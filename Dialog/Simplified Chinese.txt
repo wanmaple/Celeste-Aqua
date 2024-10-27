@@ -1,0 +1,2 @@
+yourname_mapname_testmap=测试地图
+yourname_mapname=测试

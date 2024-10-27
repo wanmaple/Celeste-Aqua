@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Celeste.Mod.Aqua
+﻿namespace Celeste.Mod.Aqua
 {
     public static class ModConstants
     {

@@ -28,6 +28,10 @@
         <Reference Include="$(CelestePrefix)\FNA.dll" Private="false" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Core\Level\" />
+    </ItemGroup>
+
     <Target Name="CopyFiles" AfterTargets="Build" Inputs="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).pdb" Outputs="..\bin\$(AssemblyName).dll;..\bin\$(AssemblyName).pdb">
         <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="..\bin" />
         <Copy SourceFiles="$(OutputPath)\$(AssemblyName).pdb" DestinationFolder="..\bin" />
@@ -42,6 +46,7 @@
     
     <PropertyGroup>
         <PathMap>$(MSBuildProjectDirectory)=Aqua/</PathMap>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <!-- Inline task used to create a .zip for the mod -->

@@ -15,6 +15,8 @@ public class AquaModule : EverestModule
     public override Type SaveDataType => typeof(AquaModuleSaveData);
     public static AquaModuleSaveData SaveData => (AquaModuleSaveData)Instance._SaveData;
 
+    public HookCenter HookCenter { get; private set; } = new HookCenter();
+
     public AquaModule()
     {
         Instance = this;
@@ -30,10 +32,12 @@ public class AquaModule : EverestModule
     public override void Load()
     {
         // TODO: apply any hooks that should always be active
+        HookCenter.Hook();
     }
 
     public override void Unload()
     {
         // TODO: unapply any hooks applied in Load()
+        HookCenter.Unhook();
     }
 }
