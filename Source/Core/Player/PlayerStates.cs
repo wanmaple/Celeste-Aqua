@@ -1,12 +1,13 @@
 ﻿using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 
 namespace Celeste.Mod.Aqua.Core
 {
     public static class PlayerStates
     {
-        private const float GRAPPLING_HOOK_RADIUS = 4;
+        private const float GRAPPLING_HOOK_SIZE = 8;
         private const float GRAPPLING_HOOK_LENGTH = 100.0f;
         private const float EMITTING_SPEED = 500.0f;
 
@@ -29,17 +30,20 @@ namespace Celeste.Mod.Aqua.Core
         private static void Player_Construct(On.Celeste.Player.orig_ctor orig, Player self, Vector2 position, PlayerSpriteMode spriteMode)
         {
             orig(self, position, spriteMode);
-            _extraData = new PlayerData();
         }
 
         private static void Player_Added(On.Celeste.Player.orig_Added orig, Player self, Scene scene)
         {
             orig(self, scene);
-            _madelineHook = new GrapplingHook(GRAPPLING_HOOK_RADIUS, GRAPPLING_HOOK_LENGTH);
+            _madelineHook = new GrapplingHook(GRAPPLING_HOOK_SIZE, GRAPPLING_HOOK_LENGTH);
         }
 
         private static void Player_Removed(On.Celeste.Player.orig_Removed orig, Player self, Scene scene)
         {
+            if (_madelineHook.Active)
+            {
+                scene.Remove(_madelineHook);
+            }
             _madelineHook = null;
             orig(self, scene);
         }
@@ -74,10 +78,16 @@ namespace Celeste.Mod.Aqua.Core
                 self.Scene.Remove(_madelineHook);
                 return 0;
             }
+            else if (_madelineHook.Active && _madelineHook.State == GrapplingHook.HookStates.Fixed)
+            {
+                if (AquaModule.Settings.ThrowHook.Pressed)
+                {
+                    _madelineHook.Revoke();
+                }
+            }
             return 0;
         }
 
-        private static PlayerData _extraData;
         private static GrapplingHook _madelineHook;
     }
 }

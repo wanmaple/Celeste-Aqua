@@ -1,5 +1,4 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
-using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -17,29 +16,39 @@ namespace Celeste.Mod.Aqua.Core
             Fixed,
         }
 
-        public float HookRadius { get; private set; }   // 爪子的半径，碰撞箱是圆形
-        public float RopeLength { get; private set; }   // 钩绳的最大长度
+        public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
 
         public HookStates State { get; private set; } = HookStates.None;
         public bool Revoked { get; private set; } = false;
 
-        public GrapplingHook(float radius, float length)
+        public GrapplingHook(float size, float length)
             : base(Vector2.Zero)
         {
-            HookRadius = radius;
-            RopeLength = length;
+            HookSize = size;
             Active = false;
 
-            Add(new HookRope());
+            Collider = new Hitbox(size, size, -size * 0.5f, -size * 0.5f);
+
+            Add(new HookRope(length));
             AddTag(Tags.Global);
         }
 
         public void Emit(Vector2 direction, float speed)
         {
-            _direction = direction;
-            _speed = speed;
-            _movement = 0.0f;
+            HookRope rope = Get<HookRope>();
+            rope.CurrentDirection = direction;
+            rope.EmitSpeed = speed;
             Revoked = false;
+
+            //_direction = direction;
+            //_speed = speed;
+            //_currentLength = 0.0f;
+            //Revoked = false;
+        }
+
+        public void Revoke()
+        {
+            State = HookStates.Revoking;
         }
 
         public override void Added(Scene scene)
@@ -71,25 +80,25 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
-            Vector2 oldPosition = Position;
+            Vector2 prevPosition = Position;
+            Vector2 nextPosition = Position;
+            HookRope rope = Get<HookRope>();
+            rope.ReleasePivotsIfPossible();
             Player player = Scene.Tracker.GetEntity<Player>();
+            Segment ropeSeg = new Segment(player.PreviousPosition + player.Center - player.Position, rope.BottomPivot);
+            Segment playerSeg = new Segment(player.PreviousPosition + player.Center - player.Position, player.Center);
             switch (State)
             {
                 case HookStates.Emitting:
-                    _movement += _speed * Engine.DeltaTime;
-                    bool reachLength = _movement > RopeLength;
-                    if (reachLength)
-                    {
-                        _movement = RopeLength;
-                    }
-                    Vector2 newPosition = player.Center + _direction * _movement;
-                    Vector2 movement = newPosition - oldPosition;
+                    bool changeState;
+                    nextPosition = rope.DetectHookNextPosition(Engine.DeltaTime, false, out changeState);
+                    Vector2 movement = nextPosition - prevPosition;
                     bool collided = false;
-                    if (!Maths.ApproximateEqual(movement.X, 0.0f))
+                    if (!AquaMaths.IsApproximateZero(movement.X))
                     {
                         collided = collided || MoveH(movement.X);
                     }
-                    if (!Maths.ApproximateEqual(movement.Y, 0.0f))
+                    if (!AquaMaths.IsApproximateZero(movement.Y))
                     {
                         collided = collided || MoveV(movement.Y);
                     }
@@ -97,25 +106,20 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         State = HookStates.Fixed;
                     }
-                    else if (reachLength)
+                    else if (changeState)
                     {
-                        State = HookStates.Revoking;
+                        Revoke();
                     }
-                    //Position = newPosition;
                     break;
                 case HookStates.Revoking:
-                    if (!Revoked)
-                    {
-                        _movement -= _speed * Engine.DeltaTime;
-                        if (_movement <= 0.0f)
-                        {
-                            Revoked = true;
-                            _movement = 0.0f;
-                        }
-                        Position = player.Center + _direction * _movement;
-                    }
+                    bool revokeHook;
+                    nextPosition = rope.DetectHookNextPosition(Engine.DeltaTime, true, out revokeHook);
+                    Revoked = revokeHook;
+                    Position = nextPosition;
                     break;
                 case HookStates.Fixed:
+                    rope.CheckCollision(ropeSeg, playerSeg);
+                    rope.UpdateCurrentDirection();
                     break;
                 default:
                     break;
@@ -127,11 +131,7 @@ namespace Celeste.Mod.Aqua.Core
         public override void Render()
         {
             base.Render();
-            Draw.Circle(Position, HookRadius, Color.Red, 16);
+            Draw.Rect(Collider, Color.Red);
         }
-
-        private Vector2 _direction;
-        private float _speed;
-        private float _movement = 0.0f;
     }
 }
