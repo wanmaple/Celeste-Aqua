@@ -8,8 +8,8 @@ namespace Celeste.Mod.Aqua.Core
     public static class PlayerStates
     {
         private const float GRAPPLING_HOOK_SIZE = 8;
-        private const float GRAPPLING_HOOK_LENGTH = 100.0f;
-        private const float EMITTING_SPEED = 500.0f;
+        private const float GRAPPLING_HOOK_LENGTH = 70.0f;
+        private const float EMITTING_SPEED = 400.0f;
 
         public static void Initialize()
         {

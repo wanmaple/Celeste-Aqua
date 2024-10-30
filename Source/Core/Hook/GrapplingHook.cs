@@ -87,6 +87,7 @@ namespace Celeste.Mod.Aqua.Core
             Player player = Scene.Tracker.GetEntity<Player>();
             Segment ropeSeg = new Segment(player.PreviousPosition + player.Center - player.Position, rope.BottomPivot);
             Segment playerSeg = new Segment(player.PreviousPosition + player.Center - player.Position, player.Center);
+            rope.CheckCollision(ropeSeg, playerSeg);
             switch (State)
             {
                 case HookStates.Emitting:
@@ -118,7 +119,6 @@ namespace Celeste.Mod.Aqua.Core
                     Position = nextPosition;
                     break;
                 case HookStates.Fixed:
-                    rope.CheckCollision(ropeSeg, playerSeg);
                     rope.UpdateCurrentDirection();
                     break;
                 default:

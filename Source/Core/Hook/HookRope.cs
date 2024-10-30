@@ -122,46 +122,60 @@ namespace Celeste.Mod.Aqua.Core
             float hookMovement = EmitSpeed * dt;
             GrapplingHook hook = Entity as GrapplingHook;
             Player player = Scene.Tracker.GetEntity<Player>();
+            float currentLength = _prevLength;
+            if (revoking)
+            {
+                currentLength -= hookMovement;
+                if (currentLength <= 0.0f)
+                {
+                    currentLength = 0.0f;
+                    changeState = true;
+                }
+            }
+            else
+            {
+                currentLength += hookMovement;
+                if (currentLength >= MaxLength)
+                {
+                    currentLength = MaxLength;
+                    changeState = true;
+                }
+            }
             if (_pivots.Count <= 1)
             {
-                float currentLength = (TopPivot - player.Center).Length();
-                Vector2 direction = CurrentDirection;
-                if (revoking)
-                {
-                    currentLength -= hookMovement;
-                    if (currentLength <= 0.0f)
-                    {
-                        currentLength = 0.0f;
-                        changeState = true;
-                    }
-                }
-                else
-                {
-                    currentLength += hookMovement;
-                    if (currentLength >= MaxLength)
-                    {
-                        currentLength = MaxLength;
-                        changeState = true;
-                    }
-                }
-
-                return player.Center + direction * currentLength;
+                return player.Center + CurrentDirection * currentLength;
             }
 
-            float ropeLength = 0.0f;
+            Vector2 nextPosition = Vector2.Zero;
+            Vector2 lastPos = player.Center;
+            float ropeLength = 0.0f, lastRopeLength = 0.0f;
+            int toRmIdx = -1;
             for (int i = _pivots.Count - 1; i >= 1; i--)
             {
                 Vector2 pivot = _pivots[i].point;
-                if (i == _pivots.Count - 1)
+                ropeLength += (pivot - lastPos).Length();
+                if (ropeLength >= currentLength)
                 {
-                    ropeLength += (pivot - player.Center).Length();
+                    toRmIdx = i;
+                    CurrentDirection = Vector2.Normalize(pivot - lastPos);
+                    nextPosition = lastPos + CurrentDirection * (currentLength - lastRopeLength);
+                    break;
                 }
                 else
                 {
-                    ropeLength += (pivot - _pivots[i + 1].point).Length();
+                    lastPos = pivot;
                 }
+                lastRopeLength = ropeLength;
             }
-            return player.Center;
+            if (toRmIdx < 0)
+            {
+                nextPosition = lastPos + CurrentDirection * (currentLength - ropeLength);
+            }
+            else if (toRmIdx > 0)
+            {
+                _pivots.RemoveRange(1, toRmIdx);
+            }
+            return nextPosition;
         }
 
         public void UpdateCurrentDirection()
@@ -175,6 +189,10 @@ namespace Celeste.Mod.Aqua.Core
             {
                 Player player = Scene.Tracker.GetEntity<Player>();
                 CurrentDirection = Vector2.Normalize(TopPivot - player.Center);
+            }
+            else
+            {
+                CurrentDirection = Vector2.Normalize(TopPivot - _pivots[1].point);
             }
         }
 
@@ -219,6 +237,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             RopePivot hookPivot = new RopePivot(Entity.Position, Cornors.Free, Entity);
             _pivots.Add(hookPivot);
+            _prevLength = 0.0f;
         }
 
         public override void Update()
@@ -230,6 +249,7 @@ namespace Celeste.Mod.Aqua.Core
             if (hook.State == GrapplingHook.HookStates.Fixed)
             {
             }
+            _prevLength = CalculateRopeLength();
             _justReleased.Clear();
         }
 
@@ -263,6 +283,24 @@ namespace Celeste.Mod.Aqua.Core
         public override void HandleGraphicsCreate()
         {
             base.HandleGraphicsCreate();
+        }
+
+        private float CalculateRopeLength()
+        {
+            float length = 0.0f;
+            Player player = Scene.Tracker.GetEntity<Player>();
+            if (_pivots.Count <= 1)
+            {
+                return (BottomPivot - player.Center).Length();
+            }
+
+            for (int i = 1; i < _pivots.Count; ++i)
+            {
+                Segment seg = new Segment(_pivots[i].point, _pivots[i - 1].point);
+                length += seg.Length;
+            }
+            length += (BottomPivot - player.Center).Length();
+            return length;
         }
 
         private bool CheckCollisionInternal(Segment ropeSeg, Segment playerSeg)
@@ -376,5 +414,6 @@ namespace Celeste.Mod.Aqua.Core
 
         private List<RopePivot> _pivots = new List<RopePivot>(8);
         private HashSet<Vector2> _justReleased = new HashSet<Vector2>(8);
+        private float _prevLength;
     }
 }
