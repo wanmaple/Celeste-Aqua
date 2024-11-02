@@ -4,7 +4,6 @@ using Monocle;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    //[CustomEntity("Aqua/Grappling Hook")]
     [Tracked(true)]
     public class GrapplingHook : Actor
     {
@@ -17,14 +16,19 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
+        public float BreakSpeed { get; private set; }   // 钩绳长度到达最大时会被挣脱的速度阈值
 
         public HookStates State { get; private set; } = HookStates.None;
         public bool Revoked { get; private set; } = false;
+        public bool JustFixed { get; private set; } = false;
 
-        public GrapplingHook(float size, float length)
+        public float SwingRadius => Get<HookRope>().SwingRadius;
+
+        public GrapplingHook(float size, float length, float breakSpeed)
             : base(Vector2.Zero)
         {
             HookSize = size;
+            BreakSpeed = breakSpeed;
             Active = false;
 
             Collider = new Hitbox(size, size, -size * 0.5f, -size * 0.5f);
@@ -39,16 +43,25 @@ namespace Celeste.Mod.Aqua.Core
             rope.CurrentDirection = direction;
             rope.EmitSpeed = speed;
             Revoked = false;
-
-            //_direction = direction;
-            //_speed = speed;
-            //_currentLength = 0.0f;
-            //Revoked = false;
         }
 
         public void Revoke()
         {
             State = HookStates.Revoking;
+            HookRope rope = Get<HookRope>();
+            rope.HookAttachEntity(null);
+        }
+
+        public void Fix()
+        {
+            State = HookStates.Fixed;
+            JustFixed = true;
+        }
+
+        public void HandleSolidMovement(Solid solid, Segment movement)
+        {
+            HookRope rope = Get<HookRope>();
+            rope.CheckCollisionOfSolidMovement(solid, movement);
         }
 
         public override void Added(Scene scene)
@@ -69,6 +82,7 @@ namespace Celeste.Mod.Aqua.Core
 
             State = HookStates.None;
             Active = false;
+            JustFixed = false;
             HookRope rope = Get<HookRope>();
             rope.Active = rope.Visible = false;
         }
@@ -80,14 +94,14 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
+            JustFixed = false;
             Vector2 prevPosition = Position;
             Vector2 nextPosition = Position;
             HookRope rope = Get<HookRope>();
-            rope.ReleasePivotsIfPossible();
             Player player = Scene.Tracker.GetEntity<Player>();
-            Segment ropeSeg = new Segment(player.PreviousPosition + player.Center - player.Position, rope.BottomPivot);
+            //Segment ropeSeg = new Segment(player.PreviousPosition + player.Center - player.Position, rope.BottomPivot);
             Segment playerSeg = new Segment(player.PreviousPosition + player.Center - player.Position, player.Center);
-            rope.CheckCollision(ropeSeg, playerSeg);
+            rope.CheckCollision2(playerSeg);
             switch (State)
             {
                 case HookStates.Emitting:
@@ -97,15 +111,15 @@ namespace Celeste.Mod.Aqua.Core
                     bool collided = false;
                     if (!AquaMaths.IsApproximateZero(movement.X))
                     {
-                        collided = collided || MoveH(movement.X);
+                        collided = collided || MoveH(movement.X, OnCollideEntity);
                     }
                     if (!AquaMaths.IsApproximateZero(movement.Y))
                     {
-                        collided = collided || MoveV(movement.Y);
+                        collided = collided || MoveV(movement.Y, OnCollideEntity);
                     }
                     if (collided)
                     {
-                        State = HookStates.Fixed;
+                        Fix();
                     }
                     else if (changeState)
                     {
@@ -119,6 +133,10 @@ namespace Celeste.Mod.Aqua.Core
                     Position = nextPosition;
                     break;
                 case HookStates.Fixed:
+                    //if (rope.EnforcePlayer(player, playerSeg, BreakSpeed))
+                    //{
+                    //    Revoke();
+                    //}
                     rope.UpdateCurrentDirection();
                     break;
                 default:
@@ -132,6 +150,12 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Render();
             Draw.Rect(Collider, Color.Red);
+        }
+
+        private void OnCollideEntity(CollisionData collisionData)
+        {
+            HookRope rope = Get<HookRope>();
+            rope.HookAttachEntity(collisionData.Hit);
         }
     }
 }

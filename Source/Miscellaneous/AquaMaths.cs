@@ -39,12 +39,18 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return v1.X * v2.Y - v1.Y * v2.X;
         }
 
-        public static bool IsVectorInsideTwoVectors(Vector2 v, Vector2 v1, Vector2 v2)
+        public static bool IsVectorInsideTwoVectors(Vector2 v, Vector2 v1, Vector2 v2, bool overlap = true)
         {
             if (IsApproximateZero(v)) return false;
             float cross1 = Cross(v1, v);
             float cross2 = Cross(v, v2);
-            return IsApproximateZero(cross1) || IsApproximateZero(cross2) || (MathF.Sign(cross1) == MathF.Sign(cross2));
+            float cross3 = Cross(v1, v2);
+            bool ret = MathF.Sign(cross1) == MathF.Sign(cross2) && MathF.Sign(cross1) == MathF.Sign(cross3);
+            if (overlap)
+            {
+                ret = ret || v == v1 || v == v2;
+            }
+            return ret;
         }
     }
 }

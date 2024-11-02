@@ -18,6 +18,8 @@ namespace Celeste.Mod.Aqua.Core
         public Cornors direction;
         public Entity entity;
 
+        private static string[] DIRECTION_STRINGS = { "F", "TL", "TR", "BL", "BR", };
+
         public RopePivot(Vector2 pt, Cornors cn, Entity e = null)
         {
             point = pt;
@@ -44,6 +46,11 @@ namespace Celeste.Mod.Aqua.Core
                     break;
             }
             return point + off * offset;
+        }
+
+        public override string ToString()
+        {
+            return $"{DIRECTION_STRINGS[(int)direction]}{point}";
         }
     }
 }
