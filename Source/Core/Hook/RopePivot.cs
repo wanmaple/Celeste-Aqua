@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -12,7 +14,7 @@ namespace Celeste.Mod.Aqua.Core
         BottomRight,
     }
 
-    public struct RopePivot
+    public struct RopePivot : IEquatable<RopePivot>
     {
         public Vector2 point;
         public Cornors direction;
@@ -51,6 +53,40 @@ namespace Celeste.Mod.Aqua.Core
         public override string ToString()
         {
             return $"{DIRECTION_STRINGS[(int)direction]}{point}";
+        }
+
+        public bool Equals(RopePivot other)
+        {
+            return point == other.point && direction == other.direction && entity == other.entity;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is RopePivot && Equals((RopePivot)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = point.GetHashCode();
+                hashCode = (hashCode * 397) ^ direction.GetHashCode();
+                if (entity != null)
+                {
+                    hashCode = (hashCode * 397) ^ entity.GetHashCode();
+                }
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(RopePivot left, RopePivot right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(RopePivot left, RopePivot right)
+        {
+            return !left.Equals(right);
         }
     }
 }

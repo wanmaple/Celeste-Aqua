@@ -1,8 +1,9 @@
 ﻿using Monocle;
+using System.Diagnostics;
 
 namespace Celeste.Mod.Aqua.Miscellaneous
 {
-    public static class AquaLogger
+    public static class AquaDebugger
     {
         public static void LogInfo(string message, params object[] args)
         {
@@ -19,6 +20,11 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         public static void LogError(string message, params object[] args)
         {
             Logger.Error(ModConstants.MOD_NAME, FrameCounterString() + string.Format(message, args));
+        }
+
+        public static void Assert(bool condition, string message, params object[] args)
+        {
+            Debug.Assert(condition, FrameCounterString() + string.Format(message, args));
         }
 
         private static string FrameCounterString()

@@ -1,5 +1,6 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Design;
 using Monocle;
 
 namespace Celeste.Mod.Aqua.Core
@@ -101,7 +102,7 @@ namespace Celeste.Mod.Aqua.Core
             Player player = Scene.Tracker.GetEntity<Player>();
             //Segment ropeSeg = new Segment(player.PreviousPosition + player.Center - player.Position, rope.BottomPivot);
             Segment playerSeg = new Segment(player.PreviousPosition + player.Center - player.Position, player.Center);
-            rope.CheckCollision2(playerSeg);
+            rope.CheckCollision(playerSeg);
             switch (State)
             {
                 case HookStates.Emitting:

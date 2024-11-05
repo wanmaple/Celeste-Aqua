@@ -1,10 +1,11 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
 using MonoMod.Utils;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    public static class SolidMovements
+    public static class SolidExtensions
     {
         public static void Initialize()
         {

@@ -13,6 +13,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         public Vector2 Point2 { get; set; }
 
         public Vector2 Vector => Point2 - Point1;
+        public Vector2 Direction => Vector2.Normalize(Vector);
         public float Length => Vector.Length();
         public bool InFirstQuadrant => Vector.X > 0.0f && Vector.Y >= 0.0f;
         public bool InSecondQuadrant => Vector.X <= 0.0f && Vector.Y > 0.0f;
