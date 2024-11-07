@@ -44,8 +44,8 @@ namespace Celeste.Mod.Aqua.Core
         public Vector2 CurrentDirection { get; set; }
         public float EmitSpeed { get; set; }
 
-        public Vector2 TopPivot => _pivots[0].point;
-        public Vector2 BottomPivot => _pivots[_pivots.Count - 1].point;
+        public RopePivot TopPivot => _pivots[0];
+        public RopePivot BottomPivot => _pivots[_pivots.Count - 1];
         public float SwingRadius
         {
             get
@@ -57,7 +57,34 @@ namespace Celeste.Mod.Aqua.Core
 
                 Player player = Scene.Tracker.GetEntity<Player>();
                 if (player == null) return 0.0f;
-                return (BottomPivot - player.Center).Length();
+                return (BottomPivot.point - player.Center).Length();
+            }
+        }
+        public Vector2 RopeDirection
+        {
+            get
+            {
+                if (Scene == null)
+                {
+                    throw new AquaException("Invalid call timing.", "HookRope.SwingDirection");
+                }
+
+                Player player = Scene.Tracker.GetEntity<Player>();
+                if (player == null) return Vector2.UnitX;
+                return Vector2.Normalize(player.Center - BottomPivot.point);
+            }
+        }
+        public Vector2 SwingDirection
+        {
+            get
+            {
+                if (Scene == null)
+                {
+                    throw new AquaException("Invalid call timing.", "HookRope.SwingDirection");
+                }
+
+                Vector2 ropeDirection = RopeDirection;
+                return new Vector2(ropeDirection.Y, -ropeDirection.X);
             }
         }
 
@@ -145,11 +172,11 @@ namespace Celeste.Mod.Aqua.Core
             {
                 Player player = Scene.Tracker.GetEntity<Player>();
                 if (player == null) return;
-                CurrentDirection = Vector2.Normalize(TopPivot - player.Center);
+                CurrentDirection = Vector2.Normalize(TopPivot.point - player.Center);
             }
             else
             {
-                CurrentDirection = Vector2.Normalize(TopPivot - _pivots[1].point);
+                CurrentDirection = Vector2.Normalize(TopPivot.point - _pivots[1].point);
             }
         }
 
@@ -200,38 +227,37 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public bool CheckCollisionOfSolidMovement(Solid solid, Segment movement)
+        public bool EnforcePlayer(Player player, Segment playerSeg, float breakSpeed, float dt)
         {
-
-            return false;
-        }
-
-        public bool EnforcePlayer(Player player, Segment playerSeg, float breakSpeed)
-        {
-            if (player.StateMachine.State != (int)AquaStates.StHanging)
+            GrapplingHook hook = Entity as GrapplingHook;
+            Vector2 hookVelocity = hook.Velocity;
+            Vector2 velocity = playerSeg.Vector / dt;
+            Vector2 relativeVelocity = velocity - hookVelocity;
+            float speed = relativeVelocity.Length();
+            float length = CalculateRopeLength(playerSeg.Point2);
+            if (length > _lockLength)
             {
-                if (AquaMaths.IsApproximateZero(playerSeg.Vector))
+                //if (speed >= breakSpeed) 
+                //    return true;
+                //Vector2 forceVelocity = Vector2.Normalize(BottomPivot - playerSeg.Point2) * (length - _lockLength) / dt;
+                //player.Speed += forceVelocity;
+                float lengthDiff = length - _lockLength;
+                Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
+                Vector2 movement = ropeDirection * lengthDiff;
+                if (!AquaMaths.IsApproximateZero(movement.X))
+                {
+                    player.MoveH(movement.X);
+                }
+                if (!AquaMaths.IsApproximateZero(movement.Y))
+                {
+                    player.MoveV(movement.Y);
+                }
+                float afterLength = CalculateRopeLength(player.Center);
+                if (afterLength - _lockLength < 0.1f)
                 {
                     return false;
                 }
-                Vector2 velocity = playerSeg.Vector / Engine.DeltaTime;
-                float speed = velocity.Length();
-                float length = CalculateRopeLength(playerSeg.Point2);
-                if (length > MaxLength)
-                {
-                    if (speed >= breakSpeed) return true;
-                    Vector2 movement = -playerSeg.Vector;
-                    if (!AquaMaths.IsApproximateZero(movement.X))
-                    {
-                        player.MoveH(movement.X, PlayerCollideSolid);
-                    }
-                    if (!AquaMaths.IsApproximateZero(movement.Y))
-                    {
-                        player.MoveV(movement.Y, PlayerCollideSolid);
-                    }
-                    if (_collidedWhenUndo) return true;
-                    UndoPivots();
-                }
+                return true;
             }
 
             return false;
@@ -242,6 +268,23 @@ namespace Celeste.Mod.Aqua.Core
             RopePivot pivot = _pivots[0];
             pivot.entity = entity;
             _pivots[0] = pivot;
+        }
+
+        public void SetLengthLocked(bool locked, Vector2 playerPosition)
+        {
+            if (locked)
+            {
+                _lockLength = MathF.Min(CalculateRopeLength(playerPosition), MaxLength);
+            }
+            else
+            {
+                _lockLength = MaxLength;
+            }
+        }
+
+        public void AddLockedLength(float diff)
+        {
+            _lockLength = Calc.Clamp(_lockLength + diff, 8.0f, MaxLength);
         }
 
         public override void EntityRemoved(Scene scene)
@@ -256,6 +299,7 @@ namespace Celeste.Mod.Aqua.Core
             RopePivot hookPivot = new RopePivot(Entity.Position, Cornors.Free, null);
             _pivots.Add(hookPivot);
             _prevLength = 0.0f;
+            _lockLength = MaxLength;
         }
 
         public override void Update()
@@ -269,9 +313,6 @@ namespace Celeste.Mod.Aqua.Core
             {
             }
             _prevLength = CalculateRopeLength(player.Center);
-            _justReleased.Clear();
-            _justAdded.Clear();
-            _collidedWhenUndo = false;
         }
 
         public override void Render()
@@ -308,7 +349,6 @@ namespace Celeste.Mod.Aqua.Core
                     }
                     else
                     {
-                        RopePivot oldPivot = pivot;
                         Vector2 moveVec = solid.Position - solid.GetPreviousPosition();
                         pivot.point += moveVec;
                         _pivots[i] = pivot;
@@ -317,7 +357,6 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             Entity.Position = pivot.point;
                         }
-                        //AquaLogger.LogInfo("Change Pivot {0} -> {1}", oldPivot.point, pivot.point);
                         ++i;
                     }
                 }
@@ -364,6 +403,7 @@ namespace Celeste.Mod.Aqua.Core
             SortedSet<PotentialPoint> potentials = new SortedSet<PotentialPoint>(AlongPerpComparer);
             foreach (Solid solid in solids)
             {
+                if (solid is GrapplingHook) continue;
                 if (!solid.Collidable || solid.Collider == null) continue;
                 CheckCollisionSolid(prevPivot, currentPivot, lastSegments, solid, potentials);
             }
@@ -519,19 +559,20 @@ namespace Celeste.Mod.Aqua.Core
             float crossNew = AquaMaths.Cross(newToPrev, currentBound.Vector);
             int signOld = MathF.Sign(crossOld);
             int signNew = MathF.Sign(crossNew);
-            if (signOld != signNew || signNew == 0)
+            if (signNew == 0) return true;
+            if (signOld != signNew)
             {
-                if (signOld == 0)
-                {
-                    // 在绕圈的时候可能出现这种特殊情况
-                    Vector2 movement = currentPt - prevPt;
-                    if (!AquaMaths.IsApproximateZero(movement))
-                    {
-                        return !IsMoveDirectionCorrect(movement, pivot.direction);
-                    }
-                    return !Collide.CheckLine(pivot.entity, currentBound.Point1 + currentBound
-                        .Direction * 0.01f, currentPt);
-                }
+                //if (signOld == 0)
+                //{
+                //    // 在绕圈的时候可能出现这种特殊情况
+                //    Vector2 movement = currentPt - prevPt;
+                //    if (!AquaMaths.IsApproximateZero(movement))
+                //    {
+                //        return !IsMoveDirectionCorrect(movement, pivot.direction);
+                //    }
+                //    return !Collide.CheckLine(pivot.entity, currentBound.Point1 + currentBound
+                //        .Direction * 0.01f, currentPt);
+                //}
                 return true;
             }
             return false;
@@ -572,28 +613,12 @@ namespace Celeste.Mod.Aqua.Core
             return v.X * pivotMovement;
         }
 
-        private void UndoPivots()
-        {
-            _pivots.RemoveRange(_pivots.Count - _justAdded.Count, _justAdded.Count);
-            for (int i = _justReleased.Count - 1; i >= 0; i--)
-            {
-                _pivots.Add(_justReleased[i]);
-            }
-            _justAdded.Clear();
-            _justReleased.Clear();
-        }
-
-        private void PlayerCollideSolid(CollisionData collisionData)
-        {
-            _collidedWhenUndo = true;
-        }
-
         private float CalculateRopeLength(Vector2 playerPosition)
         {
             float length = 0.0f;
             if (_pivots.Count <= 1)
             {
-                return (BottomPivot - playerPosition).Length();
+                return (BottomPivot.point - playerPosition).Length();
             }
 
             for (int i = 1; i < _pivots.Count; ++i)
@@ -601,16 +626,13 @@ namespace Celeste.Mod.Aqua.Core
                 Segment seg = new Segment(_pivots[i].point, _pivots[i - 1].point);
                 length += seg.Length;
             }
-            length += (BottomPivot - playerPosition).Length();
+            length += (BottomPivot.point - playerPosition).Length();
             return length;
         }
 
         private List<RopePivot> _pivots = new List<RopePivot>(8);
         private ExpiredPivotList _lastPivots = new ExpiredPivotList();
-        //private List<Vector2> _pivotMovements = new List<Vector2>(8);
-        private List<RopePivot> _justReleased = new List<RopePivot>(8);
-        private List<RopePivot> _justAdded = new List<RopePivot>(8);
         private float _prevLength;
-        private bool _collidedWhenUndo = false;
+        private float _lockLength;
     }
 }

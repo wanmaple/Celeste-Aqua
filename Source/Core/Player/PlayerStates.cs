@@ -3,6 +3,8 @@ using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Cil;
+using static Celeste.TrackSpinner;
+using System;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -42,11 +44,6 @@ namespace Celeste.Mod.Aqua.Core
 
     public static class PlayerStates
     {
-        private const float GRAPPLING_HOOK_SIZE = 8;
-        private const float GRAPPLING_HOOK_LENGTH = 70.0f;
-        private const float GRAPPLING_HOOK_BREAK_SPEED = 235.0f;
-        private const float GRAPPLING_HOOK_EMIT_SPEED = 400.0f;
-
         public static void Initialize()
         {
             IL.Celeste.Player.ctor += Player_ILConstruct;
@@ -56,17 +53,19 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.NormalUpdate += Player_NormalUpdate;
             On.Celeste.Player.DashUpdate += Player_DashUpdate;
             On.Celeste.Player.ClimbUpdate += Player_ClimbUpdate;
+            On.Celeste.Player.Update += Player_Update;
         }
 
         public static void Uninitialize()
         {
-            IL.Celeste.Player.ctor-=Player_ILConstruct;
+            IL.Celeste.Player.ctor -= Player_ILConstruct;
             On.Celeste.Player.ctor -= Player_Construct;
             On.Celeste.Player.Added -= Player_Added;
             On.Celeste.Player.Removed -= Player_Removed;
             On.Celeste.Player.NormalUpdate -= Player_NormalUpdate;
             On.Celeste.Player.DashUpdate -= Player_DashUpdate;
             On.Celeste.Player.ClimbUpdate -= Player_ClimbUpdate;
+            On.Celeste.Player.Update -= Player_Update;
         }
 
         private static void Player_ILConstruct(MonoMod.Cil.ILContext il)
@@ -91,7 +90,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void Player_Added(On.Celeste.Player.orig_Added orig, Player self, Scene scene)
         {
             orig(self, scene);
-            _madelinesHook = new GrapplingHook(GRAPPLING_HOOK_SIZE, GRAPPLING_HOOK_LENGTH, GRAPPLING_HOOK_BREAK_SPEED);
+            _madelinesHook = new GrapplingHook(AquaModule.Settings.HookSettings.HookSize, AquaModule.Settings.HookSettings.HookLength, AquaModule.Settings.HookSettings.HookBreakSpeed);
         }
 
         private static void Player_Removed(On.Celeste.Player.orig_Removed orig, Player self, Scene scene)
@@ -111,6 +110,14 @@ namespace Celeste.Mod.Aqua.Core
             {
                 nextState = orig(self);
             }
+            if (nextState == (int)AquaStates.StNormal)
+            {
+                int postState = PostNormalUpdate(self);
+                if (postState >= 0)
+                {
+                    nextState = postState;
+                }
+            }
             return nextState;
         }
 
@@ -126,16 +133,18 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void Player_HangingBegin(this Player self)
         {
-            self.Speed = Vector2.Zero;
+            _madelinesHook.SetRopeLengthLocked(true, self.Center);
+            self.Speed = TurnToTangentSpeed(self.Speed, _madelinesHook.SwingDirection);
         }
 
         private static void Player_HangingEnd(this Player self)
         {
-
+            _madelinesHook.SetRopeLengthLocked(false, self.Center);
         }
 
         private static int Player_HangingUpdate(this Player self)
         {
+            float dt = Engine.DeltaTime;
             if (self.CanDash)
             {
                 _madelinesHook.Revoke();
@@ -146,7 +155,108 @@ namespace Celeste.Mod.Aqua.Core
                 _madelinesHook.Revoke();
                 return (int)AquaStates.StNormal;
             }
+            else if (!Input.Grab.Check)
+            {
+                return (int)AquaStates.StNormal;
+            }
+            else if (Input.Jump.Pressed)
+            {
+                _madelinesHook.Revoke();
+                self.LiftSpeed = self.Speed * new Vector2(AquaModule.Settings.HookSettings.HookJumpXPercent / 100.0f, AquaModule.Settings.HookSettings.HookJumpYPercent / 100.0f);
+                self.Jump(false);
+                return (int)AquaStates.StNormal;
+            }
+
+            UpdateGravity(self, dt);
+            Vector2 ropeDirection = _madelinesHook.RopeDirection;
+            Vector2 alongRopeSpeed = Vector2.Zero;
+            if (Input.MoveY.Value != 0)
+            {
+                float rollingSpeed = Input.MoveY > 0 ? AquaModule.Settings.HookSettings.HookRollingSpeedDown : -AquaModule.Settings.HookSettings.HookRollingSpeedUp * 0.25f;
+                float rollingDistance = rollingSpeed * dt;
+                _madelinesHook.AddLockedLength(rollingDistance);
+                alongRopeSpeed = rollingSpeed * ropeDirection;
+            }
+            Vector2 swingDirection = _madelinesHook.SwingDirection;
+            if (Input.MoveX.Value != 0)
+            {
+                float sign = AquaMaths.Cross(Vector2.UnitX, ropeDirection) >= 0.0f ? 1.0f : -1.0f;
+                self.Speed += AquaModule.Settings.HookSettings.HookSwingSpeed * swingDirection * Input.MoveX.Value * dt * sign;
+            }
+            self.Speed = TurnToTangentSpeed(self.Speed, swingDirection);
+            self.Speed += alongRopeSpeed;
+
             return (int)AquaStates.StHanging;
+        }
+
+        private static void Player_Update(On.Celeste.Player.orig_Update orig, Player self)
+        {
+            orig(self);
+            if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
+            {
+                if (_madelinesHook.EnforcePlayer(self, new Segment(self.PreviousPosition, self.Position), Engine.DeltaTime))
+                {
+                    _madelinesHook.Revoke();
+                    if (self.StateMachine.State == (int)AquaStates.StHanging)
+                    {
+                        self.StateMachine.ForceState((int)AquaStates.StNormal);
+                    }
+                }
+            }
+        }
+
+        private static Vector2 TurnToTangentSpeed(Vector2 speed, Vector2 swingDirection)
+        {
+            return Vector2.Dot(speed, swingDirection) * swingDirection;
+        }
+
+        private static void UpdateGravity(Player self, float dt)
+        {
+            float target2 = self.maxFall;
+            if (self.Holding != null && self.Holding.SlowFall)
+            {
+                self.holdCannotDuck = (float)Input.MoveY == 1f;
+            }
+            if ((self.moveX == (int)self.Facing || (self.moveX == 0 && Input.GrabCheck)) && Input.MoveY.Value != 1)
+            {
+                if (self.Speed.Y >= 0f && self.wallSlideTimer > 0f && self.Holding == null && self.ClimbBoundsCheck((int)self.Facing) && self.CollideCheck<Solid>(self.Position + Vector2.UnitX * (float)self.Facing) && !ClimbBlocker.EdgeCheck(self.level, self, (int)self.Facing) && self.CanUnDuck)
+                {
+                    self.Ducking = false;
+                    self.wallSlideDir = (int)self.Facing;
+                }
+
+                if (self.wallSlideDir != 0)
+                {
+                    if (Input.GrabCheck)
+                    {
+                        self.ClimbTrigger(self.wallSlideDir);
+                    }
+
+                    if (self.wallSlideTimer > 0.6f && ClimbBlocker.Check(self.level, self, self.Position + Vector2.UnitX * self.wallSlideDir))
+                    {
+                        self.wallSlideTimer = 0.6f;
+                    }
+
+                    target2 = MathHelper.Lerp(160f, 20f, self.wallSlideTimer / 1.2f);
+                    if (self.wallSlideTimer / 1.2f > 0.65f)
+                    {
+                        self.CreateWallSlideParticles(self.wallSlideDir);
+                    }
+                }
+            }
+
+            float num7 = ((Math.Abs(self.Speed.Y) < 40f && (Input.Jump.Check || self.AutoJump)) ? 0.5f : 1f);
+            if (self.Holding != null && self.Holding.SlowFall && self.forceMoveXTimer <= 0f)
+            {
+                num7 *= 0.5f;
+            }
+
+            if (self.level.InSpace)
+            {
+                num7 *= 0.6f;
+            }
+
+            self.Speed.Y = Calc.Approach(self.Speed.Y, target2, (float)(Player.Gravity * (double)num7 * dt));
         }
 
         private static int PreNormalUpdate(Player self)
@@ -160,7 +270,7 @@ namespace Celeste.Mod.Aqua.Core
                     direction.Y = Input.MoveY;
                     direction.Normalize();
                 }
-                _madelinesHook.Emit(direction, GRAPPLING_HOOK_EMIT_SPEED);
+                _madelinesHook.Emit(direction, AquaModule.Settings.HookSettings.HookEmitSpeed);
                 self.Scene.Add(_madelinesHook);
                 return 0;
             }
@@ -169,13 +279,22 @@ namespace Celeste.Mod.Aqua.Core
                 self.Scene.Remove(_madelinesHook);
                 return 0;
             }
-            else if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
+
+            if (_madelinesHook.Active)
             {
                 if (AquaModule.Settings.ThrowHook.Pressed)
                 {
                     _madelinesHook.Revoke();
                 }
-                else if (_madelinesHook.JustFixed && !self.onGround)
+            }
+            return -1;
+        }
+
+        private static int PostNormalUpdate(Player self)
+        {
+            if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
+            {
+                if (Input.Grab.Check)
                 {
                     return (int)AquaStates.StHanging;
                 }
