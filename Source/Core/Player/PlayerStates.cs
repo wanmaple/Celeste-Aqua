@@ -276,13 +276,13 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (!_madelinesHook.Active && AquaModule.Settings.ThrowHook.Pressed)
             {
-                Vector2 direction = new Vector2(0.0f, -1.0f);
+                Vector2 direction = new Vector2((int)self.Facing, -1.0f);
                 if (Input.MoveX.Value != 0 || Input.MoveY.Value != 0)
                 {
                     direction.X = Input.MoveX;
                     direction.Y = Input.MoveY;
-                    direction.Normalize();
                 }
+                direction.Normalize();
                 _madelinesHook.Emit(direction, AquaModule.Settings.HookSettings.HookEmitSpeed);
                 self.Scene.Add(_madelinesHook);
                 return -1;
