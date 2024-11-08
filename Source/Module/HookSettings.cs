@@ -10,16 +10,16 @@ namespace Celeste.Mod.Aqua.Module
     public class HookSettings
     {
         [SettingIgnore]
-        public int HookSize { get; set; } = 8;  // 钩爪大小
+        public int HookSize { get; set; } = 6;  // 钩爪大小
 
         [SettingRange(50, 100)]
-        public int HookLength { get; set; } = 70;  // 钩绳的最大长度
+        public int HookLength { get; set; } = 90;  // 钩绳的最大长度
 
         [SettingIgnore]
         public int HookBreakSpeed { get; set; } = 235; // 强制收回Madeline所需要的速度阈值
 
-        [SettingRange(300, 500)]
-        public int HookEmitSpeed { get; set; } = 400;  // 钩爪的发射速度
+        [SettingRange(400, 800)]
+        public int HookEmitSpeed { get; set; } = 800;  // 钩爪的发射速度
 
         [SettingRange(20, 40)]
         public int HookRollingSpeedUp { get; set; } = 20;   // 上爬速度
