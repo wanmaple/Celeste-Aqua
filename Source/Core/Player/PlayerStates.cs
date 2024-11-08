@@ -105,14 +105,14 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int Player_NormalUpdate(On.Celeste.Player.orig_NormalUpdate orig, Player self)
         {
-            int nextState = PreNormalUpdate(self);
+            int nextState = PreHookUpdate(self);
             if (nextState < 0)
             {
                 nextState = orig(self);
             }
             if (nextState == (int)AquaStates.StNormal)
             {
-                int postState = PostNormalUpdate(self);
+                int postState = PostHookUpdate(self);
                 if (postState >= 0)
                 {
                     nextState = postState;
@@ -128,7 +128,20 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int Player_DashUpdate(On.Celeste.Player.orig_DashUpdate orig, Player self)
         {
-            return orig(self);
+            int nextState = PreHookUpdate(self);
+            if (nextState < 0)
+            {
+                nextState = orig(self);
+            }
+            if (nextState == (int)AquaStates.StDash)
+            {
+                int postState = PostHookUpdate(self);
+                if (postState >= 0)
+                {
+                    nextState = postState;
+                }
+            }
+            return nextState;
         }
 
         private static void Player_HangingBegin(this Player self)
@@ -259,7 +272,7 @@ namespace Celeste.Mod.Aqua.Core
             self.Speed.Y = Calc.Approach(self.Speed.Y, target2, (float)(Player.Gravity * (double)num7 * dt));
         }
 
-        private static int PreNormalUpdate(Player self)
+        private static int PreHookUpdate(Player self)
         {
             if (!_madelinesHook.Active && AquaModule.Settings.ThrowHook.Pressed)
             {
@@ -272,12 +285,12 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 _madelinesHook.Emit(direction, AquaModule.Settings.HookSettings.HookEmitSpeed);
                 self.Scene.Add(_madelinesHook);
-                return 0;
+                return -1;
             }
             else if (_madelinesHook.Active && _madelinesHook.Revoked)
             {
                 self.Scene.Remove(_madelinesHook);
-                return 0;
+                return -1;
             }
 
             if (_madelinesHook.Active)
@@ -290,7 +303,7 @@ namespace Celeste.Mod.Aqua.Core
             return -1;
         }
 
-        private static int PostNormalUpdate(Player self)
+        private static int PostHookUpdate(Player self)
         {
             if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
             {
