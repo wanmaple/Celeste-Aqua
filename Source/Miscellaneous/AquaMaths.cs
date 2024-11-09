@@ -19,14 +19,14 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return num;
         }
 
-        public static bool ApproximateEqual(float num, float compare)
+        public static bool IsApproximateEqual(float num, float compare)
         {
             return MathF.Abs(num - compare) < EPSILON;
         }
 
         public static bool IsApproximateZero(float num)
         {
-            return ApproximateEqual(num, 0.0f);
+            return IsApproximateEqual(num, 0.0f);
         }
 
         public static bool IsApproximateZero(Vector2 vec)

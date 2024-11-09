@@ -16,10 +16,6 @@ namespace Celeste.Mod.Aqua.Core.Hook
 
         public List<Segment> GetSegments(int index)
         {
-            if (index >= _indexes.Count)
-            {
-
-            }
             List<Segment> segments = new List<Segment>(_indexes[index]);
             int prev = index == 0 ? 0 : _indexes[index - 1];
             for (int i = 0; i < _indexes[index] - prev; i++)

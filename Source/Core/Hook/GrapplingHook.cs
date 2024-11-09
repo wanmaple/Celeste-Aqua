@@ -5,6 +5,8 @@ using Monocle;
 using System.Runtime.CompilerServices;
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
+using Celeste.Mod.Aqua.Module;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -27,9 +29,11 @@ namespace Celeste.Mod.Aqua.Core
         public bool Revoked { get; private set; } = false;
         public bool JustFixed { get; private set; } = false;
 
+        public float LockedRadius => Get<HookRope>().LockedLength;
         public float SwingRadius => Get<HookRope>().SwingRadius;
         public Vector2 RopeDirection => Get<HookRope>().RopeDirection;
         public Vector2 SwingDirection => Get<HookRope>().SwingDirection;
+        public Vector2 PlayerPreviousPosition => _playerPrevPosition;
 
         public GrapplingHook(float size, float length, float breakSpeed)
             : base(Vector2.Zero)
@@ -63,24 +67,54 @@ namespace Celeste.Mod.Aqua.Core
         {
             State = HookStates.Fixed;
             JustFixed = true;
+            _fixElapsed = _elapsed;
         }
 
         public void SetRopeLengthLocked(bool locked, Vector2 playerPosition)
         {
+            if (locked && _lengthLocked == locked) return;
+            _lengthLocked = locked;
             HookRope rope = Get<HookRope>();
             rope.SetLengthLocked(locked, playerPosition);
         }
 
-        public void AddLockedLength(float diff)
+        public bool ReachLockedLength(Vector2 playerPosition)
         {
             HookRope rope = Get<HookRope>();
-            rope.AddLockedLength(diff);
+            return rope.ReachLockedLength(playerPosition);
         }
 
         public bool EnforcePlayer(Player player, Segment playerSeg, float dt)
         {
             HookRope rope = Get<HookRope>();
             return rope.EnforcePlayer(player, playerSeg, BreakSpeed, dt);
+        }
+
+        public void RecordEmitElapsed()
+        {
+            _lastEmitElapsed = _elapsed;
+        }
+
+        public bool CanFlyToward()
+        {
+            float range = AquaModule.Settings.HookSettings.HookFlyTowardDuration;
+            if (JustFixed)
+            {
+                if (_elapsed - _lastEmitElapsed <= range)
+                {
+                    _lastEmitElapsed = float.MinValue;
+                    return true;
+                }
+            }
+            else
+            {
+                if (_elapsed - _fixElapsed <= range)
+                {
+                    _fixElapsed = float.MinValue;
+                    return true;
+                }
+            }
+            return false;
         }
 
         public override void Added(Scene scene)
@@ -112,23 +146,26 @@ namespace Celeste.Mod.Aqua.Core
             Velocity = Vector2.Zero;
             Player player = Scene.Tracker.GetEntity<Player>();
             _playerPrevPosition = player.Center;
+            _elapsed = 0.0f;
+            _lastEmitElapsed = float.MinValue;
+            _fixElapsed = float.MinValue;
         }
 
         public override void Update()
         {
             float dt = Engine.DeltaTime;
+            _elapsed += dt;
             JustFixed = false;
             HookRope rope = Get<HookRope>();
             Player player = Scene.Tracker.GetEntity<Player>();
             Segment playerSeg = new Segment(_playerPrevPosition, player.Center);
             Vector2 prevPosition = Position;
             Vector2 nextPosition = Position;
-            Velocity = Position - prevPosition;
-            prevPosition = Position;
             switch (State)
             {
                 case HookStates.Emitting:
                     rope.CheckCollision(playerSeg);
+                    Velocity = Position - prevPosition;
                     bool changeState;
                     nextPosition = rope.DetectHookNextPosition(dt, false, out changeState);
                     Vector2 movement = nextPosition - prevPosition;
@@ -154,6 +191,7 @@ namespace Celeste.Mod.Aqua.Core
                     break;
                 case HookStates.Revoking:
                     rope.CheckCollision(playerSeg);
+                    Velocity = Position - prevPosition;
                     bool revokeHook;
                     nextPosition = rope.DetectHookNextPosition(dt, true, out revokeHook);
                     Velocity += nextPosition - prevPosition;
@@ -166,6 +204,7 @@ namespace Celeste.Mod.Aqua.Core
                         Revoke();
                     }
                     rope.CheckCollision(playerSeg);
+                    Velocity = Position - prevPosition;
                     rope.UpdateCurrentDirection();
                     break;
                 default:
@@ -323,5 +362,9 @@ namespace Celeste.Mod.Aqua.Core
 
         private Vector2 _movementCounter = Vector2.Zero;
         private Vector2 _playerPrevPosition;    // Player的PreviousPosition貌似在相对速度为0的情况下和当前Position相同
+        private bool _lengthLocked = false;
+        private float _elapsed = 0.0f;
+        private float _lastEmitElapsed;
+        private float _fixElapsed;
     }
 }

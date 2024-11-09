@@ -46,6 +46,8 @@ namespace Celeste.Mod.Aqua.Core
 
         public RopePivot TopPivot => _pivots[0];
         public RopePivot BottomPivot => _pivots[_pivots.Count - 1];
+        public float LockedLength => _lockLength;
+
         public float SwingRadius
         {
             get
@@ -237,13 +239,14 @@ namespace Celeste.Mod.Aqua.Core
             float length = CalculateRopeLength(playerSeg.Point2);
             if (length > _lockLength)
             {
-                //if (speed >= breakSpeed) 
+                if (player.StateMachine.State == (int)AquaStates.StDash)
+                    return true;
+                //if (player.StateMachine.State != (int)AquaStates.StHanging && speed > breakSpeed)
                 //    return true;
-                //Vector2 forceVelocity = Vector2.Normalize(BottomPivot - playerSeg.Point2) * (length - _lockLength) / dt;
-                //player.Speed += forceVelocity;
                 float lengthDiff = length - _lockLength;
                 Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
                 Vector2 movement = ropeDirection * lengthDiff;
+                player.movementCounter = Vector2.Zero;
                 if (!AquaMaths.IsApproximateZero(movement.X))
                 {
                     player.MoveH(movement.X);
@@ -253,7 +256,7 @@ namespace Celeste.Mod.Aqua.Core
                     player.MoveV(movement.Y);
                 }
                 float afterLength = CalculateRopeLength(player.Center);
-                if (afterLength - _lockLength < 0.1f)
+                if (afterLength - _lockLength <= 1.0f)
                 {
                     return false;
                 }
@@ -282,9 +285,10 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public void AddLockedLength(float diff)
+        public bool ReachLockedLength(Vector2 playerPosition)
         {
-            _lockLength = Calc.Clamp(_lockLength + diff, 8.0f, MaxLength);
+            float currentLength = CalculateRopeLength(playerPosition);
+            return currentLength >= _lockLength - 1.0f;
         }
 
         public override void EntityRemoved(Scene scene)
@@ -403,7 +407,6 @@ namespace Celeste.Mod.Aqua.Core
             SortedSet<PotentialPoint> potentials = new SortedSet<PotentialPoint>(AlongPerpComparer);
             foreach (Solid solid in solids)
             {
-                if (solid is GrapplingHook) continue;
                 if (!solid.Collidable || solid.Collider == null) continue;
                 CheckCollisionSolid(prevPivot, currentPivot, lastSegments, solid, potentials);
             }
