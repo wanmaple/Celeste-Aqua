@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Sprites>
+    <Hook path="objects/hook/" start="emit">
+        <Anim id="emit" path="hook" frames="0" />
+        <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
+        <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
+    </Hook>
+</Sprites>

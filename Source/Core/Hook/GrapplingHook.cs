@@ -45,6 +45,7 @@ namespace Celeste.Mod.Aqua.Core
             Collider = new Hitbox(size, size, -size * 0.5f, -size * 0.5f);
 
             Add(new HookRope(length));
+            Add(_sprite = new HookSprite());
             AddTag(Tags.Global);
         }
 
@@ -54,6 +55,9 @@ namespace Celeste.Mod.Aqua.Core
             rope.CurrentDirection = direction;
             rope.EmitSpeed = speed;
             Revoked = false;
+
+            _sprite.Play(HookSprite.Emit, true);
+            _sprite.Rotation = direction.Angle();
         }
 
         public void Revoke()
@@ -61,6 +65,8 @@ namespace Celeste.Mod.Aqua.Core
             State = HookStates.Revoking;
             HookRope rope = Get<HookRope>();
             rope.HookAttachEntity(null);
+
+            _sprite.Play(HookSprite.Revoke, true);
         }
 
         public void Fix()
@@ -68,6 +74,8 @@ namespace Celeste.Mod.Aqua.Core
             State = HookStates.Fixed;
             JustFixed = true;
             _fixElapsed = _elapsed;
+
+            _sprite.Play(HookSprite.Hit, true);
         }
 
         public void SetRopeLengthLocked(bool locked, Vector2 playerPosition)
@@ -180,11 +188,11 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         collided = collided || MoveV(movement.Y, OnCollideEntity);
                     }
-                    if (collided)
+                    if (collided && !_hitUnhookable)
                     {
                         Fix();
                     }
-                    else if (changeState)
+                    else if (changeState || _hitUnhookable)
                     {
                         Revoke();
                     }
@@ -214,18 +222,31 @@ namespace Celeste.Mod.Aqua.Core
             Velocity /= dt;
             _playerPrevPosition = player.Center;
             base.Update();
+            if (State == HookStates.Emitting || State == HookStates.Revoking)
+            {
+                _sprite.Rotation = rope.CurrentDirection.Angle();
+            }
         }
 
         public override void Render()
         {
             base.Render();
-            Draw.Rect(Collider, Color.Red);
+            //Draw.Rect(Collider, Color.Red);
         }
 
         private void OnCollideEntity(CollisionData collisionData)
         {
             HookRope rope = Get<HookRope>();
-            rope.HookAttachEntity(collisionData.Hit);
+            Entity hitEntity = collisionData.Hit;
+            if (hitEntity.IsHookable())
+            {
+                rope.HookAttachEntity(hitEntity);
+                _hitUnhookable = false;
+            }
+            else
+            {
+                _hitUnhookable = true;
+            }
         }
 
         private bool WillHitSolids()
@@ -366,5 +387,8 @@ namespace Celeste.Mod.Aqua.Core
         private float _elapsed = 0.0f;
         private float _lastEmitElapsed;
         private float _fixElapsed;
+        private bool _hitUnhookable = false;
+
+        private HookSprite _sprite;
     }
 }

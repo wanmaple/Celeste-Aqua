@@ -19,7 +19,7 @@ namespace Celeste.Mod.Aqua.Module
         public int HookBreakSpeed { get; set; } // 强制收回Madeline所需要的速度阈值
 
         [SettingRange(400, 800, true)]
-        [DefaultValue(800)]
+        [DefaultValue(600)]
         public int HookEmitSpeed { get; set; }  // 钩爪的发射速度
 
         [SettingRange(40, 60)]
@@ -31,7 +31,7 @@ namespace Celeste.Mod.Aqua.Module
         public int HookRollingSpeedDown { get; set; } // 下爬速度
 
         [SettingRange(60, 120)]
-        [DefaultValue(90)]
+        [DefaultValue(60)]
         public int HookSwingStrength { get; set; }    // 摆荡力度
 
         [SettingRange(0, 50)]

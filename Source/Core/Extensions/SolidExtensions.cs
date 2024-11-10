@@ -9,14 +9,22 @@ namespace Celeste.Mod.Aqua.Core
     {
         public static void Initialize()
         {
+            On.Celeste.Solid.ctor += Solid_Construct;
             On.Celeste.Solid.Awake += Solid_Awake;
             On.Celeste.Solid.Update += Solid_Update;
         }
 
         public static void Uninitialize()
         {
+            On.Celeste.Solid.ctor -= Solid_Construct;
             On.Celeste.Solid.Awake -= Solid_Awake;
             On.Celeste.Solid.Update -= Solid_Update;
+        }
+
+        private static void Solid_Construct(On.Celeste.Solid.orig_ctor orig, Solid self, Vector2 position, float width, float height, bool safe)
+        {
+            orig(self, position, width, height, safe);
+            DynamicData.For(self).Set("hookable", true);
         }
 
         private static void Solid_Awake(On.Celeste.Solid.orig_Awake orig, Solid self, Monocle.Scene scene)

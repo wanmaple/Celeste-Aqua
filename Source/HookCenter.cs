@@ -15,6 +15,8 @@ namespace Celeste.Mod.Aqua
             On.Celeste.Level.End += Level_End;
             On.Celeste.Level.LoadLevel += Level_LoadLevel;
 
+            EntityExtensions.Initialize();
+            PlatformExtensions.Initialize();
             SolidExtensions.Initialize();
             PlayerStates.Initialize();
         }
@@ -25,6 +27,8 @@ namespace Celeste.Mod.Aqua
             On.Celeste.Level.End -= Level_End;
             On.Celeste.Level.LoadLevel -= Level_LoadLevel;
 
+            EntityExtensions.Uninitialize();
+            PlatformExtensions.Uninitialize();
             SolidExtensions.Uninitialize();
             PlayerStates.Uninitialize();
         }
