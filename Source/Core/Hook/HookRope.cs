@@ -44,6 +44,7 @@ namespace Celeste.Mod.Aqua.Core
         public Vector2 CurrentDirection { get; set; }
         public float EmitSpeed { get; set; }
 
+        public IReadOnlyList<RopePivot> AllPivots => _pivots;
         public RopePivot TopPivot => _pivots[0];
         public RopePivot BottomPivot => _pivots[_pivots.Count - 1];
         public float LockedLength => _lockLength;
@@ -93,6 +94,9 @@ namespace Celeste.Mod.Aqua.Core
         public HookRope(float maxLength) : base(false, false)
         {
             MaxLength = maxLength;
+
+            MTexture ropeTexture = GFX.Game["objects/hook/rope"];
+            _renderer = new RopeRenderer(ropeTexture);
         }
 
         public Vector2 DetectHookNextPosition(float dt, bool revoking, out bool changeState)
@@ -321,20 +325,29 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Render()
         {
-            Color lineColor = Color.White;
-            for (int i = 0; i < _pivots.Count; i++)
+            Player player = Scene.Tracker.GetEntity<Player>();
+            _segments.Clear();
+            for (int i = 0; i < _pivots.Count; ++i)
             {
-                if (i == _pivots.Count - 1)
-                {
-                    Player player = Scene.Tracker.GetEntity<Player>();
-                    if (player == null) return;
-                    Draw.Line(_pivots[i].point, player.Center, lineColor);
-                }
-                else
-                {
-                    Draw.Line(_pivots[i].point, _pivots[i + 1].point, lineColor);
-                }
+                Vector2 pt1 = _pivots[i].point;
+                Vector2 pt2 = i == _pivots.Count - 1 ? player.Center : _pivots[i + 1].point;
+                _segments.Add(new Segment(pt1, pt2));
             }
+            _renderer.Render(_segments);
+            //Color lineColor = Color.White;
+            //for (int i = 0; i < _pivots.Count; i++)
+            //{
+            //    if (i == _pivots.Count - 1)
+            //    {
+            //        Player player = Scene.Tracker.GetEntity<Player>();
+            //        if (player == null) return;
+            //        Draw.Line(_pivots[i].point, player.Center, lineColor);
+            //    }
+            //    else
+            //    {
+            //        Draw.Line(_pivots[i].point, _pivots[i + 1].point, lineColor);
+            //    }
+            //}
         }
 
         private void UpdatePivots(Segment playerSeg)
@@ -637,5 +650,8 @@ namespace Celeste.Mod.Aqua.Core
         private ExpiredPivotList _lastPivots = new ExpiredPivotList();
         private float _prevLength;
         private float _lockLength;
+
+        private RopeRenderer _renderer;
+        private List<Segment> _segments = new List<Segment>(8);
     }
 }

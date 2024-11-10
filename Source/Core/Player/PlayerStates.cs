@@ -5,7 +5,6 @@ using Monocle;
 using MonoMod.Cil;
 using System;
 using MonoMod.Utils;
-using System.IO.Pipes;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -204,7 +203,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 Vector2 swingDirection = _madelinesHook.SwingDirection;
                 self.Speed.Y += Player.Gravity * dt;
-                self.Speed -= _madelinesHook.Velocity;
+                self.Speed -= _madelinesHook.Velocity * dt * AquaModule.Settings.HookSettings.HookInertiaCoefficient;
                 float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
                 if (speedAlongRope >= 0.0f)
                 {
@@ -354,7 +353,7 @@ namespace Celeste.Mod.Aqua.Core
                         Vector2 ropeDirection = _madelinesHook.RopeDirection;
                         Vector2 swingDirection = _madelinesHook.SwingDirection;
                         self.Speed.Y += Player.Gravity * dt;
-                        self.Speed -= _madelinesHook.Velocity;
+                        self.Speed -= _madelinesHook.Velocity * dt * AquaModule.Settings.HookSettings.HookInertiaCoefficient;
                         float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
                         if (speedAlongRope >= 0.0f)
                         {

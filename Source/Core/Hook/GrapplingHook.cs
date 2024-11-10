@@ -1,11 +1,8 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Design;
 using Monocle;
-using System.Runtime.CompilerServices;
 using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using Celeste.Mod.Aqua.Module;
 
 namespace Celeste.Mod.Aqua.Core
@@ -226,12 +223,6 @@ namespace Celeste.Mod.Aqua.Core
             {
                 _sprite.Rotation = rope.CurrentDirection.Angle();
             }
-        }
-
-        public override void Render()
-        {
-            base.Render();
-            //Draw.Rect(Collider, Color.Red);
         }
 
         private void OnCollideEntity(CollisionData collisionData)

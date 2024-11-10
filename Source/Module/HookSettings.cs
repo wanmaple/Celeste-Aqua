@@ -49,9 +49,13 @@ namespace Celeste.Mod.Aqua.Module
         [SettingIgnore]
         public float HookFlyTowardDuration { get; set; } = 0.15f;
 
-        [SettingRange(300, 500, true)]
-        [DefaultValue(400)]
+        [SettingRange(300, 400, true)]
+        [DefaultValue(325)]
         public int HookFlyTowardSpeed { get; set; }
+
+        [SettingRange(1, 20)]
+        [DefaultValue(10)]
+        public int HookInertiaCoefficient { get; set; }
 
         public HookSettings()
         {
