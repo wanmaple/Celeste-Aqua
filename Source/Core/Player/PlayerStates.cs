@@ -53,6 +53,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.Removed += Player_Removed;
             On.Celeste.Player.NormalUpdate += Player_NormalUpdate;
             On.Celeste.Player.DashUpdate += Player_DashUpdate;
+            On.Celeste.Player.LaunchUpdate += Player_LaunchUpdate;
             On.Celeste.Player.BoostBegin += Player_BoostBegin;
             On.Celeste.Player.RedDashBegin += Player_RedDashBegin;
             On.Celeste.Player.DreamDashBegin += Player_DreamDashBegin;
@@ -73,6 +74,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.Removed -= Player_Removed;
             On.Celeste.Player.NormalUpdate -= Player_NormalUpdate;
             On.Celeste.Player.DashUpdate -= Player_DashUpdate;
+            On.Celeste.Player.LaunchUpdate -= Player_LaunchUpdate;
             On.Celeste.Player.BoostBegin -= Player_BoostBegin;
             On.Celeste.Player.RedDashBegin -= Player_RedDashBegin;
             On.Celeste.Player.DreamDashBegin -= Player_DreamDashBegin;
@@ -193,6 +195,24 @@ namespace Celeste.Mod.Aqua.Core
             return nextState;
         }
 
+        private static int Player_LaunchUpdate(On.Celeste.Player.orig_LaunchUpdate orig, Player self)
+        {
+            int nextState = PreHookUpdate(self);
+            if (nextState < 0)
+            {
+                nextState = orig(self);
+            }
+            if (nextState == (int)AquaStates.StLaunch)
+            {
+                int postState = PostHookUpdate(self);
+                if (postState >= 0)
+                {
+                    nextState = postState;
+                }
+            }
+            return nextState;
+        }
+
         private static void Player_HangingBegin(this Player self)
         {
             _madelinesHook.SetRopeLengthLocked(true, self.Center);
@@ -210,7 +230,11 @@ namespace Celeste.Mod.Aqua.Core
             float dt = Engine.DeltaTime;
             Vector2 ropeDirection = _madelinesHook.RopeDirection;
             bool swingUp = AquaMaths.Cross(Vector2.UnitX, ropeDirection) >= 0.0f;
-            if (self.CanDash)
+            if (_madelinesHook.State != GrapplingHook.HookStates.Fixed)
+            {
+                return (int)AquaStates.StNormal;
+            }
+            else if (self.CanDash)
             {
                 _madelinesHook.Revoke();
                 return self.StartDash();
@@ -254,6 +278,7 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("climb_rope_direction", 0);
             if (self.onGround)
             {
+                _madelinesHook.AlongRopeSpeed = 0.0f;
                 return (int)AquaStates.StNormal;
             }
             else
@@ -265,6 +290,7 @@ namespace Celeste.Mod.Aqua.Core
                 DynamicData.For(self).Set("along_speed", Vector2.Dot(self.Speed, ropeDirection));
 #endif
                 float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
+                _madelinesHook.AlongRopeSpeed = speedAlongRope;
                 if (speedAlongRope >= 0.0f)
                 {
                     DynamicData.For(self).Set("rope_is_loosen", false);
@@ -388,7 +414,7 @@ namespace Celeste.Mod.Aqua.Core
         private static int PreHookUpdate(Player self)
         {
             float dt = Engine.DeltaTime;
-            if (!_madelinesHook.Active && AquaModule.Settings.ThrowHook.Pressed && !self.IsExhausted())
+            if (!_madelinesHook.Active && AquaModule.Settings.ThrowHook.Pressed && !self.IsExhausted() && self.Holding == null)
             {
                 Vector2 direction = new Vector2(0.0f, -1.0f);
                 if (Input.MoveX.Value != 0 || Input.MoveY.Value != 0)
@@ -399,7 +425,6 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 float emitSpeed = AquaModule.Settings.HookSettings.HookEmitSpeed;
                 self.CalculateEmitParameters(ref direction, ref emitSpeed);
-                AquaDebugger.LogInfo("Dir: {0}, Speed: {1}", direction, emitSpeed);
                 _madelinesHook.Emit(direction, emitSpeed);
                 self.Scene.Add(_madelinesHook);
                 return -1;
@@ -413,6 +438,10 @@ namespace Celeste.Mod.Aqua.Core
             if (_madelinesHook.Active)
             {
                 if (_madelinesHook.State == GrapplingHook.HookStates.Fixed && self.IsExhausted())
+                {
+                    _madelinesHook.Revoke();
+                }
+                else if (self.Holding != null)
                 {
                     _madelinesHook.Revoke();
                 }
@@ -438,9 +467,9 @@ namespace Celeste.Mod.Aqua.Core
                         }
                     }
                 }
-                else if (!self.onGround && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
+                else if (_madelinesHook.State == GrapplingHook.HookStates.Fixed)
                 {
-                    if (_madelinesHook.ReachLockedLength(self.Center))
+                    if (!self.onGround && _madelinesHook.ReachLockedLength(self.Center))
                     {
                         Vector2 ropeDirection = _madelinesHook.RopeDirection;
                         Vector2 swingDirection = _madelinesHook.SwingDirection;
@@ -450,6 +479,7 @@ namespace Celeste.Mod.Aqua.Core
                         DynamicData.For(self).Set("along_speed", Vector2.Dot(self.Speed, ropeDirection));
 #endif
                         float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
+                        _madelinesHook.AlongRopeSpeed = speedAlongRope;
                         if (speedAlongRope >= 0.0f)
                         {
                             DynamicData.For(self).Set("rope_is_loosen", false);
@@ -460,6 +490,10 @@ namespace Celeste.Mod.Aqua.Core
                             }
                             self.Speed = TurnToTangentSpeed(self.Speed, swingDirection);
                         }
+                    }
+                    else
+                    {
+                        _madelinesHook.AlongRopeSpeed = 0.0f;
                     }
                     DynamicData.For(self).Set("fixing_speed", self.Speed);
                 }

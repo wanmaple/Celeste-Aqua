@@ -24,6 +24,7 @@ namespace Celeste.Mod.Aqua.Core
         public Vector2 Velocity { get; private set; }
         public bool Revoked { get; private set; } = false;
         public bool JustFixed { get; private set; } = false;
+        public float AlongRopeSpeed { get; set; } = 0.0f;
 
         public float LockedRadius => Get<HookRope>().LockedLength;
         public float SwingRadius => Get<HookRope>().SwingRadius;
@@ -59,6 +60,11 @@ namespace Celeste.Mod.Aqua.Core
         {
             State = HookStates.Revoking;
             HookRope rope = Get<HookRope>();
+            Entity attachedEntity = rope.TopPivot.entity;
+            if (attachedEntity != null)
+            {
+                attachedEntity.SetHookAttached(false);
+            }
             rope.HookAttachEntity(null);
 
             _sprite.Play(HookSprite.Revoke, true);
@@ -120,6 +126,32 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
+        public bool IsRopeIntersectsWith(Entity entity)
+        {
+            if (entity.Collider == null)
+            {
+                return false;
+            }
+
+            HookRope rope = Get<HookRope>();
+            IReadOnlyList<RopePivot> pivots = rope.AllPivots;
+            for (int i = 0; i < pivots.Count - 1; i++)
+            {
+                Vector2 pt1 = pivots[i].point;
+                Vector2 pt2 = pivots[i + 1].point;
+                if (entity.Collider.Collide(pt1, pt2))
+                {
+                    return true;
+                }
+            }
+            Player player = Scene.Tracker.GetEntity<Player>();
+            if (entity.Collider.Collide(pivots[pivots.Count - 1].point, player.Center))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public override void Added(Scene scene)
         {
             Player madeline = scene.Tracker.GetEntity<Player>();
@@ -164,62 +196,81 @@ namespace Celeste.Mod.Aqua.Core
             Segment playerSeg = new Segment(_playerPrevPosition, player.Center);
             Vector2 prevPosition = Position;
             Vector2 nextPosition = Position;
-            switch (State)
+            Entity attachEntity = rope.TopPivot.entity;
+            if (attachEntity != null && (!attachEntity.Collidable || attachEntity.Collider == null || !attachEntity.IsHookable()))
             {
-                case HookStates.Emitting:
-                    rope.CheckCollision(playerSeg);
-                    Velocity = Position - prevPosition;
-                    bool changeState;
-                    nextPosition = rope.DetectHookNextPosition(dt, false, out changeState);
-                    Vector2 movement = nextPosition - prevPosition;
-                    Velocity += movement;
-                    _movementCounter = Vector2.Zero;
-                    bool collided = false;
-                    if (!AquaMaths.IsApproximateZero(movement.X))
-                    {
-                        collided = collided || MoveH(movement.X, OnCollideEntity);
-                    }
-                    if (!AquaMaths.IsApproximateZero(movement.Y))
-                    {
-                        collided = collided || MoveV(movement.Y, OnCollideEntity);
-                    }
-                    if (collided && !_hitUnhookable)
-                    {
-                        Fix();
-                    }
-                    else if (changeState || _hitUnhookable)
-                    {
-                        Revoke();
-                    }
-                    break;
-                case HookStates.Revoking:
-                    rope.CheckCollision(playerSeg);
-                    Velocity = Position - prevPosition;
-                    bool revokeHook;
-                    nextPosition = rope.DetectHookNextPosition(dt, true, out revokeHook);
-                    Velocity += nextPosition - prevPosition;
-                    Revoked = revokeHook;
-                    Position = nextPosition;
-                    break;
-                case HookStates.Fixed:
-                    if (WillHitSolids())
-                    {
-                        Revoke();
-                    }
-                    rope.CheckCollision(playerSeg);
-                    Velocity = Position - prevPosition;
-                    rope.UpdateCurrentDirection();
-                    break;
-                default:
-                    break;
+                Revoke();
+                rope.CheckCollision(playerSeg);
+                rope.UpdateCurrentDirection();
+            }
+            else
+            {
+                switch (State)
+                {
+                    case HookStates.Emitting:
+                        rope.CheckCollision(playerSeg);
+                        Velocity = Position - prevPosition;
+                        bool changeState;
+                        nextPosition = rope.DetectHookNextPosition(dt, false, out changeState);
+                        Vector2 movement = nextPosition - prevPosition;
+                        Velocity += movement;
+                        _movementCounter = Vector2.Zero;
+                        bool collided = false;
+                        if (!AquaMaths.IsApproximateZero(movement.X))
+                        {
+                            collided = collided || MoveH(movement.X, OnCollideEntity);
+                        }
+                        if (!AquaMaths.IsApproximateZero(movement.Y))
+                        {
+                            collided = collided || MoveV(movement.Y, OnCollideEntity);
+                        }
+                        if (collided && !_hitUnhookable)
+                        {
+                            Fix();
+                        }
+                        else if (changeState || _hitUnhookable)
+                        {
+                            Revoke();
+                        }
+                        break;
+                    case HookStates.Revoking:
+                        rope.CheckCollision(playerSeg);
+                        Velocity = Position - prevPosition;
+                        bool revokeHook;
+                        nextPosition = rope.DetectHookNextPosition(dt, true, out revokeHook);
+                        Velocity += nextPosition - prevPosition;
+                        Revoked = revokeHook;
+                        Position = nextPosition;
+                        break;
+                    case HookStates.Fixed:
+                        if (WillHitSolids())
+                        {
+                            Revoke();
+                        }
+                        rope.CheckCollision(playerSeg);
+                        Velocity = Position - prevPosition;
+                        rope.UpdateCurrentDirection();
+                        break;
+                    default:
+                        break;
+                }
             }
 
             Velocity /= dt;
             _playerPrevPosition = player.Center;
+            CheckInteractables();
             base.Update();
             if (State == HookStates.Emitting || State == HookStates.Revoking)
             {
                 _sprite.Rotation = rope.CurrentDirection.Angle();
+            }
+        }
+
+        private void CheckInteractables()
+        {
+            foreach (HookCollider com in Scene.Tracker.GetComponents<HookCollider>())
+            {
+                com.Check(this);
             }
         }
 
@@ -230,6 +281,7 @@ namespace Celeste.Mod.Aqua.Core
             if (hitEntity.IsHookable())
             {
                 rope.HookAttachEntity(hitEntity);
+                hitEntity.SetHookAttached(true);
                 _hitUnhookable = false;
             }
             else

@@ -3,7 +3,7 @@ using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
-namespace Celeste.Mod.Aqua.Core.Hook
+namespace Celeste.Mod.Aqua.Core
 {
     public class ExpiredPivotList
     {

@@ -1,5 +1,4 @@
-﻿using Celeste.Mod.Aqua.Core.Hook;
-using Celeste.Mod.Aqua.Debug;
+﻿using Celeste.Mod.Aqua.Debug;
 using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -351,6 +350,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private void UpdatePivots(Segment playerSeg)
         {
+            WallBooster belt = CheckCollideWallBooster();
             for (int i = 0; i < _pivots.Count;)
             {
                 RopePivot pivot = _pivots[i];
@@ -362,6 +362,28 @@ namespace Celeste.Mod.Aqua.Core
                         _pivots.RemoveAt(i);
                         _lastPivots.Increase(i);
                         AquaDebugger.LogInfo("Remove Pivot {0}", pivot);
+                    }
+                    else if (i == 0 && belt != null)
+                    {
+                        GrapplingHook hook = Entity as GrapplingHook;
+                        Hitbox collider = belt.Collider as Hitbox;
+                        Vector2 pt = pivot.point;
+                        if (belt.IceMode)
+                        {
+                            if (hook.AlongRopeSpeed > 0.0f)
+                            {
+                                float speedY = Vector2.Dot(-CurrentDirection * hook.AlongRopeSpeed, Vector2.UnitY) * 2.0f;
+                                pt.Y = Calc.Clamp(pt.Y + speedY * Engine.DeltaTime, collider.AbsoluteTop, collider.AbsoluteBottom);
+                            }
+                        }
+                        else
+                        {
+                            pt.Y = Calc.Clamp(pt.Y + Player.WallBoosterSpeed * Engine.DeltaTime, collider.AbsoluteTop, collider.AbsoluteBottom);
+                        }
+                        pivot.point = hook.Position = pt;
+                        _pivots[i] = pivot;
+                        _lastPivots.Increase(i);
+                        ++i;
                     }
                     else
                     {
@@ -405,6 +427,19 @@ namespace Celeste.Mod.Aqua.Core
                     ++i;
                 }
             }
+        }
+
+        private WallBooster CheckCollideWallBooster()
+        {
+            List<Entity> belts = Scene.Tracker.GetEntities<WallBooster>();
+            foreach (WallBooster belt in belts)
+            {
+                if (belt.CollideCheck(Entity))
+                {
+                    return belt;
+                }
+            }
+            return null;
         }
 
         private bool CheckCollisionSolids(RopePivot prevPivot, RopePivot currentPivot, IList<Segment> lastSegments, IList<RopePivot> addedPivots)

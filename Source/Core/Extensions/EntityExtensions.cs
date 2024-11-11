@@ -1,4 +1,5 @@
-﻿using Monocle;
+﻿using Microsoft.Xna.Framework;
+using Monocle;
 using MonoMod.Utils;
 
 namespace Celeste.Mod.Aqua.Core
@@ -7,23 +8,44 @@ namespace Celeste.Mod.Aqua.Core
     {
         public static void Initialize()
         {
-            On.Monocle.Entity.ctor += Entity_Construct;
+            On.Monocle.Entity.ctor_Vector2 += Entity_Construct;
         }
 
         public static void Uninitialize()
         {
-            On.Monocle.Entity.ctor -= Entity_Construct;
+            On.Monocle.Entity.ctor_Vector2 -= Entity_Construct;
         }
 
-        private static void Entity_Construct(On.Monocle.Entity.orig_ctor orig, Monocle.Entity self)
+        private static void Entity_Construct(On.Monocle.Entity.orig_ctor_Vector2 orig, Entity self, Vector2 position)
         {
-            orig(self);
+            orig(self, position);
             DynamicData.For(self).Set("hookable", false);
+            DynamicData.For(self).Set("hook_attached", false);
         }
 
         public static bool IsHookable(this Entity self)
         {
             return DynamicData.For(self).Get<bool>("hookable");
+        }
+
+        public static bool IsHookAttached(this Entity self)
+        {
+            return DynamicData.For(self).Get<bool>("hook_attached");
+        }
+
+        public static void SetHookAttached(this Entity self, bool attached)
+        {
+            DynamicData.For(self).Set("hook_attached", attached);
+        }
+
+        public static bool IntersectsWithRope(this Entity self)
+        {
+            GrapplingHook hook = self.Scene.Tracker.GetEntity<GrapplingHook>();
+            if (hook != null)
+            {
+                return hook.IsRopeIntersectsWith(self);
+            }
+            return false;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Celeste.Mod.Aqua.Core;
+using Celeste.Mod.Aqua.Core.Extensions;
 
 namespace Celeste.Mod.Aqua
 {
@@ -18,6 +19,10 @@ namespace Celeste.Mod.Aqua
             EntityExtensions.Initialize();
             PlatformExtensions.Initialize();
             SolidExtensions.Initialize();
+            FallingBlockExtensions.Initialize();
+            CrumblePlatformExtensions.Initialize();
+            BounceBlockExtensions.Initialize();
+            CoreModeToggleExtensions.Initialize();
             PlayerStates.Initialize();
         }
 
@@ -30,6 +35,10 @@ namespace Celeste.Mod.Aqua
             EntityExtensions.Uninitialize();
             PlatformExtensions.Uninitialize();
             SolidExtensions.Uninitialize();
+            FallingBlockExtensions.Uninitialize();
+            CrumblePlatformExtensions.Uninitialize();
+            BounceBlockExtensions.Uninitialize();
+            CoreModeToggleExtensions.Uninitialize();
             PlayerStates.Uninitialize();
         }
 
