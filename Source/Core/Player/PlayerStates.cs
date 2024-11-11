@@ -57,6 +57,9 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.BoostBegin += Player_BoostBegin;
             On.Celeste.Player.RedDashBegin += Player_RedDashBegin;
             On.Celeste.Player.DreamDashBegin += Player_DreamDashBegin;
+            On.Celeste.Player.SummitLaunchBegin += Player_SummitLaunchBegin;
+            On.Celeste.Player.StarFlyBegin += Player_StarFlyBegin;
+            On.Celeste.Player.FlingBirdBegin += Player_FlingBirdBegin;
             On.Celeste.Player.Update += Player_Update;
             On.Celeste.Player.ClimbJump += Player_ClimbJump;
             On.Celeste.Player.WindMove += Player_WindMove;
@@ -78,6 +81,9 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.BoostBegin -= Player_BoostBegin;
             On.Celeste.Player.RedDashBegin -= Player_RedDashBegin;
             On.Celeste.Player.DreamDashBegin -= Player_DreamDashBegin;
+            On.Celeste.Player.SummitLaunchBegin -= Player_SummitLaunchBegin;
+            On.Celeste.Player.StarFlyBegin -= Player_StarFlyBegin;
+            On.Celeste.Player.FlingBirdBegin -= Player_FlingBirdBegin;
             On.Celeste.Player.Update -= Player_Update;
             On.Celeste.Player.ClimbJump -= Player_ClimbJump;
             On.Celeste.Player.WindMove -= Player_WindMove;
@@ -150,6 +156,36 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         private static void Player_BoostBegin(On.Celeste.Player.orig_BoostBegin orig, Player self)
+        {
+            if (_madelinesHook.Active && _madelinesHook.State != GrapplingHook.HookStates.Revoking)
+            {
+                _madelinesHook.Revoke();
+            }
+
+            orig(self);
+        }
+
+        private static void Player_FlingBirdBegin(On.Celeste.Player.orig_FlingBirdBegin orig, Player self)
+        {
+            if (_madelinesHook.Active && _madelinesHook.State != GrapplingHook.HookStates.Revoking)
+            {
+                _madelinesHook.Revoke();
+            }
+
+            orig(self);
+        }
+
+        private static void Player_StarFlyBegin(On.Celeste.Player.orig_StarFlyBegin orig, Player self)
+        {
+            if (_madelinesHook.Active && _madelinesHook.State != GrapplingHook.HookStates.Revoking)
+            {
+                _madelinesHook.Revoke();
+            }
+
+            orig(self);
+        }
+
+        private static void Player_SummitLaunchBegin(On.Celeste.Player.orig_SummitLaunchBegin orig, Player self)
         {
             if (_madelinesHook.Active && _madelinesHook.State != GrapplingHook.HookStates.Revoking)
             {
