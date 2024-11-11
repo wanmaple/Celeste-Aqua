@@ -1,4 +1,5 @@
 ﻿using Celeste.Mod.Aqua.Core.Hook;
+using Celeste.Mod.Aqua.Debug;
 using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -233,7 +234,7 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public bool EnforcePlayer(Player player, Segment playerSeg, float breakSpeed, float dt)
+        public bool EnforcePlayer(Player player, Segment playerSeg, float dt)
         {
             GrapplingHook hook = Entity as GrapplingHook;
             Vector2 hookVelocity = hook.Velocity;
@@ -243,13 +244,11 @@ namespace Celeste.Mod.Aqua.Core
             float length = CalculateRopeLength(playerSeg.Point2);
             if (length > _lockLength)
             {
-                if (player.StateMachine.State == (int)AquaStates.StDash)
-                    return true;
-                //if (player.StateMachine.State != (int)AquaStates.StHanging && speed > breakSpeed)
+                //if (player.StateMachine.State == (int)AquaStates.StDash)
                 //    return true;
                 float lengthDiff = length - _lockLength;
                 Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
-                Vector2 movement = ropeDirection * lengthDiff;
+                Vector2 movement = ropeDirection * MathF.Ceiling(lengthDiff);
                 player.movementCounter = Vector2.Zero;
                 if (!AquaMaths.IsApproximateZero(movement.X))
                 {
@@ -260,7 +259,7 @@ namespace Celeste.Mod.Aqua.Core
                     player.MoveV(movement.Y);
                 }
                 float afterLength = CalculateRopeLength(player.Center);
-                if (afterLength - _lockLength <= 1.0f)
+                if (afterLength - _lockLength <= 1.5f)  // 保证大于1.414即可
                 {
                     return false;
                 }

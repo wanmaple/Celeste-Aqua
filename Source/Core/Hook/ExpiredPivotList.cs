@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Aqua.Miscellaneous;
+﻿using Celeste.Mod.Aqua.Debug;
+using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 

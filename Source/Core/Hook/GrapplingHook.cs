@@ -19,7 +19,6 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
-        public float BreakSpeed { get; private set; }   // 钩绳长度到达最大时会被挣脱的速度阈值
 
         public HookStates State { get; private set; } = HookStates.None;
         public Vector2 Velocity { get; private set; }
@@ -32,11 +31,10 @@ namespace Celeste.Mod.Aqua.Core
         public Vector2 SwingDirection => Get<HookRope>().SwingDirection;
         public Vector2 PlayerPreviousPosition => _playerPrevPosition;
 
-        public GrapplingHook(float size, float length, float breakSpeed)
+        public GrapplingHook(float size, float length)
             : base(Vector2.Zero)
         {
             HookSize = size;
-            BreakSpeed = breakSpeed;
             Active = false;
 
             Collider = new Hitbox(size, size, -size * 0.5f, -size * 0.5f);
@@ -92,7 +90,7 @@ namespace Celeste.Mod.Aqua.Core
         public bool EnforcePlayer(Player player, Segment playerSeg, float dt)
         {
             HookRope rope = Get<HookRope>();
-            return rope.EnforcePlayer(player, playerSeg, BreakSpeed, dt);
+            return rope.EnforcePlayer(player, playerSeg, dt);
         }
 
         public void RecordEmitElapsed()
