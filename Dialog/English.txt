@@ -1,2 +1,9 @@
-yourname_mapname_testmap=Test Map
-yourname_mapname=Test
+Aqua_0_JourneyStart=Aqua
+Aqua_0_JourneyStart_0_Prologue=Prologue
+Aqua_0_JourneyStart_0_Prologue_mapside=FLY
+Aqua_0_JourneyStart_1_City=City
+
+THROW_HOOK=THROW HOOK
+SWING_JUMP=SWING AND JUMP
+CLIMB_ROPE=CLIMB HOOK ROPE
+DASH_GRAB_JUMP=DASH AND JUMP

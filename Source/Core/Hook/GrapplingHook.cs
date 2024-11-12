@@ -145,7 +145,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
             Player player = Scene.Tracker.GetEntity<Player>();
-            if (entity.Collider.Collide(pivots[pivots.Count - 1].point, player.Center))
+            if (entity.Collider.Collide(pivots[pivots.Count - 1].point, player.ExactCenter()))
             {
                 return true;
             }
@@ -180,7 +180,7 @@ namespace Celeste.Mod.Aqua.Core
             base.Awake(scene);
             Velocity = Vector2.Zero;
             Player player = Scene.Tracker.GetEntity<Player>();
-            _playerPrevPosition = player.Center;
+            _playerPrevPosition = player.ExactCenter();
             _elapsed = 0.0f;
             _lastEmitElapsed = float.MinValue;
             _fixElapsed = float.MinValue;
@@ -193,7 +193,7 @@ namespace Celeste.Mod.Aqua.Core
             JustFixed = false;
             HookRope rope = Get<HookRope>();
             Player player = Scene.Tracker.GetEntity<Player>();
-            Segment playerSeg = new Segment(_playerPrevPosition, player.Center);
+            Segment playerSeg = new Segment(_playerPrevPosition, player.ExactCenter());
             Vector2 prevPosition = Position;
             Vector2 nextPosition = Position;
             Entity attachEntity = rope.TopPivot.entity;
@@ -257,7 +257,7 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             Velocity /= dt;
-            _playerPrevPosition = player.Center;
+            _playerPrevPosition = player.ExactCenter();
             CheckInteractables();
             base.Update();
             if (State == HookStates.Emitting || State == HookStates.Revoking)

@@ -20,6 +20,7 @@ namespace Celeste.Mod.Aqua
             PlatformExtensions.Initialize();
             SolidExtensions.Initialize();
             FallingBlockExtensions.Initialize();
+            ZipMoverExtensions.Initialize();
             CrumblePlatformExtensions.Initialize();
             BounceBlockExtensions.Initialize();
             CoreModeToggleExtensions.Initialize();
@@ -36,6 +37,7 @@ namespace Celeste.Mod.Aqua
             PlatformExtensions.Uninitialize();
             SolidExtensions.Uninitialize();
             FallingBlockExtensions.Uninitialize();
+            ZipMoverExtensions.Uninitialize();
             CrumblePlatformExtensions.Uninitialize();
             BounceBlockExtensions.Uninitialize();
             CoreModeToggleExtensions.Uninitialize();

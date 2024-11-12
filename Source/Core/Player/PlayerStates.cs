@@ -93,6 +93,11 @@ namespace Celeste.Mod.Aqua.Core
 #endif
         }
 
+        public static Vector2 ExactCenter(this Player self)
+        {
+            return self.ExactPosition + self.Center - self.Position;
+        }
+
         private static void Player_ILConstruct(MonoMod.Cil.ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
