@@ -15,6 +15,7 @@ namespace Celeste.Mod.Aqua.Core
             None = 0,
             Emitting,
             Revoking,
+            Bouncing,
             Fixed,
         }
 
@@ -25,6 +26,7 @@ namespace Celeste.Mod.Aqua.Core
         public bool Revoked { get; private set; } = false;
         public bool JustFixed { get; private set; } = false;
         public float AlongRopeSpeed { get; set; } = 0.0f;
+        public Vector2 BouncingVelocity { get; set; }
 
         public float LockedRadius => Get<HookRope>().LockedLength;
         public float SwingRadius => Get<HookRope>().SwingRadius;
@@ -77,6 +79,31 @@ namespace Celeste.Mod.Aqua.Core
             _fixElapsed = _elapsed;
 
             _sprite.Play(HookSprite.Hit, true);
+        }
+
+        public bool Bounce(Vector2 axis, float speed)
+        {
+            HookRope rope = Get<HookRope>();
+            BouncingVelocity = State == HookStates.Bouncing ? BouncingVelocity : rope.CurrentDirection * rope.EmitSpeed;
+            float proj = Vector2.Dot(BouncingVelocity, axis);
+            if (proj > 0.0f)
+                return false;
+
+            State = HookStates.Bouncing;
+            if (AquaMaths.IsApproximateZero(proj))
+            {
+                BouncingVelocity += speed * axis;
+            }
+            else
+            {
+                axis = Vector2.Normalize(axis);
+                Vector2 doubleAxis = axis * MathF.Abs(proj) * 2.0f;
+                Vector2 bouncingDirection = Vector2.Normalize(BouncingVelocity);
+                BouncingVelocity += doubleAxis;
+                BouncingVelocity += Vector2.Normalize(BouncingVelocity) * Vector2.Dot(bouncingDirection, axis) * speed;
+            }
+            BouncingVelocity = Vector2.Normalize(BouncingVelocity) * rope.EmitSpeed;
+            return true;
         }
 
         public void SetRopeLengthLocked(bool locked, Vector2 playerPosition)
@@ -205,16 +232,17 @@ namespace Celeste.Mod.Aqua.Core
             }
             else
             {
+                bool collided = false;
+                bool changeState = false;
+                Vector2 movement = Vector2.Zero;
                 switch (State)
                 {
                     case HookStates.Emitting:
                         rope.CheckCollision(playerSeg);
                         Velocity = Position - prevPosition;
-                        bool changeState;
                         nextPosition = rope.DetectHookNextPosition(dt, false, out changeState);
-                        Vector2 movement = nextPosition - prevPosition;
+                        movement = nextPosition - prevPosition;
                         Velocity += movement;
-                        bool collided = false;
                         if (!AquaMaths.IsApproximateZero(movement.X))
                         {
                             collided = collided || MoveH(movement.X, OnCollideEntity);
@@ -222,6 +250,10 @@ namespace Celeste.Mod.Aqua.Core
                         if (!AquaMaths.IsApproximateZero(movement.Y))
                         {
                             collided = collided || MoveV(movement.Y, OnCollideEntity);
+                        }
+                        if (collided && _hitInteractable)
+                        {
+                            break;
                         }
                         if (collided && !_hitUnhookable)
                         {
@@ -241,6 +273,38 @@ namespace Celeste.Mod.Aqua.Core
                         Revoked = revokeHook;
                         Position = nextPosition;
                         break;
+                    case HookStates.Bouncing:
+                        rope.CheckCollision(playerSeg);
+                        Velocity = Position - prevPosition;
+                        movement = BouncingVelocity * dt;
+                        float currentLength = rope._prevLength + movement.Length();
+                        if (currentLength > rope.MaxLength)
+                        {
+                            movement = Vector2.Normalize(movement) * (movement.Length() - (currentLength - rope.MaxLength));
+                            changeState = true;
+                        }
+                        if (!AquaMaths.IsApproximateZero(movement.X))
+                        {
+                            collided = collided || MoveH(movement.X, OnCollideEntity);
+                        }
+                        if (!AquaMaths.IsApproximateZero(movement.Y))
+                        {
+                            collided = collided || MoveV(movement.Y, OnCollideEntity);
+                        }
+                        if (collided && _hitInteractable)
+                        {
+                            break;
+                        }
+                        if (collided && !_hitUnhookable)
+                        {
+                            Fix();
+                        }
+                        else if (changeState || _hitUnhookable)
+                        {
+                            Revoke();
+                        }
+                        rope.UpdateCurrentDirection();
+                        break;
                     case HookStates.Fixed:
                         if (WillHitSolids())
                         {
@@ -257,15 +321,19 @@ namespace Celeste.Mod.Aqua.Core
 
             Velocity /= dt;
             _playerPrevPosition = player.ExactCenter();
-            CheckInteractables();
+            CheckHookColliders();
             base.Update();
             if (State == HookStates.Emitting || State == HookStates.Revoking)
             {
                 _sprite.Rotation = rope.CurrentDirection.Angle();
             }
+            else if (State == HookStates.Bouncing)
+            {
+                _sprite.Rotation = BouncingVelocity.Angle();
+            }
         }
 
-        private void CheckInteractables()
+        private void CheckHookColliders()
         {
             foreach (HookCollider com in Scene.Tracker.GetComponents<HookCollider>())
             {
@@ -339,6 +407,11 @@ namespace Celeste.Mod.Aqua.Core
             int num2 = 0;
             while (moveH != 0)
             {
+                if (CheckInteractables(Position + Vector2.UnitX * num))
+                {
+                    return true;
+                }
+
                 Solid solid = CollideFirst<Solid>(Position + Vector2.UnitX * num);
                 if (solid != null)
                 {
@@ -369,6 +442,11 @@ namespace Celeste.Mod.Aqua.Core
             int num2 = 0;
             while (moveV != 0)
             {
+                if (CheckInteractables(Position + Vector2.UnitX * num))
+                {
+                    return true;
+                }
+
                 Platform platform = CollideFirst<Solid>(Position + Vector2.UnitY * num);
                 CollisionData data;
                 if (platform != null)
@@ -421,6 +499,35 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
+        private bool CheckInteractables(Vector2 at)
+        {
+            List<Spring> springs = Scene.Entities.FindAll<Spring>();
+            Spring spring = Collide.First(this, springs, at) as Spring;
+            if (spring != null)
+            {
+                if (Bounce(spring.GetBounceDirection(), AquaModule.Settings.HookSettings.HookBounceSpeedAddition))
+                {
+                    _hitInteractable = true;
+                    spring.BounceAnimate();
+                    return true;
+                }
+            }
+            List<Bumper> bumpers = Scene.Entities.FindAll<Bumper>();
+            Bumper bumper = Collide.First(this, bumpers, at) as Bumper;
+            if (bumper != null)
+            {
+                Vector2 direction = Vector2.Normalize(at - bumper.Center);
+                if (Bounce(direction, AquaModule.Settings.HookSettings.HookBounceSpeedAddition))
+                {
+                    _hitInteractable = true;
+                    bumper.Hit(direction);
+                    return true;
+                }
+            }
+            _hitInteractable = false;
+            return false;
+        }
+
         private Vector2 _movementCounter = Vector2.Zero;
         private Vector2 _playerPrevPosition;    // Player的PreviousPosition貌似在相对速度为0的情况下和当前Position相同
         private bool _lengthLocked = false;
@@ -428,6 +535,7 @@ namespace Celeste.Mod.Aqua.Core
         private float _lastEmitElapsed;
         private float _fixElapsed;
         private bool _hitUnhookable = false;
+        private bool _hitInteractable = false;
 
         private HookSprite _sprite;
     }

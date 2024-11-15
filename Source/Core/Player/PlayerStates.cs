@@ -552,6 +552,23 @@ namespace Celeste.Mod.Aqua.Core
                     }
                     DynamicData.For(self).Set("fixing_speed", self.Speed);
                 }
+                else if (_madelinesHook.State == GrapplingHook.HookStates.Bouncing && Input.Jump.Pressed)
+                {
+                    float checkDot = Vector2.Dot(-_madelinesHook.RopeDirection, _madelinesHook.BouncingVelocity);
+                    if (checkDot > 0.0f)
+                    {
+                        if (self.onGround)
+                        {
+                            self.LiftSpeed += -_madelinesHook.RopeDirection * _madelinesHook.BouncingVelocity.Length() * dt * AquaModule.Settings.HookSettings.HookBounceJumpCoefficient;
+                            self.Jump(true);
+                        }
+                        else
+                        {
+                            self.Speed += -_madelinesHook.RopeDirection * _madelinesHook.BouncingVelocity.Length() * dt * AquaModule.Settings.HookSettings.HookBounceMoveCoefficient;
+                        }
+                        _madelinesHook.Revoke();
+                    }
+                }
             }
             return -1;
         }

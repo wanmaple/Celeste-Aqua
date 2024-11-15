@@ -24,6 +24,11 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return MathF.Abs(num - compare) < EPSILON;
         }
 
+        public static bool IsApproximateEqual(Vector2 v1, Vector2 v2)
+        {
+            return IsApproximateZero(v1 - v2);
+        }
+
         public static bool IsApproximateZero(float num)
         {
             return IsApproximateEqual(num, 0.0f);

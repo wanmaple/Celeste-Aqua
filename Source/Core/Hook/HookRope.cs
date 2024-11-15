@@ -203,7 +203,7 @@ namespace Celeste.Mod.Aqua.Core
                 RopePivot curPivot = _pivots[i];
                 List<Segment> lastSegments = _lastPivots.GetSegments(lastIdx);
                 addedPivots.Clear();
-                if (CheckCollisionSolids(prevPivot, curPivot, lastSegments, addedPivots))
+                if (CheckCollisionHangables(prevPivot, curPivot, lastSegments, addedPivots))
                 {
                     for (int j = addedPivots.Count - 1; j >= 0; --j)
                     {
@@ -219,10 +219,11 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
 
+            if (!AquaMaths.IsApproximateEqual(playerSeg.Point2, _pivots[_pivots.Count - 1].point))
             {
                 List<Segment> lastSegments = _lastPivots.GetSegments(lastIdx);
                 addedPivots.Clear();
-                if (CheckCollisionSolids(_pivots[_pivots.Count - 1], new RopePivot(playerSeg.Point2, Cornors.Free, null), lastSegments, addedPivots))
+                if (CheckCollisionHangables(_pivots[_pivots.Count - 1], new RopePivot(playerSeg.Point2, Cornors.Free, null), lastSegments, addedPivots))
                 {
                     for (int i = 0; i < addedPivots.Count; ++i)
                     {
@@ -437,7 +438,7 @@ namespace Celeste.Mod.Aqua.Core
             return null;
         }
 
-        private bool CheckCollisionSolids(RopePivot prevPivot, RopePivot currentPivot, IList<Segment> lastSegments, IList<RopePivot> addedPivots)
+        private bool CheckCollisionHangables(RopePivot prevPivot, RopePivot currentPivot, IList<Segment> lastSegments, IList<RopePivot> addedPivots)
         {
             Segment ropeSeg = new Segment(prevPivot.point, currentPivot.point);
             if (AquaMaths.IsApproximateZero(ropeSeg.Length))
@@ -458,12 +459,18 @@ namespace Celeste.Mod.Aqua.Core
                 if (!jump.Collidable || jump.Collider == null) continue;
                 CheckCollisionJumpThru(prevPivot, currentPivot, lastSegments, jump, potentials);
             }
+            List<Bumper> bumpers = Scene.Entities.FindAll<Bumper>();
+            foreach (Bumper bumper in bumpers)
+            {
+                if (!bumper.Collidable || bumper.Collider == null) continue;
+                CheckCollisionBumper(prevPivot, currentPivot, lastSegments, bumper, potentials);
+            }
             if (potentials.Count > 0)
             {
                 RopePivot pivot = potentials.Min.pivot;
                 addedPivots.Add(pivot);
                 ropeSeg.Point1 = pivot.point;
-                CheckCollisionSolids(pivot, currentPivot, lastSegments, addedPivots);
+                CheckCollisionHangables(pivot, currentPivot, lastSegments, addedPivots);
             }
             return addedPivots.Count > 0;
         }
@@ -528,6 +535,22 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         TryAddPotentialPoint(pts[i], cornors[i], prevPivot, currentPivot, jump, Vector2.Zero, lastSegments, curRopeSeg, potentials);
                     }
+                }
+            }
+        }
+
+        private void CheckCollisionBumper(RopePivot prevPivot, RopePivot currentPivot, IList<Segment> lastSegments, Bumper bumper, SortedSet<PotentialPoint> potentials)
+        {
+            Segment curRopeSeg = new Segment(prevPivot.point, currentPivot.point);
+            Collider collider = bumper.Collider;
+            if (collider is Circle circle)
+            {
+                List<RopePivot> pivots = circle.SimulatePivots();
+                for (int i = 0; i <  pivots.Count; ++i)
+                {
+                    RopePivot pivot = pivots[i];
+                    pivot.point += bumper.Position;
+                    TryAddPotentialPoint(pivot.point, pivot.direction, prevPivot, currentPivot, bumper, Vector2.Zero, lastSegments, curRopeSeg, potentials);
                 }
             }
         }
@@ -677,7 +700,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private List<RopePivot> _pivots = new List<RopePivot>(8);
         private ExpiredPivotList _lastPivots = new ExpiredPivotList();
-        private float _prevLength;
+        internal float _prevLength;
         private float _lockLength;
 
         private RopeRenderer _renderer;

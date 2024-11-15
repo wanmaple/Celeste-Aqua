@@ -22,6 +22,7 @@ namespace Celeste.Mod.Aqua
             FallingBlockExtensions.Initialize();
             ZipMoverExtensions.Initialize();
             CrumblePlatformExtensions.Initialize();
+            MoveBlockExtensions.Initialize();
             BounceBlockExtensions.Initialize();
             CoreModeToggleExtensions.Initialize();
             PlayerSpriteExtensions.Initialize();
@@ -40,6 +41,7 @@ namespace Celeste.Mod.Aqua
             FallingBlockExtensions.Uninitialize();
             ZipMoverExtensions.Uninitialize();
             CrumblePlatformExtensions.Uninitialize();
+            MoveBlockExtensions.Uninitialize();
             BounceBlockExtensions.Uninitialize();
             CoreModeToggleExtensions.Uninitialize();
             PlayerSpriteExtensions.Uninitialize();

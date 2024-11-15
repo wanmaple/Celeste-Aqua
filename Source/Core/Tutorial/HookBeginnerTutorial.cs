@@ -1,6 +1,6 @@
 ﻿namespace Celeste.Mod.Aqua.Core
 {
-    public class HookBeginnerTutorial
+    public static class HookBeginnerTutorial
     {
         public static bool IsHookFixed(Level level)
         {
