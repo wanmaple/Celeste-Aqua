@@ -23,12 +23,12 @@
         <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
         <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
     </MadelinePlayback>
-    <Badeline path="characters/badeline/" start="hookidle">
+    <AquaBadeline path="characters/badeline/" start="hookidle">
         <Origin x="16" y="32" />
         <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
         <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
         <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-    </Badeline>
+    </AquaBadeline>
     <MadelineAsBadeline path="characters/player_badeline/" start="hookidle">
         <Origin x="16" y="32" />
         <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />

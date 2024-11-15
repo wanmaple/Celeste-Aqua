@@ -32,7 +32,7 @@ namespace Celeste.Mod.Aqua.Core
                     id = useHook ? "MadelineNoBackpack" : "player_no_backpack";
                     break;
                 case PlayerSpriteMode.Badeline:
-                    id = useHook ? "Badeline" : "badeline";
+                    id = useHook ? "AquaBadeline" : "badeline";
                     break;
                 case PlayerSpriteMode.MadelineAsBadeline:
                     id = useHook ? "MadelineAsBadeline" : "player_badeline";
