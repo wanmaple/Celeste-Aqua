@@ -5,4 +5,34 @@
         <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
         <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
     </Hook>
+    <Madeline path="characters/player/" start="hookidle">
+        <Origin x="16" y="32" />
+        <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
+        <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
+        <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
+    </Madeline>
+    <MadelineNoBackpack path="characters/player_no_backpack/" start="hookidle">
+        <Origin x="16" y="32" />
+        <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
+        <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
+        <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
+    </MadelineNoBackpack>
+    <MadelinePlayback path="characters/player_playback/" start="hookidle">
+        <Origin x="16" y="32" />
+        <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
+        <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
+        <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
+    </MadelinePlayback>
+    <Badeline path="characters/badeline/" start="hookidle">
+        <Origin x="16" y="32" />
+        <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
+        <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
+        <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
+    </Badeline>
+    <MadelineAsBadeline path="characters/player_badeline/" start="hookidle">
+        <Origin x="16" y="32" />
+        <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
+        <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
+        <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
+    </MadelineAsBadeline>
 </Sprites>

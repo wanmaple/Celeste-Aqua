@@ -63,6 +63,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.Update += Player_Update;
             On.Celeste.Player.ClimbJump += Player_ClimbJump;
             On.Celeste.Player.WindMove += Player_WindMove;
+            On.Celeste.Player.Die += Player_Die;
             On.Celeste.Player.UpdateSprite += Player_UpdateSprite;
 #if DEBUG
             On.Celeste.Player.Render += Player_Render;
@@ -87,6 +88,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.Update -= Player_Update;
             On.Celeste.Player.ClimbJump -= Player_ClimbJump;
             On.Celeste.Player.WindMove -= Player_WindMove;
+            On.Celeste.Player.Die -= Player_Die;
             On.Celeste.Player.UpdateSprite -= Player_UpdateSprite;
 #if DEBUG
             On.Celeste.Player.Render -= Player_Render;
@@ -342,15 +344,14 @@ namespace Celeste.Mod.Aqua.Core
                     }
                     self.Speed = TurnToTangentSpeed(self.Speed, swingDirection);
                 }
+                if (swingUp)
+                {
+                    DynamicData.For(self).Set("climb_rope_direction", MathF.Sign(Input.MoveY.Value));
+                }
                 if (Input.MoveY.Value != 0 && swingUp && speedAlongRope >= 0.0f)
                 {
-                    float rollingSpeed = Input.MoveY > 0 ? AquaModule.Settings.HookSettings.HookRollingSpeedDown : -AquaModule.Settings.HookSettings.HookRollingSpeedUp;
+                    float rollingSpeed = Input.MoveY.Value > 0 ? AquaModule.Settings.HookSettings.HookRollingSpeedDown : -AquaModule.Settings.HookSettings.HookRollingSpeedUp;
                     _madelinesHook.SetRopeLengthLocked(false, self.Center);
-                    if (Input.MoveY < 0 && _madelinesHook.SwingRadius <= 4.0f)
-                    {
-                        rollingSpeed = 0.0f;
-                    }
-                    DynamicData.For(self).Set("climb_rope_direction", MathF.Sign(rollingSpeed));
                     alongRopeSpeed = rollingSpeed * ropeDirection;
                 }
                 else
@@ -419,24 +420,37 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, move);
         }
 
+        private static PlayerDeadBody Player_Die(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
+        {
+            self.Sprite.SetHookMode(false);
+            return orig(self, direction, evenIfInvincible, registerDeathInStats);
+        }
+
         private static void Player_UpdateSprite(On.Celeste.Player.orig_UpdateSprite orig, Player self)
         {
-            orig(self);
-
-            if (self.StateMachine.State == (int)AquaStates.StHanging)
+            if (self.StateMachine.State != (int)AquaStates.StHanging)
             {
+                self.Sprite.SetHookMode(false);
+                orig(self);
+            }
+            else
+            {
+                self.Sprite.SetHookMode(true);
                 int climbRopeDirection = DynamicData.For(self).Get<int>("climb_rope_direction");
                 if (climbRopeDirection < 0)
                 {
-                    self.Sprite.Play("climbUp");
+                    AquaDebugger.LogInfo("UP");
+                    self.Sprite.Play("hookup");
                 }
                 else if (climbRopeDirection > 0)
                 {
-                    self.Sprite.Play("wallslide");
+                    AquaDebugger.LogInfo("DOWN");
+                    self.Sprite.Play("hookdown");
                 }
                 else
                 {
-                    self.Sprite.Play("dangling");
+                    AquaDebugger.LogInfo("IDLE");
+                    self.Sprite.Play("hookidle");
                 }
             }
         }
@@ -604,14 +618,14 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self);
 
-            if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed && !self.onGround)
-            {
-                int tangentSpd = Math.Abs((int)MathF.Floor(DynamicData.For(self).Get<float>("tangent_speed")));
-                int alongSpd = Math.Abs((int)MathF.Floor(DynamicData.For(self).Get<float>("along_speed")));
-                float scale = 1.0f;
-                Draw.TextCentered(Draw.DefaultFont, tangentSpd.ToString(), self.Center + new Vector2(0.0f, 8.0f), Color.White, scale);
-                Draw.TextCentered(Draw.DefaultFont, alongSpd.ToString(), self.Position + new Vector2(0.0f, 16.0f), Color.White, scale);
-            }
+            //if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed && !self.onGround)
+            //{
+            //    int tangentSpd = Math.Abs((int)MathF.Floor(DynamicData.For(self).Get<float>("tangent_speed")));
+            //    int alongSpd = Math.Abs((int)MathF.Floor(DynamicData.For(self).Get<float>("along_speed")));
+            //    float scale = 1.0f;
+            //    Draw.TextCentered(Draw.DefaultFont, tangentSpd.ToString(), self.Center + new Vector2(0.0f, 8.0f), Color.White, scale);
+            //    Draw.TextCentered(Draw.DefaultFont, alongSpd.ToString(), self.Position + new Vector2(0.0f, 16.0f), Color.White, scale);
+            //}
         }
 #endif
 

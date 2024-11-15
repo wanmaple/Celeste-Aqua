@@ -243,8 +243,6 @@ namespace Celeste.Mod.Aqua.Core
             float length = CalculateRopeLength(playerSeg.Point2);
             if (length > _lockLength)
             {
-                //if (player.StateMachine.State == (int)AquaStates.StDash)
-                //    return true;
                 float lengthDiff = length - _lockLength;
                 Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
                 Vector2 movement = ropeDirection * MathF.Ceiling(lengthDiff);

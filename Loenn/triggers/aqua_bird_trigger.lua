@@ -1,6 +1,11 @@
 local AquaBirdTrigger = {}
 
 AquaBirdTrigger.name = "Aqua/Aqua Bird Trigger"
+AquaBirdTrigger.fieldInformation = {
+    tutorialIndex = {
+        fieldType = "integer",
+    }
+}
 AquaBirdTrigger.placements = {
     name = "Aqua Bird Trigger (Tutorial)",
     data = {

@@ -1,9 +1,12 @@
-Aqua_0_JourneyStart=Aqua
-Aqua_0_JourneyStart_0_Prologue=Prologue
-Aqua_0_JourneyStart_0_Prologue_mapside=FLY
-Aqua_0_JourneyStart_1_City=City
+Aqua_0_JourneyStart=Another Journey
+Aqua_0_JourneyStart_1_AnotherOne=Another One
+Aqua_0_JourneyStart_1_AnotherOne_mapside=FLY
+Aqua_0_JourneyStart_2_City=Another City
+Aqua_0_JourneyStart_2_City_5=Higher
+poem_Aqua_0_JourneyStart_2_City_A=First Step
 
 THROW_HOOK=THROW HOOK
 SWING_JUMP=SWING AND JUMP
 CLIMB_ROPE=CLIMB HOOK ROPE
 DASH_GRAB_JUMP=DASH AND JUMP
+INERTIA_SWING=MAKE USE OF INERTIA

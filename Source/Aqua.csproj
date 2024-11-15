@@ -30,6 +30,7 @@
 
     <ItemGroup>
       <Folder Include="Core\Level\" />
+      <Folder Include="Core\Triggers\" />
     </ItemGroup>
 
     <Target Name="CopyFiles" AfterTargets="Build" Inputs="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).pdb" Outputs="..\bin\$(AssemblyName).dll;..\bin\$(AssemblyName).pdb">

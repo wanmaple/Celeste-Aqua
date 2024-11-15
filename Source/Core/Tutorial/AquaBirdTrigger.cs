@@ -1,4 +1,5 @@
 ﻿using Celeste.Mod.Aqua.Debug;
+using Celeste.Mod.Aqua.Miscellaneous;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -32,28 +33,7 @@ namespace Celeste.Mod.Aqua.Core
                     string modName = path[0];
                     string className = path[1];
                     string methodName = path[2];
-                    EverestModule everestModule = Enumerable.FirstOrDefault(Everest.Modules, (EverestModule m) => m.Metadata.Name == path[0]);
-                    if (everestModule != null)
-                    {
-                        Assembly asm = everestModule.GetType().Assembly;
-                        Type[] types = asm.GetTypes();
-                        foreach (Type type in types)
-                        {
-                            if (type.Name == className)
-                            {
-                                MethodInfo method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
-                                if (method != null && method.ReturnType == typeof(bool))
-                                {
-                                    ParameterInfo[] args = method.GetParameters();
-                                    if (args.Length == 1 && args[0].ParameterType == typeof(Level))
-                                    {
-                                        _conditionMethod = method;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    _conditionMethod = ReflectionHelper.FindMethodInMod(modName, className, methodName, new ReflectionHelper.MethodDeclaration(typeof(bool), typeof(Level)));
                 }
             }
             if (_conditionMethod == null && !string.IsNullOrEmpty(ConditionFunction))

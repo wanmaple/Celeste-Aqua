@@ -214,7 +214,6 @@ namespace Celeste.Mod.Aqua.Core
                         nextPosition = rope.DetectHookNextPosition(dt, false, out changeState);
                         Vector2 movement = nextPosition - prevPosition;
                         Velocity += movement;
-                        _movementCounter = Vector2.Zero;
                         bool collided = false;
                         if (!AquaMaths.IsApproximateZero(movement.X))
                         {

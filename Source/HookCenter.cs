@@ -24,6 +24,7 @@ namespace Celeste.Mod.Aqua
             CrumblePlatformExtensions.Initialize();
             BounceBlockExtensions.Initialize();
             CoreModeToggleExtensions.Initialize();
+            PlayerSpriteExtensions.Initialize();
             PlayerStates.Initialize();
         }
 
@@ -41,6 +42,7 @@ namespace Celeste.Mod.Aqua
             CrumblePlatformExtensions.Uninitialize();
             BounceBlockExtensions.Uninitialize();
             CoreModeToggleExtensions.Uninitialize();
+            PlayerSpriteExtensions.Uninitialize();
             PlayerStates.Uninitialize();
         }
 

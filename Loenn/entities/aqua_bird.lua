@@ -6,6 +6,11 @@ AquaBird.nodeLineRenderType = "line"
 AquaBird.justification = { 0.5, 1.0 }
 AquaBird.texture = "characters/bird/crow00"
 AquaBird.nodeLimits = { 0, -1 }
+AquaBird.fieldInformation = {
+    startupIndex = {
+        fieldType = "integer",
+    }
+}
 AquaBird.placements = {
     name = "Aqua Bird (Tutorial)",
     data = {
