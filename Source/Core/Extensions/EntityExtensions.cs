@@ -19,13 +19,18 @@ namespace Celeste.Mod.Aqua.Core
         private static void Entity_Construct(On.Monocle.Entity.orig_ctor_Vector2 orig, Entity self, Vector2 position)
         {
             orig(self, position);
-            DynamicData.For(self).Set("hookable", false);
-            DynamicData.For(self).Set("hook_attached", false);
+            self.SetHookable(false);
+            self.SetHookAttached(false);
         }
 
         public static bool IsHookable(this Entity self)
         {
             return DynamicData.For(self).Get<bool>("hookable");
+        }
+
+        public static void SetHookable(this Entity self, bool hookable)
+        {
+            DynamicData.For(self).Set("hookable", hookable);
         }
 
         public static bool IsHookAttached(this Entity self)

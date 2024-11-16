@@ -442,7 +442,7 @@ namespace Celeste.Mod.Aqua.Core
             int num2 = 0;
             while (moveV != 0)
             {
-                if (CheckInteractables(Position + Vector2.UnitX * num))
+                if (CheckInteractables(Position + Vector2.UnitY * num))
                 {
                     return true;
                 }
@@ -501,31 +501,25 @@ namespace Celeste.Mod.Aqua.Core
 
         private bool CheckInteractables(Vector2 at)
         {
-            List<Spring> springs = Scene.Entities.FindAll<Spring>();
-            Spring spring = Collide.First(this, springs, at) as Spring;
-            if (spring != null)
-            {
-                if (Bounce(spring.GetBounceDirection(), AquaModule.Settings.HookSettings.HookBounceSpeedAddition))
-                {
-                    _hitInteractable = true;
-                    spring.BounceAnimate();
-                    return true;
-                }
-            }
-            List<Bumper> bumpers = Scene.Entities.FindAll<Bumper>();
-            Bumper bumper = Collide.First(this, bumpers, at) as Bumper;
-            if (bumper != null)
-            {
-                Vector2 direction = Vector2.Normalize(at - bumper.Center);
-                if (Bounce(direction, AquaModule.Settings.HookSettings.HookBounceSpeedAddition))
-                {
-                    _hitInteractable = true;
-                    bumper.Hit(direction);
-                    return true;
-                }
-            }
             _hitInteractable = false;
-            return false;
+            Vector2 position = Position;
+            Position = at;
+            List<Component> interactables = Scene.Tracker.GetComponents<HookInteractable>();
+            for (int i = 0; i < interactables.Count; i++)
+            {
+                HookInteractable interactable = interactables[i] as HookInteractable;
+                Entity entity = interactable.Entity;
+                if (entity != null && Collide.Check(this, entity))
+                {
+                    if (interactable.OnInteract(this, at))
+                    {
+                        _hitInteractable = true;
+                        break;
+                    }
+                }
+            }
+            Position = position;
+            return _hitInteractable;
         }
 
         private Vector2 _movementCounter = Vector2.Zero;
