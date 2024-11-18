@@ -509,7 +509,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 HookInteractable interactable = interactables[i] as HookInteractable;
                 Entity entity = interactable.Entity;
-                if (entity != null && Collide.Check(this, entity))
+                if (entity != null && entity.Collidable && entity.Collider != null && Collide.Check(this, entity))
                 {
                     if (interactable.OnInteract(this, at))
                     {

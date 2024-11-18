@@ -23,11 +23,19 @@ namespace Celeste.Mod.Aqua.Core
             LitColor = data.HexColor("color");
 
             Add(new PlayerInOut(OnPlayerIn, null));
-            _texLamp = GFX.Game["objects/common/puzzle_light"];
-            _texLampMask = GFX.Game["objects/common/puzzle_light_mask"];
-            _texLit = GFX.Game["objects/common/lit"];
+            Add(_spriteBulb = new Sprite());
+            GFX.SpriteBank.CreateOn(_spriteBulb, "PuzzleLight");
+            _spriteBulb.Justify = new Vector2(0.5f, 0.5f);
+            _spriteBulb.SetColor(LitColor);
+            _spriteBulb.Play("idle");
+            Add(_imgPedestal = new Image(GFX.Game["objects/puzzle_light/pedestal"]));
+            _imgPedestal.JustifyOrigin(0.5f, 0.5f);
+            Add(_imgLit = new Image(GFX.Game["objects/puzzle_light/lit"]));
+            _imgLit.JustifyOrigin(0.5f, 0.5f);
+            _imgLit.SetColor(LitColor);
+            _imgLit.Visible = SwitchOn;
 
-            Collider = new Hitbox(_texLamp.Width, _texLamp.Height);
+            Collider = new Hitbox(_spriteBulb.Width, _spriteBulb.Height, -_spriteBulb.Width * 0.5f, -_spriteBulb.Height * 0.5f);
         }
 
         public override void Awake(Scene scene)
@@ -55,30 +63,18 @@ namespace Celeste.Mod.Aqua.Core
             if (!SwitchOn && _relatedCenter.CanLitOn(this))
             {
                 SwitchOn = true;
+                _imgLit.Visible = true;
             }
             else if (SwitchOn && _relatedCenter.CanLitOff(this))
             {
                 SwitchOn = false;
-            }
-        }
-
-        public override void Render()
-        {
-            if (_texLamp != null && _texLampMask != null && _texLit != null)
-            {
-                Vector2 center = new Vector2(_texLamp.Width * 0.5f, _texLamp.Height * 0.5f);
-                _texLamp.Draw(Position, center, Color.White);
-                _texLampMask.Draw(Position, center, LitColor);
-                if (SwitchOn)
-                {
-                    _texLit.Draw(Position + new Vector2(0.0f, -2.0f), new Vector2(_texLit.Width * 0.5f, _texLit.Height * 0.5f), LitColor);
-                }
+                _imgLit.Visible = false;
             }
         }
 
         private PuzzleEntity _relatedCenter;
-        private MTexture _texLamp;
-        private MTexture _texLampMask;
-        private MTexture _texLit;
+        private Sprite _spriteBulb;
+        private Image _imgPedestal;
+        private Image _imgLit;
     }
 }

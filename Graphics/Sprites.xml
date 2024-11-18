@@ -2,59 +2,89 @@
 <Sprites>
 
     <Hook path="objects/hook/" start="emit">
-        <Anim id="emit" path="hook" frames="0" />
-        <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
-        <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
+      <Anim id="emit" path="hook" frames="0" />
+      <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
+      <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
     </Hook>
 
     <Madeline path="characters/player/" start="hookidle">
-        <Origin x="16" y="32" />
-        <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
-        <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
-        <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-    <Metadata>
-      <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
-    </Metadata>
+      <Origin x="16" y="32" />
+      <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
+      <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
+      <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
+      <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
+      <Metadata>
+        <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+      </Metadata>
     </Madeline>
 
     <MadelineNoBackpack path="characters/player_no_backpack/" start="hookidle">
-        <Origin x="16" y="32" />
-        <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
-        <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
-        <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-    <Metadata>
-      <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
-    </Metadata>
+      <Origin x="16" y="32" />
+      <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
+      <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
+      <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
+      <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
+      <Metadata>
+        <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+      </Metadata>
     </MadelineNoBackpack>
 
     <MadelinePlayback path="characters/player_playback/" start="hookidle">
-        <Origin x="16" y="32" />
-        <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
-        <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
-        <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-    <Metadata>
-      <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
-    </Metadata>
+      <Origin x="16" y="32" />
+      <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
+      <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
+      <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
+      <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
+      <Metadata>
+        <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+      </Metadata>
     </MadelinePlayback>
 
     <AquaBadeline path="characters/badeline/" start="hookidle">
-        <Origin x="16" y="32" />
-        <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
-        <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
-        <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-    <Metadata>
-      <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
-    </Metadata>
+      <Origin x="16" y="32" />
+      <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
+      <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
+      <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
+      <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
+      <Metadata>
+        <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+      </Metadata>
     </AquaBadeline>
 
     <MadelineAsBadeline path="characters/player_badeline/" start="hookidle">
-        <Origin x="16" y="32" />
-        <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
-        <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
-        <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-    <Metadata>
-      <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
-    </Metadata>
+      <Origin x="16" y="32" />
+      <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
+      <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
+      <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
+      <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
+      <Metadata>
+        <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+      </Metadata>
     </MadelineAsBadeline>
+
+    <PuzzleLight path="objects/puzzle_light/" start="idle">
+      <Origin x="8" y="8" />
+      <Loop id="idle" path="bulb" delay="0.1" frames="0-11" />
+    </PuzzleLight>
+
+    <RefillOne path="objects/refill_one/" start="idle">
+      <Origin x="8" y="8" />
+      <Loop id="idle" path="idle" delay="0.1" frames="0-4" />
+    </RefillOne>
+
+    <RefillOneFlash path="objects/refill_one/" start="flash">
+      <Origin x="8" y="8" />
+      <Anim id="flash" path="flash" delay="0.05" frames="0-5" />
+    </RefillOneFlash>
+
+    <RefillTwo path="objects/refill_two/" start="idle">
+      <Origin x="8" y="8" />
+      <Loop id="idle" path="idle" delay="0.1" frames="0-4" />
+    </RefillTwo>
+
+    <RefillTwoFlash path="objects/refill_two/" start="flash">
+      <Origin x="8" y="8" />
+      <Anim id="flash" path="flash" delay="0.05" frames="0-5" />
+    </RefillTwoFlash>
 
 </Sprites>

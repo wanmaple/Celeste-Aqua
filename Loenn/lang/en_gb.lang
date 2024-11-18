@@ -1,0 +1,32 @@
+mods.Aqua.name=Aqua
+
+# Aqua Bird
+entities.Aqua/Aqua Bird.attributes.description.birdId=Identifier of the bird.
+entities.Aqua/Aqua Bird.attributes.description.controls=Tutorial content which is the same format as Everest CustomBirdTutorial, multiple sub-tutorial should be separated by semicolon.
+entities.Aqua/Aqua Bird.attributes.description.dialogs=Tutorial title key, multiple sub-tutorial should be separated by semicolon.
+entities.Aqua/Aqua Bird.attributes.description.startupIndex=First tutorial index to display(if no condition), start from zero.
+entities.Aqua/Aqua Bird.attributes.description.triggerOnce=Whether each sub-tutorial only trigger once.
+entities.Aqua/Aqua Bird.attributes.description.faceLeft=Whether the bird is facing left.
+entities.Aqua/Aqua Bird.attributes.description.caw=Whether the bird will caw if trigger the tutorial, which will delay the occurence of the dialog.
+entities.Aqua/Aqua Bird.attributes.description.onlyOnce=Whether the tutorial only occurs once even if the stage is reload.
+
+# Aqua City Satellite
+entities.Aqua/Aqua City Satellite.attributes.description.puzzleId=Puzzle Identifier, used to recognize which Puzzle Light belongs to the puzzle.
+
+# Aqua Refill
+entities.Aqua/Aqua Refill.attributes.description.twoDash=Whether the refill should give two dashes.
+entities.Aqua/Aqua Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
+entities.Aqua/Aqua Refill.attributes.description.hookable=Whether the refill is interactable with the grappling hook.
+
+# Puzzle Light
+entities.Aqua/Puzzle Light.attributes.description.puzzleId=Puzzle Identifier that indicates which puzzle it belongs to.
+entities.Aqua/Puzzle Light.attributes.description.sequence=The puzzle light will be ordered with this attribute, used to handle logic.
+entities.Aqua/Puzzle Light.attributes.description.on=Whether the light is default on.
+entities.Aqua/Puzzle Light.attributes.description.color=The color of the light.
+
+# Unidirectional Dash Block
+entities.Aqua/Puzzle Light.attributes.description.tiletype=Determines the visual apperance of the wall.
+entities.Aqua/Puzzle Light.attributes.description.blendin=Blend the block with the walls it touches, making it less apparent.
+entities.Aqua/Puzzle Light.attributes.description.canDash=Whether the player can break the wall by dashing into it.
+entities.Aqua/Puzzle Light.attributes.description.permanent=Once broken, the block will remain that way, even the player dies.
+entities.Aqua/Puzzle Light.attributes.description.direction=Indicates the dashing direction which will break the wall, use All/Left/Right/Up/Down.

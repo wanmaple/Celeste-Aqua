@@ -7,7 +7,7 @@ local UnhookableArea = {}
 
 UnhookableArea.name = "Aqua/Unhookable Area"
 UnhookableArea.placements = {
-    name = "Unhookable Area",
+    name = "Aqua Unhookable Area",
     data = {
         width = 8,
         height = 8,
