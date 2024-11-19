@@ -15,6 +15,7 @@
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+        <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
       </Metadata>
     </Madeline>
 
@@ -26,6 +27,7 @@
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+        <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
       </Metadata>
     </MadelineNoBackpack>
 
@@ -37,6 +39,7 @@
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+        <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
       </Metadata>
     </MadelinePlayback>
 
@@ -48,6 +51,7 @@
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+        <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
       </Metadata>
     </AquaBadeline>
 
@@ -59,6 +63,7 @@
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
+        <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
       </Metadata>
     </MadelineAsBadeline>
 
