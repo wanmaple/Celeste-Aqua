@@ -6,7 +6,7 @@ UnidirectionalDashBlock.name = "Aqua/Unidirectional Dash Block"
 UnidirectionalDashBlock.depth = 0
 
 UnidirectionalDashBlock.placements = {
-    name = "Aqua Dash Block (Unidirectional)",
+    name = "Dash Block (Unidirectional)",
     data = {
         tiletype = FakeTilesHelper.getPlacementMaterial(),
         blendin = true,

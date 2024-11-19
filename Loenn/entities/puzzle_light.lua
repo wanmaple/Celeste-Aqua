@@ -17,7 +17,7 @@ PuzzleLight.fieldInformation = {
     },
 }
 PuzzleLight.placements = {
-    name = "Aqua Puzzle Light",
+    name = "Puzzle Light",
     data = {
         puzzleId = "my_puzzle",
         sequence = 0,

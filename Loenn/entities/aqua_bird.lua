@@ -12,7 +12,7 @@ AquaBird.fieldInformation = {
     }
 }
 AquaBird.placements = {
-    name = "Aqua Bird (Tutorial)",
+    name = "Tutorial Bird",
     data = {
         birdId = "",
         controls = "UpRight,+,mod:Aqua/ThrowHook;HOLD,Grab,+,Left,Right,tinyarrow,Jump",

@@ -30,3 +30,6 @@ entities.Aqua/Puzzle Light.attributes.description.blendin=Blend the block with t
 entities.Aqua/Puzzle Light.attributes.description.canDash=Whether the player can break the wall by dashing into it.
 entities.Aqua/Puzzle Light.attributes.description.permanent=Once broken, the block will remain that way, even the player dies.
 entities.Aqua/Puzzle Light.attributes.description.direction=Indicates the dashing direction which will break the wall, use All/Left/Right/Up/Down.
+
+# Freeze Listener
+entities.Aqua/Freeze Listener.attributes.description.inputs=The inputs to listen when frozen. (Up/Down/Left/Right/UpLeft/UpRight/DownLeft/DownRight/Jump/Grab/Dash/mod:MOD_NAME/BINDING_NAME)

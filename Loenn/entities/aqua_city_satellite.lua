@@ -12,7 +12,7 @@ AquaCitySatellite.fieldInformation = {
     },
 }
 AquaCitySatellite.placements = {
-    name = "Aqua City Satellite",
+    name = "Puzzle City Satellite",
     data = {
         puzzleId = "my_puzzle",
     },

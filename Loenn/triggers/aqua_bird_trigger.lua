@@ -7,7 +7,7 @@ AquaBirdTrigger.fieldInformation = {
     }
 }
 AquaBirdTrigger.placements = {
-    name = "Aqua Bird Trigger (Tutorial)",
+    name = "Tutorial Bird Trigger",
     data = {
         birdId = "",
         tutorialIndex = 0,

@@ -40,19 +40,6 @@ namespace Celeste.Mod.Aqua.Core
             cursor.EmitCall(_methodCreateFramesMetadata);
         }
 
-        private static void GFX_LoadData2(On.Celeste.GFX.orig_LoadData orig)
-        {
-            if (!GFX.DataLoaded)
-            {
-                PlayerSprite.CreateFramesMetadata("Madeline");
-                PlayerSprite.CreateFramesMetadata("MadelineNoBackpack");
-                PlayerSprite.CreateFramesMetadata("MadelinePlayback");
-                PlayerSprite.CreateFramesMetadata("AquaBadeline");
-                PlayerSprite.CreateFramesMetadata("MadelineAsBadeline");
-            }
-            orig();
-        }
-
         private static MethodInfo _methodCreateFramesMetadata;
     }
 }

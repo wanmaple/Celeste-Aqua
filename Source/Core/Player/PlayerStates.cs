@@ -61,6 +61,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.SummitLaunchBegin += Player_SummitLaunchBegin;
             On.Celeste.Player.StarFlyBegin += Player_StarFlyBegin;
             On.Celeste.Player.FlingBirdBegin += Player_FlingBirdBegin;
+            On.Celeste.Player.PickupCoroutine += Player_PickupCoroutine;
             On.Celeste.Player.Update += Player_Update;
             On.Celeste.Player.ClimbJump += Player_ClimbJump;
             On.Celeste.Player.WindMove += Player_WindMove;
@@ -83,6 +84,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.SummitLaunchBegin -= Player_SummitLaunchBegin;
             On.Celeste.Player.StarFlyBegin -= Player_StarFlyBegin;
             On.Celeste.Player.FlingBirdBegin -= Player_FlingBirdBegin;
+            On.Celeste.Player.PickupCoroutine -= Player_PickupCoroutine;
             On.Celeste.Player.Update -= Player_Update;
             On.Celeste.Player.ClimbJump -= Player_ClimbJump;
             On.Celeste.Player.WindMove -= Player_WindMove;
@@ -176,6 +178,16 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             orig(self);
+        }
+
+        private static System.Collections.IEnumerator Player_PickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self)
+        {
+            if (_madelinesHook.Active && _madelinesHook.State != GrapplingHook.HookStates.Revoking)
+            {
+                _madelinesHook.Revoke();
+            }
+
+            return orig(self);
         }
 
         private static void Player_StarFlyBegin(On.Celeste.Player.orig_StarFlyBegin orig, Player self)
@@ -494,10 +506,6 @@ namespace Celeste.Mod.Aqua.Core
             if (_madelinesHook.Active)
             {
                 if (_madelinesHook.State == GrapplingHook.HookStates.Fixed && self.IsExhausted())
-                {
-                    _madelinesHook.Revoke();
-                }
-                else if (self.Holding != null)
                 {
                     _madelinesHook.Revoke();
                 }

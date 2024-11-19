@@ -1,29 +1,29 @@
-local Triggers = require("triggers")
-local Depths = require("consts.object_depths")
 local DrawableRectangle = require("structs.drawable_rectangle")
 local DrawableText = require("structs.drawable_text")
+local Depths = require("consts.object_depths")
 
-local UnhookableArea = {}
+local FreezeListener = {}
 
-UnhookableArea.name = "Aqua/Unhookable Area"
-UnhookableArea.placements = {
-    name = "Unhookable Area",
+FreezeListener.name = "Aqua/Freeze Listener"
+FreezeListener.placements = {
+    name = "Freeze Listener",
     data = {
+        inputs = "UpRight,mod:Aqua/ThrowHook",
         width = 8,
         height = 8,
     },
 }
 
-function UnhookableArea.sprite(room, entity)
+function FreezeListener.sprite(room, entity)
     local x = entity.x or 0
     local y = entity.y or 0
 
     local width = entity.width or 16
     local height = entity.height or 16
 
-    local fillColor, borderColor, textColor = "d0d0d088", "ffffff", "ffffff"
+    local fillColor, borderColor, textColor = "19f00688", "ffffff", "ffffff"
     local borderedRectangle = DrawableRectangle.fromRectangle("bordered", x, y, width, height, fillColor, borderColor)
-    -- local textDrawable = DrawableText.fromText("Unhookable", x, y, width, height, nil, Triggers.triggerFontSize, textColor)
+    -- local textDrawable = DrawableText.fromText("Freeze Listener", x, y, width, height, nil, Triggers.triggerFontSize, textColor)
 
     local drawables = borderedRectangle:getDrawableSprite()
     for _, drawable in ipairs(drawables) do
@@ -36,4 +36,4 @@ function UnhookableArea.sprite(room, entity)
     return drawables
 end
 
-return UnhookableArea
+return FreezeListener
