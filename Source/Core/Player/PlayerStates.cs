@@ -136,7 +136,6 @@ namespace Celeste.Mod.Aqua.Core
             {
                 scene.Remove(_madelinesHook);
             }
-            _madelinesHook = null;
             orig(self, scene);
         }
 
