@@ -115,7 +115,6 @@ namespace Celeste.Mod.Aqua.Core
             var climbJumpTicker = new TimeTicker(1.0f);
             DynamicData.For(self).Set("climb_jump_ticker", climbJumpTicker);
             DynamicData.For(self).Set("rope_is_loosen", true);
-            InitializeCustomPlayerHair();
 #if DEBUG
             DynamicData.For(self).Set("tangent_speed", 0.0f);
             DynamicData.For(self).Set("along_speed", 0.0f);
@@ -368,7 +367,6 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void Player_Update(On.Celeste.Player.orig_Update orig, Player self)
         {
-            var temp = GFX.SpriteBank.SpriteData;
             float dt = Engine.DeltaTime;
             TimeTicker climbJumpTicker = DynamicData.For(self).Get<TimeTicker>("climb_jump_ticker");
             climbJumpTicker.Tick(dt);
@@ -633,20 +631,7 @@ namespace Celeste.Mod.Aqua.Core
             return self.CheckStamina <= 0.0f;
         }
 
-        private static void InitializeCustomPlayerHair()
-        {
-            if (_runtimeInitialized) return;
-
-            PlayerSprite.CreateFramesMetadata("Madeline");
-            PlayerSprite.CreateFramesMetadata("MadelineNoBackpack");
-            PlayerSprite.CreateFramesMetadata("MadelinePlayback");
-            PlayerSprite.CreateFramesMetadata("AquaBadeline");
-            PlayerSprite.CreateFramesMetadata("MadelineAsBadeline");
-            _runtimeInitialized = true;
-        }
-
         private static GrapplingHook _madelinesHook;
-        private static bool _runtimeInitialized = false;
 #if DEBUG
         private static ConditionTrigger _cond = new ConditionTrigger();
 #endif

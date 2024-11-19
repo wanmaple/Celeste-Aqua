@@ -69,19 +69,19 @@ namespace Celeste.Mod.Aqua.Module
         [DefaultValue(2)]
         public int HookWindCoefficient { get; set; }
 
-        [SettingRange(800, 1200, true)]
+        //[SettingRange(800, 1200, true)]
         [DefaultValue(1000)]
         public int HookBouncingSpeed { get; set; }
 
-        [SettingRange(100, 200, true)]
+        //[SettingRange(100, 200, true)]
         [DefaultValue(150)]
         public int HookBounceSpeedAddition { get; set; }
 
-        [SettingRange(5, 30)]
+        //[SettingRange(5, 30)]
         [DefaultValue(15)]
         public int HookBounceJumpCoefficient { get; set; }
 
-        [SettingRange(20, 40)]
+        //[SettingRange(20, 40)]
         [DefaultValue(30)]
         public int HookBounceMoveCoefficient { get; set; }
 

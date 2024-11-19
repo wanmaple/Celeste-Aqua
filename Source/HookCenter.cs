@@ -7,6 +7,7 @@ namespace Celeste.Mod.Aqua
     {
         public void Hook()
         {
+            LevelLoaderExtensions.Initialize();
             EntityExtensions.Initialize();
             PlatformExtensions.Initialize();
             SolidExtensions.Initialize();
@@ -24,6 +25,7 @@ namespace Celeste.Mod.Aqua
 
         public void Unhook()
         {
+            LevelLoaderExtensions.Uninitialize();
             EntityExtensions.Uninitialize();
             PlatformExtensions.Uninitialize();
             SolidExtensions.Uninitialize();
