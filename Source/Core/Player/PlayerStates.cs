@@ -6,7 +6,6 @@ using MonoMod.Cil;
 using System;
 using MonoMod.Utils;
 using Celeste.Mod.Aqua.Debug;
-using static Celeste.TrackSpinner;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -97,7 +96,7 @@ namespace Celeste.Mod.Aqua.Core
             return self.ExactPosition + self.Center - self.Position;
         }
 
-        private static void Player_ILConstruct(MonoMod.Cil.ILContext il)
+        private static void Player_ILConstruct(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             if (cursor.TryGotoNext(ins => ins.MatchLdcI4(26)))

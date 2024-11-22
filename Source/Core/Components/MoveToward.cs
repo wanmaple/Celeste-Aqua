@@ -6,11 +6,22 @@ namespace Celeste.Mod.Aqua.Core
 {
     public class MoveToward : Component
     {
-        public Entity Target { get; private set; }
-        public float BaseSpeed { get; private set; }
-        public bool FasterAsTarget { get; private set; }
+        public Entity Target
+        {
+            get => _target;
+            set
+            {
+                _target = value;
+                if (_target != null)
+                {
+                    _targetPrevPosition = _target.Center;
+                }
+            }
+        }
+        public float BaseSpeed { get; set; }
+        public bool FasterAsTarget { get; set; }
 
-        public MoveToward(Entity target, float baseSpeed, bool fasterAsTarget = true) 
+        public MoveToward(Entity target, float baseSpeed, bool fasterAsTarget = true)
             : base(true, false)
         {
             Target = target;
@@ -18,14 +29,11 @@ namespace Celeste.Mod.Aqua.Core
             FasterAsTarget = fasterAsTarget;
         }
 
-        public override void Added(Entity entity)
-        {
-            base.Added(entity);
-            _targetPrevPosition = Target.Center;
-        }
-
         public override void Update()
         {
+            if (_target == null)
+                return;
+
             float dt = Engine.DeltaTime;
             float targetSpeed = (Target.Center - _targetPrevPosition).Length() / dt;
             float finalSpeed = BaseSpeed + targetSpeed;
@@ -47,5 +55,6 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         private Vector2 _targetPrevPosition;
+        private Entity _target;
     }
 }

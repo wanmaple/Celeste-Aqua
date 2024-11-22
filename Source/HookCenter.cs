@@ -18,6 +18,7 @@ namespace Celeste.Mod.Aqua
             BounceBlockExtensions.Initialize();
             SpringExtensions.Initialize();
             BumperExtensions.Initialize();
+            BoosterExtensions.Initialize();
             CoreModeToggleExtensions.Initialize();
             PlayerSpriteExtensions.Initialize();
             PlayerStates.Initialize();
@@ -36,6 +37,7 @@ namespace Celeste.Mod.Aqua
             BounceBlockExtensions.Uninitialize();
             SpringExtensions.Uninitialize();
             BumperExtensions.Uninitialize();
+            BoosterExtensions.Uninitialize();
             CoreModeToggleExtensions.Uninitialize();
             PlayerSpriteExtensions.Uninitialize();
             PlayerStates.Uninitialize();

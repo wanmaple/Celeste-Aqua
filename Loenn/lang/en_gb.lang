@@ -33,3 +33,7 @@ entities.Aqua/Puzzle Light.attributes.description.direction=Indicates the dashin
 
 # Freeze Listener
 entities.Aqua/Freeze Listener.attributes.description.inputs=The inputs to listen when frozen. (Up/Down/Left/Right/UpLeft/UpRight/DownLeft/DownRight/Jump/Grab/Dash/mod:MOD_NAME/BINDING_NAME)
+
+# Aqua Booster
+entities.Aqua/Aqua Booster.attributes.description.red=Whether the booster is short distance or infinite distance.
+entities.Aqua/Aqua Booster.attributes.description.hookable=Whether the booster is interactable with the grappling hook.

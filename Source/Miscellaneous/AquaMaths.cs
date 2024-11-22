@@ -44,6 +44,18 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return v1.X * v2.Y - v1.Y * v2.X;
         }
 
+        public static Vector2 Lerp(Vector2 v1, Vector2 v2, float amount)
+        {
+            return new Vector2(MathHelper.Lerp(v1.X, v2.X, amount), MathHelper.Lerp(v1.Y, v2.Y, amount));
+        }
+
+        public static Vector2 Reflect(Vector2 inDirection, Vector2 axis)
+        {
+            float proj = Vector2.Dot(inDirection, axis);
+            Vector2 doubleAxis = axis * MathF.Abs(proj) * 2.0f;
+            return inDirection + doubleAxis;
+        }
+
         public static bool IsVectorInsideTwoVectors(Vector2 v, Vector2 v1, Vector2 v2, bool includeBoundary = true)
         {
             if (IsApproximateZero(v)) return false;

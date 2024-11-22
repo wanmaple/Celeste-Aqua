@@ -30,6 +30,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public float LockedRadius => Get<HookRope>().LockedLength;
         public float SwingRadius => Get<HookRope>().SwingRadius;
+        public Vector2 HookDirection => Get<HookRope>().HookDirection;
         public Vector2 RopeDirection => Get<HookRope>().RopeDirection;
         public Vector2 SwingDirection => Get<HookRope>().SwingDirection;
         public Vector2 PlayerPreviousPosition => _playerPrevPosition;
@@ -83,6 +84,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public bool Bounce(Vector2 axis, float speed)
         {
+            axis = Vector2.Normalize(axis);
             HookRope rope = Get<HookRope>();
             BouncingVelocity = State == HookStates.Bouncing ? BouncingVelocity : rope.CurrentDirection * rope.EmitSpeed;
             float proj = Vector2.Dot(BouncingVelocity, axis);
@@ -96,7 +98,6 @@ namespace Celeste.Mod.Aqua.Core
             }
             else
             {
-                axis = Vector2.Normalize(axis);
                 Vector2 doubleAxis = axis * MathF.Abs(proj) * 2.0f;
                 Vector2 bouncingDirection = Vector2.Normalize(BouncingVelocity);
                 BouncingVelocity += doubleAxis;

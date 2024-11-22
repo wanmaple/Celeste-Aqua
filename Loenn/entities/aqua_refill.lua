@@ -1,5 +1,3 @@
-local DrawableSprite = require("structs.drawable_sprite")
-
 local AquaRefill = {}
 
 AquaRefill.name = "Aqua/Aqua Refill"

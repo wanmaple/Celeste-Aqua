@@ -38,6 +38,8 @@ namespace Celeste.Mod.Aqua.Core
             PlayerCollider old = Get<PlayerCollider>();
             old.OnCollide = OnPlayerCollide;
             Add(new HookInteractable(OnHookInteract));
+            Add(_moveToward = new MoveToward(null, 0.0f, true));
+            _moveToward.Active = false;
         }
 
         public AquaRefill(EntityData data, Vector2 offset) 
@@ -56,9 +58,7 @@ namespace Celeste.Mod.Aqua.Core
                 Add(new Coroutine(RefillAndResetRoutine(player)));
                 respawnTimer = 2.5f;
                 _hookCollided = false;
-                MoveToward com = Get<MoveToward>();
-                if (com != null)
-                    Remove(com);
+                _moveToward.Active = false;
             }
         }
 
@@ -71,7 +71,9 @@ namespace Celeste.Mod.Aqua.Core
             if (player.Dashes < (twoDashes ? 2 : 1))
             {
                 hook.Revoke();
-                Add(new MoveToward(hook, 100000.0f, true));
+                _moveToward.Target = hook;
+                _moveToward.BaseSpeed = 100000.0f;
+                _moveToward.Active = true;
                 _hookCollided = true;
                 return true;
             }
@@ -87,5 +89,6 @@ namespace Celeste.Mod.Aqua.Core
 
         private bool _hookCollided = false;
         private Vector2 _respawnPosition;
+        private MoveToward _moveToward;
     }
 }

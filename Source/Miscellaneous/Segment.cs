@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using static Celeste.GaussianBlur;
-using System.Drawing;
 
 namespace Celeste.Mod.Aqua.Miscellaneous
 {
@@ -13,10 +11,6 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         public Vector2 Vector => Point2 - Point1;
         public Vector2 Direction => Vector2.Normalize(Vector);
         public float Length => Vector.Length();
-        public bool InFirstQuadrant => Vector.X > 0.0f && Vector.Y >= 0.0f;
-        public bool InSecondQuadrant => Vector.X <= 0.0f && Vector.Y > 0.0f;
-        public bool InThirdQuadrant => Vector.X < 0.0f && Vector.Y <= 0.0f;
-        public bool InFourthQuadrant => Vector.X >= 0.0f && Vector.Y < 0.0f;
 
         public Segment(Vector2 pt1, Vector2 pt2)
         {
@@ -36,7 +30,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
         public static bool operator==(Segment seg1, Segment seg2)
         {
-            return seg1.Point1 == seg2.Point1 && seg1.Point2 == seg2.Point2;
+            return (seg1.Point1 == seg2.Point1 && seg1.Point2 == seg2.Point2) || (seg1.Point1 == seg2.Point2 && seg1.Point2 == seg2.Point1);
         }
 
         public static bool operator!=(Segment seg1, Segment seg2)

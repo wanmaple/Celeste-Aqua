@@ -92,4 +92,21 @@
       <Anim id="flash" path="flash" delay="0.05" frames="0-5" />
     </RefillTwoFlash>
 
+    <BoosterOrange path="objects/booster_orange/" start="loop">
+      <Justify x="0.5" y="0.5"/>
+      <Loop id="loop" path="booster" delay="0.1" frames="0-4" />
+      <Loop id="inside" path="booster" delay="0.1" frames="5-8"/>
+      <Loop id="spin" path="booster" delay="0.06" frames="18-25"/>
+      <Anim id="pop" path="booster" delay="0.08" frames="9-17"/>
+    </BoosterOrange>
+    
+    <BoosterPurple path="objects/booster_purple/" start="loop">
+      <Justify x="0.5" y="0.5"/>
+      <Anim id="appear" path="booster_red" delay="0.08" frames="26-34" goto="loop"/>
+      <Loop id="loop" path="booster_red" delay="0.1" frames="0-4"/>
+      <Loop id="inside" path="booster_red" delay="0.1" frames="5-8"/>
+      <Loop id="spin" path="booster_red" delay="0.06" frames="18-25"/>
+      <Anim id="pop" path="booster_red" delay="0.08" frames="9-17"/>
+    </BoosterPurple>
+
 </Sprites>

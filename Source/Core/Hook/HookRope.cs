@@ -63,6 +63,26 @@ namespace Celeste.Mod.Aqua.Core
                 return (BottomPivot.point - player.ExactCenter()).Length();
             }
         }
+        public Vector2 HookDirection
+        {
+            get
+            {
+                if (Scene == null)
+                {
+                    throw new AquaException("Invalid call timing.", "HookRope.HookDirection");
+                }
+
+                Player player = Scene.Tracker.GetEntity<Player>();
+                if (_pivots.Count == 1)
+                {
+                    Vector2 direction = player.ExactCenter() - TopPivot.point;
+                    if (AquaMaths.IsApproximateZero(direction))
+                        return -Vector2.UnitY;
+                    return Vector2.Normalize(direction);
+                }
+                return Vector2.Normalize(_pivots[1].point - TopPivot.point);
+            }
+        }
         public Vector2 RopeDirection
         {
             get
@@ -502,12 +522,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             else if (collider is Grid grid)
             {
-                List<RopePivot> convexPoints = DynamicData.For(grid).Get<List<RopePivot>>("convex_points");
-                if (convexPoints == null)
-                {
-                    convexPoints = grid.FindConvexPoints();
-                    DynamicData.For(grid).Set("convex_points", convexPoints);
-                }
+                IReadOnlyList<RopePivot> convexPoints = grid.ConvexPoints();
                 foreach (RopePivot pt in convexPoints)
                 {
                     TryAddPotentialPoint(pt.point, pt.direction, prevPivot, currentPivot, solid, moveVec, lastSegments, curRopeSeg, potentials);

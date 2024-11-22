@@ -8,21 +8,21 @@ namespace Celeste.Mod.Aqua.Core
     {
         public delegate bool InteractHookHandler(GrapplingHook hook, Vector2 at);
 
+        public InteractHookHandler Interaction { get; set; }
+
         public HookInteractable(InteractHookHandler interaction)
             : base(false, false)
         {
-            _interaction = interaction;
+            Interaction = interaction;
         }
 
         public bool OnInteract(GrapplingHook hook, Vector2 at)
         {
-            if (_interaction != null)
+            if (Interaction != null)
             {
-                return _interaction.Invoke(hook, at);
+                return Interaction.Invoke(hook, at);
             }
             return false;
         }
-
-        private InteractHookHandler _interaction;
     }
 }
