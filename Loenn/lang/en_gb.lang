@@ -37,3 +37,13 @@ entities.Aqua/Freeze Listener.attributes.description.inputs=The inputs to listen
 # Aqua Booster
 entities.Aqua/Aqua Booster.attributes.description.red=Whether the booster is short distance or infinite distance.
 entities.Aqua/Aqua Booster.attributes.description.hookable=Whether the booster is interactable with the grappling hook.
+
+# Aqua Bird Trigger
+triggers.Aqua/Aqua Bird Trigger.attributes.description.birdId=Identifier of the bird.
+triggers.Aqua/Aqua Bird Trigger.attributes.description.tutorialIndex=The tutorial index related to the Aqua Bird.
+triggers.Aqua/Aqua Bird Trigger.attributes.description.conditionFunction=The condition function checked in runtime code, make sure the format is 'mod:ModName/ClassName/FunctionName' and the function must be static, boolean return and accept a Level type parameter.
+
+# Custom Cutscene Trigger
+triggers.Aqua/Custom Cutscene Trigger.attributes.description.cutsceneId=Identifier of the cutscene, be aware that your dialog id should be 'AquaCutscene_{Your ID}'.
+triggers.Aqua/Custom Cutscene Trigger.attributes.description.fadeInOnSkip=Whether the cutscene has fade effect when skipping.
+triggers.Aqua/Custom Cutscene Trigger.attributes.description.endingChapter=Whether the chapter will end after this cutscene.

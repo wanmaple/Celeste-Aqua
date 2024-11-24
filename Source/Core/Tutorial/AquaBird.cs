@@ -83,6 +83,7 @@ namespace Celeste.Mod.Aqua.Core
                     BuildGUI(dialogIds[i], controls[i]);
                 }
             }
+            AddTag(Tags.FrozenUpdate);
         }
 
         public bool IsTutorialTrig(int index)
