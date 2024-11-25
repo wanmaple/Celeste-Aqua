@@ -38,6 +38,21 @@ entities.Aqua/Freeze Listener.attributes.description.inputs=The inputs to listen
 entities.Aqua/Aqua Booster.attributes.description.red=Whether the booster is short distance or infinite distance.
 entities.Aqua/Aqua Booster.attributes.description.hookable=Whether the booster is interactable with the grappling hook.
 
+# Aqua NPC
+entities.Aqua/Custom NPC.attributes.description.indicatorOffsetX=Offset for the chat icon on the X axis.
+entities.Aqua/Custom NPC.attributes.description.indicatorOffsetY=Offset for the chat icon on the Y axis.
+entities.Aqua/Custom NPC.attributes.description.dialogId=The dialog ID to use for the dialogue. Leave empty to make no bubble appear.
+entities.Aqua/Custom NPC.attributes.description.flipY=Flips the sprite of the NPC vertically.
+entities.Aqua/Custom NPC.attributes.description.flipX=Flips the sprite of the NPC horizontally.
+entities.Aqua/Custom NPC.attributes.description.onlyOnce=Whether the dialogue should only be completable once.
+entities.Aqua/Custom NPC.attributes.description.endLevel=Whether finishing the dialogue should count as completing the map.
+entities.Aqua/Custom NPC.attributes.description.approachWhenTalking=Whether Madeline should walk towards the NPC when talking.
+entities.Aqua/Custom NPC.attributes.description.spriteRate=Deprecated field.
+entities.Aqua/Custom NPC.attributes.description.approachDistance=How far away from the NPC Madeline should stop when approaching.
+entities.Aqua/Custom NPC.attributes.description.sprite=Editor sprite to use.
+entities.Aqua/Custom NPC.attributes.description.spriteName=Runtime sprite to use.
+entities.Aqua/Custom NPC.attributes.description.animationName=Runtime animation to play.
+
 # Aqua Bird Trigger
 triggers.Aqua/Aqua Bird Trigger.attributes.description.birdId=Identifier of the bird.
 triggers.Aqua/Aqua Bird Trigger.attributes.description.tutorialIndex=The tutorial index related to the Aqua Bird.

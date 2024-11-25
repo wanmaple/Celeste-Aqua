@@ -14,10 +14,10 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.PlayerSprite.ctor -= PlayerSprite_Construct;
         }
 
-        public static void SetHookMode(this PlayerSprite self, bool useHook)
+        public static void SetHookMode(this PlayerSprite self, bool useHook, bool force = false)
         {
             bool isHookMode = DynamicData.For(self).Get<bool>("is_hook_mode");
-            if (isHookMode == useHook)
+            if (isHookMode == useHook && !force)
             {
                 return;
             }
