@@ -4,10 +4,12 @@ namespace Celeste.Mod.Aqua.Module;
 
 public class AquaModuleSettings : EverestModuleSettings
 {
-    [DefaultButtonBinding(Buttons.LeftShoulder, Keys.T)]
+    [DefaultButtonBinding(Buttons.LeftShoulder, Keys.V)]
     public ButtonBinding ThrowHook { get; set; }
 
     public HookSettings HookSettings { get; set; }
+
+    public bool FeatureEnabled { get; set; } = true;
 
     public bool ResetHookSettings { get; set; }
 

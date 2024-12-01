@@ -479,6 +479,9 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int PreHookUpdate(Player self)
         {
+            if (!AquaModule.Settings.FeatureEnabled)
+                return -1;
+
             float dt = Engine.DeltaTime;
             if (!_madelinesHook.Active && AquaModule.Settings.ThrowHook.Pressed && !self.IsExhausted() && self.Holding == null)
             {
@@ -582,6 +585,9 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int PostHookUpdate(Player self)
         {
+            if (!AquaModule.Settings.FeatureEnabled)
+                return -1;
+
             float dt = Engine.DeltaTime;
             if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
             {
