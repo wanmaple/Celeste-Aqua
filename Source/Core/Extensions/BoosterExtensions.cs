@@ -1,8 +1,5 @@
-﻿using Celeste.Mod.Aqua.Miscellaneous;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Monocle;
-using System;
-using System.Collections;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -42,37 +39,8 @@ namespace Celeste.Mod.Aqua.Core
         {
             hook.Revoke();
             Audio.Play(self.red ? "event:/game/05_mirror_temple/redbooster_reappear" : "event:/game/04_cliffside/greenbooster_reappear", self.Position);
-            self.Add(new Coroutine(self.UndraggableRoutine(Vector2.Normalize(at - self.Center))));
+            self.Add(new Coroutine(self.UndraggableRoutine(self.sprite, Vector2.Normalize(at - self.Center), 0.4f, 8.0f)));
             return true;
-        }
-
-        private static IEnumerator UndraggableRoutine(this Booster self, Vector2 direction)
-        {
-            float duration = 0.4f;
-            float elapsed = 0.0f;
-            float distance = 8.0f;
-            Vector2 movement = direction * distance;
-            Vector2 oldRenderPos = self.sprite.RenderPosition;
-            while (elapsed < duration)
-            {
-                elapsed += Engine.DeltaTime;
-                float t = elapsed / duration;
-                t = MathF.Sqrt(t);
-                Vector2 offset = AquaMaths.Lerp(Vector2.Zero, movement, t);
-                self.sprite.RenderPosition = oldRenderPos + offset;
-                yield return null;
-            }
-
-            duration = 0.2f;
-            elapsed = 0.0f;
-            while (elapsed < duration)
-            {
-                elapsed += Engine.DeltaTime;
-                float t = elapsed / duration;
-                Vector2 offset = AquaMaths.Lerp(movement, Vector2.Zero, t);
-                self.sprite.RenderPosition = oldRenderPos + offset;
-                yield return null;
-            }
         }
     }
 }

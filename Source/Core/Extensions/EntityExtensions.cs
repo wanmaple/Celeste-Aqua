@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Aqua.Miscellaneous;
+using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
+using System;
+using System.Collections;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -51,6 +54,33 @@ namespace Celeste.Mod.Aqua.Core
                 return hook.IsRopeIntersectsWith(self);
             }
             return false;
+        }
+
+        public static IEnumerator UndraggableRoutine(this Entity self, Sprite sprite, Vector2 direction, float duration, float distance)
+        {
+            float elapsed = 0.0f;
+            Vector2 movement = direction * distance;
+            Vector2 oldRenderPos = sprite.RenderPosition;
+            while (elapsed < duration)
+            {
+                elapsed += Engine.DeltaTime;
+                float t = elapsed / duration;
+                t = MathF.Sqrt(t);
+                Vector2 offset = AquaMaths.Lerp(Vector2.Zero, movement, t);
+                sprite.RenderPosition = oldRenderPos + offset;
+                yield return null;
+            }
+
+            duration = 0.2f;
+            elapsed = 0.0f;
+            while (elapsed < duration)
+            {
+                elapsed += Engine.DeltaTime;
+                float t = elapsed / duration;
+                Vector2 offset = AquaMaths.Lerp(movement, Vector2.Zero, t);
+                sprite.RenderPosition = oldRenderPos + offset;
+                yield return null;
+            }
         }
     }
 }

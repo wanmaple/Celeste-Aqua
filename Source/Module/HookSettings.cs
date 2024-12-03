@@ -61,8 +61,8 @@ namespace Celeste.Mod.Aqua.Module
         [DefaultValue(325)]
         public int HookFlyTowardSpeed { get; set; }
 
-        [SettingRange(1, 20)]
-        [DefaultValue(10)]
+        [SettingRange(1, 10)]
+        [DefaultValue(5)]
         public int HookInertiaCoefficient { get; set; }
 
         [SettingRange(1, 5)]

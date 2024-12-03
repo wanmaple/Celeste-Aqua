@@ -115,6 +115,15 @@ namespace Celeste.Mod.Aqua.Core
             rope.SetLengthLocked(locked, playerPosition);
         }
 
+        public void AddLockedRopeLength(float diff)
+        {
+            if (_lengthLocked)
+            {
+                HookRope rope = Get<HookRope>();
+                rope.AddLockedLength(diff);
+            }
+        }
+
         public bool ReachLockedLength(Vector2 playerPosition)
         {
             HookRope rope = Get<HookRope>();

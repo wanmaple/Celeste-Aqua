@@ -283,6 +283,21 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 return true;
             }
+            else if (player.StateMachine.State == (int)AquaStates.StHanging && length < _lockLength)
+            {
+                float lengthDiff = length - _lockLength;
+                Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
+                Vector2 movement = ropeDirection * MathF.Ceiling(lengthDiff);
+                player.movementCounter = Vector2.Zero;
+                if (!AquaMaths.IsApproximateZero(movement.X))
+                {
+                    player.MoveH(movement.X);
+                }
+                if (!AquaMaths.IsApproximateZero(movement.Y))
+                {
+                    player.MoveV(movement.Y);
+                }
+            }
 
             return false;
         }
@@ -304,6 +319,11 @@ namespace Celeste.Mod.Aqua.Core
             {
                 _lockLength = MaxLength;
             }
+        }
+
+        public void AddLockedLength(float diff)
+        {
+            _lockLength = Calc.Clamp(_lockLength + diff, 4.0f, MaxLength);
         }
 
         public bool ReachLockedLength(Vector2 playerPosition)

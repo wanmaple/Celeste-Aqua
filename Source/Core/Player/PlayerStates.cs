@@ -357,12 +357,7 @@ namespace Celeste.Mod.Aqua.Core
                 if (Input.MoveY.Value != 0 && swingUp && speedAlongRope >= 0.0f)
                 {
                     float rollingSpeed = Input.MoveY.Value > 0 ? AquaModule.Settings.HookSettings.HookRollingSpeedDown : -AquaModule.Settings.HookSettings.HookRollingSpeedUp;
-                    _madelinesHook.SetRopeLengthLocked(false, self.Center);
-                    alongRopeSpeed = rollingSpeed * ropeDirection;
-                }
-                else
-                {
-                    _madelinesHook.SetRopeLengthLocked(true, self.Center);
+                    _madelinesHook.AddLockedRopeLength(rollingSpeed * dt);
                 }
                 if (Input.MoveX.Value != 0)
                 {
@@ -370,7 +365,6 @@ namespace Celeste.Mod.Aqua.Core
                     self.Speed += AquaModule.Settings.HookSettings.HookSwingStrength * swingDirection * Input.MoveX.Value * dt * sign;
                 }
             }
-            self.Speed += alongRopeSpeed;
 
             return (int)AquaStates.StHanging;
         }

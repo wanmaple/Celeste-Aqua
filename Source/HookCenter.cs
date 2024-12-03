@@ -19,6 +19,10 @@ namespace Celeste.Mod.Aqua
             SpringExtensions.Initialize();
             BumperExtensions.Initialize();
             BoosterExtensions.Initialize();
+            AngryOshiroExtensions.Initialize();
+            SeekerExtensions.Initialize();
+            PufferExtensions.Initialize();
+            FireBallExtensions.Initialize();
             CoreModeToggleExtensions.Initialize();
             PlayerSpriteExtensions.Initialize();
             PlayerStates.Initialize();
@@ -38,6 +42,10 @@ namespace Celeste.Mod.Aqua
             SpringExtensions.Uninitialize();
             BumperExtensions.Uninitialize();
             BoosterExtensions.Uninitialize();
+            AngryOshiroExtensions.Uninitialize();
+            SeekerExtensions.Uninitialize();
+            PufferExtensions.Uninitialize();
+            FireBallExtensions.Uninitialize();
             CoreModeToggleExtensions.Uninitialize();
             PlayerSpriteExtensions.Uninitialize();
             PlayerStates.Uninitialize();
