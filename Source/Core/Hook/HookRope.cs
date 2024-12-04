@@ -283,11 +283,11 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 return true;
             }
-            else if (player.StateMachine.State == (int)AquaStates.StHanging && length < _lockLength)
+            else if (player.StateMachine.State == (int)AquaStates.StHanging && length < _lockLength - 1.5f)
             {
                 float lengthDiff = length - _lockLength;
                 Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
-                Vector2 movement = ropeDirection * MathF.Ceiling(lengthDiff);
+                Vector2 movement = ropeDirection * -MathF.Ceiling(-lengthDiff);
                 player.movementCounter = Vector2.Zero;
                 if (!AquaMaths.IsApproximateZero(movement.X))
                 {

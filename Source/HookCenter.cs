@@ -23,6 +23,7 @@ namespace Celeste.Mod.Aqua
             SeekerExtensions.Initialize();
             PufferExtensions.Initialize();
             FireBallExtensions.Initialize();
+            CassetteBlockExtensions.Initialize();
             CoreModeToggleExtensions.Initialize();
             PlayerSpriteExtensions.Initialize();
             PlayerStates.Initialize();
@@ -46,6 +47,7 @@ namespace Celeste.Mod.Aqua
             SeekerExtensions.Uninitialize();
             PufferExtensions.Uninitialize();
             FireBallExtensions.Uninitialize();
+            CassetteBlockExtensions.Uninitialize();
             CoreModeToggleExtensions.Uninitialize();
             PlayerSpriteExtensions.Uninitialize();
             PlayerStates.Uninitialize();

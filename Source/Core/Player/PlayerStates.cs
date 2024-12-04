@@ -6,6 +6,7 @@ using MonoMod.Cil;
 using System;
 using MonoMod.Utils;
 using Celeste.Mod.Aqua.Debug;
+using Mono.Cecil;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -48,6 +49,7 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             IL.Celeste.Player.ctor += Player_ILConstruct;
+            IL.Celeste.Player.OnCollideV += Player_OnCollideV;
             On.Celeste.Player.ctor += Player_Construct;
             On.Celeste.Player.Added += Player_Added;
             On.Celeste.Player.Removed += Player_Removed;
@@ -71,6 +73,7 @@ namespace Celeste.Mod.Aqua.Core
         public static void Uninitialize()
         {
             IL.Celeste.Player.ctor -= Player_ILConstruct;
+            IL.Celeste.Player.OnCollideV -= Player_ILConstruct;
             On.Celeste.Player.ctor -= Player_Construct;
             On.Celeste.Player.Added -= Player_Added;
             On.Celeste.Player.Removed -= Player_Removed;
@@ -104,6 +107,23 @@ namespace Celeste.Mod.Aqua.Core
                 cursor.Index++;
                 cursor.EmitLdcI4((int)AquaStates.MaxStates - (int)AquaStates.StHanging);
                 cursor.EmitAdd();
+            }
+        }
+
+        private static void Player_OnCollideV(ILContext il)
+        {
+            ILCursor cursor = new ILCursor(il);
+            FieldReference field = null;
+            MethodReference method = null;
+            ILLabel label = null;
+            if (cursor.TryGotoNext(ins => ins.MatchLdfld(out field), ins => ins.MatchCallvirt(out method), ins => ins.MatchLdcI4(1), ins => ins.MatchBeq(out label)))
+            {
+                cursor.Index += 4;
+                cursor.EmitLdarg0();
+                cursor.EmitLdfld(field);
+                cursor.EmitCallvirt(method);
+                cursor.EmitLdcI4((int)AquaStates.StHanging);
+                cursor.EmitBeq(label);
             }
         }
 
@@ -437,6 +457,7 @@ namespace Celeste.Mod.Aqua.Core
             else
             {
                 self.Sprite.SetHookMode(true);
+                self.Sprite.Scale = Vector2.One;
                 int climbRopeDirection = DynamicData.For(self).Get<int>("climb_rope_direction");
                 if (DynamicData.For(self).Get<int>("previous_facing") == -(int)self.Facing)
                 {
