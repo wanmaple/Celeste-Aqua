@@ -72,22 +72,22 @@
       <Loop id="idle" path="bulb" delay="0.1" frames="0-11" />
     </PuzzleLight>
 
-    <RefillOne path="objects/refill_one/" start="idle">
+    <RefillOne path="objects/refill1/" start="idle">
       <Origin x="8" y="8" />
       <Loop id="idle" path="idle" delay="0.1" frames="0-4" />
     </RefillOne>
 
-    <RefillOneFlash path="objects/refill_one/" start="flash">
+    <RefillOneFlash path="objects/refill1/" start="flash">
       <Origin x="8" y="8" />
       <Anim id="flash" path="flash" delay="0.05" frames="0-5" />
     </RefillOneFlash>
 
-    <RefillTwo path="objects/refill_two/" start="idle">
+    <RefillTwo path="objects/refill2/" start="idle">
       <Origin x="8" y="8" />
       <Loop id="idle" path="idle" delay="0.1" frames="0-4" />
     </RefillTwo>
 
-    <RefillTwoFlash path="objects/refill_two/" start="flash">
+    <RefillTwoFlash path="objects/refill2/" start="flash">
       <Origin x="8" y="8" />
       <Anim id="flash" path="flash" delay="0.05" frames="0-5" />
     </RefillTwoFlash>

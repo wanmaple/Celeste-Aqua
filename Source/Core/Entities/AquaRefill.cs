@@ -23,12 +23,12 @@ namespace Celeste.Mod.Aqua.Core
                 string animID = string.Empty;
                 if (twoDashes)
                 {
-                    dir = "objects/refill_two/";
+                    dir = "objects/refill2/";
                     animID = "RefillTwo";
                 }
                 else
                 {
-                    dir = "objects/refill_one/";
+                    dir = "objects/refill1/";
                     animID = "RefillOne";
                 }
                 outline.Texture = GFX.Game[dir + "outline"];

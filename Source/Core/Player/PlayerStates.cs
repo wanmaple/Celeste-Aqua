@@ -5,8 +5,8 @@ using Monocle;
 using MonoMod.Cil;
 using System;
 using MonoMod.Utils;
-using Celeste.Mod.Aqua.Debug;
 using Mono.Cecil;
+using Celeste.Mod.Aqua.Debug;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -134,7 +134,9 @@ namespace Celeste.Mod.Aqua.Core
             self.StateMachine.SetCallbacks((int)AquaStates.StHanging, self.Player_HangingUpdate, null, self.Player_HangingBegin, self.Player_HangingEnd);
             self.StateMachine.SetStateName((int)AquaStates.StHanging, "Hanging");
             var climbJumpTicker = new TimeTicker(1.0f);
+            var hookBreakTicker = new TimeTicker(0.15f);
             DynamicData.For(self).Set("climb_jump_ticker", climbJumpTicker);
+            DynamicData.For(self).Set("hook_break_ticker", hookBreakTicker);
             DynamicData.For(self).Set("rope_is_loosen", true);
 #if DEBUG
             DynamicData.For(self).Set("tangent_speed", 0.0f);
@@ -360,15 +362,29 @@ namespace Celeste.Mod.Aqua.Core
 #endif
                 float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
                 _madelinesHook.AlongRopeSpeed = speedAlongRope;
+                TimeTicker breakTicker = DynamicData.For(self).Get<TimeTicker>("hook_break_ticker");
                 if (speedAlongRope >= 0.0f)
                 {
                     DynamicData.For(self).Set("rope_is_loosen", false);
+                    AquaDebugger.LogInfo("Speed Along {0}", speedAlongRope);
                     if (speedAlongRope > AquaModule.Settings.HookSettings.HookBreakSpeed)
                     {
-                        _madelinesHook.Revoke();
-                        return (int)AquaStates.StNormal;
+                        breakTicker.Tick(dt);
+                        if (!breakTicker.Check())
+                        {
+                            _madelinesHook.Revoke();
+                            return (int)AquaStates.StNormal;
+                        }
+                    }
+                    else
+                    {
+                        breakTicker.Reset();
                     }
                     self.Speed = TurnToTangentSpeed(self.Speed, swingDirection);
+                }
+                else
+                {
+                    breakTicker.Reset();
                 }
                 if (swingUp)
                 {
@@ -483,7 +499,9 @@ namespace Celeste.Mod.Aqua.Core
 
         private static Vector2 TurnToTangentSpeed(Vector2 speed, Vector2 swingDirection)
         {
-            return Vector2.Dot(speed, swingDirection) * swingDirection;
+            float lineSpeed = Vector2.Dot(speed, swingDirection);
+            lineSpeed = Calc.Clamp(lineSpeed, -AquaModule.Settings.HookSettings.HookMaxLineSpeed, AquaModule.Settings.HookSettings.HookMaxLineSpeed);
+            return lineSpeed * swingDirection;
         }
 
         private static void FlyTowardHook(Player player)
@@ -560,15 +578,28 @@ namespace Celeste.Mod.Aqua.Core
 #endif
                         float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
                         _madelinesHook.AlongRopeSpeed = speedAlongRope;
+                        TimeTicker breakTicker = DynamicData.For(self).Get<TimeTicker>("hook_break_ticker");
                         if (speedAlongRope >= 0.0f)
                         {
                             DynamicData.For(self).Set("rope_is_loosen", false);
                             if (speedAlongRope > AquaModule.Settings.HookSettings.HookBreakSpeed)
                             {
-                                _madelinesHook.Revoke();
-                                return -1;
+                                breakTicker.Tick(dt);
+                                if (!breakTicker.Check())
+                                {
+                                    _madelinesHook.Revoke();
+                                    return (int)AquaStates.StNormal;
+                                }
+                            }
+                            else
+                            {
+                                breakTicker.Reset();
                             }
                             self.Speed = TurnToTangentSpeed(self.Speed, swingDirection);
+                        }
+                        else
+                        {
+                            breakTicker.Reset();
                         }
                     }
                     else
@@ -659,8 +690,5 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         private static GrapplingHook _madelinesHook;
-#if DEBUG
-        private static ConditionTrigger _cond = new ConditionTrigger();
-#endif
     }
 }

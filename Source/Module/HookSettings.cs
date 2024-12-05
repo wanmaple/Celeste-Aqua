@@ -14,8 +14,8 @@ namespace Celeste.Mod.Aqua.Module
         [DefaultValue(80)]
         public int HookLength { get; set; }  // 钩绳的最大长度
 
-        [SettingRange(200, 300, true)]
-        [DefaultValue(235)]
+        [SettingRange(40, 100, true)]
+        [DefaultValue(80)]
         public int HookBreakSpeed { get; set; } // 钩绳能承受的最大速度
 
         [SettingRange(400, 800, true)]
@@ -34,13 +34,17 @@ namespace Celeste.Mod.Aqua.Module
         [DefaultValue(60)]
         public int HookSwingStrength { get; set; }    // 摆荡力度
 
+        [SettingRange(400, 600)]
+        [DefaultValue(450)]
+        public int HookMaxLineSpeed { get; set; }   // 最大线速度
+
         [SettingRange(0, 50)]
         [DefaultValue(0)]
-        public int HookJumpXPercent { get; set; } // 钩爪抓取跳跃X方向的速度倍率
+        public int HookJumpXPercent { get; set; } // 钩爪抓取跳跃X方向的额外速度倍率
 
         [SettingRange(100, 150)]
         [DefaultValue(100)]
-        public int HookJumpYPercent { get; set; } // 钩爪抓取跳跃Y方向的速度倍率
+        public int HookJumpYPercent { get; set; } // 钩爪抓取跳跃Y方向的额外速度倍率
 
         [SettingRange(0, 10)]
         [DefaultValue(5)]
@@ -66,7 +70,7 @@ namespace Celeste.Mod.Aqua.Module
         public int HookInertiaCoefficient { get; set; }
 
         [SettingRange(1, 5)]
-        [DefaultValue(2)]
+        [DefaultValue(3)]
         public int HookWindCoefficient { get; set; }
 
         //[SettingRange(800, 1200, true)]
@@ -76,14 +80,6 @@ namespace Celeste.Mod.Aqua.Module
         //[SettingRange(100, 200, true)]
         [DefaultValue(150)]
         public int HookBounceSpeedAddition { get; set; }
-
-        //[SettingRange(5, 30)]
-        [DefaultValue(15)]
-        public int HookBounceJumpCoefficient { get; set; }
-
-        //[SettingRange(20, 40)]
-        [DefaultValue(30)]
-        public int HookBounceMoveCoefficient { get; set; }
 
         public HookSettings()
         {
