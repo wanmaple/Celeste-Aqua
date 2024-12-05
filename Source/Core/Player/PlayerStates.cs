@@ -366,7 +366,6 @@ namespace Celeste.Mod.Aqua.Core
                 if (speedAlongRope >= 0.0f)
                 {
                     DynamicData.For(self).Set("rope_is_loosen", false);
-                    AquaDebugger.LogInfo("Speed Along {0}", speedAlongRope);
                     if (speedAlongRope > AquaModule.Settings.HookSettings.HookBreakSpeed)
                     {
                         breakTicker.Tick(dt);

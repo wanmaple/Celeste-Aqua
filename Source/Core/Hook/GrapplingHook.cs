@@ -4,6 +4,8 @@ using Monocle;
 using System;
 using System.Collections.Generic;
 using Celeste.Mod.Aqua.Module;
+using System.Security.Principal;
+using Celeste.Mod.Aqua.Debug;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -359,6 +361,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 rope.HookAttachEntity(hitEntity);
                 hitEntity.SetHookAttached(true);
+                PlaySound(hitEntity);
                 _hitUnhookable = false;
             }
             else
@@ -531,6 +534,46 @@ namespace Celeste.Mod.Aqua.Core
             Position = position;
             return _hitInteractable;
         }
+
+        private void PlaySound(Entity entity)
+        {
+            int index = 0;
+            if (entity is SolidTiles tiles)
+            {
+                index = FindHookingIndexOfSolidTiles(tiles);
+            }
+            else if (entity is Platform platform)
+            {
+                index = platform.GetLandSoundIndex(this);
+            }
+            Audio.Play(SurfaceIndex.GetPathFromIndex(index) + "/hooking", "surface_index", index);
+            AquaDebugger.LogInfo("Play Sound {0}", index);
+        }
+
+        private int FindHookingIndexOfSolidTiles(SolidTiles tiles)
+        {
+            float halfSize = MathF.Ceiling(HookSize * 0.5f + 0.5f);
+            foreach (var dir in EIGHT_DIRECTIONS)
+            {
+                Vector2 pos = Center + dir * halfSize;
+                int idx = tiles.SurfaceSoundIndexAt(pos);
+                if (idx >= 0)
+                    return idx;
+            }
+            return -1;
+        }
+
+        private static readonly Vector2[] EIGHT_DIRECTIONS = new Vector2[]
+        {
+            Vector2.UnitY,
+            -Vector2.UnitY,
+            Vector2.UnitX,
+            -Vector2.UnitX,
+            new Vector2(-1.0f, -1.0f),
+            new Vector2(-1.0f, 1.0f),
+            new Vector2(1.0f, -1.0f),
+            Vector2.One,
+        };
 
         private Vector2 _movementCounter = Vector2.Zero;
         private Vector2 _playerPrevPosition;    // Player的PreviousPosition貌似在相对速度为0的情况下和当前Position相同
