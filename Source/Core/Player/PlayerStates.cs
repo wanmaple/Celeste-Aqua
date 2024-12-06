@@ -62,6 +62,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.SummitLaunchBegin += Player_SummitLaunchBegin;
             On.Celeste.Player.StarFlyBegin += Player_StarFlyBegin;
             On.Celeste.Player.FlingBirdBegin += Player_FlingBirdBegin;
+            On.Celeste.Player.CassetteFlyBegin += Player_CassetteFlyBegin;
             On.Celeste.Player.PickupCoroutine += Player_PickupCoroutine;
             On.Celeste.Player.Update += Player_Update;
             On.Celeste.Player.ClimbJump += Player_ClimbJump;
@@ -86,6 +87,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.SummitLaunchBegin -= Player_SummitLaunchBegin;
             On.Celeste.Player.StarFlyBegin -= Player_StarFlyBegin;
             On.Celeste.Player.FlingBirdBegin -= Player_FlingBirdBegin;
+            On.Celeste.Player.CassetteFlyBegin -= Player_CassetteFlyBegin;
             On.Celeste.Player.PickupCoroutine -= Player_PickupCoroutine;
             On.Celeste.Player.Update -= Player_Update;
             On.Celeste.Player.ClimbJump -= Player_ClimbJump;
@@ -157,6 +159,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 scene.Remove(_madelinesHook);
             }
+
             orig(self, scene);
         }
 
@@ -200,6 +203,17 @@ namespace Celeste.Mod.Aqua.Core
             orig(self);
         }
 
+        private static void Player_CassetteFlyBegin(On.Celeste.Player.orig_CassetteFlyBegin orig, Player self)
+        {
+            if (_madelinesHook.Active && _madelinesHook.State != GrapplingHook.HookStates.Revoking)
+            {
+                _madelinesHook.Revoke();
+            }
+
+            self.Sprite.SetHookMode(false);
+            orig(self);
+        }
+
         private static System.Collections.IEnumerator Player_PickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self)
         {
             if (_madelinesHook.Active && _madelinesHook.State != GrapplingHook.HookStates.Revoking)
@@ -217,6 +231,7 @@ namespace Celeste.Mod.Aqua.Core
                 _madelinesHook.Revoke();
             }
 
+            self.Sprite.SetHookMode(false);
             orig(self);
         }
 
@@ -227,6 +242,7 @@ namespace Celeste.Mod.Aqua.Core
                 _madelinesHook.Revoke();
             }
 
+            self.Sprite.SetHookMode(false);
             orig(self);
         }
 
@@ -414,7 +430,11 @@ namespace Celeste.Mod.Aqua.Core
 
             orig(self);
 
-            if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
+            if (_madelinesHook.Active && _madelinesHook.Revoked)
+            {
+                self.Scene.Remove(_madelinesHook);
+            }
+            else if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
             {
                 if (_madelinesHook.EnforcePlayer(self, new Segment(_madelinesHook.PlayerPreviousPosition, self.Center), Engine.DeltaTime))
                 {
@@ -528,11 +548,6 @@ namespace Celeste.Mod.Aqua.Core
                 self.CalculateEmitParameters(ref direction, ref emitSpeed);
                 _madelinesHook.Emit(direction, emitSpeed);
                 self.Scene.Add(_madelinesHook);
-                return -1;
-            }
-            else if (_madelinesHook.Active && _madelinesHook.Revoked)
-            {
-                self.Scene.Remove(_madelinesHook);
                 return -1;
             }
 

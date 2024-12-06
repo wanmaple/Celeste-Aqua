@@ -558,6 +558,8 @@ namespace Celeste.Mod.Aqua.Core
             {
                 Vector2 tl = new Vector2(box.AbsoluteLeft, box.AbsoluteTop);
                 Vector2 tr = new Vector2(box.AbsoluteRight, box.AbsoluteTop);
+                if (prevPivot.point.X >= tl.X && prevPivot.point.X <= tr.X)
+                    return;
                 Vector2 alongJump = tr - tl;
                 float crossJump = AquaMaths.Cross(alongJump, curRopeSeg.Vector);
                 if (MathF.Sign(crossJump) < 0)
