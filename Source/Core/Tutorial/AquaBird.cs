@@ -242,6 +242,8 @@ namespace Celeste.Mod.Aqua.Core
                 yield return Caw();
             }
 
+            if (this.gui != null)
+                this.gui.Open = false;
             this.gui = gui;
             gui.Open = true;
             Scene.Add(gui);
