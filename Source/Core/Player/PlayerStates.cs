@@ -369,7 +369,7 @@ namespace Celeste.Mod.Aqua.Core
                     if (speedAlongRope > AquaModule.Settings.HookSettings.HookBreakSpeed)
                     {
                         breakTicker.Tick(dt);
-                        if (!breakTicker.Check())
+                        if (breakTicker.Check())
                         {
                             _madelinesHook.Revoke();
                             return (int)AquaStates.StNormal;
@@ -584,7 +584,7 @@ namespace Celeste.Mod.Aqua.Core
                             if (speedAlongRope > AquaModule.Settings.HookSettings.HookBreakSpeed)
                             {
                                 breakTicker.Tick(dt);
-                                if (!breakTicker.Check())
+                                if (breakTicker.Check())
                                 {
                                     _madelinesHook.Revoke();
                                     return (int)AquaStates.StNormal;
@@ -637,7 +637,7 @@ namespace Celeste.Mod.Aqua.Core
             if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
             {
                 TimeTicker climbJumpTicker = DynamicData.For(self).Get<TimeTicker>("climb_jump_ticker");
-                if (!self.onGround && !climbJumpTicker.Check() && Input.GrabCheck)
+                if (!self.onGround && climbJumpTicker.Check() && Input.GrabCheck)
                 {
                     return (int)AquaStates.StHanging;
                 }

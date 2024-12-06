@@ -10,7 +10,6 @@ namespace Celeste.Mod.Aqua
             LevelLoaderExtensions.Initialize();
             EntityExtensions.Initialize();
             PlatformExtensions.Initialize();
-            SolidExtensions.Initialize();
             FallingBlockExtensions.Initialize();
             ZipMoverExtensions.Initialize();
             CrumblePlatformExtensions.Initialize();
@@ -34,7 +33,6 @@ namespace Celeste.Mod.Aqua
             LevelLoaderExtensions.Uninitialize();
             EntityExtensions.Uninitialize();
             PlatformExtensions.Uninitialize();
-            SolidExtensions.Uninitialize();
             FallingBlockExtensions.Uninitialize();
             ZipMoverExtensions.Uninitialize();
             CrumblePlatformExtensions.Uninitialize();

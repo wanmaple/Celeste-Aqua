@@ -390,7 +390,7 @@ namespace Celeste.Mod.Aqua.Core
             for (int i = 0; i < _pivots.Count;)
             {
                 RopePivot pivot = _pivots[i];
-                Solid solid = pivot.entity as Solid;
+                Platform solid = pivot.entity as Platform;
                 if (solid != null)
                 {
                     if (i != 0 && (solid.Collider == null || !solid.Collidable))

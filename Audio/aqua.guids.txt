@@ -78,6 +78,7 @@
 {8aa6ab7b-3104-4a06-8e7e-b1141ac0d23d} event:/char/madeline/grab
 {0e0bb484-9840-47f8-a697-773134e4bedb} event:/char/madeline/grab_letgo
 {7f8c23d1-bd9d-4a10-b8af-fd4a5cb12244} event:/char/madeline/handhold
+{4f15cb10-6104-4477-a91a-5e56c0f103c1} event:/char/madeline/hooking
 {421fe5d0-9d4b-40a5-ab8e-23b1ec4bf1b3} event:/char/madeline/idle_crackknuckles
 {852ea39f-c182-4385-9aa3-1d95cb02040b} event:/char/madeline/idle_scratch
 {ae4aea88-f499-49e8-9536-78c4bad21743} event:/char/madeline/idle_sneeze
@@ -109,7 +110,7 @@
 {5cf06f89-cf18-4dfa-bc69-5e4b58095cf3} event:/char/madeline/water_move_general
 {7d656ffa-050f-4cab-bbc9-03863fa14e4f} event:/char/madeline/water_move_shallow
 {3b90c629-7dcf-467b-a438-75e3287c8ae5} event:/char/madeline/water_out
-{4f15cb10-6104-4477-a91a-5e56c0f103c1} event:/char/madeline/hooking
+{20d12a73-caa3-4d81-810f-4cfc8a5fad28} event:/char/madeline/hook_fixing
 {e1fec409-ace5-4006-8b7c-ccf9fbf1ac59} event:/char/oshiro/boss_charge
 {05362357-0f1e-4f89-9d04-8a2778451a6c} event:/char/oshiro/boss_enter_screen
 {f5fc7368-4f02-4479-a805-0efdff3633f6} event:/char/oshiro/boss_precharge
@@ -993,10 +994,10 @@
 {641d4a72-8e6e-41a8-8f3d-b28219bd4cd7} snapshot:/berry_cooperation/3000s_down
 {365efe2d-29e7-4d45-988e-451406863f9a} snapshot:/berry_cooperation/4000s_down
 {1aa61ee8-68fc-4c62-9a54-35743044bafe} snapshot:/berry_cooperation/5000s_down
+{a2a1b010-531b-4f2c-b4bc-1804ef1359a9} bank:/aqua
 {a327f717-e8b5-4fb0-b4dd-84bd8a585fe0} bank:/dlc_music
 {e85b3c9e-428d-41b7-82c0-37814f3cbf15} bank:/dlc_sfx
 {7916fdbf-1253-451d-a369-6dfd34341e4e} bank:/music
 {98263171-3ea2-482b-abb7-9af01e4c002a} bank:/sfx
 {f0efde81-92ec-4f1a-8b48-815f4d8a3255} bank:/ui
 {f42d1384-f9ea-4ba4-9e08-a4d067c55b3b} bank:/Master Bank
-{a2a1b010-531b-4f2c-b4bc-1804ef1359a9} bank:/aqua

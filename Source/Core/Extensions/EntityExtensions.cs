@@ -12,11 +12,15 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             On.Monocle.Entity.ctor_Vector2 += Entity_Construct;
+            On.Monocle.Entity.Awake += Entity_Awake;
+            On.Monocle.Entity.Update += Entity_Update;
         }
 
         public static void Uninitialize()
         {
             On.Monocle.Entity.ctor_Vector2 -= Entity_Construct;
+            On.Monocle.Entity.Awake -= Entity_Awake;
+            On.Monocle.Entity.Update -= Entity_Update;
         }
 
         private static void Entity_Construct(On.Monocle.Entity.orig_ctor_Vector2 orig, Entity self, Vector2 position)
@@ -24,6 +28,23 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, position);
             self.SetHookable(false);
             self.SetHookAttached(false);
+        }
+
+        private static void Entity_Awake(On.Monocle.Entity.orig_Awake orig, Entity self, Scene scene)
+        {
+            orig(self, scene);
+            DynamicData.For(self).Set("prev_position", self.Position);
+        }
+
+        private static void Entity_Update(On.Monocle.Entity.orig_Update orig, Entity self)
+        {
+            DynamicData.For(self).Set("prev_position", self.Position);
+            orig(self);
+        }
+
+        public static Vector2 GetPreviousPosition(this Entity self)
+        {
+            return DynamicData.For(self).Get<Vector2>("prev_position");
         }
 
         public static bool IsHookable(this Entity self)

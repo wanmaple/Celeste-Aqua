@@ -82,6 +82,7 @@ namespace Celeste.Mod.Aqua.Core
             _fixElapsed = _elapsed;
 
             _sprite.Play(HookSprite.Hit, true);
+            _fixTimer.Reset();
         }
 
         public bool Bounce(Vector2 axis, float speed)
@@ -325,6 +326,12 @@ namespace Celeste.Mod.Aqua.Core
                         rope.CheckCollision(playerSeg);
                         Velocity = Position - prevPosition;
                         rope.UpdateCurrentDirection();
+                        _fixTimer.Tick(dt);
+                        if (_fixTimer.Check())
+                        {
+                            Audio.Play("event:/char/madeline/hook_fixing", Position);
+                            _fixTimer.Expire();
+                        }
                         break;
                     default:
                         break;
@@ -361,7 +368,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 rope.HookAttachEntity(hitEntity);
                 hitEntity.SetHookAttached(true);
-                PlaySound(hitEntity);
+                PlayHitSound(hitEntity);
                 _hitUnhookable = false;
             }
             else
@@ -535,7 +542,7 @@ namespace Celeste.Mod.Aqua.Core
             return _hitInteractable;
         }
 
-        private void PlaySound(Entity entity)
+        private void PlayHitSound(Entity entity)
         {
             int index = 0;
             if (entity is SolidTiles tiles)
@@ -546,7 +553,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 index = platform.GetLandSoundIndex(this);
             }
-            Audio.Play(SurfaceIndex.GetPathFromIndex(index) + "/hooking", "surface_index", index);
+            Audio.Play(SurfaceIndex.GetPathFromIndex(index) + "/hooking", Position, "surface_index", index);
             AquaDebugger.LogInfo("Play Sound {0}", index);
         }
 
@@ -583,6 +590,7 @@ namespace Celeste.Mod.Aqua.Core
         private float _fixElapsed;
         private bool _hitUnhookable = false;
         private bool _hitInteractable = false;
+        private TimeTicker _fixTimer = new TimeTicker(0.08f);
 
         private HookSprite _sprite;
     }
