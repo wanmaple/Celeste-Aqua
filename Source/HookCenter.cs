@@ -24,6 +24,7 @@ namespace Celeste.Mod.Aqua
             FireBallExtensions.Initialize();
             CassetteBlockExtensions.Initialize();
             CoreModeToggleExtensions.Initialize();
+            HeartGemExtensions.Initialize();
             PlayerSpriteExtensions.Initialize();
             PlayerStates.Initialize();
         }
@@ -47,6 +48,7 @@ namespace Celeste.Mod.Aqua
             FireBallExtensions.Uninitialize();
             CassetteBlockExtensions.Uninitialize();
             CoreModeToggleExtensions.Uninitialize();
+            HeartGemExtensions.Uninitialize();
             PlayerSpriteExtensions.Uninitialize();
             PlayerStates.Uninitialize();
         }

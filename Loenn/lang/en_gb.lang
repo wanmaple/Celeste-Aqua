@@ -25,11 +25,11 @@ entities.Aqua/Puzzle Light.attributes.description.on=Whether the light is defaul
 entities.Aqua/Puzzle Light.attributes.description.color=The color of the light.
 
 # Unidirectional Dash Block
-entities.Aqua/Puzzle Light.attributes.description.tiletype=Determines the visual apperance of the wall.
-entities.Aqua/Puzzle Light.attributes.description.blendin=Blend the block with the walls it touches, making it less apparent.
-entities.Aqua/Puzzle Light.attributes.description.canDash=Whether the player can break the wall by dashing into it.
-entities.Aqua/Puzzle Light.attributes.description.permanent=Once broken, the block will remain that way, even the player dies.
-entities.Aqua/Puzzle Light.attributes.description.direction=Indicates the dashing direction which will break the wall, use All/Left/Right/Up/Down.
+entities.Aqua/Unidirectional Dash Block.attributes.description.tiletype=Determines the visual apperance of the wall.
+entities.Aqua/Unidirectional Dash Block.attributes.description.blendin=Blend the block with the walls it touches, making it less apparent.
+entities.Aqua/Unidirectional Dash Block.attributes.description.canDash=Whether the player can break the wall by dashing into it.
+entities.Aqua/Unidirectional Dash Block.attributes.description.permanent=Once broken, the block will remain that way, even the player dies.
+entities.Aqua/Unidirectional Dash Block.attributes.description.direction=Indicates the dashing direction which will break the wall, use All/Left/Right/Up/Down.
 
 # Freeze Listener
 entities.Aqua/Freeze Listener.attributes.description.inputs=The inputs to listen when frozen. (Up/Down/Left/Right/UpLeft/UpRight/DownLeft/DownRight/Jump/Grab/Dash/mod:MOD_NAME/BINDING_NAME)
@@ -52,6 +52,16 @@ entities.Aqua/Custom NPC.attributes.description.approachDistance=How far away fr
 entities.Aqua/Custom NPC.attributes.description.sprite=Editor sprite to use.
 entities.Aqua/Custom NPC.attributes.description.spriteName=Runtime sprite to use.
 entities.Aqua/Custom NPC.attributes.description.animationName=Runtime animation to play.
+
+# Trap Button
+entities.Aqua/Trap Button.attributes.description.group=Used by Trap Gate, the gate will open while all buttons with the same group of gate are pressed.
+entities.Aqua/Trap Button.attributes.description.color=Button color.
+entities.Aqua/Trap Button.attributes.description.direction=Button direction (Up/Down/Left/Right).
+
+# Trap Gate
+entities.Aqua/Trap Gate.attributes.description.sprite=Gate style.
+entities.Aqua/Trap Gate.attributes.description.group=The gate will open if all Trap Buttons with the same group are pressed.
+entities.Aqua/Trap Gate.attributes.description.color=Gate color.
 
 # Aqua Bird Trigger
 triggers.Aqua/Aqua Bird Trigger.attributes.description.birdId=Identifier of the bird.

@@ -40,6 +40,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Awake(Scene scene)
         {
+            base.Awake(scene);
             if (!string.IsNullOrEmpty(PuzzleID))
             {
                 List<Entity> puzzleCenters = scene.Tracker.GetEntities<PuzzleEntity>();
@@ -53,6 +54,12 @@ namespace Celeste.Mod.Aqua.Core
                     }
                 }
             }
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            _imgLit.Visible = SwitchOn;
         }
 
         private void OnPlayerIn(Player player)

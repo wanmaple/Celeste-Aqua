@@ -7,6 +7,7 @@ using System;
 using MonoMod.Utils;
 using Mono.Cecil;
 using Celeste.Mod.Aqua.Debug;
+using System.IO.Pipes;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -351,7 +352,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 return (int)AquaStates.StClimb;
             }
-            else if (Input.Jump.Pressed)
+            else if (swingUp && Input.Jump.Pressed)
             {
                 _madelinesHook.Revoke();
                 self.LiftSpeed = self.Speed * new Vector2(AquaModule.Settings.HookSettings.HookJumpXPercent / 100.0f, AquaModule.Settings.HookSettings.HookJumpYPercent / 100.0f);
@@ -382,6 +383,15 @@ namespace Celeste.Mod.Aqua.Core
                 if (speedAlongRope >= 0.0f)
                 {
                     DynamicData.For(self).Set("rope_is_loosen", false);
+                    if (Input.Jump.Pressed)
+                    {
+                        _madelinesHook.Revoke();
+                        self.LiftSpeed = self.Speed * new Vector2(AquaModule.Settings.HookSettings.HookJumpXPercent / 100.0f, AquaModule.Settings.HookSettings.HookJumpYPercent / 100.0f);
+                        self.Jump(false);
+                        float staminaCost = AquaModule.Settings.HookSettings.HookJumpStaminaCost * dt;
+                        self.Stamina = MathF.Max(0.0f, self.Stamina - staminaCost);
+                        return (int)AquaStates.StNormal;
+                    }
                     if (speedAlongRope > AquaModule.Settings.HookSettings.HookBreakSpeed)
                     {
                         breakTicker.Tick(dt);
@@ -400,6 +410,10 @@ namespace Celeste.Mod.Aqua.Core
                 else
                 {
                     breakTicker.Reset();
+                    if (!swingUp)
+                    {
+                        return (int)AquaStates.StNormal;
+                    }
                 }
                 if (swingUp)
                 {
@@ -654,7 +668,17 @@ namespace Celeste.Mod.Aqua.Core
                 TimeTicker climbJumpTicker = DynamicData.For(self).Get<TimeTicker>("climb_jump_ticker");
                 if (!self.onGround && climbJumpTicker.Check() && Input.GrabCheck)
                 {
-                    return (int)AquaStates.StHanging;
+                    Vector2 ropeDirection = _madelinesHook.RopeDirection;
+                    bool swingUp = AquaMaths.Cross(Vector2.UnitX, ropeDirection) >= 0.0f;
+                    if (swingUp)
+                    {
+                        return (int)AquaStates.StHanging;
+                    }
+                    float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
+                    if (speedAlongRope >= 0.0f)
+                    {
+                        return (int)AquaStates.StHanging;
+                    }
                 }
                 if (!self.onGround && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
                 {

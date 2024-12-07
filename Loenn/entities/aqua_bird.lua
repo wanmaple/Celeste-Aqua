@@ -26,7 +26,7 @@ AquaBird.placements = {
 }
 
 function AquaBird.scale(room, entity)
-    return AquaBird.placements.data.faceLeft and -1 or 1, 1
+    return (entity.faceLeft and -1 or 1), 1
 end
 
 return AquaBird
