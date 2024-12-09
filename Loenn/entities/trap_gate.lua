@@ -24,6 +24,9 @@ TrapGate.fieldInformation = {
     sprite = {
         options = textureOptions
     },
+    group = {
+        fieldType = "integer",
+    },
     color = {
         fieldType = "color",
         useAlpha = false,
@@ -39,6 +42,7 @@ for i, texture in ipairs(textures) do
             height = 16,
             sprite = texture,
             group = 0,
+            close_time = 1.0,
             color = "ff0000",
         }
     }

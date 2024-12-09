@@ -4,7 +4,7 @@ using Monocle;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Aqua Spring")]
-    [Tracked(true)]
+    [Tracked(false)]
     public class AquaSpring : Entity
     {
     }

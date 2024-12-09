@@ -12,12 +12,18 @@ namespace Celeste.Mod.Aqua.Core
     [Tracked(false)]
     public class TrapGate : Solid
     {
+        public static ParticleType P_Behind;
+        public static ParticleType P_Dust;
+
         public int Group { get; private set; }
+        public float CloseTime { get; private set; }
         public IList<TrapButton> RelatedButtons { get; private set; } = new List<TrapButton>(4);
 
         public TrapGate(EntityData data, Vector2 offset)
             : base(data.Position + offset, data.Width, data.Height, true)
         {
+            Group = data.Int("group");
+            CloseTime = MathF.Max(data.Float("close_time"), 0.5f);
             _openPosition = data.Nodes[0] + offset;
             _closePosition = Position;
             Add(_icon = new Sprite(GFX.Game, "objects/switchgate/icon"));
@@ -43,30 +49,19 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
             Add(new LightOcclude(0.5f));
+        }
 
-            if (P_Behind == null)
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+
+            List<Entity> buttons = scene.Tracker.GetEntities<TrapButton>();
+            foreach (TrapButton btn in buttons)
             {
-                P_Behind = new ParticleType
+                if (!RelatedButtons.Contains(btn))
                 {
-                    Color = Calc.HexToColor("ffeb6b"),
-                    Color2 = Calc.HexToColor("d39332"),
-                    ColorMode = ParticleType.ColorModes.Blink,
-                    FadeMode = ParticleType.FadeModes.Late,
-                    LifeMin = 1f,
-                    LifeMax = 1.5f,
-                    Size = 1f,
-                    SpeedMin = 5f,
-                    SpeedMax = 10f,
-                    Acceleration = new Vector2(0f, 6f),
-                    DirectionRange = MathF.PI * 2f
-                };
-                P_Dust = new ParticleType(ParticleTypes.Dust)
-                {
-                    LifeMin = 0.5f,
-                    LifeMax = 1f,
-                    SpeedMin = 2f,
-                    SpeedMax = 4f
-                };
+                    RelatedButtons.Add(btn);
+                }
             }
         }
 
@@ -253,7 +248,7 @@ namespace Celeste.Mod.Aqua.Core
             //StartShaking(0.5f);
             _icon.Rate = 1.0f;
             int particleAt = 0;
-            float duration = (position - start).Length() / (position - _openPosition).Length() * 1.0f;
+            float duration = (position - start).Length() / (position - _openPosition).Length() * CloseTime;
             _tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeOut, duration, true);
             _tween.OnUpdate = delegate (Tween t)
             {
@@ -388,8 +383,5 @@ namespace Celeste.Mod.Aqua.Core
         private bool _on;
         private Coroutine _anim;
         private Tween _tween;
-
-        private static ParticleType P_Behind;
-        private static ParticleType P_Dust;
     }
 }

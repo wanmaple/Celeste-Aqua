@@ -13,7 +13,7 @@ using System.Runtime.CompilerServices;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Aqua Bird")]
-    [Tracked(true)]
+    [Tracked(false)]
     public class AquaBird : BirdNPC
     {
         public string BirdID { get; set; }

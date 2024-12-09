@@ -61,7 +61,22 @@ entities.Aqua/Trap Button.attributes.description.direction=Button direction (Up/
 # Trap Gate
 entities.Aqua/Trap Gate.attributes.description.sprite=Gate style.
 entities.Aqua/Trap Gate.attributes.description.group=The gate will open if all Trap Buttons with the same group are pressed.
+entities.Aqua/Trap Gate.attributes.description.close_time=How much time it takes to close.
 entities.Aqua/Trap Gate.attributes.description.color=Gate color.
+
+# Rod Zip Mover
+entities.Aqua/Rod Zip Mover.attributes.description.theme=The visual theme of the zip mover.
+entities.Aqua/Rod Zip Mover.attributes.description.group=Only Tie Rods with the same group can control.
+entities.Aqua/Rod Zip Mover.attributes.description.duration=How much time it takes to reach the other side.
+
+# Rod Move Block
+entities.Aqua/Rod Move Block.attributes.description.canSteer=Determines whether the move block can be moved by the player.
+entities.Aqua/Rod Move Block.attributes.description.direction=Determines the direction the move block moves in upon activation.
+entities.Aqua/Rod Move Block.attributes.description.group=Only Tie Rods with the same group can control.
+entities.Aqua/Rod Move Block.attributes.description.speed=Move speed of block.
+
+# Tie Rod
+entities.Aqua/Tie Rod.attributes.description.group=Which group of entities to control.
 
 # Aqua Bird Trigger
 triggers.Aqua/Aqua Bird Trigger.attributes.description.birdId=Identifier of the bird.

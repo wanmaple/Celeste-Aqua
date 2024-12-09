@@ -8,6 +8,7 @@ namespace Celeste.Mod.Aqua
         public void Hook()
         {
             LevelLoaderExtensions.Initialize();
+            ParticleTypesExtensions.Initialize();
             EntityExtensions.Initialize();
             PlatformExtensions.Initialize();
             FallingBlockExtensions.Initialize();
@@ -32,6 +33,7 @@ namespace Celeste.Mod.Aqua
         public void Unhook()
         {
             LevelLoaderExtensions.Uninitialize();
+            ParticleTypesExtensions.Uninitialize();
             EntityExtensions.Uninitialize();
             PlatformExtensions.Uninitialize();
             FallingBlockExtensions.Uninitialize();

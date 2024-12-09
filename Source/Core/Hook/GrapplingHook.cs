@@ -9,7 +9,7 @@ using Celeste.Mod.Aqua.Debug;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    [Tracked(true)]
+    [Tracked(false)]
     public class GrapplingHook : Entity
     {
         public enum HookStates : byte
@@ -146,7 +146,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public bool CanFlyToward()
         {
-            float range = AquaModule.Settings.HookSettings.HookFlyTowardDuration;
+            float range = AquaModule.Settings.HookSettings.FlyTowardDuration;
             if (JustFixed)
             {
                 if (_elapsed - _lastEmitElapsed <= range)

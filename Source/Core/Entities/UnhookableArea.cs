@@ -5,7 +5,7 @@ using Monocle;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Unhookable Area")]
-    [Tracked(true)]
+    [Tracked(false)]
     public class UnhookableArea : Entity
     {
         public UnhookableArea(EntityData data, Vector2 offset)

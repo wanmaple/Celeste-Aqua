@@ -10,6 +10,7 @@ using System.Linq;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Aqua City Satellite")]
+    [Tracked(false)]
     public class AquaCitySatellite : PuzzleEntity
     {
         public AquaCitySatellite(EntityData data, Vector2 offset)
@@ -60,6 +61,16 @@ namespace Celeste.Mod.Aqua.Core
             {
                 HeartGem entity = new HeartGem(BonusPosition);
                 scene.Add(entity);
+            }
+        }
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            List<Entity> lights = scene.Tracker.GetEntities<PuzzleLight>();
+            foreach (PuzzleLight light in lights)
+            {
+                RelatedLights.Add(light);
             }
         }
 
@@ -122,7 +133,8 @@ namespace Celeste.Mod.Aqua.Core
             Tag = Tags.FrozenUpdate;
             yield return 0.25f;
 
-            HeartGem gem = new HeartGem(BonusPosition)
+            Vector2 screenCenter = Position + _computerScreen.Position + new Vector2(_computerScreen.Width * 0.5f, _computerScreen.Height * 0.5f);
+            HeartGem gem = new HeartGem(screenCenter)
             {
                 Tag = Tags.FrozenUpdate
             };
@@ -132,7 +144,7 @@ namespace Celeste.Mod.Aqua.Core
             gem.ScaleWiggler.Start();
             yield return 0.85f;
 
-            SimpleCurve curve = new SimpleCurve(gem.Position, BonusPosition, (gem.Position + BonusPosition) / 2f + new Vector2(0f, -64f));
+            SimpleCurve curve = new SimpleCurve(screenCenter, BonusPosition, (gem.Position + BonusPosition) / 2f + new Vector2(0f, -64f));
             for (float t = 0f; t < 1f; t += Engine.DeltaTime)
             {
                 yield return null;

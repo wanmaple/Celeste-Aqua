@@ -3,7 +3,7 @@ using System;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    [Tracked(true)]
+    [Tracked(false)]
     public class HookCollider : Component
     {
         public HookCollider(Action<GrapplingHook> callback)

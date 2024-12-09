@@ -7,7 +7,7 @@ using System.Collections;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Aqua Refill")]
-    [Tracked(true)]
+    [Tracked(false)]
     public class AquaRefill : Refill
     {
         public bool HookTouchable { get; private set; }

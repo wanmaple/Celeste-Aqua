@@ -24,7 +24,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static bool OnInteractHook(this Spring self, GrapplingHook hook, Vector2 at)
         {
-            if (hook.Bounce(self.GetBounceDirection(), AquaModule.Settings.HookSettings.HookBounceSpeedAddition))
+            if (hook.Bounce(self.GetBounceDirection(), AquaModule.Settings.HookSettings.BounceSpeedAddition))
             {
                 self.BounceAnimate();
                 return true;

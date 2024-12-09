@@ -11,7 +11,7 @@ using System.Reflection;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Aqua Bird Trigger")]
-    [Tracked(true)]
+    [Tracked(false)]
     public class AquaBirdTrigger : Trigger
     {
         public string BirdID { get; set; }

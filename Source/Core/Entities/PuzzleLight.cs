@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Puzzle Light")]
-    [Tracked(true)]
+    [Tracked(false)]
     public class PuzzleLight : Entity
     {
         public string PuzzleID { get; private set; }
@@ -41,18 +41,10 @@ namespace Celeste.Mod.Aqua.Core
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            if (!string.IsNullOrEmpty(PuzzleID))
+            PuzzleEntity center = FindRelatedCenter(scene);
+            if (center != null)
             {
-                List<Entity> puzzleCenters = scene.Tracker.GetEntities<PuzzleEntity>();
-                foreach (PuzzleEntity center in puzzleCenters)
-                {
-                    if (center.PuzzleID == PuzzleID)
-                    {
-                        _relatedCenter = center;
-                        _relatedCenter.RelatedLights.Add(this);
-                        break;
-                    }
-                }
+                center.RelatedLights.Add(this);
             }
         }
 
@@ -65,18 +57,37 @@ namespace Celeste.Mod.Aqua.Core
         private void OnPlayerIn(Player player)
         {
             if (_relatedCenter == null)
+                _relatedCenter = FindRelatedCenter(Scene);
+            if (_relatedCenter == null)
                 return;
 
             if (!SwitchOn && _relatedCenter.CanLitOn(this))
             {
                 SwitchOn = true;
                 _imgLit.Visible = true;
+                Audio.Play("event:/game/05_mirror_temple/torch_activate", Position);
             }
             else if (SwitchOn && _relatedCenter.CanLitOff(this))
             {
                 SwitchOn = false;
                 _imgLit.Visible = false;
             }
+        }
+
+        private PuzzleEntity FindRelatedCenter(Scene scene)
+        {
+            if (!string.IsNullOrEmpty(PuzzleID))
+            {
+                List<Entity> puzzleCenters = scene.Tracker.GetEntities<PuzzleEntity>();
+                foreach (PuzzleEntity center in puzzleCenters)
+                {
+                    if (center.PuzzleID == PuzzleID)
+                    {
+                        return center;
+                    }
+                }
+            }
+            return null;
         }
 
         private PuzzleEntity _relatedCenter;

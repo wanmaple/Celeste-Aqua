@@ -3,7 +3,7 @@ using Monocle;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    [Tracked(true)]
+    [Tracked(false)]
     public class HookInteractable : Component
     {
         public delegate bool InteractHookHandler(GrapplingHook hook, Vector2 at);

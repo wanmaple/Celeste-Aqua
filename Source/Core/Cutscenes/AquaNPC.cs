@@ -7,7 +7,7 @@ using System.Collections;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Custom NPC")]
-    [Tracked(true)]
+    [Tracked(false)]
     public class AquaNPC : CustomNPC
     {
         public string Name { get; private set; }
@@ -22,6 +22,16 @@ namespace Celeste.Mod.Aqua.Core
             GFX.SpriteBank.CreateOn(Sprite, Name);
             Sprite.Justify = new Vector2(0.5f, 1.0f);
             Sprite.Play(Animation);
+            Vector2 scale = Vector2.One;
+            if (data.Bool("flipX"))
+            {
+                scale.X = -1f;
+            }
+            if (data.Bool("flipY"))
+            {
+                scale.Y = -1f;
+            }
+            Sprite.Scale = scale;
         }
 
         public IEnumerator DummyWalkTo(float x, bool walkBackwards = false, float speedMultiplier = 1f, bool keepWalkingIntoWalls = false)

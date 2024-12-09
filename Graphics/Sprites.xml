@@ -109,4 +109,11 @@
       <Anim id="pop" path="booster_red" delay="0.08" frames="9-17"/>
     </BoosterPurple>
 
+    <TieRod path="objects/tie_rod/" start="idle">
+      <Justify x="0.5" y="0.5" />
+      <Anim id="idle" path="tie_rod" frames="0" />
+      <Anim id="turn_left" path="tie_rod" delay="0.1" frames="0-4" />
+      <Anim id="turn_right" path="tie_rod" delay="0.1" frames="4-0" />
+    </TieRod>
+
 </Sprites>

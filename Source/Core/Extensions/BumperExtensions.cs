@@ -26,7 +26,7 @@ namespace Celeste.Mod.Aqua.Core
         private static bool OnInteractHook(this Bumper self, GrapplingHook hook, Vector2 at)
         {
             Vector2 direction = Vector2.Normalize(at - self.Center);
-            if (hook.Bounce(direction, AquaModule.Settings.HookSettings.HookBounceSpeedAddition))
+            if (hook.Bounce(direction, AquaModule.Settings.HookSettings.BounceSpeedAddition))
             {
                 self.Hit(direction);
                 return true;

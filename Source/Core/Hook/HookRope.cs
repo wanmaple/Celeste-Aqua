@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    [Tracked(true)]
+    [Tracked(false)]
     public class HookRope : Component
     {
         private struct PotentialPoint
@@ -499,12 +499,12 @@ namespace Celeste.Mod.Aqua.Core
                 if (!jump.Collidable || jump.Collider == null) continue;
                 CheckCollisionJumpThru(prevPivot, currentPivot, lastSegments, jump, potentials);
             }
-            List<Bumper> bumpers = Scene.Entities.FindAll<Bumper>();
-            foreach (Bumper bumper in bumpers)
-            {
-                if (!bumper.Collidable || bumper.Collider == null) continue;
-                CheckCollisionBumper(prevPivot, currentPivot, lastSegments, bumper, potentials);
-            }
+            //List<Bumper> bumpers = Scene.Entities.FindAll<Bumper>();
+            //foreach (Bumper bumper in bumpers)
+            //{
+            //    if (!bumper.Collidable || bumper.Collider == null) continue;
+            //    CheckCollisionBumper(prevPivot, currentPivot, lastSegments, bumper, potentials);
+            //}
             if (potentials.Count > 0)
             {
                 RopePivot pivot = potentials.Min.pivot;

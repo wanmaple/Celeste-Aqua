@@ -8,78 +8,78 @@ namespace Celeste.Mod.Aqua.Module
     {
         [SettingIgnore]
         [DefaultValue(6)]
-        public int HookSize { get; set; }  // 钩爪大小
+        public int Size { get; set; }  // 钩爪大小
 
         [SettingRange(50, 150)]
         [DefaultValue(80)]
-        public int HookLength { get; set; }  // 钩绳的最大长度
+        public int RopeLength { get; set; }  // 钩绳的最大长度
 
         [SettingRange(40, 100, true)]
         [DefaultValue(80)]
-        public int HookBreakSpeed { get; set; } // 钩绳能承受的最大速度
+        public int BreakSpeed { get; set; } // 钩绳能承受的最大速度
 
         [SettingRange(400, 800, true)]
         [DefaultValue(600)]
-        public int HookEmitSpeed { get; set; }  // 钩爪的发射速度
+        public int EmitSpeed { get; set; }  // 钩爪的发射速度
 
         [SettingRange(40, 60)]
         [DefaultValue(45)]
-        public int HookRollingSpeedUp { get; set; }   // 上爬速度
+        public int RollingSpeedUp { get; set; }   // 上爬速度
 
         [SettingRange(80, 120)]
         [DefaultValue(80)]
-        public int HookRollingSpeedDown { get; set; } // 下爬速度
+        public int RollingSpeedDown { get; set; } // 下爬速度
 
         [SettingRange(60, 120)]
         [DefaultValue(60)]
-        public int HookSwingStrength { get; set; }    // 摆荡力度
+        public int SwingStrength { get; set; }    // 摆荡力度
 
         [SettingRange(400, 600)]
         [DefaultValue(450)]
-        public int HookMaxLineSpeed { get; set; }   // 最大线速度
+        public int MaxLineSpeed { get; set; }   // 最大线速度
 
         [SettingRange(0, 50)]
         [DefaultValue(0)]
-        public int HookJumpXPercent { get; set; } // 钩爪抓取跳跃X方向的额外速度倍率
+        public int SwingJumpXPercent { get; set; } // 钩爪摆荡跳X方向的额外速度倍率
 
         [SettingRange(100, 150)]
         [DefaultValue(100)]
-        public int HookJumpYPercent { get; set; } // 钩爪抓取跳跃Y方向的额外速度倍率
+        public int SwingJumpYPercent { get; set; } // 钩爪摆荡跳Y方向的额外速度倍率
 
         [SettingRange(0, 10)]
         [DefaultValue(5)]
-        public int HookClimbUpStaminaCost { get; set; } // 钩爪抓取上爬体力消耗
+        public int ClimbUpStaminaCost { get; set; } // 钩爪抓取上爬体力消耗
 
         [SettingRange(0, 10)]
         [DefaultValue(1)]
-        public int HookGrabingStaminaCost { get; set; } // 钩爪抓取不动时体力消耗
+        public int GrabingStaminaCost { get; set; } // 钩爪抓取不动时体力消耗
 
-        [SettingRange(0, 20)]
-        [DefaultValue(10)]
-        public int HookJumpStaminaCost { get; set; }    // 勾跳体力消耗
+        [SettingRange(0, 30)]
+        [DefaultValue(20)]
+        public int SwingJumpStaminaCost { get; set; }    // 摆荡跳体力消耗
 
         [SettingIgnore]
-        public float HookFlyTowardDuration { get; set; } = 0.15f;
+        public float FlyTowardDuration { get; set; } = 0.15f;
 
         [SettingRange(300, 400, true)]
         [DefaultValue(325)]
-        public int HookFlyTowardSpeed { get; set; }
+        public int FlyTowardSpeed { get; set; }
 
         [SettingRange(1, 10)]
         [DefaultValue(5)]
-        public int HookInertiaCoefficient { get; set; }
+        public int InertiaCoefficient { get; set; }
 
         [SettingRange(1, 5)]
-        [DefaultValue(3)]
-        public int HookWindCoefficient { get; set; }
+        [DefaultValue(2)]
+        public int WindCoefficient { get; set; }
 
         //[SettingRange(800, 1200, true)]
         [DefaultValue(1000)]
-        public int HookBouncingSpeed { get; set; }
+        public int BouncingSpeed { get; set; }
 
         //[SettingRange(100, 200, true)]
         [DefaultValue(150)]
-        public int HookBounceSpeedAddition { get; set; }
+        public int BounceSpeedAddition { get; set; }
 
         public HookSettings()
         {

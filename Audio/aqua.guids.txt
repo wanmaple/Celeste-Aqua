@@ -78,6 +78,7 @@
 {8aa6ab7b-3104-4a06-8e7e-b1141ac0d23d} event:/char/madeline/grab
 {0e0bb484-9840-47f8-a697-773134e4bedb} event:/char/madeline/grab_letgo
 {7f8c23d1-bd9d-4a10-b8af-fd4a5cb12244} event:/char/madeline/handhold
+{20d12a73-caa3-4d81-810f-4cfc8a5fad28} event:/char/madeline/hook_fixing
 {4f15cb10-6104-4477-a91a-5e56c0f103c1} event:/char/madeline/hooking
 {421fe5d0-9d4b-40a5-ab8e-23b1ec4bf1b3} event:/char/madeline/idle_crackknuckles
 {852ea39f-c182-4385-9aa3-1d95cb02040b} event:/char/madeline/idle_scratch
@@ -110,7 +111,6 @@
 {5cf06f89-cf18-4dfa-bc69-5e4b58095cf3} event:/char/madeline/water_move_general
 {7d656ffa-050f-4cab-bbc9-03863fa14e4f} event:/char/madeline/water_move_shallow
 {3b90c629-7dcf-467b-a438-75e3287c8ae5} event:/char/madeline/water_out
-{20d12a73-caa3-4d81-810f-4cfc8a5fad28} event:/char/madeline/hook_fixing
 {e1fec409-ace5-4006-8b7c-ccf9fbf1ac59} event:/char/oshiro/boss_charge
 {05362357-0f1e-4f89-9d04-8a2778451a6c} event:/char/oshiro/boss_enter_screen
 {f5fc7368-4f02-4479-a805-0efdff3633f6} event:/char/oshiro/boss_precharge
@@ -226,6 +226,7 @@
 {99c35088-2d5e-4846-b27e-e1adfcd15afa} event:/game/01_forsaken_city/fallblock_ice_impact
 {8d6d24fe-c860-4328-9650-c29b39ba87a2} event:/game/01_forsaken_city/fallblock_ice_shake
 {c7f359ea-785f-4328-8135-4000ec1486bc} event:/game/01_forsaken_city/zip_mover
+{ffa4f9ce-b607-4e4d-ac65-c3368ac1bd14} event:/game/01_forsaken_city/zip_mover_no_return
 {f4f839d0-f7cc-402a-9767-ad79d20ae5d6} event:/game/02_old_site/lantern_hit
 {44ed360f-e714-4a3a-99e8-3aed8ecf22cb} event:/game/02_old_site/sequence_badeline_intro
 {77800c0d-5128-44d0-8bb1-67174af44406} event:/game/02_old_site/sequence_mirror
@@ -483,6 +484,7 @@
 {525d00db-bc31-4054-9f61-0238bfd62941} event:/game/general/strawberry_touch
 {dd319a09-d197-4604-8ebf-c5fee614d863} event:/game/general/strawberry_wingflap
 {5a1e6a52-fa6a-44fb-b7ef-931a000b7c95} event:/game/general/thing_booped
+{3df913f9-c00c-4724-bca2-b11b44cc001b} event:/game/general/tie_rod
 {30fafd37-cd47-4a56-ab3b-0cc8f1beec5b} event:/game/general/touchswitch_any
 {0d6edb8b-2936-4e11-bc13-2c8bba70cbfa} event:/game/general/touchswitch_gate_finish
 {845556f0-842c-46d2-ac6c-64fc05f14cb0} event:/game/general/touchswitch_gate_open
@@ -493,6 +495,7 @@
 {7c01de41-a31a-43c3-9c0f-9ae85ad94c68} event:/game/general/wall_break_ice
 {92f75010-4e90-428e-834c-1315ddbd9460} event:/game/general/wall_break_stone
 {634bdd66-3f53-4679-8ced-fadfc60d412f} event:/game/general/wall_break_wood
+{7a7911d4-f959-4e57-8239-f753eb0044ff} event:/game/general/tie_rod_stuck
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort
@@ -668,6 +671,7 @@
 {28caabf1-2b9d-480e-bcc2-5947a2398087} event:/new_content/game/10_farewell/quake_rockbreak
 {a948d002-6935-4b70-92bf-39b7e43c56e0} event:/new_content/game/10_farewell/strawberry_gold_detach
 {b0f9d304-0ba2-4858-b514-7620a56dda0b} event:/new_content/game/10_farewell/zip_mover
+{a7fac62a-2117-4007-bb18-02f94fac2252} event:/new_content/game/10_farewell/zip_mover_no_return
 {3f2d120c-8b3f-4adf-b110-42388e8c5674} event:/new_content/music/lvl10/cinematic/bird_crash_first
 {92aa23ba-8ab2-4448-aae6-67acbe73582b} event:/new_content/music/lvl10/cinematic/bird_crash_second
 {3482e653-439f-46cc-8cbd-02abf456b0e4} event:/new_content/music/lvl10/cinematic/end

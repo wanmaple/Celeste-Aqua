@@ -6,16 +6,9 @@ using Monocle;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Unidirectional Dash Block")]
-    [Tracked(true)]
+    [Tracked(false)]
     public class UnidirectionalDashBlock : DashBlock
     {
-        public UnidirectionalDashBlock(Vector2 position, char tiletype, float width, float height, bool blendIn, bool permanent, bool canDash, EntityID id) 
-            : base(position, tiletype, width, height, blendIn, permanent, canDash, id)
-        {
-            OnDashCollide = OnDashAttacked;
-            _texNotchSet = GFX.Game["tilesets/notches/notch_set"];
-        }
-
         public UnidirectionalDashBlock(EntityData data, Vector2 offset, EntityID id) 
             : base(data, offset, id)
         {
@@ -52,19 +45,6 @@ namespace Celeste.Mod.Aqua.Core
             return DashCollisionResults.NormalCollision;
         }
 
-        public override void Render()
-        {
-            //if (_texNotchSet != null)
-            //{
-            //    _texNotchSet.Draw(Position, Vector2.Zero, Color.White, new Vector2(1.0f, Height / 8.0f), 0.0f, Microsoft.Xna.Framework.Graphics.SpriteEffects.None);
-            //}
-            //TileGrid tileGrid = Get<TileGrid>();
-            //tileGrid.Position = new Vector2(8.0f, 0.0f);
-            base.Render();
-        }
-
         private Vector2 _specificDashDirection = Vector2.Zero;
-
-        private MTexture _texNotchSet;
     }
 }

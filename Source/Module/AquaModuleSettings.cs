@@ -7,9 +7,9 @@ public class AquaModuleSettings : EverestModuleSettings
     [DefaultButtonBinding(Buttons.LeftShoulder, Keys.V)]
     public ButtonBinding ThrowHook { get; set; }
 
-    public HookSettings HookSettings { get; set; }
-
     public bool FeatureEnabled { get; set; } = true;
+
+    public HookSettings HookSettings { get; set; }
 
     public bool ResetHookSettings { get; set; }
 
