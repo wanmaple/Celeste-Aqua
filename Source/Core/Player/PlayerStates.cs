@@ -7,7 +7,7 @@ using System;
 using MonoMod.Utils;
 using Mono.Cecil;
 using Celeste.Mod.Aqua.Debug;
-using System.IO.Pipes;
+using Celeste.Mod.Entities;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -41,6 +41,7 @@ namespace Celeste.Mod.Aqua.Core
 
         // Extended States
         StHanging = 26,
+        StElectricShocking = 27,
 
         MaxStates,
     }
@@ -136,10 +137,14 @@ namespace Celeste.Mod.Aqua.Core
 
             self.StateMachine.SetCallbacks((int)AquaStates.StHanging, self.Player_HangingUpdate, null, self.Player_HangingBegin, self.Player_HangingEnd);
             self.StateMachine.SetStateName((int)AquaStates.StHanging, "Hanging");
+            self.StateMachine.SetCallbacks((int)AquaStates.StElectricShocking, self.Player_ElectricShockingUpdate, null, self.Player_ElectricShockingBegin);
+            self.StateMachine.SetStateName((int)AquaStates.StElectricShocking, "ElectricShocking");
             var climbJumpTicker = new TimeTicker(1.0f);
             var hookBreakTicker = new TimeTicker(0.15f);
+            var elecShockTicker = new TimeTicker(1.0f);
             DynamicData.For(self).Set("climb_jump_ticker", climbJumpTicker);
             DynamicData.For(self).Set("hook_break_ticker", hookBreakTicker);
+            DynamicData.For(self).Set("elec_shock_ticker", elecShockTicker);
             DynamicData.For(self).Set("rope_is_loosen", true);
 #if DEBUG
             DynamicData.For(self).Set("tangent_speed", 0.0f);
@@ -150,7 +155,8 @@ namespace Celeste.Mod.Aqua.Core
         private static void Player_Added(On.Celeste.Player.orig_Added orig, Player self, Scene scene)
         {
             orig(self, scene);
-            _madelinesHook = new GrapplingHook(AquaModule.Settings.HookSettings.Size, AquaModule.Settings.HookSettings.RopeLength);
+            AreaData mapData = AreaData.Get((scene as Level).Session.Area);
+            _madelinesHook = new GrapplingHook(AquaModule.Settings.HookSettings.Size, AquaModule.Settings.HookSettings.RopeLength, (GrapplingHook.RopeMaterial)mapData.GetExtraMeta().HookMaterial);
             DynamicData.For(self).Set("previous_facing", (int)self.Facing);
         }
 
@@ -426,43 +432,75 @@ namespace Celeste.Mod.Aqua.Core
             return (int)AquaStates.StHanging;
         }
 
+        private static void Player_ElectricShockingBegin(this Player self)
+        {
+            self.Speed = Vector2.Zero;
+            TimeTicker ticker = DynamicData.For(self).Get<TimeTicker>("elec_shock_ticker");
+            ticker.Reset();
+            self.Sprite.SetHookMode(true);
+            self.Sprite.Play("electricshock");
+            Audio.Play("event:/char/madeline/electric_shock", self.Position);
+        }
+
+        private static int Player_ElectricShockingUpdate(this Player self)
+        {
+            TimeTicker ticker = DynamicData.For(self).Get<TimeTicker>("elec_shock_ticker");
+            ticker.Tick(Engine.DeltaTime);
+            if (ticker.Check())
+            {
+                self.Die(Vector2.One);
+                return (int)AquaStates.StNormal;
+            }
+            return (int)AquaStates.StElectricShocking;
+        }
+
         private static void Player_Update(On.Celeste.Player.orig_Update orig, Player self)
         {
-            float dt = Engine.DeltaTime;
-            TimeTicker climbJumpTicker = DynamicData.For(self).Get<TimeTicker>("climb_jump_ticker");
-            climbJumpTicker.Tick(dt);
-            DynamicData.For(self).Set("rope_is_loosen", true);
-            DynamicData.For(self).Set("previous_facing", (int)self.Facing);
-
-            orig(self);
-
-            if (_madelinesHook.Active && _madelinesHook.Revoked)
+            if (self.StateMachine.State == (int)AquaStates.StElectricShocking)
             {
-                self.Scene.Remove(_madelinesHook);
-            }
-            else if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
-            {
-                if (_madelinesHook.EnforcePlayer(self, new Segment(_madelinesHook.PlayerPreviousPosition, self.Center), Engine.DeltaTime))
+                foreach (var com in self.Components)
                 {
-                    _madelinesHook.Revoke();
+                    com.Update();
+                }
+            }
+            else
+            {
+                float dt = Engine.DeltaTime;
+                TimeTicker climbJumpTicker = DynamicData.For(self).Get<TimeTicker>("climb_jump_ticker");
+                climbJumpTicker.Tick(dt);
+                DynamicData.For(self).Set("rope_is_loosen", true);
+                DynamicData.For(self).Set("previous_facing", (int)self.Facing);
+
+                orig(self);
+
+                if (_madelinesHook.Active && _madelinesHook.Revoked)
+                {
+                    self.Scene.Remove(_madelinesHook);
+                }
+                else if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
+                {
+                    if (_madelinesHook.EnforcePlayer(self, new Segment(_madelinesHook.PlayerPreviousPosition, self.Center), Engine.DeltaTime))
+                    {
+                        _madelinesHook.Revoke();
+                        if (self.StateMachine.State == (int)AquaStates.StHanging)
+                        {
+                            self.StateMachine.ForceState((int)AquaStates.StNormal);
+                        }
+                    }
                     if (self.StateMachine.State == (int)AquaStates.StHanging)
                     {
-                        self.StateMachine.ForceState((int)AquaStates.StNormal);
+                        int climbRopeDirection = DynamicData.For(self).Get<int>("climb_rope_direction");
+                        float staminaCost = 0.0f;
+                        if (climbRopeDirection < 0)
+                        {
+                            staminaCost = AquaModule.Settings.HookSettings.ClimbUpStaminaCost * dt;
+                        }
+                        else if (climbRopeDirection == 0)
+                        {
+                            staminaCost = AquaModule.Settings.HookSettings.GrabingStaminaCost * dt;
+                        }
+                        self.Stamina = MathF.Max(0.0f, self.Stamina - staminaCost);
                     }
-                }
-                if (self.StateMachine.State == (int)AquaStates.StHanging)
-                {
-                    int climbRopeDirection = DynamicData.For(self).Get<int>("climb_rope_direction");
-                    float staminaCost = 0.0f;
-                    if (climbRopeDirection < 0)
-                    {
-                        staminaCost = AquaModule.Settings.HookSettings.ClimbUpStaminaCost * dt;
-                    }
-                    else if (climbRopeDirection == 0)
-                    {
-                        staminaCost = AquaModule.Settings.HookSettings.GrabingStaminaCost * dt;
-                    }
-                    self.Stamina = MathF.Max(0.0f, self.Stamina - staminaCost);
                 }
             }
         }

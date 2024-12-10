@@ -5,6 +5,7 @@ using Monocle;
 using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
+using static Celeste.Mod.Aqua.Core.GrapplingHook;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -43,6 +44,11 @@ namespace Celeste.Mod.Aqua.Core
         public float MaxLength { get; private set; }
         public Vector2 CurrentDirection { get; set; }
         public float EmitSpeed { get; set; }
+        public bool ElectricShocking
+        {
+            get => _renderer.ElectricShocking;
+            set => _renderer.ElectricShocking = value;
+        }
 
         public IReadOnlyList<RopePivot> AllPivots => _pivots;
         public RopePivot TopPivot => _pivots[0];
@@ -111,11 +117,21 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public HookRope(float maxLength) : base(false, false)
+        public HookRope(float maxLength, RopeMaterial material) : base(false, false)
         {
             MaxLength = maxLength;
 
-            MTexture ropeTexture = GFX.Game["objects/hook/rope"];
+            MTexture ropeTexture = null;
+            switch (material)
+            {
+                case RopeMaterial.Metal:
+                    ropeTexture = GFX.Game["objects/hook/rope_metal"];
+                    break;
+                case RopeMaterial.Default:
+                default:
+                    ropeTexture = GFX.Game["objects/hook/rope"];
+                    break;
+            }
             _renderer = new RopeRenderer(ropeTexture);
         }
 
@@ -355,6 +371,7 @@ namespace Celeste.Mod.Aqua.Core
             pivot.point = hook.Position;
             _pivots[0] = pivot;
             _prevLength = CalculateRopeLength(player.ExactCenter());
+            _renderer.Update(Engine.DeltaTime);
         }
 
         public override void Render()
@@ -583,7 +600,7 @@ namespace Celeste.Mod.Aqua.Core
             if (collider is Circle circle)
             {
                 List<RopePivot> pivots = circle.SimulatePivots();
-                for (int i = 0; i <  pivots.Count; ++i)
+                for (int i = 0; i < pivots.Count; ++i)
                 {
                     RopePivot pivot = pivots[i];
                     pivot.point += bumper.Position;

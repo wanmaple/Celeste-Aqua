@@ -8,17 +8,44 @@ namespace Celeste.Mod.Aqua.Core
 {
     public class RopeRenderer
     {
+        public bool ElectricShocking { get; set; }
+
         public RopeRenderer(MTexture texture)
         {
             _texture = texture;
+            _elecShockTextures = new MTexture[5];
+            for (int i = 0; i <= 4; ++i)
+            {
+                _elecShockTextures[i] = GFX.Game["objects/hook/rope_charge" + i.ToString()];
+            }
+        }
+
+        public void Update(float dt)
+        {
+            _elapsed += dt;
+            _elecShockIndex = (int)MathF.Floor(_elapsed / 0.1f) % 5;
         }
 
         public void Render(IReadOnlyList<Segment> segments)
         {
-            if (_texture == null) return;
+            if (_texture != null)
+            {
+                RenderSteps(segments, _texture);
+            }
+            if (ElectricShocking)
+            {
+                MTexture texElecShock = _elecShockTextures[_elecShockIndex];
+                if (texElecShock != null)
+                {
+                    RenderSteps(segments, texElecShock);
+                }
+            }
+        }
 
-            int step = _texture.Width;
-            Vector2 origin = new Vector2(0.0f, _texture.Height * 0.5f);
+        private void RenderSteps(IReadOnlyList<Segment> segments, MTexture texture)
+        {
+            int step = texture.Width;
+            Vector2 origin = new Vector2(0.0f, texture.Height * 0.5f);
             int start = 0;
             for (int i = 0; i < segments.Count; i++)
             {
@@ -29,14 +56,17 @@ namespace Celeste.Mod.Aqua.Core
                 float angle = direction.Angle();
                 while (length > 0.0f)
                 {
-                    Rectangle rect = new Rectangle(start, 0, Math.Min((int)MathF.Ceiling(length), step), _texture.Height);
-                    _texture.Draw(position, origin, Color.White, Vector2.One, angle, rect);
+                    Rectangle rect = new Rectangle(start, 0, Math.Min((int)MathF.Ceiling(length), step), texture.Height);
+                    texture.Draw(position, origin, Color.White, Vector2.One, angle, rect);
                     position += direction * step;
                     length -= step;
                 }
             }
         }
 
+        private float _elapsed;
         private MTexture _texture;
+        private int _elecShockIndex;
+        private MTexture[] _elecShockTextures;
     }
 }

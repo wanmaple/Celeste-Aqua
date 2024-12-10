@@ -74,6 +74,7 @@
 {0a9527ad-360b-4cd2-b585-92b066720b34} event:/char/madeline/dreamblock_exit
 {47bc2416-fd95-4a75-8952-7c43757e0e66} event:/char/madeline/dreamblock_travel
 {0d6cb459-91af-4842-8d2b-0f0e103313ef} event:/char/madeline/duck
+{a014a6f4-d7fb-42cd-99d7-edb61671e2af} event:/char/madeline/electric_shock
 {73ada323-e77f-43f7-b0df-a8facdef03b7} event:/char/madeline/footstep
 {8aa6ab7b-3104-4a06-8e7e-b1141ac0d23d} event:/char/madeline/grab
 {0e0bb484-9840-47f8-a697-773134e4bedb} event:/char/madeline/grab_letgo
@@ -485,6 +486,7 @@
 {dd319a09-d197-4604-8ebf-c5fee614d863} event:/game/general/strawberry_wingflap
 {5a1e6a52-fa6a-44fb-b7ef-931a000b7c95} event:/game/general/thing_booped
 {3df913f9-c00c-4724-bca2-b11b44cc001b} event:/game/general/tie_rod
+{7a7911d4-f959-4e57-8239-f753eb0044ff} event:/game/general/tie_rod_stuck
 {30fafd37-cd47-4a56-ab3b-0cc8f1beec5b} event:/game/general/touchswitch_any
 {0d6edb8b-2936-4e11-bc13-2c8bba70cbfa} event:/game/general/touchswitch_gate_finish
 {845556f0-842c-46d2-ac6c-64fc05f14cb0} event:/game/general/touchswitch_gate_open
@@ -495,7 +497,6 @@
 {7c01de41-a31a-43c3-9c0f-9ae85ad94c68} event:/game/general/wall_break_ice
 {92f75010-4e90-428e-834c-1315ddbd9460} event:/game/general/wall_break_stone
 {634bdd66-3f53-4679-8ced-fadfc60d412f} event:/game/general/wall_break_wood
-{7a7911d4-f959-4e57-8239-f753eb0044ff} event:/game/general/tie_rod_stuck
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort

@@ -21,7 +21,15 @@ namespace Celeste.Mod.Aqua.Core
             Fixed,
         }
 
+        public enum RopeMaterial
+        {
+            Default,
+            Metal,
+        }
+
         public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
+        public RopeMaterial Material { get; private set; }
+        public bool ElectricShocking { get; set; } = false;
 
         public HookStates State { get; private set; } = HookStates.None;
         public Vector2 Velocity { get; private set; }
@@ -37,16 +45,19 @@ namespace Celeste.Mod.Aqua.Core
         public Vector2 SwingDirection => Get<HookRope>().SwingDirection;
         public Vector2 PlayerPreviousPosition => _playerPrevPosition;
 
-        public GrapplingHook(float size, float length)
+        public GrapplingHook(float size, float length, RopeMaterial material = RopeMaterial.Default)
             : base(Vector2.Zero)
         {
             HookSize = size;
+            Material = material;
             Active = false;
 
             Collider = new Hitbox(size, size, -size * 0.5f, -size * 0.5f);
 
-            Add(new HookRope(length));
+            Add(new HookRope(length, material));
             Add(_sprite = new HookSprite());
+            Add(_elecShockSprite = new Sprite());
+            GFX.SpriteBank.CreateOn(_elecShockSprite, "HookElectricShock");
             AddTag(Tags.Global);
         }
 
@@ -58,7 +69,7 @@ namespace Celeste.Mod.Aqua.Core
             Revoked = false;
 
             _sprite.Play(HookSprite.Emit, true);
-            _sprite.Rotation = direction.Angle();
+            _sprite.Rotation = _elecShockSprite.Rotation = direction.Angle();
         }
 
         public void Revoke()
@@ -228,11 +239,20 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
+            HookRope rope = Get<HookRope>();
+            Player player = Scene.Tracker.GetEntity<Player>();
             float dt = Engine.DeltaTime;
             _elapsed += dt;
             JustFixed = false;
-            HookRope rope = Get<HookRope>();
-            Player player = Scene.Tracker.GetEntity<Player>();
+            _elecShockSprite.Visible = ElectricShocking;
+            if (player.StateMachine.State == (int)AquaStates.StElectricShocking)
+            {
+                _elecShockSprite.Visible = true;
+                rope.ElectricShocking = true;
+                base.Update();
+                return;
+            }
+
             Segment playerSeg = new Segment(_playerPrevPosition, player.ExactCenter());
             Vector2 prevPosition = Position;
             Vector2 nextPosition = Position;
@@ -593,5 +613,6 @@ namespace Celeste.Mod.Aqua.Core
         private TimeTicker _fixTimer = new TimeTicker(0.08f);
 
         private HookSprite _sprite;
+        private Sprite _elecShockSprite;
     }
 }

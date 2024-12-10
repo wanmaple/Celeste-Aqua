@@ -13,8 +13,6 @@ namespace Celeste.Mod.Aqua.Core
             : base(null, null)
         {
             GFX.SpriteBank.CreateOn(this, "Hook");
-            //RenderPosition = new Vector2(-Width * 0.5f, -Height * 0.5f);
-            Origin = new Vector2(Width * 0.5f, Height * 0.5f);
         }
     }
 }

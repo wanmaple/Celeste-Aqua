@@ -2,10 +2,16 @@
 <Sprites>
 
     <Hook path="objects/hook/" start="emit">
+      <Justify x="0.5" y="0.5" />
       <Anim id="emit" path="hook" frames="0" />
       <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
       <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
     </Hook>
+
+    <HookElectricShock path="objects/hook/" start="shocking">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="shocking" path="hook_charge" frames="0-4" delay="0.1" />
+    </HookElectricShock>
 
     <Madeline path="characters/player/" start="hookidle">
       <Origin x="16" y="32" />
@@ -13,6 +19,7 @@
       <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
       <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
+      <Loop id="electricshock" path="electrocution" delay="0.04" frames="0-14" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -25,6 +32,7 @@
       <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
       <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
+      <Loop id="electricshock" path="electrocution" delay="0.04" frames="0-14" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -37,6 +45,7 @@
       <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
       <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
+      <Loop id="electricshock" path="electrocution" delay="0.04" frames="0-14" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -49,6 +58,7 @@
       <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
       <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
+      <Loop id="electricshock" path="electrocution" delay="0.04" frames="0-14" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -61,6 +71,7 @@
       <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
       <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
+      <Loop id="electricshock" path="electrocution" delay="0.04" frames="0-14" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
