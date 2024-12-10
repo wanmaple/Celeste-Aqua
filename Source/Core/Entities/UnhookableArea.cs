@@ -12,7 +12,7 @@ namespace Celeste.Mod.Aqua.Core
             : base(data.Position + offset)
         {
             Collider = new Hitbox(data.Width, data.Height);
-
+            this.SetHookable(true);
             Add(new HookInteractable(OnInteractHook));
         }
 

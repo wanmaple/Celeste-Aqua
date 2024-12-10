@@ -18,6 +18,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, position, fromCutscene);
             self.Add(new HookInteractable(self.OnHookInteract));
+            self.SetHookable(true);
         }
 
         private static bool OnHookInteract(this AngryOshiro self, GrapplingHook hook, Vector2 at)

@@ -8,6 +8,7 @@ using MonoMod.Utils;
 using Mono.Cecil;
 using Celeste.Mod.Aqua.Debug;
 using Celeste.Mod.Entities;
+using static Celeste.TrackSpinner;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -51,11 +52,14 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             IL.Celeste.Player.ctor += Player_ILConstruct;
-            IL.Celeste.Player.OnCollideV += Player_OnCollideV;
+            IL.Celeste.Player.NormalUpdate += Player_ILNormalUpdate;
+            IL.Celeste.Player.OnCollideV += Player_ILOnCollideV;
             On.Celeste.Player.ctor += Player_Construct;
             On.Celeste.Player.Added += Player_Added;
             On.Celeste.Player.Removed += Player_Removed;
             On.Celeste.Player.NormalUpdate += Player_NormalUpdate;
+            On.Celeste.Player.DashBegin += Player_DashBegin;
+            On.Celeste.Player.DashEnd += Player_DashEnd;
             On.Celeste.Player.DashUpdate += Player_DashUpdate;
             On.Celeste.Player.LaunchUpdate += Player_LaunchUpdate;
             On.Celeste.Player.BoostBegin += Player_BoostBegin;
@@ -76,11 +80,14 @@ namespace Celeste.Mod.Aqua.Core
         public static void Uninitialize()
         {
             IL.Celeste.Player.ctor -= Player_ILConstruct;
-            IL.Celeste.Player.OnCollideV -= Player_ILConstruct;
+            IL.Celeste.Player.NormalUpdate -= Player_ILNormalUpdate;
+            IL.Celeste.Player.OnCollideV -= Player_ILOnCollideV;
             On.Celeste.Player.ctor -= Player_Construct;
             On.Celeste.Player.Added -= Player_Added;
             On.Celeste.Player.Removed -= Player_Removed;
             On.Celeste.Player.NormalUpdate -= Player_NormalUpdate;
+            On.Celeste.Player.DashBegin -= Player_DashBegin;
+            On.Celeste.Player.DashEnd -= Player_DashEnd;
             On.Celeste.Player.DashUpdate -= Player_DashUpdate;
             On.Celeste.Player.LaunchUpdate -= Player_LaunchUpdate;
             On.Celeste.Player.BoostBegin -= Player_BoostBegin;
@@ -103,6 +110,11 @@ namespace Celeste.Mod.Aqua.Core
             return self.ExactPosition + self.Center - self.Position;
         }
 
+        public static bool IsBoosterDash(this Player self)
+        {
+            return self.StateMachine.State == (int)AquaStates.StDash && DynamicData.For(self).Get<bool>("is_booster_dash");
+        }
+
         private static void Player_ILConstruct(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
@@ -114,7 +126,30 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private static void Player_OnCollideV(ILContext il)
+        private static void Player_ILNormalUpdate(ILContext il)
+        {
+            ILCursor cursor = new ILCursor(il);
+            if (cursor.TryGotoNext(ins => ins.MatchLdcR4(90.0f), ins => ins.MatchStloc(6)))
+            {
+                AquaDebugger.LogInfo("IL Hook Success");
+                cursor.Index += 2;
+                cursor.EmitLdloc(6);
+                cursor.EmitDelegate(CalculateNormalMoveCoefficient);
+                cursor.EmitMul();
+                cursor.EmitStloc(6);
+            }
+        }
+
+        private static float CalculateNormalMoveCoefficient()
+        {
+            if (_madelinesHook.Active && (_madelinesHook.State == GrapplingHook.HookStates.Emitting || _madelinesHook.State == GrapplingHook.HookStates.Bouncing))
+            {
+                return 0.5f;
+            }
+            return 1.0f;
+        }
+
+        private static void Player_ILOnCollideV(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             FieldReference field = null;
@@ -146,6 +181,7 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("hook_break_ticker", hookBreakTicker);
             DynamicData.For(self).Set("elec_shock_ticker", elecShockTicker);
             DynamicData.For(self).Set("rope_is_loosen", true);
+            DynamicData.For(self).Set("is_booster_dash", false);
 #if DEBUG
             DynamicData.For(self).Set("tangent_speed", 0.0f);
             DynamicData.For(self).Set("along_speed", 0.0f);
@@ -269,6 +305,21 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
             return nextState;
+        }
+
+        private static void Player_DashBegin(On.Celeste.Player.orig_DashBegin orig, Player self)
+        {
+            orig(self);
+            if (self.CurrentBooster != null)
+            {
+                DynamicData.For(self).Set("is_booster_dash", true);
+            }
+        }
+
+        private static void Player_DashEnd(On.Celeste.Player.orig_DashEnd orig, Player self)
+        {
+            orig(self);
+            DynamicData.For(self).Set("is_booster_dash", false);
         }
 
         private static int Player_DashUpdate(On.Celeste.Player.orig_DashUpdate orig, Player self)
@@ -448,7 +499,7 @@ namespace Celeste.Mod.Aqua.Core
             ticker.Tick(Engine.DeltaTime);
             if (ticker.Check())
             {
-                self.Die(Vector2.One);
+                self.Die(Vector2.Zero);
                 return (int)AquaStates.StNormal;
             }
             return (int)AquaStates.StElectricShocking;
@@ -580,7 +631,8 @@ namespace Celeste.Mod.Aqua.Core
         private static void FlyTowardHook(Player player)
         {
             Vector2 ropeDirection = _madelinesHook.RopeDirection;
-            player.Speed = -ropeDirection * AquaModule.Settings.HookSettings.FlyTowardSpeed;
+            float origAlongSpeed = MathF.Max(Vector2.Dot(player.Speed, -ropeDirection), 0.0f);
+            player.Speed = -ropeDirection * (AquaModule.Settings.HookSettings.FlyTowardSpeed + origAlongSpeed);
         }
 
         private static int PreHookUpdate(Player self)

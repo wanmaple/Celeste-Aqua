@@ -507,19 +507,19 @@ namespace Celeste.Mod.Aqua.Core
             SortedSet<PotentialPoint> potentials = new SortedSet<PotentialPoint>(AlongPerpComparer);
             foreach (Solid solid in solids)
             {
-                if (!solid.Collidable || solid.Collider == null) continue;
+                if (!solid.Collidable || solid.Collider == null || !solid.IsHookable()) continue;
                 CheckCollisionSolid(prevPivot, currentPivot, lastSegments, solid, potentials);
             }
             List<Entity> jumps = Scene.Tracker.GetEntities<JumpThru>();
             foreach (JumpThru jump in jumps)
             {
-                if (!jump.Collidable || jump.Collider == null) continue;
+                if (!jump.Collidable || jump.Collider == null || !jump.IsHookable()) continue;
                 CheckCollisionJumpThru(prevPivot, currentPivot, lastSegments, jump, potentials);
             }
             //List<Bumper> bumpers = Scene.Entities.FindAll<Bumper>();
             //foreach (Bumper bumper in bumpers)
             //{
-            //    if (!bumper.Collidable || bumper.Collider == null) continue;
+            //    if (!bumper.Collidable || bumper.Collider == null || !bumper.IsHookable()) continue;
             //    CheckCollisionBumper(prevPivot, currentPivot, lastSegments, bumper, potentials);
             //}
             if (potentials.Count > 0)

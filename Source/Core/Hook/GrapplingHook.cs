@@ -27,6 +27,8 @@ namespace Celeste.Mod.Aqua.Core
             Metal,
         }
 
+        public const float BOUNCE_SPEED_ADDITION = 350.0f;
+
         public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
         public RopeMaterial Material { get; private set; }
         public bool ElectricShocking { get; set; } = false;
@@ -59,6 +61,13 @@ namespace Celeste.Mod.Aqua.Core
             Add(_elecShockSprite = new Sprite());
             GFX.SpriteBank.CreateOn(_elecShockSprite, "HookElectricShock");
             AddTag(Tags.Global);
+
+            this.MakeExtraCollideCondition();
+        }
+
+        public bool CanCollide(Entity other)
+        {
+            return other.IsHookable();
         }
 
         public void Emit(Vector2 direction, float speed)
@@ -115,7 +124,6 @@ namespace Celeste.Mod.Aqua.Core
                 Vector2 doubleAxis = axis * MathF.Abs(proj) * 2.0f;
                 Vector2 bouncingDirection = Vector2.Normalize(BouncingVelocity);
                 BouncingVelocity += doubleAxis;
-                BouncingVelocity += Vector2.Normalize(BouncingVelocity) * Vector2.Dot(bouncingDirection, axis) * speed;
             }
             BouncingVelocity = Vector2.Normalize(BouncingVelocity) * rope.EmitSpeed;
             return true;
@@ -292,7 +300,7 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             Fix();
                         }
-                        else if (changeState || _hitUnhookable)
+                        else if (changeState)
                         {
                             Revoke();
                         }

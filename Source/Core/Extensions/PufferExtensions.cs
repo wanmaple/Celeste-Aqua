@@ -18,6 +18,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void Puffer_Construct(On.Celeste.Puffer.orig_ctor_Vector2_bool orig, Puffer self, Vector2 position, bool faceRight)
         {
             orig(self, position, faceRight);
+            self.SetHookable(true);
             self.Add(new HookInteractable(self.OnHookInteract));
         }
 

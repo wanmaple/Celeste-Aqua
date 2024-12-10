@@ -3,12 +3,20 @@ local Depths = require("consts.object_depths")
 
 local TrapButton = {}
 
+local directions = {
+    "Up", "Down", "Left", "Right",
+}
+
 TrapButton.name = "Aqua/Trap Button"
 TrapButton.depth = Depths.top
 TrapButton.fieldInformation = {
     color = {
         fieldType = "color",
         useAlpha = false,
+    },
+    direction = {
+        options = directions,
+        editable = false,
     },
     group = {
         fieldType = "integer",
