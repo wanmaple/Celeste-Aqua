@@ -135,7 +135,7 @@ namespace Celeste.Mod.Aqua.Core
             _renderer = new RopeRenderer(ropeTexture);
         }
 
-        public Vector2 DetectHookNextPosition(float dt, bool revoking, out bool changeState)
+        public Vector2 DetectHookNextPosition(float dt, bool revoking, float speedCoeff, out bool changeState)
         {
             if (Scene == null)
             {
@@ -143,7 +143,7 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             changeState = false;
-            float hookMovement = EmitSpeed * dt;
+            float hookMovement = EmitSpeed * speedCoeff * dt;
             GrapplingHook hook = Entity as GrapplingHook;
             Player player = Scene.Tracker.GetEntity<Player>();
             if (player == null) return hook.Position;

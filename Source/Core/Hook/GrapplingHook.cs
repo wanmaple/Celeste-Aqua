@@ -281,7 +281,7 @@ namespace Celeste.Mod.Aqua.Core
                     case HookStates.Emitting:
                         rope.CheckCollision(playerSeg);
                         Velocity = Position - prevPosition;
-                        nextPosition = rope.DetectHookNextPosition(dt, false, out changeState);
+                        nextPosition = rope.DetectHookNextPosition(dt, false, CalculateSpeedCoefficient(), out changeState);
                         movement = nextPosition - prevPosition;
                         Velocity += movement;
                         if (!AquaMaths.IsApproximateZero(movement.X))
@@ -309,7 +309,7 @@ namespace Celeste.Mod.Aqua.Core
                         rope.CheckCollision(playerSeg);
                         Velocity = Position - prevPosition;
                         bool revokeHook;
-                        nextPosition = rope.DetectHookNextPosition(dt, true, out revokeHook);
+                        nextPosition = rope.DetectHookNextPosition(dt, true, CalculateSpeedCoefficient(), out revokeHook);
                         Velocity += nextPosition - prevPosition;
                         Revoked = revokeHook;
                         Position = nextPosition;
@@ -420,6 +420,16 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
             return false;
+        }
+
+        private float CalculateSpeedCoefficient()
+        {
+            Water water = CollideFirst<Water>();
+            if (water != null)
+            {
+                return 0.5f;
+            }
+            return 1.0f;
         }
 
         private bool MoveH(float moveH, Collision onCollide = null)

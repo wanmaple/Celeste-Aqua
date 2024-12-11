@@ -105,16 +105,6 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.UpdateSprite -= Player_UpdateSprite;
         }
 
-        public static Vector2 ExactCenter(this Player self)
-        {
-            return self.ExactPosition + self.Center - self.Position;
-        }
-
-        public static bool IsBoosterDash(this Player self)
-        {
-            return self.StateMachine.State == (int)AquaStates.StDash && DynamicData.For(self).Get<bool>("is_booster_dash");
-        }
-
         private static void Player_ILConstruct(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
