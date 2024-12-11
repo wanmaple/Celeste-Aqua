@@ -9,7 +9,7 @@ public class AquaModuleSettings : EverestModuleSettings
 
     public bool FeatureEnabled { get; set; } = true;
 
-    public HookSettings HookSettings { get; set; }
+    public HookSettings HookSettings { get; set; } = new HookSettings();
 
     public bool ResetHookSettings { get; set; }
 
