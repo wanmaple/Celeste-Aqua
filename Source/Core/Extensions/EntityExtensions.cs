@@ -79,6 +79,16 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
+        public static TimeTicker GetTimeTicker(this Entity self, string name)
+        {
+            return DynamicData.For(self).Get<TimeTicker>(name);
+        }
+
+        public static void SetTimeTicker(this Entity self, string name, float duration)
+        {
+            DynamicData.For(self).Set(name, new TimeTicker(duration));
+        }
+
         public static IEnumerator UndraggableRoutine(this Entity self, Sprite sprite, Vector2 direction, float duration, float distance)
         {
             float elapsed = 0.0f;

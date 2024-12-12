@@ -2,6 +2,12 @@
 {
     public class TimeTicker
     {
+        public float Duration
+        {
+            get => _time;
+            set => _time = value;
+        }
+
         public TimeTicker(float time)
         {
             _time = _ticker = time;

@@ -164,12 +164,17 @@ namespace Celeste.Mod.Aqua.Core
             self.StateMachine.SetStateName((int)AquaStates.StHanging, "Hanging");
             self.StateMachine.SetCallbacks((int)AquaStates.StElectricShocking, self.Player_ElectricShockingUpdate, null, self.Player_ElectricShockingBegin);
             self.StateMachine.SetStateName((int)AquaStates.StElectricShocking, "ElectricShocking");
+            var bulletTimeTicker = new TimeTicker(0.0f);
+            var emitTicker = new TimeTicker(0.05f);
             var climbJumpTicker = new TimeTicker(1.0f);
             var hookBreakTicker = new TimeTicker(0.15f);
             var elecShockTicker = new TimeTicker(1.0f);
-            DynamicData.For(self).Set("climb_jump_ticker", climbJumpTicker);
-            DynamicData.For(self).Set("hook_break_ticker", hookBreakTicker);
-            DynamicData.For(self).Set("elec_shock_ticker", elecShockTicker);
+            DynamicData.For(self).Set("start_emitting", false);
+            self.SetTimeTicker("bullet_time_ticker", 0.0f);
+            self.SetTimeTicker("emit_ticker", 0.05f);
+            self.SetTimeTicker("climb_jump_ticker", 1.0f);
+            self.SetTimeTicker("hook_break_ticker", 0.15f);
+            self.SetTimeTicker("elec_shock_ticker", 1.0f);
             DynamicData.For(self).Set("rope_is_loosen", true);
             DynamicData.For(self).Set("is_booster_dash", false);
 #if DEBUG
@@ -422,7 +427,7 @@ namespace Celeste.Mod.Aqua.Core
 #endif
                 float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
                 _madelinesHook.AlongRopeSpeed = speedAlongRope;
-                TimeTicker breakTicker = DynamicData.For(self).Get<TimeTicker>("hook_break_ticker");
+                TimeTicker breakTicker = self.GetTimeTicker("hook_break_ticker");
                 if (speedAlongRope >= 0.0f)
                 {
                     DynamicData.For(self).Set("rope_is_loosen", false);
@@ -476,7 +481,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void Player_ElectricShockingBegin(this Player self)
         {
             self.Speed = Vector2.Zero;
-            TimeTicker ticker = DynamicData.For(self).Get<TimeTicker>("elec_shock_ticker");
+            TimeTicker ticker = self.GetTimeTicker("elec_shock_ticker");
             ticker.Reset();
             self.Sprite.SetHookMode(true);
             self.Sprite.Play("electricshock");
@@ -485,7 +490,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int Player_ElectricShockingUpdate(this Player self)
         {
-            TimeTicker ticker = DynamicData.For(self).Get<TimeTicker>("elec_shock_ticker");
+            TimeTicker ticker = self.GetTimeTicker("elec_shock_ticker");
             ticker.Tick(Engine.DeltaTime);
             if (ticker.Check())
             {
@@ -507,7 +512,7 @@ namespace Celeste.Mod.Aqua.Core
             else
             {
                 float dt = Engine.DeltaTime;
-                TimeTicker climbJumpTicker = DynamicData.For(self).Get<TimeTicker>("climb_jump_ticker");
+                TimeTicker climbJumpTicker = self.GetTimeTicker("climb_jump_ticker");
                 climbJumpTicker.Tick(dt);
                 DynamicData.For(self).Set("rope_is_loosen", true);
                 DynamicData.For(self).Set("previous_facing", (int)self.Facing);
@@ -549,7 +554,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void Player_ClimbJump(On.Celeste.Player.orig_ClimbJump orig, Player self)
         {
             orig(self);
-            TimeTicker climbJumpTicker = DynamicData.For(self).Get<TimeTicker>("climb_jump_ticker");
+            TimeTicker climbJumpTicker = self.GetTimeTicker("climb_jump_ticker");
             climbJumpTicker.Reset();
         }
 
@@ -631,19 +636,34 @@ namespace Celeste.Mod.Aqua.Core
                 return -1;
 
             float dt = Engine.DeltaTime;
+            if (DynamicData.For(self).Get<bool>("start_emitting"))
+            {
+                TimeTicker emittingTicker = self.GetTimeTicker("emit_ticker");
+                emittingTicker.Tick(Engine.RawDeltaTime);
+                if (emittingTicker.Check())
+                {
+                    Engine.TimeRate = 1.0f;
+                    DynamicData.For(self).Set("start_emitting", false);
+                    Vector2 direction = new Vector2(0.0f, -1.0f);
+                    if (Input.MoveX.Value != 0 || Input.MoveY.Value != 0)
+                    {
+                        direction.X = Input.MoveX;
+                        direction.Y = Input.MoveY;
+                        direction.Normalize();
+                    }
+                    float emitSpeed = AquaModule.Settings.HookSettings.EmitSpeed;
+                    self.CalculateEmitParameters(ref direction, ref emitSpeed);
+                    _madelinesHook.Emit(direction, emitSpeed);
+                    self.Scene.Add(_madelinesHook);
+                }
+                return -1;
+            }
             if (!_madelinesHook.Active && AquaModule.Settings.ThrowHook.Pressed && !self.IsExhausted() && self.Holding == null)
             {
-                Vector2 direction = new Vector2(0.0f, -1.0f);
-                if (Input.MoveX.Value != 0 || Input.MoveY.Value != 0)
-                {
-                    direction.X = Input.MoveX;
-                    direction.Y = Input.MoveY;
-                    direction.Normalize();
-                }
-                float emitSpeed = AquaModule.Settings.HookSettings.EmitSpeed;
-                self.CalculateEmitParameters(ref direction, ref emitSpeed);
-                _madelinesHook.Emit(direction, emitSpeed);
-                self.Scene.Add(_madelinesHook);
+                Engine.TimeRate = 0.1f;
+                DynamicData.For(self).Set("start_emitting", true);
+                TimeTicker emittingTicker = self.GetTimeTicker("emit_ticker");
+                emittingTicker.Reset();
                 return -1;
             }
 
