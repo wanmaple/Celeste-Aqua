@@ -164,13 +164,9 @@ namespace Celeste.Mod.Aqua.Core
             self.StateMachine.SetStateName((int)AquaStates.StHanging, "Hanging");
             self.StateMachine.SetCallbacks((int)AquaStates.StElectricShocking, self.Player_ElectricShockingUpdate, null, self.Player_ElectricShockingBegin);
             self.StateMachine.SetStateName((int)AquaStates.StElectricShocking, "ElectricShocking");
-            var bulletTimeTicker = new TimeTicker(0.0f);
-            var emitTicker = new TimeTicker(0.05f);
-            var climbJumpTicker = new TimeTicker(1.0f);
-            var hookBreakTicker = new TimeTicker(0.15f);
-            var elecShockTicker = new TimeTicker(1.0f);
             DynamicData.For(self).Set("start_emitting", false);
             self.SetTimeTicker("bullet_time_ticker", 0.0f);
+            self.SetTimeTicker("dash_hanging_ticker", 0.05f);
             self.SetTimeTicker("emit_ticker", 0.05f);
             self.SetTimeTicker("climb_jump_ticker", 1.0f);
             self.SetTimeTicker("hook_break_ticker", 0.15f);
@@ -306,6 +302,8 @@ namespace Celeste.Mod.Aqua.Core
         private static void Player_DashBegin(On.Celeste.Player.orig_DashBegin orig, Player self)
         {
             orig(self);
+            TimeTicker dashHangingTicker = self.GetTimeTicker("dash_hanging_ticker");
+            dashHangingTicker.Reset();
             if (self.CurrentBooster != null)
             {
                 DynamicData.For(self).Set("is_booster_dash", true);
@@ -767,8 +765,13 @@ namespace Celeste.Mod.Aqua.Core
             float dt = Engine.DeltaTime;
             if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
             {
-                TimeTicker climbJumpTicker = DynamicData.For(self).Get<TimeTicker>("climb_jump_ticker");
-                if (!self.onGround && climbJumpTicker.Check() && (Input.GrabCheck || AquaModule.Settings.AutoGrabHookIfPossible))
+                TimeTicker climbJumpTicker = self.GetTimeTicker("climb_jump_ticker");
+                TimeTicker dashHangingTicker = self.GetTimeTicker("dash_hanging_ticker");
+                if (self.StateMachine.State == (int)AquaStates.StDash)
+                {
+                    dashHangingTicker.Tick(dt);
+                }
+                if (!self.onGround && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()) && climbJumpTicker.Check() && (Input.GrabCheck || AquaModule.Settings.AutoGrabHookIfPossible))
                 {
                     Vector2 ropeDirection = _madelinesHook.RopeDirection;
                     bool swingUp = AquaMaths.Cross(Vector2.UnitX, ropeDirection) >= 0.0f;
