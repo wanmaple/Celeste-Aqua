@@ -188,6 +188,7 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, scene);
             AreaData mapData = AreaData.Get((scene as Level).Session.Area);
             _madelinesHook = new GrapplingHook(AquaModule.Settings.HookSettings.Size, AquaModule.Settings.HookSettings.RopeLength, (GrapplingHook.RopeMaterial)mapData.GetExtraMeta().HookMaterial);
+            _throwHookCheck = new ThrowHookCheck(AquaModule.Settings.ThrowHook, AquaModule.Settings.ThrowHookMode);
             DynamicData.For(self).Set("previous_facing", (int)self.Facing);
         }
 
@@ -376,7 +377,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             else if (self.CanDash)
             {
-                _madelinesHook.Revoke();
+                //_madelinesHook.Revoke();
                 return self.StartDash();
             }
             else if (self.IsExhausted())
@@ -384,19 +385,16 @@ namespace Celeste.Mod.Aqua.Core
                 _madelinesHook.Revoke();
                 return (int)AquaStates.StNormal;
             }
-            else if (AquaModule.Settings.ThrowHook.Pressed)
+            else if (_throwHookCheck.CanFlyTowards && _madelinesHook.CanFlyToward())
             {
-                if (_madelinesHook.CanFlyToward())
-                {
-                    FlyTowardHook(self);
-                }
-                else
-                {
-                    _madelinesHook.Revoke();
-                    return (int)AquaStates.StNormal;
-                }
+                FlyTowardHook(self);
             }
-            else if (!Input.GrabCheck)
+            else if (_throwHookCheck.CanRevoke)
+            {
+                _madelinesHook.Revoke();
+                return (int)AquaStates.StNormal;
+            }
+            else if (!Input.GrabCheck && !AquaModule.Settings.AutoGrabHookIfPossible)
             {
                 return (int)AquaStates.StNormal;
             }
@@ -522,6 +520,7 @@ namespace Celeste.Mod.Aqua.Core
                 if (_madelinesHook.Active && _madelinesHook.Revoked)
                 {
                     self.Scene.Remove(_madelinesHook);
+                    _throwHookCheck.EndPeriod();
                 }
                 else if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
                 {
@@ -549,6 +548,7 @@ namespace Celeste.Mod.Aqua.Core
                     }
                 }
             }
+            _throwHookCheck.Update();
         }
 
         private static void Player_ClimbJump(On.Celeste.Player.orig_ClimbJump orig, Player self)
@@ -658,7 +658,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 return -1;
             }
-            if (!_madelinesHook.Active && AquaModule.Settings.ThrowHook.Pressed && !self.IsExhausted() && self.Holding == null)
+            if (!_madelinesHook.Active && _throwHookCheck.CanThrow && !self.IsExhausted() && self.Holding == null)
             {
                 Engine.TimeRate = 0.1f;
                 DynamicData.For(self).Set("start_emitting", true);
@@ -677,7 +677,7 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     FlyTowardHook(self);
                 }
-                else if (AquaModule.Settings.ThrowHook.Pressed)
+                else if (_throwHookCheck.CanRevoke || _throwHookCheck.CanFlyTowards)
                 {
                     if (_madelinesHook.State == GrapplingHook.HookStates.Emitting)
                     {
@@ -685,11 +685,11 @@ namespace Celeste.Mod.Aqua.Core
                     }
                     else if (_madelinesHook.State == GrapplingHook.HookStates.Fixed)
                     {
-                        if (_madelinesHook.CanFlyToward())
+                        if (_throwHookCheck.CanFlyTowards && _madelinesHook.CanFlyToward())
                         {
                             FlyTowardHook(self);
                         }
-                        else
+                        else if (_throwHookCheck.CanRevoke)
                         {
                             _madelinesHook.Revoke();
                         }
@@ -768,7 +768,7 @@ namespace Celeste.Mod.Aqua.Core
             if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed)
             {
                 TimeTicker climbJumpTicker = DynamicData.For(self).Get<TimeTicker>("climb_jump_ticker");
-                if (!self.onGround && climbJumpTicker.Check() && Input.GrabCheck)
+                if (!self.onGround && climbJumpTicker.Check() && (Input.GrabCheck || AquaModule.Settings.AutoGrabHookIfPossible))
                 {
                     Vector2 ropeDirection = _madelinesHook.RopeDirection;
                     bool swingUp = AquaMaths.Cross(Vector2.UnitX, ropeDirection) >= 0.0f;
@@ -830,5 +830,6 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         private static GrapplingHook _madelinesHook;
+        private static ThrowHookCheck _throwHookCheck;
     }
 }

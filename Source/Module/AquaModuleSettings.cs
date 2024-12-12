@@ -1,3 +1,4 @@
+using Celeste.Mod.Aqua.Core;
 using Microsoft.Xna.Framework.Input;
 
 namespace Celeste.Mod.Aqua.Module;
@@ -12,6 +13,10 @@ public class AquaModuleSettings : EverestModuleSettings
     public HookSettings HookSettings { get; set; } = new HookSettings();
 
     public bool ResetHookSettings { get; set; }
+
+    public bool AutoGrabHookIfPossible { get; set; }
+
+    public ThrowHookModes ThrowHookMode { get; set; }
 
     public void CreateResetHookSettingsEntry(TextMenu menu, bool inGame)
     {
