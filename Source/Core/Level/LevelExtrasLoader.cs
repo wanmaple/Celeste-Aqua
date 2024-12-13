@@ -7,12 +7,20 @@ namespace Celeste.Mod.Aqua.Core
     {
         public static void Initialize()
         {
+            On.Celeste.AreaData.ctor += AreaData_Construct;
             On.Celeste.AreaData.Load += AreaData_Load;
         }
 
         public static void Uninitialize()
         {
+            On.Celeste.AreaData.ctor -= AreaData_Construct;
             On.Celeste.AreaData.Load -= AreaData_Load;
+        }
+
+        private static void AreaData_Construct(On.Celeste.AreaData.orig_ctor orig, AreaData self)
+        {
+            orig(self);
+            self.SetExtraMeta(new LevelExtras());
         }
 
         private static void AreaData_Load(On.Celeste.AreaData.orig_Load orig)

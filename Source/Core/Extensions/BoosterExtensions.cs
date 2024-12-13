@@ -24,6 +24,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, position, red);
             self.Add(new HookInteractable(self.OnHookCollide));
+            self.SetHookable(true);
         }
 
         private static void Booster_Respawn(On.Celeste.Booster.orig_Respawn orig, Booster self)

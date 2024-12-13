@@ -4,6 +4,7 @@ using Monocle;
 using MonoMod.Utils;
 using System;
 using System.Collections;
+using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -28,6 +29,7 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, position);
             self.SetHookable(false);
             self.SetHookAttached(false);
+            DynamicData.For(self).Set("can_collide_method", null);
         }
 
         private static void Entity_Awake(On.Monocle.Entity.orig_Awake orig, Entity self, Scene scene)
@@ -77,6 +79,16 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
+        public static TimeTicker GetTimeTicker(this Entity self, string name)
+        {
+            return DynamicData.For(self).Get<TimeTicker>(name);
+        }
+
+        public static void SetTimeTicker(this Entity self, string name, float duration)
+        {
+            DynamicData.For(self).Set(name, new TimeTicker(duration));
+        }
+
         public static IEnumerator UndraggableRoutine(this Entity self, Sprite sprite, Vector2 direction, float duration, float distance)
         {
             float elapsed = 0.0f;
@@ -102,6 +114,20 @@ namespace Celeste.Mod.Aqua.Core
                 sprite.RenderPosition = oldRenderPos + offset;
                 yield return null;
             }
+        }
+
+        public static bool CanCollide(this Entity self, Entity other)
+        {
+            MethodInfo method = DynamicData.For(self).Get<MethodInfo>("can_collide_method");
+            if (method == null)
+                return true;
+            return (bool)method.Invoke(self, new object[] { other });
+        }
+
+        public static void MakeExtraCollideCondition(this Entity self)
+        {
+            MethodInfo method = self.GetType().GetMethod("CanCollide", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            DynamicData.For(self).Set("can_collide_method", method);
         }
     }
 }

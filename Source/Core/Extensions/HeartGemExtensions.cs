@@ -18,6 +18,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void HeartGem_Construct(On.Celeste.HeartGem.orig_ctor_Vector2 orig, HeartGem self, Vector2 position)
         {
             orig(self, position);
+            self.SetHookable(true);
             self.Add(new HookCollider(self.OnHookCollide));
         }
 

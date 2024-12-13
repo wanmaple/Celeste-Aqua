@@ -21,17 +21,17 @@ function UnhookableArea.sprite(room, entity)
     local width = entity.width or 16
     local height = entity.height or 16
 
-    local fillColor, borderColor, textColor = "d0d0d088", "ffffff", "ffffff"
+    local fillColor, borderColor = "d0d0d088", "ffffff"
     local borderedRectangle = DrawableRectangle.fromRectangle("bordered", x, y, width, height, fillColor, borderColor)
-    -- local textDrawable = DrawableText.fromText("Unhookable", x, y, width, height, nil, Triggers.triggerFontSize, textColor)
+    local textDrawable = DrawableText.fromText("Unhookable", x, y, width, height, nil, Triggers.triggerFontSize)
 
     local drawables = borderedRectangle:getDrawableSprite()
     for _, drawable in ipairs(drawables) do
         drawable.depth = Depths.triggers
     end
-    -- table.insert(drawables, textDrawable)
+    table.insert(drawables, textDrawable)
 
-    -- textDrawable.depth = Depths.triggers - 1
+    textDrawable.depth = Depths.triggers - 1
 
     return drawables
 end

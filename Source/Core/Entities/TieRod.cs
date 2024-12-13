@@ -26,6 +26,7 @@ namespace Celeste.Mod.Aqua.Core
             _sprite.Play("idle");
             Add(new HookInteractable(OnHookInteract));
             Depth = -10000;
+            this.SetHookable(true);
         }
 
         public override void Update()

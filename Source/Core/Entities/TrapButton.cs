@@ -48,6 +48,7 @@ namespace Celeste.Mod.Aqua.Core
             _texPressed = GFX.Game["objects/trap_button/button01"];
             _texPedestal = GFX.Game["objects/trap_button/button_pedestal"];
             Depth = -10000;
+            this.SetHookable(true);
         }
 
         public override void Awake(Scene scene)

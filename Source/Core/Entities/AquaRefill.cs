@@ -34,6 +34,7 @@ namespace Celeste.Mod.Aqua.Core
                 outline.Texture = GFX.Game[dir + "outline"];
                 GFX.SpriteBank.CreateOn(sprite, animID);
                 GFX.SpriteBank.CreateOn(flash, animID + "Flash");
+                this.SetHookable(true);
             }
             PlayerCollider old = Get<PlayerCollider>();
             old.OnCollide = OnPlayerCollide;

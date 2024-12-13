@@ -18,13 +18,13 @@ namespace Celeste.Mod.Aqua.Core
         private static void Spring_Construct(On.Celeste.Spring.orig_ctor_Vector2_Orientations_bool orig, Spring self, Vector2 position, Spring.Orientations orientation, bool playerCanUse)
         {
             orig(self, position, orientation, playerCanUse);
-
+            self.SetHookable(true);
             self.Add(new HookInteractable(self.OnInteractHook));
         }
 
         private static bool OnInteractHook(this Spring self, GrapplingHook hook, Vector2 at)
         {
-            if (hook.Bounce(self.GetBounceDirection(), AquaModule.Settings.HookSettings.BounceSpeedAddition))
+            if (hook.Bounce(self.GetBounceDirection(), GrapplingHook.BOUNCE_SPEED_ADDITION))
             {
                 self.BounceAnimate();
                 return true;

@@ -73,14 +73,6 @@ namespace Celeste.Mod.Aqua.Module
         [DefaultValue(2)]
         public int WindCoefficient { get; set; }
 
-        //[SettingRange(800, 1200, true)]
-        [DefaultValue(1000)]
-        public int BouncingSpeed { get; set; }
-
-        //[SettingRange(100, 200, true)]
-        [DefaultValue(150)]
-        public int BounceSpeedAddition { get; set; }
-
         public HookSettings()
         {
             Reset();

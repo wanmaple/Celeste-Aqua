@@ -135,7 +135,7 @@ namespace Celeste.Mod.Aqua.Core
             _renderer = new RopeRenderer(ropeTexture);
         }
 
-        public Vector2 DetectHookNextPosition(float dt, bool revoking, out bool changeState)
+        public Vector2 DetectHookNextPosition(float dt, bool revoking, float speedCoeff, out bool changeState)
         {
             if (Scene == null)
             {
@@ -143,7 +143,7 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             changeState = false;
-            float hookMovement = EmitSpeed * dt;
+            float hookMovement = EmitSpeed * speedCoeff * dt;
             GrapplingHook hook = Entity as GrapplingHook;
             Player player = Scene.Tracker.GetEntity<Player>();
             if (player == null) return hook.Position;
@@ -507,19 +507,19 @@ namespace Celeste.Mod.Aqua.Core
             SortedSet<PotentialPoint> potentials = new SortedSet<PotentialPoint>(AlongPerpComparer);
             foreach (Solid solid in solids)
             {
-                if (!solid.Collidable || solid.Collider == null) continue;
+                if (!solid.Collidable || solid.Collider == null || !solid.IsHookable()) continue;
                 CheckCollisionSolid(prevPivot, currentPivot, lastSegments, solid, potentials);
             }
             List<Entity> jumps = Scene.Tracker.GetEntities<JumpThru>();
             foreach (JumpThru jump in jumps)
             {
-                if (!jump.Collidable || jump.Collider == null) continue;
+                if (!jump.Collidable || jump.Collider == null || !jump.IsHookable()) continue;
                 CheckCollisionJumpThru(prevPivot, currentPivot, lastSegments, jump, potentials);
             }
             //List<Bumper> bumpers = Scene.Entities.FindAll<Bumper>();
             //foreach (Bumper bumper in bumpers)
             //{
-            //    if (!bumper.Collidable || bumper.Collider == null) continue;
+            //    if (!bumper.Collidable || bumper.Collider == null || !bumper.IsHookable()) continue;
             //    CheckCollisionBumper(prevPivot, currentPivot, lastSegments, bumper, potentials);
             //}
             if (potentials.Count > 0)

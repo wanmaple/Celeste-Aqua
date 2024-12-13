@@ -15,7 +15,7 @@
         private static void CoreModeToggle_Construct(On.Celeste.CoreModeToggle.orig_ctor_Vector2_bool_bool_bool orig, CoreModeToggle self, Microsoft.Xna.Framework.Vector2 position, bool onlyFire, bool onlyIce, bool persistent)
         {
             orig(self, position, onlyFire, onlyIce, persistent);
-
+            self.SetHookable(true);
             self.Add(new HookCollider(self.OnGrapplingHook));
         }
 

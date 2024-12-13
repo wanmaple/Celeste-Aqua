@@ -70,6 +70,7 @@ namespace Celeste.Mod.Aqua.Core
             _moveToward.Target = hook;
             _moveToward.BaseSpeed = 100000.0f;
             _moveToward.Active = true;
+            _grabbing = true;
             return true;
         }
 
@@ -78,6 +79,10 @@ namespace Celeste.Mod.Aqua.Core
             if (respawnTimer <= 0f && cannotUseTimer <= 0f && !BoostingPlayer)
             {
                 cannotUseTimer = 0.45f;
+                if (Hookable && _grabbing)
+                {
+                    Position = player.Center;
+                }
                 if (red)
                 {
                     player.RedBoost(this);
@@ -92,6 +97,7 @@ namespace Celeste.Mod.Aqua.Core
                 sprite.Play("inside");
                 sprite.FlipX = player.Facing == Facings.Left;
                 _moveToward.Active = false;
+                _grabbing = false;
             }
         }
 
@@ -221,5 +227,6 @@ namespace Celeste.Mod.Aqua.Core
         //}
 
         private MoveToward _moveToward;
+        private bool _grabbing;
     }
 }

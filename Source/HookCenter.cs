@@ -7,6 +7,7 @@ namespace Celeste.Mod.Aqua
     {
         public void Hook()
         {
+            CollideExtensions.Initialize();
             LevelExtrasLoader.Initialize();
             LevelLoaderExtensions.Initialize();
             ParticleTypesExtensions.Initialize();
@@ -27,6 +28,7 @@ namespace Celeste.Mod.Aqua
             CassetteBlockExtensions.Initialize();
             CoreModeToggleExtensions.Initialize();
             LightningExtensions.Initialize();
+            WaterExtensions.Initialize();
             HeartGemExtensions.Initialize();
             PlayerSpriteExtensions.Initialize();
             PlayerStates.Initialize();
@@ -34,6 +36,7 @@ namespace Celeste.Mod.Aqua
 
         public void Unhook()
         {
+            CollideExtensions.Uninitialize();
             LevelExtrasLoader.Uninitialize();
             LevelLoaderExtensions.Uninitialize();
             ParticleTypesExtensions.Uninitialize();
@@ -54,6 +57,7 @@ namespace Celeste.Mod.Aqua
             CassetteBlockExtensions.Uninitialize();
             CoreModeToggleExtensions.Uninitialize();
             LightningExtensions.Uninitialize();
+            WaterExtensions.Uninitialize();
             HeartGemExtensions.Uninitialize();
             PlayerSpriteExtensions.Uninitialize();
             PlayerStates.Uninitialize();

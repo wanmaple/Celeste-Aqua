@@ -19,14 +19,14 @@ namespace Celeste.Mod.Aqua.Core
         private static void Bumper_Construct(On.Celeste.Bumper.orig_ctor_Vector2_Nullable1 orig, Bumper self, Vector2 position, Vector2? node)
         {
             orig(self, position, node);
-
+            self.SetHookable(true);
             self.Add(new HookInteractable(self.OnInteractHook));
         }
 
         private static bool OnInteractHook(this Bumper self, GrapplingHook hook, Vector2 at)
         {
             Vector2 direction = Vector2.Normalize(at - self.Center);
-            if (hook.Bounce(direction, AquaModule.Settings.HookSettings.BounceSpeedAddition))
+            if (hook.Bounce(direction, GrapplingHook.BOUNCE_SPEED_ADDITION))
             {
                 self.Hit(direction);
                 return true;

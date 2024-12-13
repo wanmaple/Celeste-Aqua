@@ -78,6 +78,13 @@ entities.Aqua/Rod Move Block.attributes.description.speed=Move speed of block.
 # Tie Rod
 entities.Aqua/Tie Rod.attributes.description.group=Which group of entities to control.
 
+# Booster Filter
+entities.Aqua/Booster Filter.attributes.description.color=Area main color.
+entities.Aqua/Booster Filter.attributes.description.opacity=Area main opacity.
+entities.Aqua/Booster Filter.attributes.description.particle_color=Area particle color.
+entities.Aqua/Booster Filter.attributes.description.particle_opacity=Area particle opacity.
+entities.Aqua/Booster Filter.attributes.description.can_pass=What kind of booster can pass through.
+
 # Aqua Bird Trigger
 triggers.Aqua/Aqua Bird Trigger.attributes.description.birdId=Identifier of the bird.
 triggers.Aqua/Aqua Bird Trigger.attributes.description.tutorialIndex=The tutorial index related to the Aqua Bird.

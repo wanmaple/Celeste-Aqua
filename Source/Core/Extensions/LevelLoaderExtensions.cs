@@ -13,11 +13,13 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             IL.Celeste.LevelLoader.ctor += LevelLoader_Construct;
+            On.Celeste.LevelLoader.LoadingThread += LevelLoader_LoadingThread;
         }
 
         public static void Uninitialize()
         {
             IL.Celeste.LevelLoader.ctor -= LevelLoader_Construct;
+            On.Celeste.LevelLoader.LoadingThread -= LevelLoader_LoadingThread;
         }
 
         private static void LevelLoader_Construct(ILContext il)
@@ -32,6 +34,12 @@ namespace Celeste.Mod.Aqua.Core
                 ILCreateFramesMetadata(cursor, "AquaBadeline");
                 ILCreateFramesMetadata(cursor, "MadelineAsBadeline");
             }
+        }
+
+        private static void LevelLoader_LoadingThread(On.Celeste.LevelLoader.orig_LoadingThread orig, LevelLoader self)
+        {
+            orig(self);
+            self.Level.Add(new BarrierRenderer());
         }
 
         private static void ILCreateFramesMetadata(ILCursor cursor, string spriteName)
