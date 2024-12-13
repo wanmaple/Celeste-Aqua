@@ -828,7 +828,6 @@ namespace Celeste.Mod.Aqua.Core
         private static void HandleHangingSpeed(this Player self, float dt)
         {
             self.Speed.Y += Player.Gravity * dt;
-            AquaDebugger.LogInfo("Acc: {0}", _madelinesHook.Acceleration);
             self.Speed -= _madelinesHook.Acceleration * dt * 0.8f;
             self.Speed += self.CalculateWindSpeed() * dt * AquaModule.Settings.HookSettings.WindCoefficient;
         }

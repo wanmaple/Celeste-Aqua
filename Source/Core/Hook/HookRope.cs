@@ -525,6 +525,7 @@ namespace Celeste.Mod.Aqua.Core
             if (potentials.Count > 0)
             {
                 RopePivot pivot = potentials.Min.pivot;
+                AquaDebugger.LogInfo("CheckHangable {0}", pivot);
                 addedPivots.Add(pivot);
                 ropeSeg.Point1 = pivot.point;
                 CheckCollisionHangables(pivot, currentPivot, lastSegments, addedPivots);
@@ -624,6 +625,10 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (WillHitPivot(prevPt, pivot, lastSegments, curRopeSeg))
                 {
+                    if (pivot.point.X == 2952)
+                    {
+
+                    }
                     Vector2 prev = curPt - curRopeSeg.Point1;
                     Vector2 alongPerp = new Vector2(prev.Y, -prev.X);
                     float perpDis = MathF.Abs(Vector2.Dot(prev, alongPerp));
@@ -650,7 +655,12 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     float crossOld = AquaMaths.Cross(oldToPrev, oldToNext);
                     int signOld = MathF.Sign(crossOld);
-                    if (signOld != signNew)
+                    bool inside = true;
+                    if (lastSeg.Point1 == currentRopeSeg.Point1)
+                    {
+                        inside = AquaMaths.IsPointInsideTriangle(currentPt, lastSeg.Point1, lastSeg.Point2, currentRopeSeg.Point2);
+                    }
+                    if (signOld != signNew && inside)
                     {
                         if (signOld == 0)
                         {

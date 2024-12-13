@@ -65,13 +65,17 @@ namespace Celeste.Mod.Aqua.Core
 
         private bool OnHookGrab(GrapplingHook hook, Vector2 at)
         {
-            Audio.Play(red ? "event:/game/05_mirror_temple/redbooster_reappear" : "event:/game/04_cliffside/greenbooster_reappear", Position);
-            hook.Revoke();
-            _moveToward.Target = hook;
-            _moveToward.BaseSpeed = 100000.0f;
-            _moveToward.Active = true;
-            _grabbing = true;
-            return true;
+            if (!BoostingPlayer)
+            {
+                Audio.Play(red ? "event:/game/05_mirror_temple/redbooster_reappear" : "event:/game/04_cliffside/greenbooster_reappear", Position);
+                hook.Revoke();
+                _moveToward.Target = hook;
+                _moveToward.BaseSpeed = 100000.0f;
+                _moveToward.Active = true;
+                _grabbing = true;
+                return true;
+            }
+            return false;
         }
 
         private void OnPlayerEx(Player player)

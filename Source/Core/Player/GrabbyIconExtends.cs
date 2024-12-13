@@ -42,7 +42,10 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     string texture = state.AutoGrabHookRope ? "util/grab_rope" : "util/ungrab_rope";
                     float x = self.enabled ? 6.0f : 0.0f;
-                    GFX.Game[texture].DrawJustified(new Vector2(entity.X + x, entity.Y - 16.0f), new Vector2(0.5f, 1.0f), Color.White, scale);
+                    if (state.AutoGrabHookRope)
+                    {
+                        GFX.Game[texture].DrawJustified(new Vector2(entity.X + x, entity.Y - 16.0f), new Vector2(0.5f, 1.0f), Color.White, scale);
+                    }
                 }
             }
         }
@@ -50,7 +53,7 @@ namespace Celeste.Mod.Aqua.Core
         private static float CalculateOffset(this GrabbyIcon self)
         {
             LevelStates.LevelState state = self.SceneAs<Level>().GetState();
-            if (state.FeatureEnabled && self.enabled)
+            if (state.FeatureEnabled && state.AutoGrabHookRope && self.enabled)
             {
                 return -6.0f;
             }

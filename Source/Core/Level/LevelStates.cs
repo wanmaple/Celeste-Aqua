@@ -44,9 +44,13 @@ namespace Celeste.Mod.Aqua.Core
         private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader)
         {
             orig(self, playerIntro, isFromLoader);
-            AreaData areaData = AreaData.Get(self.Session.Area);
-            var state = new LevelState(areaData);
-            DynamicData.For(self).Set("state", state);
+            LevelState state = self.GetState();
+            if (state == null)
+            {
+                AreaData areaData = AreaData.Get(self.Session.Area);
+                state = new LevelState(areaData);
+                DynamicData.For(self).Set("state", state);
+            }
         }
 
         private static void Level_Update(On.Celeste.Level.orig_Update orig, Level self)
