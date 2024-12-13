@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Celeste.Mod.Aqua.Rendering;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace Celeste.Mod.Aqua.Module;
 
@@ -39,5 +42,18 @@ public class AquaModule : EverestModule
     {
         // TODO: unapply any hooks applied in Load()
         HookCenter.Unhook();
+    }
+
+    public override void LoadContent(bool firstLoad)
+    {
+        ModContent mod = Everest.Content.Mods.First(mod => mod.Name == ModConstants.MOD_NAME);
+        foreach (ModAsset asset in mod.List)
+        {
+            if (asset.PathVirtual.StartsWith("Shaders/") && Path.GetExtension(asset.PathVirtual) == ".cso")
+            {
+                string shaderName = Path.GetFileNameWithoutExtension(asset.PathVirtual);
+                FXCenter.Instance.PrepareLoad(shaderName, asset);
+            }
+        }
     }
 }

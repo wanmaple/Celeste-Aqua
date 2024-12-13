@@ -39,6 +39,16 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return IsApproximateZero(vec.X) && IsApproximateZero(vec.Y);
         }
 
+        public static bool IsPointInsideTriangle(Vector2 pt, Vector2 tri1, Vector2 tri2, Vector2 tri3)
+        {
+            float d1 = Sign(pt, tri1, tri2);
+            float d2 = Sign(pt, tri2, tri3);
+            float d3 = Sign(pt, tri3, tri1);
+            bool hasNeg = d1 < 0.0f || d2 < 0.0f || d3 < 0.0f;
+            bool hasPos = d1 > 0.0f || d2 > 0.0f || d3 > 0.0f;
+            return !(hasNeg && hasPos);
+        }
+
         public static float Cross(Vector2 v1, Vector2 v2)
         {
             return v1.X * v2.Y - v1.Y * v2.X;
@@ -83,6 +93,12 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return ret;
         }
 
+
+        public static Matrix TRS(Vector3 position, Quaternion rotation, Vector3 scale)
+        {
+            return Matrix.CreateTranslation(position) * Matrix.CreateFromQuaternion(rotation) * Matrix.CreateScale(scale);
+        }
+
         // 没有2x2矩阵可以用，用4x4的凑合一下，虽然运算量会上来
         public static Matrix BuildMatrix(Vector2 v1, Vector2 v2)
         {
@@ -105,6 +121,11 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             float z = Vector4.Dot(row3, v);
             float w = Vector4.Dot(row4, v);
             return new Vector4(x, y, z, w);
+        }
+
+        private static float Sign(Vector2 p1, Vector2 p2, Vector2 p3)
+        {
+            return (p1.X - p3.X) * (p2.Y - p3.Y) - (p2.X - p3.X) * (p1.Y - p3.Y);
         }
     }
 }
