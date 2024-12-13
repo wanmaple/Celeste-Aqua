@@ -65,10 +65,6 @@ namespace Celeste.Mod.Aqua.Module
         [DefaultValue(325)]
         public int FlyTowardSpeed { get; set; }
 
-        [SettingRange(1, 10)]
-        [DefaultValue(5)]
-        public int InertiaCoefficient { get; set; }
-
         [SettingRange(1, 5)]
         [DefaultValue(2)]
         public int WindCoefficient { get; set; }

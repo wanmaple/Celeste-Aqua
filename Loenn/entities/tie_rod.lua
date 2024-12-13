@@ -14,7 +14,7 @@ TieRod.fieldInformation = {
 TieRod.placements = {
     name = "Tie Rod",
     data = {
-        group = 0,
+        flag = "Rod1",
     }
 }
 

@@ -32,6 +32,8 @@ namespace Celeste.Mod.Aqua
             HeartGemExtensions.Initialize();
             PlayerSpriteExtensions.Initialize();
             PlayerStates.Initialize();
+            GrabbyIconExtends.Initialize();
+            LevelStates.Initialize();
         }
 
         public void Unhook()
@@ -61,6 +63,8 @@ namespace Celeste.Mod.Aqua
             HeartGemExtensions.Uninitialize();
             PlayerSpriteExtensions.Uninitialize();
             PlayerStates.Uninitialize();
+            GrabbyIconExtends.Uninitialize();
+            LevelStates.Uninitialize();
         }
     }
 }

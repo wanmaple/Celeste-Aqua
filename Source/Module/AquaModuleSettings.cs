@@ -8,13 +8,16 @@ public class AquaModuleSettings : EverestModuleSettings
     [DefaultButtonBinding(Buttons.LeftShoulder, Keys.V)]
     public ButtonBinding ThrowHook { get; set; }
 
+    [DefaultButtonBinding(Buttons.Y, Keys.Tab)]
+    public ButtonBinding SwitchAutoGrab { get; set; }
+
     public bool FeatureEnabled { get; set; } = true;
 
     public HookSettings HookSettings { get; set; } = new HookSettings();
 
     public bool ResetHookSettings { get; set; }
 
-    public bool AutoGrabHookIfPossible { get; set; }
+    public bool AutoGrabRopeIfPossible { get; set; }
 
     public ThrowHookModes ThrowHookMode { get; set; }
 

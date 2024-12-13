@@ -55,7 +55,7 @@ for i, theme in ipairs(themes) do
         data = {
             width = 16,
             height = 16,
-            group = 0,
+            flag = "Rod1",
             duration = 0.5,
             theme = theme,
         },

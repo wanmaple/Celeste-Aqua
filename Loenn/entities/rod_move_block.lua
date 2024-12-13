@@ -33,7 +33,7 @@ for _, direction in ipairs(moveBlockDirections) do
                     height = 16,
                     direction = direction,
                     canSteer = steerable == 1,
-                    group = 0,
+                    flag = "Rod1",
                     speed = 60,
                 }
             })

@@ -12,13 +12,13 @@ namespace Celeste.Mod.Aqua.Core
     public class TrapButton : Entity
     {
         public bool Pressed { get; private set; }
-        public int Group { get; private set; }
+        public string Flag { get; private set; }
         public Color Color { get; private set; }
 
         public TrapButton(EntityData data, Vector2 offset)
             : base(data.Position + offset)
         {
-            Group = data.Int("group");
+            Flag = data.Attr("flag");
             Color = data.HexColor("color");
             switch (data.Attr("direction"))
             {
@@ -51,19 +51,6 @@ namespace Celeste.Mod.Aqua.Core
             this.SetHookable(true);
         }
 
-        public override void Awake(Scene scene)
-        {
-            base.Awake(scene);
-            List<Entity> doors = scene.Tracker.GetEntities<TrapGate>();
-            foreach (TrapGate door in doors)
-            {
-                if (door.Group == Group)
-                {
-                    door.RelatedButtons.Add(this);
-                }
-            }
-        }
-
         public override void Update()
         {
             base.Update();
@@ -75,10 +62,25 @@ namespace Celeste.Mod.Aqua.Core
             if (collideEntity != null)
             {
                 Pressed = true;
+                List<Entity> allBtns = Scene.Tracker.GetEntities<TrapButton>();
+                bool allPressed = true;
+                foreach (TrapButton btn in allBtns)
+                {
+                    if (btn.Flag == Flag && !btn.Pressed)
+                    {
+                        allPressed = false;
+                        break;
+                    }
+                }
+                if (allPressed)
+                {
+                    SceneAs<Level>().Session.SetFlag(Flag, true);
+                }
             }
             else
             {
                 Pressed = false;
+                SceneAs<Level>().Session.SetFlag(Flag, false);
             }
         }
 

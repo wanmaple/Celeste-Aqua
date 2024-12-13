@@ -26,7 +26,7 @@ TrapButton.placements = {
     {
         name = "Trap Button (Up)",
         data = {
-            group = 0,
+            flag = "Trap1",
             color = "ff0000",
             direction = "Up",
         },
@@ -34,7 +34,7 @@ TrapButton.placements = {
     {
         name = "Trap Button (Down)",
         data = {
-            group = 0,
+            flag = "Trap1",
             color = "ff0000",
             direction = "Down",
         },
@@ -42,7 +42,7 @@ TrapButton.placements = {
     {
         name = "Trap Button (Left)",
         data = {
-            group = 0,
+            flag = "Trap1",
             color = "ff0000",
             direction = "Left",
         },
@@ -50,7 +50,7 @@ TrapButton.placements = {
     {
         name = "Trap Button (Right)",
         data = {
-            group = 0,
+            flag = "Trap1",
             color = "ff0000",
             direction = "Right",
         },

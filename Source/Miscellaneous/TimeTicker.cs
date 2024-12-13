@@ -18,6 +18,11 @@
             return _ticker <= 0.0f && !_expired;
         }
 
+        public bool CheckRate(float rate)
+        {
+            return _ticker <= _time * (1.0f - rate);
+        }
+
         public void Reset()
         {
             _ticker = _time;

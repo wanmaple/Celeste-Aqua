@@ -9,7 +9,7 @@ namespace Celeste.Mod.Aqua.Core
     [Tracked(false)]
     public class RodZipMover : ZipMover, IRodControllable
     {
-        public int Group { get; private set; }
+        public string Flag { get; private set; }
         public float Duration { get; private set; }
         public bool State { get; set; }
         public bool IsRunning { get; private set; }
@@ -17,7 +17,7 @@ namespace Celeste.Mod.Aqua.Core
         public RodZipMover(EntityData data, Vector2 offset)
             : base(data, offset)
         {
-            Group = data.Int("group");
+            Flag = data.Attr("flag");
             Duration = data.Has("duration") ? Calc.Max(data.Float("duration"), 0.1f) : 0.5f;
             Coroutine coroutine = Get<Coroutine>();
             Remove(coroutine);
@@ -47,13 +47,10 @@ namespace Celeste.Mod.Aqua.Core
             base.Update();
             _lastState = State;
             streetlight.SetAnimationFrame(IsRunning ? 3 : 1);
-        }
-
-        public void Run()
-        {
-            if (IsRunning)
-                return;
-            State = !State;
+            if (!IsRunning && SceneAs<Level>().Session.GetFlag(Flag))
+            {
+                State = !State;
+            }
         }
 
         private IEnumerator RodSequence()
@@ -86,6 +83,7 @@ namespace Celeste.Mod.Aqua.Core
                     }
                     StopPlayerRunIntoAnimation = true;
                     yield return 0.2f;
+                    SceneAs<Level>().Session.SetFlag(Flag, false);
                     IsRunning = false;
                 }
                 yield return null;

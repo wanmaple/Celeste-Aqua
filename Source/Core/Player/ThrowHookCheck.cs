@@ -62,12 +62,10 @@ namespace Celeste.Mod.Aqua.Core
             if (_key.Check && !_lastPressed)
             {
                 _lastFirstPressFrame = Engine.FrameCounter;
-                AquaDebugger.LogInfo("Last Press {0}", _lastFirstPressFrame);
             }
             else if (!_key.Check && _lastPressed)
             {
                 _lastFirstNotPressFrame = Engine.FrameCounter;
-                AquaDebugger.LogInfo("Last Unpress {0}", _lastFirstNotPressFrame);
             }
             _lastPressed = _key.Check;
         }

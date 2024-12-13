@@ -49,12 +49,16 @@ namespace Celeste.Mod.Aqua.Core
 
     public static class PlayerStates
     {
+        public static GrapplingHook MadelinesHook => _madelinesHook;
+
         public static void Initialize()
         {
             IL.Celeste.Player.ctor += Player_ILConstruct;
             IL.Celeste.Player.NormalUpdate += Player_ILNormalUpdate;
             IL.Celeste.Player.OnCollideV += Player_ILOnCollideV;
             On.Celeste.Player.ctor += Player_Construct;
+            On.Celeste.Player.SceneBegin += Player_SceneBegin;
+            On.Celeste.Player.SceneEnd += Player_SceneEnd;
             On.Celeste.Player.Added += Player_Added;
             On.Celeste.Player.Removed += Player_Removed;
             On.Celeste.Player.NormalUpdate += Player_NormalUpdate;
@@ -83,6 +87,8 @@ namespace Celeste.Mod.Aqua.Core
             IL.Celeste.Player.NormalUpdate -= Player_ILNormalUpdate;
             IL.Celeste.Player.OnCollideV -= Player_ILOnCollideV;
             On.Celeste.Player.ctor -= Player_Construct;
+            On.Celeste.Player.SceneBegin -= Player_SceneBegin;
+            On.Celeste.Player.SceneEnd -= Player_SceneEnd;
             On.Celeste.Player.Added -= Player_Added;
             On.Celeste.Player.Removed -= Player_Removed;
             On.Celeste.Player.NormalUpdate -= Player_NormalUpdate;
@@ -121,7 +127,6 @@ namespace Celeste.Mod.Aqua.Core
             ILCursor cursor = new ILCursor(il);
             if (cursor.TryGotoNext(ins => ins.MatchLdcR4(90.0f), ins => ins.MatchStloc(6)))
             {
-                AquaDebugger.LogInfo("IL Hook Success");
                 cursor.Index += 2;
                 cursor.EmitLdloc(6);
                 cursor.EmitDelegate(CalculateNormalMoveCoefficient);
@@ -179,11 +184,26 @@ namespace Celeste.Mod.Aqua.Core
 #endif
         }
 
+        private static void Player_SceneBegin(On.Celeste.Player.orig_SceneBegin orig, Player self, Scene scene)
+        {
+            orig(self, scene);
+            _madelinesHook = new GrapplingHook(AquaModule.Settings.HookSettings.Size, AquaModule.Settings.HookSettings.RopeLength, (scene as Level).GetState().RopeMaterial);
+            _loaded = true;
+        }
+
+        private static void Player_SceneEnd(On.Celeste.Player.orig_SceneEnd orig, Player self, Scene scene)
+        {
+            orig(self, scene);
+            _loaded = false;
+        }
+
         private static void Player_Added(On.Celeste.Player.orig_Added orig, Player self, Scene scene)
         {
             orig(self, scene);
-            AreaData mapData = AreaData.Get((scene as Level).Session.Area);
-            _madelinesHook = new GrapplingHook(AquaModule.Settings.HookSettings.Size, AquaModule.Settings.HookSettings.RopeLength, (GrapplingHook.RopeMaterial)mapData.GetExtraMeta().HookMaterial);
+            if (_loaded)
+            {
+                _madelinesHook = new GrapplingHook(AquaModule.Settings.HookSettings.Size, AquaModule.Settings.HookSettings.RopeLength, (scene as Level).GetState().RopeMaterial);
+            }
             _throwHookCheck = new ThrowHookCheck(AquaModule.Settings.ThrowHook, AquaModule.Settings.ThrowHookMode);
             DynamicData.For(self).Set("previous_facing", (int)self.Facing);
         }
@@ -392,7 +412,7 @@ namespace Celeste.Mod.Aqua.Core
                 _madelinesHook.Revoke();
                 return (int)AquaStates.StNormal;
             }
-            else if (!Input.GrabCheck && !AquaModule.Settings.AutoGrabHookIfPossible)
+            else if (!Input.GrabCheck && !(self.level.GetState().AutoGrabHookRope))
             {
                 return (int)AquaStates.StNormal;
             }
@@ -426,6 +446,7 @@ namespace Celeste.Mod.Aqua.Core
                 TimeTicker breakTicker = self.GetTimeTicker("hook_break_ticker");
                 if (speedAlongRope >= 0.0f)
                 {
+                    _madelinesHook.SetRopeLengthLocked(true, self.Center);
                     DynamicData.For(self).Set("rope_is_loosen", false);
                     if (Input.Jump.Pressed)
                     {
@@ -449,6 +470,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 else
                 {
+                    _madelinesHook.SetRopeLengthLocked(false, self.Center);
                     breakTicker.Reset();
                     if (!swingUp)
                     {
@@ -630,7 +652,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int PreHookUpdate(Player self)
         {
-            if (!AquaModule.Settings.FeatureEnabled)
+            if (!AquaModule.Settings.FeatureEnabled || !self.level.GetState().FeatureEnabled)
                 return -1;
 
             float dt = Engine.DeltaTime;
@@ -638,21 +660,27 @@ namespace Celeste.Mod.Aqua.Core
             {
                 TimeTicker emittingTicker = self.GetTimeTicker("emit_ticker");
                 emittingTicker.Tick(Engine.RawDeltaTime);
-                if (emittingTicker.Check())
+                if (emittingTicker.CheckRate(0.5f))
                 {
-                    Engine.TimeRate = 1.0f;
-                    DynamicData.For(self).Set("start_emitting", false);
-                    Vector2 direction = new Vector2(0.0f, -1.0f);
-                    if (Input.MoveX.Value != 0 || Input.MoveY.Value != 0)
+                    if (!_madelinesHook.Active)
                     {
-                        direction.X = Input.MoveX;
-                        direction.Y = Input.MoveY;
-                        direction.Normalize();
+                        Vector2 direction = new Vector2(0.0f, -1.0f);
+                        if (Input.MoveX.Value != 0 || Input.MoveY.Value != 0)
+                        {
+                            direction.X = Input.MoveX;
+                            direction.Y = Input.MoveY;
+                            direction.Normalize();
+                        }
+                        float emitSpeed = AquaModule.Settings.HookSettings.EmitSpeed;
+                        self.CalculateEmitParameters(ref direction, ref emitSpeed);
+                        _madelinesHook.Emit(direction, emitSpeed);
+                        self.Scene.Add(_madelinesHook);
                     }
-                    float emitSpeed = AquaModule.Settings.HookSettings.EmitSpeed;
-                    self.CalculateEmitParameters(ref direction, ref emitSpeed);
-                    _madelinesHook.Emit(direction, emitSpeed);
-                    self.Scene.Add(_madelinesHook);
+                    if (emittingTicker.CheckRate(1.0f))
+                    {
+                        DynamicData.For(self).Set("start_emitting", false);
+                        Engine.TimeRate = 1.0f;
+                    }
                 }
                 return -1;
             }
@@ -759,7 +787,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int PostHookUpdate(Player self)
         {
-            if (!AquaModule.Settings.FeatureEnabled)
+            if (!AquaModule.Settings.FeatureEnabled || !self.level.GetState().FeatureEnabled)
                 return -1;
 
             float dt = Engine.DeltaTime;
@@ -771,7 +799,7 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     dashHangingTicker.Tick(dt);
                 }
-                if (!self.onGround && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()) && climbJumpTicker.Check() && (Input.GrabCheck || AquaModule.Settings.AutoGrabHookIfPossible))
+                if (!self.onGround && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()) && climbJumpTicker.Check() && (Input.GrabCheck || self.level.GetState().AutoGrabHookRope))
                 {
                     Vector2 ropeDirection = _madelinesHook.RopeDirection;
                     bool swingUp = AquaMaths.Cross(Vector2.UnitX, ropeDirection) >= 0.0f;
@@ -800,7 +828,8 @@ namespace Celeste.Mod.Aqua.Core
         private static void HandleHangingSpeed(this Player self, float dt)
         {
             self.Speed.Y += Player.Gravity * dt;
-            self.Speed -= _madelinesHook.Velocity * dt * AquaModule.Settings.HookSettings.InertiaCoefficient;
+            AquaDebugger.LogInfo("Acc: {0}", _madelinesHook.Acceleration);
+            self.Speed -= _madelinesHook.Acceleration * dt * 0.8f;
             self.Speed += self.CalculateWindSpeed() * dt * AquaModule.Settings.HookSettings.WindCoefficient;
         }
 
@@ -834,5 +863,6 @@ namespace Celeste.Mod.Aqua.Core
 
         private static GrapplingHook _madelinesHook;
         private static ThrowHookCheck _throwHookCheck;
+        private static bool _loaded;
     }
 }

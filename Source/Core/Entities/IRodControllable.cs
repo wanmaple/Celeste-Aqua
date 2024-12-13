@@ -2,9 +2,7 @@
 {
     public interface IRodControllable
     {
-        int Group { get; }
+        string Flag { get; }
         bool IsRunning { get; }
-
-        void Run();
     }
 }

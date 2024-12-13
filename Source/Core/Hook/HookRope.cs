@@ -120,7 +120,11 @@ namespace Celeste.Mod.Aqua.Core
         public HookRope(float maxLength, RopeMaterial material) : base(false, false)
         {
             MaxLength = maxLength;
+            ChangeMaterial(material);
+        }
 
+        public void ChangeMaterial(RopeMaterial material)
+        {
             MTexture ropeTexture = null;
             switch (material)
             {
@@ -273,10 +277,6 @@ namespace Celeste.Mod.Aqua.Core
         public bool EnforcePlayer(Player player, Segment playerSeg, float dt)
         {
             GrapplingHook hook = Entity as GrapplingHook;
-            Vector2 hookVelocity = hook.Velocity;
-            Vector2 velocity = playerSeg.Vector / dt;
-            Vector2 relativeVelocity = velocity - hookVelocity;
-            float speed = relativeVelocity.Length();
             float length = CalculateRopeLength(playerSeg.Point2);
             if (length > _lockLength)
             {
@@ -299,7 +299,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 return true;
             }
-            else if (player.StateMachine.State == (int)AquaStates.StHanging && length < _lockLength - 1.5f)
+            else if (player.StateMachine.State == (int)AquaStates.StHanging && !DynamicData.For(player).Get<bool>("rope_is_loosen") && length < _lockLength - 1.5f)
             {
                 float lengthDiff = length - _lockLength;
                 Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);

@@ -30,11 +30,23 @@ namespace Celeste.Mod.Aqua.Core
         public const float BOUNCE_SPEED_ADDITION = 350.0f;
 
         public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
-        public RopeMaterial Material { get; private set; }
         public bool ElectricShocking { get; set; } = false;
+        public RopeMaterial Material
+        {
+            get => _material;
+            set
+            {
+                if (_material != value)
+                {
+                    Get<HookRope>().ChangeMaterial(value);
+                    _material = value;
+                }
+            }
+        }
 
         public HookStates State { get; private set; } = HookStates.None;
         public Vector2 Velocity { get; private set; }
+        public Vector2 Acceleration { get; private set; }
         public bool Revoked { get; private set; } = false;
         public bool JustFixed { get; private set; } = false;
         public float AlongRopeSpeed { get; set; } = 0.0f;
@@ -51,7 +63,7 @@ namespace Celeste.Mod.Aqua.Core
             : base(Vector2.Zero)
         {
             HookSize = size;
-            Material = material;
+            _material = material;
             Active = false;
 
             Collider = new Hitbox(size, size, -size * 0.5f, -size * 0.5f);
@@ -103,6 +115,7 @@ namespace Celeste.Mod.Aqua.Core
 
             _sprite.Play(HookSprite.Hit, true);
             _fixTimer.Reset();
+            Input.Rumble(RumbleStrength.Light, RumbleLength.Short);
         }
 
         public bool Bounce(Vector2 axis, float speed)
@@ -228,6 +241,7 @@ namespace Celeste.Mod.Aqua.Core
             base.Removed(scene);
 
             State = HookStates.None;
+            Velocity = Acceleration = Vector2.Zero;
             Active = false;
             JustFixed = false;
             HookRope rope = Get<HookRope>();
@@ -238,6 +252,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Awake(scene);
             Velocity = Vector2.Zero;
+            Acceleration = Vector2.Zero;
             Player player = Scene.Tracker.GetEntity<Player>();
             _playerPrevPosition = player.ExactCenter();
             _elapsed = 0.0f;
@@ -264,6 +279,8 @@ namespace Celeste.Mod.Aqua.Core
             Segment playerSeg = new Segment(_playerPrevPosition, player.ExactCenter());
             Vector2 prevPosition = Position;
             Vector2 nextPosition = Position;
+            Vector2 lastVelocity = Velocity;
+            HookStates lastState = State;
             Entity attachEntity = rope.TopPivot.entity;
             if (attachEntity != null && (!attachEntity.Collidable || attachEntity.Collider == null || !attachEntity.IsHookable()))
             {
@@ -280,10 +297,8 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     case HookStates.Emitting:
                         rope.CheckCollision(playerSeg);
-                        Velocity = Position - prevPosition;
                         nextPosition = rope.DetectHookNextPosition(dt, false, CalculateSpeedCoefficient(), out changeState);
                         movement = nextPosition - prevPosition;
-                        Velocity += movement;
                         if (!AquaMaths.IsApproximateZero(movement.X))
                         {
                             collided = collided || MoveH(movement.X, OnCollideEntity);
@@ -307,16 +322,13 @@ namespace Celeste.Mod.Aqua.Core
                         break;
                     case HookStates.Revoking:
                         rope.CheckCollision(playerSeg);
-                        Velocity = Position - prevPosition;
                         bool revokeHook;
                         nextPosition = rope.DetectHookNextPosition(dt, true, CalculateSpeedCoefficient(), out revokeHook);
-                        Velocity += nextPosition - prevPosition;
                         Revoked = revokeHook;
                         Position = nextPosition;
                         break;
                     case HookStates.Bouncing:
                         rope.CheckCollision(playerSeg);
-                        Velocity = Position - prevPosition;
                         movement = BouncingVelocity * dt;
                         float currentLength = rope._prevLength + movement.Length();
                         if (currentLength > rope.MaxLength)
@@ -360,6 +372,7 @@ namespace Celeste.Mod.Aqua.Core
                             Audio.Play("event:/char/madeline/hook_fixing", Position);
                             _fixTimer.Expire();
                         }
+                        _playerPrevPosition = player.ExactCenter();
                         break;
                     default:
                         break;
@@ -367,7 +380,7 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             Velocity /= dt;
-            _playerPrevPosition = player.ExactCenter();
+            Acceleration = (Velocity - lastVelocity) / dt;
             CheckHookColliders();
             base.Update();
             if (State == HookStates.Emitting || State == HookStates.Revoking)
@@ -620,6 +633,7 @@ namespace Celeste.Mod.Aqua.Core
             Vector2.One,
         };
 
+        private RopeMaterial _material;
         private Vector2 _movementCounter = Vector2.Zero;
         private Vector2 _playerPrevPosition;    // Player的PreviousPosition貌似在相对速度为0的情况下和当前Position相同
         private bool _lengthLocked = false;

@@ -50,7 +50,7 @@ namespace Celeste.Mod.Aqua.Core
                 _particlePositions.Add(new Vector2(Calc.Random.NextFloat(Width - 1f), Calc.Random.NextFloat(Height - 1f)));
             }
 
-            Add(new PlayerCollider(OnPlayerCollide));
+            Add(new PlayerExactCollider(OnPlayerCollide));
         }
 
         public override void Added(Scene scene)
@@ -92,11 +92,6 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (other is Player player)
             {
-                if (player.StateMachine.State != 0)
-                {
-                    AquaDebugger.LogInfo("Current Booster {0} {1}", player.CurrentBooster, player.StateMachine.State);
-                }
-
                 if (CanPassGreenBooster && player.IsBoosterDash())
                     return false;
                 if (CanPassRedBooster && player.StateMachine.State == (int)AquaStates.StRedDash)

@@ -3,10 +3,19 @@ local AquaBooster = {}
 AquaBooster.name = "Aqua/Aqua Booster"
 AquaBooster.depth = -8500
 AquaBooster.placements = {
-    name = "Booster",
-    data = {
-        red = false,
-        hookable = true,
+    {
+        name = "Booster (Orange)",
+        data = {
+            red = false,
+            hookable = true,
+        },
+    },
+    {
+        name = "Booster (Purple)",
+        data = {
+            red = true,
+            hookable = true,
+        },
     },
 }
 

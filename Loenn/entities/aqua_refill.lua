@@ -3,11 +3,21 @@ local AquaRefill = {}
 AquaRefill.name = "Aqua/Aqua Refill"
 AquaRefill.depth = -100
 AquaRefill.placements = {
-    name = "Refill",
-    data = {
-        twoDash = false,
-        oneUse = false,
-        hookable = true,
+    {
+        name = "Refill (One Dash)",
+        data = {
+            twoDash = false,
+            oneUse = false,
+            hookable = true,
+        },
+    },
+    {
+        name = "Refill (Two Dashes)",
+        data = {
+            twoDash = true,
+            oneUse = false,
+            hookable = true,
+        },
     },
 }
 

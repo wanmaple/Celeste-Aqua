@@ -12,14 +12,14 @@ namespace Celeste.Mod.Aqua.Core
     [Tracked(false)]
     public class RodMoveBlock : MoveBlock, IRodControllable
     {
-        public int Group { get; private set; }
+        public string Flag { get; private set; }
         public float RunSpeed { get; private set; }
         public bool IsRunning { get; private set; }
 
         public RodMoveBlock(EntityData data, Vector2 offset)
             : base(data, offset)
         {
-            Group = data.Int("group");
+            Flag = data.Attr("flag");
             RunSpeed = Calc.Max(data.Float("speed"), 1.0f);
             Coroutine coroutine = Get<Coroutine>();
             Remove(coroutine);
@@ -44,10 +44,13 @@ namespace Celeste.Mod.Aqua.Core
             RodEntityManager.Instance.Remove(this);
         }
 
-        public void Run()
+        public override void Update()
         {
-            IsRunning = true;
-            triggered = true;
+            base.Update();
+            if (SceneAs<Level>().Session.GetFlag(Flag))
+            {
+                triggered = true;
+            }
         }
 
         private IEnumerator RodController()
@@ -61,6 +64,7 @@ namespace Celeste.Mod.Aqua.Core
                     yield return null;
                 }
 
+                IsRunning = true;
                 Audio.Play("event:/game/04_cliffside/arrowblock_activate", Position);
                 state = MovementState.Moving;
                 StartShaking(0.2f);
@@ -188,6 +192,7 @@ namespace Celeste.Mod.Aqua.Core
                         break;
                     }
 
+                    SceneAs<Level>().Session.SetFlag(Flag, false);
                     yield return null;
                 }
 

@@ -21,9 +21,9 @@ namespace Celeste.Mod.Aqua.Core
         {
         }
 
-        public IReadOnlyList<IRodControllable> GetEntitiesOfGroup(int group)
+        public IReadOnlyList<IRodControllable> GetEntitiesOfFlag(string flag)
         {
-            if (_rodEntities.TryGetValue(group, out List<IRodControllable> entities))
+            if (_rodEntities.TryGetValue(flag, out List<IRodControllable> entities))
             {
                 return entities;
             }
@@ -32,26 +32,26 @@ namespace Celeste.Mod.Aqua.Core
 
         public void Add(IRodControllable entity)
         {
-            if (!_rodEntities.TryGetValue(entity.Group, out List<IRodControllable> entities))
+            if (!_rodEntities.TryGetValue(entity.Flag, out List<IRodControllable> entities))
             {
                 entities = new List<IRodControllable>();
-                _rodEntities.Add(entity.Group, entities);
+                _rodEntities.Add(entity.Flag, entities);
             }
             entities.Add(entity);
         }
 
         public void Remove(IRodControllable entity)
         {
-            if (_rodEntities.TryGetValue(entity.Group, out List<IRodControllable> entities))
+            if (_rodEntities.TryGetValue(entity.Flag, out List<IRodControllable> entities))
             {
                 entities.RemoveFast(entity);
                 if (entities.Count == 0)
                 {
-                    _rodEntities.Remove(entity.Group);
+                    _rodEntities.Remove(entity.Flag);
                 }
             }
         }
 
-        private Dictionary<int, List<IRodControllable>> _rodEntities = new Dictionary<int, List<IRodControllable>>(16);
+        private Dictionary<string, List<IRodControllable>> _rodEntities = new Dictionary<string, List<IRodControllable>>(16);
     }
 }

@@ -15,14 +15,13 @@ namespace Celeste.Mod.Aqua.Core
         public static ParticleType P_Behind;
         public static ParticleType P_Dust;
 
-        public int Group { get; private set; }
+        public string Flag { get; private set; }
         public float CloseTime { get; private set; }
-        public IList<TrapButton> RelatedButtons { get; private set; } = new List<TrapButton>(4);
 
         public TrapGate(EntityData data, Vector2 offset)
             : base(data.Position + offset, data.Width, data.Height, true)
         {
-            Group = data.Int("group");
+            Flag = data.Attr("flag");
             CloseTime = MathF.Max(data.Float("close_time"), 0.5f);
             _openPosition = data.Nodes[0] + offset;
             _closePosition = Position;
@@ -51,24 +50,10 @@ namespace Celeste.Mod.Aqua.Core
             Add(new LightOcclude(0.5f));
         }
 
-        public override void Awake(Scene scene)
-        {
-            base.Awake(scene);
-
-            List<Entity> buttons = scene.Tracker.GetEntities<TrapButton>();
-            foreach (TrapButton btn in buttons)
-            {
-                if (!RelatedButtons.Contains(btn))
-                {
-                    RelatedButtons.Add(btn);
-                }
-            }
-        }
-
         public override void Update()
         {
             base.Update();
-            bool on = CheckButtons();
+            bool on = SceneAs<Level>().Session.GetFlag(Flag);
             if (_on != on)
             {
                 if (_tween != null)
@@ -357,20 +342,6 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             Collidable = collidable;
-        }
-
-        private bool CheckButtons()
-        {
-            bool ret = true;
-            foreach (TrapButton button in RelatedButtons)
-            {
-                if (!button.Pressed)
-                {
-                    ret = false;
-                    break;
-                }
-            }
-            return ret;
         }
 
         private MTexture[,] _nineSlice;

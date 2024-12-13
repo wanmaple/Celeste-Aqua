@@ -54,29 +54,29 @@ entities.Aqua/Custom NPC.attributes.description.spriteName=Runtime sprite to use
 entities.Aqua/Custom NPC.attributes.description.animationName=Runtime animation to play.
 
 # Trap Button
-entities.Aqua/Trap Button.attributes.description.group=Used by Trap Gate, the gate will open while all buttons with the same group of gate are pressed.
+entities.Aqua/Trap Button.attributes.description.flag=Used by Trap Gate, the gate will open while all buttons with the same flag of gate are pressed.
 entities.Aqua/Trap Button.attributes.description.color=Button color.
 entities.Aqua/Trap Button.attributes.description.direction=Button direction (Up/Down/Left/Right).
 
 # Trap Gate
 entities.Aqua/Trap Gate.attributes.description.sprite=Gate style.
-entities.Aqua/Trap Gate.attributes.description.group=The gate will open if all Trap Buttons with the same group are pressed.
+entities.Aqua/Trap Gate.attributes.description.flag=The gate will open if all Trap Buttons with the same flag are pressed.
 entities.Aqua/Trap Gate.attributes.description.close_time=How much time it takes to close.
 entities.Aqua/Trap Gate.attributes.description.color=Gate color.
 
 # Rod Zip Mover
 entities.Aqua/Rod Zip Mover.attributes.description.theme=The visual theme of the zip mover.
-entities.Aqua/Rod Zip Mover.attributes.description.group=Only Tie Rods with the same group can control.
+entities.Aqua/Rod Zip Mover.attributes.description.flag=Only Tie Rods with the same flag can control.
 entities.Aqua/Rod Zip Mover.attributes.description.duration=How much time it takes to reach the other side.
 
 # Rod Move Block
 entities.Aqua/Rod Move Block.attributes.description.canSteer=Determines whether the move block can be moved by the player.
 entities.Aqua/Rod Move Block.attributes.description.direction=Determines the direction the move block moves in upon activation.
-entities.Aqua/Rod Move Block.attributes.description.group=Only Tie Rods with the same group can control.
+entities.Aqua/Rod Move Block.attributes.description.flag=Only Tie Rods with the same flag can control.
 entities.Aqua/Rod Move Block.attributes.description.speed=Move speed of block.
 
 # Tie Rod
-entities.Aqua/Tie Rod.attributes.description.group=Which group of entities to control.
+entities.Aqua/Tie Rod.attributes.description.flag=Which flag of entities to control.
 
 # Booster Filter
 entities.Aqua/Booster Filter.attributes.description.color=Area main color.
@@ -94,3 +94,7 @@ triggers.Aqua/Aqua Bird Trigger.attributes.description.conditionFunction=The con
 triggers.Aqua/Custom Cutscene Trigger.attributes.description.cutsceneId=Identifier of the cutscene, be aware that your dialog id should be 'AquaCutscene_{Your ID}'.
 triggers.Aqua/Custom Cutscene Trigger.attributes.description.fadeInOnSkip=Whether the cutscene has fade effect when skipping.
 triggers.Aqua/Custom Cutscene Trigger.attributes.description.endingChapter=Whether the chapter will end after this cutscene.
+
+# Change Hook Parameter Trigger
+triggers.Aqua/Change Hook Parameter Trigger.attributes.description.parameter=Parameter name.
+triggers.Aqua/Change Hook Parameter Trigger.attributes.description.value=Parameter value, whose type depends on the parameter.

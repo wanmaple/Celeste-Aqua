@@ -10,12 +10,12 @@ namespace Celeste.Mod.Aqua.Core
     [Tracked(false)]
     public class TieRod : Entity
     {
-        public int Group { get; private set; }
+        public string Flag { get; private set; }
 
         public TieRod(EntityData data, Vector2 offset)
             : base(data.Position + offset)
         {
-            Group = data.Int("group");
+            Flag = data.Attr("flag");
             float w = 16.0f;
             float h = 16.0f;
             Collider = new Hitbox(w, h, -w * 0.5f, -h * 0.5f);
@@ -32,7 +32,7 @@ namespace Celeste.Mod.Aqua.Core
         public override void Update()
         {
             base.Update();
-            IReadOnlyList<IRodControllable> entities = RodEntityManager.Instance.GetEntitiesOfGroup(Group);
+            IReadOnlyList<IRodControllable> entities = RodEntityManager.Instance.GetEntitiesOfFlag(Flag);
             if (entities == null || entities.Any(e => e.IsRunning))
             {
                 Remove(_talker);
@@ -72,7 +72,7 @@ namespace Celeste.Mod.Aqua.Core
         private bool OnHookInteract(GrapplingHook hook, Vector2 at)
         {
             hook.Revoke();
-            IReadOnlyList<IRodControllable> entities = RodEntityManager.Instance.GetEntitiesOfGroup(Group);
+            IReadOnlyList<IRodControllable> entities = RodEntityManager.Instance.GetEntitiesOfFlag(Flag);
             {
                 if (entities != null && entities.All(e => !e.IsRunning))
                 {
@@ -99,7 +99,7 @@ namespace Celeste.Mod.Aqua.Core
             List<Entity> rods = Scene.Tracker.GetEntities<TieRod>();
             foreach (TieRod rod in rods)
             {
-                if (rod.Group == Group)
+                if (rod.Flag == Flag)
                 {
                     rod.ChangeState();
                 }
@@ -117,14 +117,8 @@ namespace Celeste.Mod.Aqua.Core
 
         private void Execute()
         {
-            IReadOnlyList<IRodControllable> entities = RodEntityManager.Instance.GetEntitiesOfGroup(Group);
-            if (entities != null)
-            {
-                foreach (IRodControllable entity in entities)
-                {
-                    entity.Run();
-                }
-            }
+            IReadOnlyList<IRodControllable> entities = RodEntityManager.Instance.GetEntitiesOfFlag(Flag);
+            SceneAs<Level>().Session.SetFlag(Flag, true);
             _pending = false;
         }
 
