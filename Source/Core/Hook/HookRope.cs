@@ -625,10 +625,6 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (WillHitPivot(prevPt, pivot, lastSegments, curRopeSeg))
                 {
-                    if (pivot.point.X == 2952)
-                    {
-
-                    }
                     Vector2 prev = curPt - curRopeSeg.Point1;
                     Vector2 alongPerp = new Vector2(prev.Y, -prev.X);
                     float perpDis = MathF.Abs(Vector2.Dot(prev, alongPerp));

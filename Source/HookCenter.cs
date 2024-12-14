@@ -1,5 +1,6 @@
 ﻿using Celeste.Mod.Aqua.Core;
 using Celeste.Mod.Aqua.Core.Extensions;
+using Celeste.Mod.Aqua.Rendering;
 
 namespace Celeste.Mod.Aqua
 {
@@ -34,6 +35,7 @@ namespace Celeste.Mod.Aqua
             PlayerStates.Initialize();
             GrabbyIconExtends.Initialize();
             LevelStates.Initialize();
+            RenderHook.Initialize();
         }
 
         public void Unhook()
@@ -65,6 +67,7 @@ namespace Celeste.Mod.Aqua
             PlayerStates.Uninitialize();
             GrabbyIconExtends.Uninitialize();
             LevelStates.Uninitialize();
+            RenderHook.Uninitialize();
         }
     }
 }

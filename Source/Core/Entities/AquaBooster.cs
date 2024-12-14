@@ -1,12 +1,6 @@
-﻿using Celeste.Mod.Aqua.Debug;
-using Celeste.Mod.Aqua.Miscellaneous;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
 {

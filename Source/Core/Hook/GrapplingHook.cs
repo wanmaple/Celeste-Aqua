@@ -4,7 +4,6 @@ using Monocle;
 using System;
 using System.Collections.Generic;
 using Celeste.Mod.Aqua.Module;
-using System.Security.Principal;
 using Celeste.Mod.Aqua.Debug;
 
 namespace Celeste.Mod.Aqua.Core
@@ -135,7 +134,6 @@ namespace Celeste.Mod.Aqua.Core
             else
             {
                 Vector2 doubleAxis = axis * MathF.Abs(proj) * 2.0f;
-                Vector2 bouncingDirection = Vector2.Normalize(BouncingVelocity);
                 BouncingVelocity += doubleAxis;
             }
             BouncingVelocity = Vector2.Normalize(BouncingVelocity) * rope.EmitSpeed;

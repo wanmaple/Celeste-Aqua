@@ -18,9 +18,9 @@ namespace Celeste.Mod.Aqua.Rendering
             : base(Engine.Instance)
         {
             _device = Engine.Instance.GraphicsDevice;
-            _fx = FXCenter.Instance.GetFX("test");
+            _fx = FXCenter.Instance.GetFX("test2");
             _vbo = new VertexBuffer(Engine.Instance.GraphicsDevice, typeof(VertexPositionColorTexture), _cube.Vertices.Length, BufferUsage.None);
-            _vbo.SetData(_cube.Vertices);
+            _vbo.SetData(_quad.Vertices);
             //MTexture tex = GFX.Game["objects/booster_orange/booster00"];
         }
 
@@ -35,7 +35,7 @@ namespace Celeste.Mod.Aqua.Rendering
         }
 
         public void Draw(GameTime gameTime)
-        {
+        {            
             //_device.SetRenderTarget(GameplayBuffers.Level);
             _device.BlendState = BlendState.AlphaBlend;
             _device.SamplerStates[0] = SamplerState.PointClamp;
@@ -48,21 +48,22 @@ namespace Celeste.Mod.Aqua.Rendering
             _device.SetVertexBuffer(_vbo);
             Viewport viewport = _device.Viewport;
             Matrix model = AquaMaths.TRS(Vector3.UnitY * 1.0f, Quaternion.CreateFromAxisAngle(Vector3.UnitY, _rotation), Vector3.One * 1.0f);
-            Matrix view = Matrix.CreateLookAt(Vector3.UnitZ * 2.5f, Vector3.Zero, Vector3.Up);
+            Matrix view = Matrix.CreateLookAt(Vector3.UnitZ * -2.5f, Vector3.Zero, Vector3.Up);
             Matrix proj = Matrix.CreatePerspectiveFieldOfView(MathF.PI * 2.0f / 3.0f, (float)viewport.Width / viewport.Height, 0.1f, 1000.0f);
             Matrix transform = model * view * proj;
-            _fx.Parameters["MatrixTransform"].SetValue(transform);
+            //_fx.Parameters["MatrixTransform"].SetValue(transform);
             //_fx.Parameters["Albedo"].SetValue(GFX.Game["objects/booster_orange/booster00"].Texture.Texture_Safe);
-            //_fx.Parameters["Time"].SetValue(_time);
-            //_fx.Parameters["Resolution"].SetValue(new Vector2(viewport.Width, viewport.Height));
+            _fx.Parameters["Time"].SetValue(_time);
+            _fx.Parameters["Resolution"].SetValue(new Vector2(viewport.Width, viewport.Height));
             foreach (EffectPass pass in _fx.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                _device.DrawPrimitives(PrimitiveType.TriangleList, 0, _cube.Vertices.Length / 3);
+                _device.DrawPrimitives(PrimitiveType.TriangleList, 0, _quad.Vertices.Length / 3);
             }
         }
 
         Cube _cube = new Cube();
+        Quad _quad = new Quad();
         VertexBuffer _vbo;
         Effect _fx;
         GraphicsDevice _device;

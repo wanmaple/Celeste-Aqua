@@ -43,6 +43,12 @@ namespace Celeste.Mod.Aqua.Rendering
             return null;
         }
 
+        public void ClearAll()
+        {
+            _toLoad.Clear();
+            _loaded.Clear();
+        }
+
         private Dictionary<string, ModAsset> _toLoad = new Dictionary<string, ModAsset>(32);
         private Dictionary<string, Effect> _loaded = new Dictionary<string, Effect>(32);
     }

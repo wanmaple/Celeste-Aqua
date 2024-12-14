@@ -1,4 +1,6 @@
 ﻿using Celeste.Mod.Aqua.Module;
+using Celeste.Mod.Aqua.Rendering;
+using Monocle;
 using MonoMod.Utils;
 
 namespace Celeste.Mod.Aqua.Core

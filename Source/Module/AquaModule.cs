@@ -1,5 +1,7 @@
 ﻿using Celeste.Mod.Aqua.Rendering;
+using Monocle;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -36,15 +38,47 @@ public class AquaModule : EverestModule
     {
         // TODO: apply any hooks that should always be active
         HookCenter.Hook();
+        Everest.Events.AssetReload.OnBeforeReload += AssetReload_OnBeforeReload;
+        Everest.Events.AssetReload.OnAfterReload += AssetReload_OnAfterReload;
     }
 
     public override void Unload()
     {
         // TODO: unapply any hooks applied in Load()
         HookCenter.Unhook();
+        Everest.Events.AssetReload.OnBeforeReload -= AssetReload_OnBeforeReload;
+        Everest.Events.AssetReload.OnAfterReload -= AssetReload_OnAfterReload;
     }
 
     public override void LoadContent(bool firstLoad)
+    {
+        ReloadAllShaders();
+    }
+
+    private void AssetReload_OnBeforeReload(bool silent)
+    {
+        ClearAllShaders();
+    }
+
+    private void AssetReload_OnAfterReload(bool silent)
+    {
+        ReloadAllShaders();
+        if (Engine.Instance.scene is Level level)
+        {
+            List<Entity> drawables = level.Tracker.GetEntities<CustomShaderEntity>();
+            foreach (CustomShaderEntity drawable in drawables)
+            {
+                drawable.OnReload();
+            }
+        }
+    }
+
+    private void ClearAllShaders()
+    {
+        FXCenter.Instance.ClearAll();
+    }
+
+    private void ReloadAllShaders()
     {
         ModContent mod = Everest.Content.Mods.First(mod => mod.Name == ModConstants.MOD_NAME);
         foreach (ModAsset asset in mod.List)
