@@ -7,8 +7,6 @@ using System;
 using MonoMod.Utils;
 using Mono.Cecil;
 using Celeste.Mod.Aqua.Debug;
-using Celeste.Mod.Entities;
-using static Celeste.TrackSpinner;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -178,10 +176,6 @@ namespace Celeste.Mod.Aqua.Core
             self.SetTimeTicker("elec_shock_ticker", 1.0f);
             DynamicData.For(self).Set("rope_is_loosen", true);
             DynamicData.For(self).Set("is_booster_dash", false);
-#if DEBUG
-            DynamicData.For(self).Set("tangent_speed", 0.0f);
-            DynamicData.For(self).Set("along_speed", 0.0f);
-#endif
         }
 
         private static void Player_SceneBegin(On.Celeste.Player.orig_SceneBegin orig, Player self, Scene scene)
@@ -437,10 +431,6 @@ namespace Celeste.Mod.Aqua.Core
             {
                 Vector2 swingDirection = _madelinesHook.SwingDirection;
                 self.HandleHangingSpeed(dt);
-#if DEBUG
-                DynamicData.For(self).Set("tangent_speed", TurnToTangentSpeed(self.Speed, swingDirection).Length());
-                DynamicData.For(self).Set("along_speed", Vector2.Dot(self.Speed, ropeDirection));
-#endif
                 float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
                 _madelinesHook.AlongRopeSpeed = speedAlongRope;
                 TimeTicker breakTicker = self.GetTimeTicker("hook_break_ticker");
@@ -728,10 +718,6 @@ namespace Celeste.Mod.Aqua.Core
                         Vector2 ropeDirection = _madelinesHook.RopeDirection;
                         Vector2 swingDirection = _madelinesHook.SwingDirection;
                         self.HandleHangingSpeed(dt);
-#if DEBUG
-                        DynamicData.For(self).Set("tangent_speed", TurnToTangentSpeed(self.Speed, swingDirection).Length());
-                        DynamicData.For(self).Set("along_speed", Vector2.Dot(self.Speed, ropeDirection));
-#endif
                         float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
                         _madelinesHook.AlongRopeSpeed = speedAlongRope;
                         TimeTicker breakTicker = DynamicData.For(self).Get<TimeTicker>("hook_break_ticker");

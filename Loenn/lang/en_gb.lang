@@ -53,6 +53,21 @@ entities.Aqua/Custom NPC.attributes.description.sprite=Editor sprite to use.
 entities.Aqua/Custom NPC.attributes.description.spriteName=Runtime sprite to use.
 entities.Aqua/Custom NPC.attributes.description.animationName=Runtime animation to play.
 
+# Aqua Move Block
+entities.Aqua/Aqua Move Block.attributes.description.canSteer=Determines whether the move block can be moved by the player.
+entities.Aqua/Aqua Move Block.attributes.description.direction=Determines the direction the move block moves in upon activation.
+entities.Aqua/Aqua Move Block.attributes.description.speed=Move speed of block.
+entities.Aqua/Aqua Move Block.attributes.description.acceleration=Acceleration of block (pixels per second squared).
+entities.Aqua/Aqua Move Block.attributes.description.steer_acceleration=Steer acceleration of block (angles per second squared).
+
+# Acceleration Area
+entities.Aqua/Acceleration Area.attributes.description.direction=Some entities (Move Block) with the same direction with the area will gain acceleration.
+entities.Aqua/Acceleration Area.attributes.description.border_color=Border color.
+entities.Aqua/Acceleration Area.attributes.description.arrow_color=Arrow color.
+entities.Aqua/Acceleration Area.attributes.description.blink_border_color=Blink border color (When entities enter and takes effect).
+entities.Aqua/Acceleration Area.attributes.description.blink_arrow_color=Arrow color (When entities enter and takes effect).
+entities.Aqua/Acceleration Area.attributes.description.blink_duration=Blink duration.
+
 # Trap Button
 entities.Aqua/Trap Button.attributes.description.flag=Used by Trap Gate, the gate will open while all buttons with the same flag of gate are pressed.
 entities.Aqua/Trap Button.attributes.description.color=Button color.
@@ -68,12 +83,18 @@ entities.Aqua/Trap Gate.attributes.description.color=Gate color.
 entities.Aqua/Rod Zip Mover.attributes.description.theme=The visual theme of the zip mover.
 entities.Aqua/Rod Zip Mover.attributes.description.flag=Only Tie Rods with the same flag can control.
 entities.Aqua/Rod Zip Mover.attributes.description.duration=How much time it takes to reach the other side.
+entities.Aqua/Rod Zip Mover.attributes.description.hue_offset=Hue offset, should be in [-1, 1].
+entities.Aqua/Rod Zip Mover.attributes.description.saturation_offset=Saturation offset, should be in [-1, 1].
 
 # Rod Move Block
 entities.Aqua/Rod Move Block.attributes.description.canSteer=Determines whether the move block can be moved by the player.
 entities.Aqua/Rod Move Block.attributes.description.direction=Determines the direction the move block moves in upon activation.
 entities.Aqua/Rod Move Block.attributes.description.flag=Only Tie Rods with the same flag can control.
 entities.Aqua/Rod Move Block.attributes.description.speed=Move speed of block.
+entities.Aqua/Rod Move Block.attributes.description.acceleration=Acceleration of block (pixels per second squared).
+entities.Aqua/Rod Move Block.attributes.description.steer_acceleration=Steer acceleration of block (angles per second squared).
+entities.Aqua/Rod Move Block.attributes.description.hue_offset=Hue offset (Fracted), should be in [-1, 1].
+entities.Aqua/Rod Move Block.attributes.description.saturation_offset=Saturation offset (Clamped), should be in [-1, 1].
 
 # Tie Rod
 entities.Aqua/Tie Rod.attributes.description.flag=Which flag of entities to control.

@@ -27,7 +27,7 @@ struct VS_Out
 //-----------------------------------------------------------------------------
 // Vertex Shaders.
 //-----------------------------------------------------------------------------
-VS_Out VS_Function(
+VS_Out VS_Main(
 	float4 position : POSITION0,
     float4 color    : COLOR0,
     float2 uv : TEXCOORD0)
@@ -42,11 +42,6 @@ VS_Out VS_Function(
 float hash12(float2 x)
 {
  	return frac(sin(dot(x, float2(42.2347, 43.4271))) * 342.324234);   
-}
-
-float2 hash22(float2 x)
-{
- 	return frac(sin(mul(x, float2x2(23.421, 24.4217, 25.3271, 27.2412))) * 342.324234);   
 }
 
 float3 hash33(float3 x)
@@ -164,7 +159,7 @@ float3 rayMarch(float3 rayOrigin, float3 rayDirection, out float3 color)
 //-----------------------------------------------------------------------------
 // Fragment Shaders.
 //-----------------------------------------------------------------------------
-float4 PS_Function(float4 inPosition : SV_Position, float4 inColor : COLOR0, float2 uv : TEXCOORD1) : SV_TARGET0
+float4 FS_Main(float4 inPosition : SV_Position, float4 inColor : COLOR0, float2 uv : TEXCOORD1) : SV_TARGET0
 {
 	float3 cameraCenter = float3(0.0, 0.0, -TIME * 10.0);
     cameraCenter -= spaceBounding(cameraCenter);
@@ -199,11 +194,11 @@ float4 PS_Function(float4 inPosition : SV_Position, float4 inColor : COLOR0, flo
     return float4(color, 0.5);
 }
 
-technique DigitalTunnel
+technique DigitalTunnelTech
 {
     pass
     {
-        VertexShader = compile vs_3_0 VS_Function();
-        PixelShader = compile ps_3_0 PS_Function();
+        VertexShader = compile vs_3_0 VS_Main();
+        PixelShader = compile ps_3_0 FS_Main();
     }
 }

@@ -38,7 +38,7 @@ namespace Celeste.Mod.Aqua.Rendering
             }
             if (_loaded.TryGetValue(fxName, out Effect fx))
             {
-                return fx;
+                return fx.Clone();
             }
             return null;
         }

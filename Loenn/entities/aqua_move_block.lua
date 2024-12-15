@@ -2,16 +2,16 @@ local DrawableNinePatch = require("structs.drawable_nine_patch")
 local DrawableRectangle = require("structs.drawable_rectangle")
 local DrawableSprite = require("structs.drawable_sprite")
 
-local RodMoveBlock = {}
+local AquaMoveBlock = {}
 
 local moveBlockDirections = {
     "Up", "Down", "Left", "Right"
 }
 
-RodMoveBlock.name = "Aqua/Rod Move Block"
-RodMoveBlock.depth = 8995
-RodMoveBlock.warnBelowSize = {16, 16}
-RodMoveBlock.fieldInformation = {
+AquaMoveBlock.name = "Aqua/Aqua Move Block"
+AquaMoveBlock.depth = 8995
+AquaMoveBlock.warnBelowSize = {16, 16}
+AquaMoveBlock.fieldInformation = {
     direction = {
         options = moveBlockDirections,
         editable = false
@@ -20,24 +20,21 @@ RodMoveBlock.fieldInformation = {
         fieldType = "integer",
     },
 }
-RodMoveBlock.placements = {}
+AquaMoveBlock.placements = {}
 
 for _, direction in ipairs(moveBlockDirections) do
     for steerable = 1, 2 do
-        local name = string.format("Rod Move Block (%s, %s)", direction, steerable == 1 and "Steer" or "Nosteer")
-        table.insert(RodMoveBlock.placements, {
+        local name = string.format("Move Block (%s, %s)", direction, steerable == 1 and "Steer" or "Nosteer")
+        table.insert(AquaMoveBlock.placements, {
             name = name,
             data = {
                 width = 16,
                 height = 16,
                 direction = direction,
                 canSteer = steerable == 1,
-                flag = "Rod1",
                 speed = 60,
                 acceleration = 300,
                 steer_acceleration = 2880,
-                hue_offset = 0.3,
-                saturation_offset = 0.35,
             }
         })
     end
@@ -76,7 +73,7 @@ local steeringFrameTextures = {
 local buttonPopout = 3
 local buttonOffset = 3
 
-function RodMoveBlock.sprite(room, entity)
+function AquaMoveBlock.sprite(room, entity)
     local x, y = entity.x or 0, entity.y or 0
     local width, height = entity.width or 24, entity.height or 24
 
@@ -154,4 +151,4 @@ function RodMoveBlock.sprite(room, entity)
     return sprites
 end
 
-return RodMoveBlock
+return AquaMoveBlock

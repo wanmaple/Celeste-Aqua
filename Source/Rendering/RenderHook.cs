@@ -38,10 +38,13 @@ namespace Celeste.Mod.Aqua.Rendering
             ILCursor cursor = new ILCursor(il);
             if (cursor.TryGotoNext(ins => ins.MatchCallvirt(_methodRender)))
             {
-                AquaDebugger.LogInfo("IL Hook Success111");
                 cursor.Index -= 3;
                 cursor.EmitLdarg0();
-                cursor.EmitDelegate(RenderCustomBackground);
+                cursor.EmitDelegate(RenderBackground);
+                // 有很多限制，由于GameplayRenderer并没有写深度，我只能靠后画了，因此可能盖掉其他非Custom的Entity。
+                cursor.Index += 4;
+                cursor.EmitLdarg0();
+                cursor.EmitDelegate(RenderCustomEntities);
             }
         }
 
@@ -62,14 +65,18 @@ namespace Celeste.Mod.Aqua.Rendering
             var bgRender = new CustomBackgroundRenderer();
             DynamicData.For(self.Level).Set("custom_bg_renderer", bgRender);
             self.Level.Add(bgRender);
+            var customEntityRenderer = new CustomEntityRenderer();
+            DynamicData.For(self.Level).Set("custom_entity_renderer", customEntityRenderer);
+            self.Level.Add(customEntityRenderer);
         }
 
         private static void Tags_Initialize(On.Celeste.Tags.orig_Initialize orig)
         {
             orig();
             RenderTags.CustomBackground = new BitTag("CustomBackground");
+            RenderTags.CustomEntity = new BitTag("CustomEntity");
             RenderTags.CustomPostProcessing = new BitTag("CustomPostProcessing");
-            RenderTags.All = RenderTags.CustomBackground | RenderTags.CustomPostProcessing;
+            RenderTags.All = RenderTags.CustomBackground | RenderTags.CustomEntity | RenderTags.CustomPostProcessing;
         }
 
         private static void Scene_Construct(On.Monocle.Scene.orig_ctor orig, Scene self)
@@ -86,12 +93,21 @@ namespace Celeste.Mod.Aqua.Rendering
             DynamicData.For(self).Set("time", time);
         }
 
-        private static void RenderCustomBackground(this Level self)
+        private static void RenderBackground(this Level self)
         {
-            CustomBackgroundRenderer renderer = DynamicData.For(self).Get<CustomBackgroundRenderer>("custom_bg_renderer");
-            if (renderer != null)
+            CustomBackgroundRenderer bgRenderer = DynamicData.For(self).Get<CustomBackgroundRenderer>("custom_bg_renderer");
+            if (bgRenderer != null)
             {
-                renderer.Render(self);
+                bgRenderer.Render(self);
+            }
+        }
+
+        private static void RenderCustomEntities(this Level self)
+        {
+            CustomEntityRenderer entityRenderer = DynamicData.For(self).Get<CustomEntityRenderer>("custom_entity_renderer");
+            if (entityRenderer != null)
+            {
+                entityRenderer.Render(self);
             }
         }
 

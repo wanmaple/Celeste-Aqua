@@ -11,12 +11,20 @@ namespace Celeste.Mod.Aqua.Core
     {
         public static void Initialize()
         {
+            On.Celeste.MoveBlock.ctor_Vector2_int_int_Directions_bool_bool += MoveBlock_Construct;
             On.Celeste.MoveBlock.Controller += MoveBlock_Controller;
         }
 
         public static void Uninitialize()
         {
+            On.Celeste.MoveBlock.ctor_Vector2_int_int_Directions_bool_bool -= MoveBlock_Construct;
             On.Celeste.MoveBlock.Controller -= MoveBlock_Controller;
+        }
+
+        private static void MoveBlock_Construct(On.Celeste.MoveBlock.orig_ctor_Vector2_int_int_Directions_bool_bool orig, MoveBlock self, Vector2 position, int width, int height, Directions direction, bool canSteer, bool fast)
+        {
+            orig(self, position, width, height, direction, canSteer, fast);
+            self.Add(new AccelerationAreaInOut(self.OnEnterAccelerationArea, null, self.OnKeepInAccelerationArea));
         }
 
         private static System.Collections.IEnumerator MoveBlock_Controller(On.Celeste.MoveBlock.orig_Controller orig, MoveBlock self)
@@ -230,6 +238,33 @@ namespace Celeste.Mod.Aqua.Core
                 self.fillColor = idleBgFill;
                 self.UpdateColors();
                 self.flash = 1f;
+            }
+        }
+
+        private static void OnEnterAccelerationArea(this MoveBlock self, AccelerationArea area)
+        {
+            if (area.TryAccelerate(self))
+                area.StartBlink();
+        }
+
+        private static void OnKeepInAccelerationArea(this MoveBlock self, AccelerationArea area)
+        {
+            area.TryAccelerate(self);
+        }
+
+        private static void MoveBlock_Update(On.Celeste.MoveBlock.orig_Update orig, MoveBlock self)
+        {
+            orig(self);
+            if (self.state == MovementState.Moving)
+            {
+                List<Entity> accAreas = self.Scene.Tracker.GetEntities<AccelerationArea>();
+                foreach (AccelerationArea area in accAreas)
+                {
+                    if (area.CollideCheck(self))
+                    {
+                        area.TryAccelerate(self);
+                    }
+                }
             }
         }
     }

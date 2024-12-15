@@ -5,7 +5,7 @@ using Monocle;
 namespace Celeste.Mod.Aqua.Rendering
 {
     [Tracked(true)]
-    public abstract class CustomShaderEntity : Entity
+    public abstract class CustomShaderEntity : Entity, ICustomRenderEntity
     {
         protected CustomShaderEntity()
             : base(Vector2.Zero)
@@ -26,7 +26,7 @@ namespace Celeste.Mod.Aqua.Rendering
         }
 
         protected abstract VertexPositionColorTexture[] GetVertices();
-        protected abstract Effect GetEffect();
+        public abstract Effect GetEffect();
 
         public override void Added(Scene scene)
         {

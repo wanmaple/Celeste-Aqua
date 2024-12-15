@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Aqua.Rendering;
+﻿using Celeste.Mod.Aqua.Core;
+using Celeste.Mod.Aqua.Rendering;
 using Monocle;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,13 @@ public class AquaModule : EverestModule
         ReloadAllShaders();
         if (Engine.Instance.scene is Level level)
         {
+            foreach (Entity entity in level.Entities)
+            {
+                if (entity is ICustomRenderEntity e)
+                {
+                    e.OnReload();
+                }
+            }
             List<Entity> drawables = level.Tracker.GetEntities<CustomShaderEntity>();
             foreach (CustomShaderEntity drawable in drawables)
             {

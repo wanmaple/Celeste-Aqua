@@ -125,6 +125,14 @@
       <Anim id="idle" path="tie_rod" frames="0" />
       <Anim id="turn_left" path="tie_rod" delay="0.1" frames="0-4" />
       <Anim id="turn_right" path="tie_rod" delay="0.1" frames="4-0" />
+      <Anim id="top_idle" path="tie_rod_top" frames="0" />
+      <Anim id="top_turn_left" path="tie_rod_top" delay="0.1" frames="0-4" />
+      <Anim id="top_turn_right" path="tie_rod_top" delay="0.1" frames="4-0" />
     </TieRod>
+
+    <AccelerationArrow path="objects/acceleration_area/" start="idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="idle" path="icon" delay="0.1" />
+    </AccelerationArrow>
 
 </Sprites>

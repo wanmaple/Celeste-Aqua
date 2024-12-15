@@ -46,7 +46,7 @@ namespace Celeste.Mod.Aqua.Rendering
             return _quad.Vertices;
         }
 
-        protected override Effect GetEffect()
+        public override Effect GetEffect()
         {
             return _fx;
         }
