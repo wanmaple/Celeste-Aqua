@@ -79,13 +79,27 @@ namespace Celeste.Mod.Aqua.Core
             float acc = (block is AquaMoveBlock amb) ? amb.Acceleration : 300.0f;
             if (IsIdenticalDirection(block.direction))
             {
+                int oldSign = MathF.Sign(block.targetSpeed);
+                float oldSpeedAbs = MathF.Abs(block.targetSpeed);
                 block.targetSpeed += acc * Engine.DeltaTime;
-                return AccelerateState.Accelerate;
+                int newSign = MathF.Sign(block.targetSpeed);
+                float newSpeedAbs = MathF.Abs(block.targetSpeed);
+                if (oldSign == newSign && newSpeedAbs > oldSpeedAbs)
+                    return AccelerateState.Accelerate;
+                else
+                    return AccelerateState.Deaccelerate;
             }
             else if (IsOppositeDirection(block.direction))
             {
+                int oldSign = MathF.Sign(block.targetSpeed);
+                float oldSpeedAbs = MathF.Abs(block.targetSpeed);
                 block.targetSpeed -= acc * Engine.DeltaTime;
-                return AccelerateState.Deaccelerate;
+                int newSign = MathF.Sign(block.targetSpeed);
+                float newSpeedAbs = MathF.Abs(block.targetSpeed);
+                if (oldSign == newSign && newSpeedAbs > oldSpeedAbs)
+                    return AccelerateState.Accelerate;
+                else
+                    return AccelerateState.Deaccelerate;
             }
             return AccelerateState.None;
         }
