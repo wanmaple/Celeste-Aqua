@@ -150,7 +150,8 @@ namespace Celeste.Mod.Aqua.Core
             float hookMovement = EmitSpeed * speedCoeff * dt;
             GrapplingHook hook = Entity as GrapplingHook;
             Player player = Scene.Tracker.GetEntity<Player>();
-            if (player == null) return hook.Position;
+            if (player == null) 
+                return hook.ExactPosition;
             float currentLength = _prevLength;
             if (revoking)
             {

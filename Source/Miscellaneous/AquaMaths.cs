@@ -39,6 +39,16 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return IsApproximateZero(vec.X) && IsApproximateZero(vec.Y);
         }
 
+        public static float Fract(float num)
+        {
+            return num - (int)num;
+        }
+
+        public static Vector2 Fract(Vector2 vec)
+        {
+            return new Vector2(Fract(vec.X), Fract(vec.Y));
+        }
+
         public static bool IsPointInsideTriangle(Vector2 pt, Vector2 tri1, Vector2 tri2, Vector2 tri3)
         {
             float d1 = Sign(pt, tri1, tri2);

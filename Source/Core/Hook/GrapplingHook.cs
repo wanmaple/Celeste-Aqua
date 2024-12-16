@@ -58,6 +58,7 @@ namespace Celeste.Mod.Aqua.Core
         public Vector2 RopeDirection => Get<HookRope>().RopeDirection;
         public Vector2 SwingDirection => Get<HookRope>().SwingDirection;
         public Vector2 PlayerPreviousPosition => _playerPrevPosition;
+        public Vector2 ExactPosition => Position + _movementCounter;
 
         public GrapplingHook(float size, float length, RopeMaterial material = RopeMaterial.Default)
             : base(Vector2.Zero)
@@ -239,6 +240,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Removed(scene);
 
+            _movementCounter = Vector2.Zero;
             State = HookStates.None;
             Velocity = Acceleration = Vector2.Zero;
             Active = false;
@@ -276,8 +278,8 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             Segment playerSeg = new Segment(_playerPrevPosition, player.ExactCenter());
-            Vector2 prevPosition = Position;
-            Vector2 nextPosition = Position;
+            Vector2 prevPosition = ExactPosition;
+            Vector2 nextPosition = ExactPosition;
             Vector2 lastVelocity = Velocity;
             HookStates lastState = State;
             Entity attachEntity = rope.TopPivot.entity;
@@ -298,14 +300,15 @@ namespace Celeste.Mod.Aqua.Core
                         rope.CheckCollision(playerSeg);
                         nextPosition = rope.DetectHookNextPosition(dt, false, CalculateSpeedCoefficient(), out changeState);
                         movement = nextPosition - prevPosition;
-                        if (!AquaMaths.IsApproximateZero(movement.X))
-                        {
-                            collided = collided || MoveH(movement.X, OnCollideEntity);
-                        }
-                        if (!AquaMaths.IsApproximateZero(movement.Y))
-                        {
-                            collided = collided || MoveV(movement.Y, OnCollideEntity);
-                        }
+                        collided = BresenhamMove(movement, OnCollideEntity);
+                        //if (!AquaMaths.IsApproximateZero(movement.X))
+                        //{
+                        //    collided = collided || MoveH(movement.X, OnCollideEntity);
+                        //}
+                        //if (!AquaMaths.IsApproximateZero(movement.Y))
+                        //{
+                        //    collided = collided || MoveV(movement.Y, OnCollideEntity);
+                        //}
                         if (collided && _hitInteractable)
                         {
                             break;
@@ -335,14 +338,15 @@ namespace Celeste.Mod.Aqua.Core
                             movement = Vector2.Normalize(movement) * (movement.Length() - (currentLength - rope.MaxLength));
                             changeState = true;
                         }
-                        if (!AquaMaths.IsApproximateZero(movement.X))
-                        {
-                            collided = collided || MoveH(movement.X, OnCollideEntity);
-                        }
-                        if (!AquaMaths.IsApproximateZero(movement.Y))
-                        {
-                            collided = collided || MoveV(movement.Y, OnCollideEntity);
-                        }
+                        collided = BresenhamMove(movement, OnCollideEntity);
+                        //if (!AquaMaths.IsApproximateZero(movement.X))
+                        //{
+                        //    collided = collided || MoveH(movement.X, OnCollideEntity);
+                        //}
+                        //if (!AquaMaths.IsApproximateZero(movement.Y))
+                        //{
+                        //    collided = collided || MoveV(movement.Y, OnCollideEntity);
+                        //}
                         if (collided && _hitInteractable)
                         {
                             break;
@@ -363,7 +367,7 @@ namespace Celeste.Mod.Aqua.Core
                             Revoke();
                         }
                         rope.CheckCollision(playerSeg);
-                        Velocity = Position - prevPosition;
+                        Velocity = ExactPosition - prevPosition;
                         rope.UpdateCurrentDirection();
                         _fixTimer.Tick(dt);
                         if (_fixTimer.Check())
@@ -444,81 +448,149 @@ namespace Celeste.Mod.Aqua.Core
             return 1.0f;
         }
 
-        private bool MoveH(float moveH, Collision onCollide = null)
+        private bool BresenhamMove(Vector2 movement, Collision onCollide = null)
         {
-            _movementCounter.X += moveH;
-            int num = (int)Math.Round(_movementCounter.X, MidpointRounding.ToEven);
-            if (num != 0)
+            _movementCounter += movement;
+            int dx = (int)MathF.Round(_movementCounter.X, MidpointRounding.ToEven);
+            int dy = (int)MathF.Round(_movementCounter.Y, MidpointRounding.ToEven);
+            if (dx != 0 || dy != 0)
             {
-                _movementCounter.X -= num;
-                return MoveHExact(num, onCollide);
-            }
-
-            return false;
-        }
-
-        private bool MoveV(float moveV, Collision onCollide = null)
-        {
-            _movementCounter.Y += moveV;
-            int num = (int)Math.Round(_movementCounter.Y, MidpointRounding.ToEven);
-            if (num != 0)
-            {
-                _movementCounter.Y -= num;
-                return MoveVExact(num, onCollide);
-            }
-
-            return false;
-        }
-
-        private bool MoveHExact(int moveH, Collision onCollide = null)
-        {
-            Vector2 targetPosition = Position + Vector2.UnitX * moveH;
-            int num = Math.Sign(moveH);
-            int num2 = 0;
-            while (moveH != 0)
-            {
-                if (CheckInteractables(Position + Vector2.UnitX * num))
+                if (dx == 0)
                 {
-                    return true;
-                }
-                
-                Solid solid = CollideFirst<Solid>(Position + Vector2.UnitX * num);
-                if (solid != null)
-                {
-                    _movementCounter.X = 0f;
-                    onCollide?.Invoke(new CollisionData
+                    int step = MathF.Sign(dy);
+                    while (dy != 0)
                     {
-                        Direction = Vector2.UnitX * num,
-                        Moved = Vector2.UnitX * num2,
-                        TargetPosition = targetPosition,
-                        Hit = solid,
-                        Pusher = null,
-                    });
-                    return true;
+                        if (StepMoveV(step, onCollide))
+                            return true;
+                        dy -= step;
+                        Y += step;
+                    }
                 }
+                else if (dy == 0)
+                {
+                    int step = MathF.Sign(dx);
+                    while (dx != 0)
+                    {
+                        if (StepMoveH(step, onCollide))
+                            return true;
+                        dx -= step;
+                        X += step;
+                    }
+                }
+                else
+                {
+                    int absY = Math.Abs(dy);
+                    int absX = Math.Abs(dx);
+                    bool swapped = false;
+                    if (absY > absX)
+                    {
+                        // swap dx, dy
+                        int tmp = absX;
+                        absX = absY;
+                        absY = tmp;
+                        swapped = true;
+                    }
 
-                num2 += num;
-                moveH -= num;
-                base.X += num;
+                    int stepX = MathF.Sign(dx);
+                    int stepY = MathF.Sign(dy);
+                    int error = absX - absY;
+                    do
+                    {
+                        error += 2 * absY;
+                        if (error >= 2 * absX)
+                        {
+                            error -= 2 * absX;
+                            if ((!swapped && StepMoveV(stepY, onCollide)) || (swapped && StepMoveH(stepX, onCollide)))
+                            {
+                                if (swapped)
+                                    _movementCounter.X = 0.0f;
+                                else
+                                    _movementCounter.Y = 0.0f;
+                                return true;
+                            }
+                            else
+                            {
+                                if (!swapped)
+                                    Y += stepY;
+                                else
+                                    X += stepX;
+                            }
+                        }
+                        if ((!swapped && StepMoveH(stepX, onCollide)) || (swapped && StepMoveV(stepY, onCollide)))
+                        {
+                            if (swapped)
+                                _movementCounter.Y = 0.0f;
+                            else
+                                _movementCounter.X = 0.0f;
+                            return true;
+                        }
+                        else
+                        {
+                            if (!swapped)
+                                X += stepX;
+                            else
+                                Y += stepY;
+                        }
+                        absX--;
+                    } while (absX != 0);
+                }
             }
-
             return false;
         }
 
-        private bool MoveVExact(int moveV, Collision onCollide = null)
+        private bool StepMoveH(int step, Collision onCollide)
         {
-            Vector2 targetPosition = Position + Vector2.UnitY * moveV;
-            int num = Math.Sign(moveV);
-            int num2 = 0;
-            while (moveV != 0)
+            if (CheckInteractables(Position + Vector2.UnitX * step))
             {
-                if (CheckInteractables(Position + Vector2.UnitY * num))
+                return true;
+            }
+
+            Solid solid = CollideFirst<Solid>(Position + Vector2.UnitX * step);
+            if (solid != null)
+            {
+                _movementCounter.X = 0f;
+                onCollide?.Invoke(new CollisionData
                 {
-                    return true;
+                    Direction = Vector2.UnitX * step,
+                    Hit = solid,
+                    Pusher = null,
+                });
+
+                return true;
+            }
+            _movementCounter.X -= step;
+            return false;
+        }
+
+        private bool StepMoveV(int step, Collision onCollide)
+        {
+            if (CheckInteractables(Position + Vector2.UnitY * step))
+            {
+                return true;
+            }
+
+            Platform platform = CollideFirst<Solid>(Position + Vector2.UnitY * step);
+            CollisionData data;
+            if (platform != null)
+            {
+                _movementCounter.Y = 0f;
+                if (onCollide != null)
+                {
+                    data = new CollisionData
+                    {
+                        Direction = Vector2.UnitY * step,
+                        Hit = platform,
+                        Pusher = null,
+                    };
+                    onCollide(data);
                 }
 
-                Platform platform = CollideFirst<Solid>(Position + Vector2.UnitY * num);
-                CollisionData data;
+                return true;
+            }
+
+            if (step > 0)
+            {
+                platform = CollideFirstOutside<JumpThru>(Position + Vector2.UnitY * step);
                 if (platform != null)
                 {
                     _movementCounter.Y = 0f;
@@ -526,9 +598,7 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         data = new CollisionData
                         {
-                            Direction = Vector2.UnitY * num,
-                            Moved = Vector2.UnitY * num2,
-                            TargetPosition = targetPosition,
+                            Direction = Vector2.UnitY * step,
                             Hit = platform,
                             Pusher = null,
                         };
@@ -537,35 +607,8 @@ namespace Celeste.Mod.Aqua.Core
 
                     return true;
                 }
-
-                if (moveV > 0)
-                {
-                    platform = CollideFirstOutside<JumpThru>(Position + Vector2.UnitY * num);
-                    if (platform != null)
-                    {
-                        _movementCounter.Y = 0f;
-                        if (onCollide != null)
-                        {
-                            data = new CollisionData
-                            {
-                                Direction = Vector2.UnitY * num,
-                                Moved = Vector2.UnitY * num2,
-                                TargetPosition = targetPosition,
-                                Hit = platform,
-                                Pusher = null,
-                            };
-                            onCollide(data);
-                        }
-
-                        return true;
-                    }
-                }
-
-                num2 += num;
-                moveV -= num;
-                base.Y += num;
             }
-
+            _movementCounter.Y -= step;
             return false;
         }
 
