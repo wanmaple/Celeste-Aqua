@@ -51,6 +51,7 @@ namespace Celeste.Mod.Aqua.Core
         public float AlongRopeSpeed { get; set; } = 0.0f;
         public Vector2 BouncingVelocity { get; set; }
 
+        public float MaxLength => Get<HookRope>().MaxLength;
         public float LockedRadius => Get<HookRope>().LockedLength;
         public float SwingRadius => Get<HookRope>().SwingRadius;
         public Vector2 HookDirection => Get<HookRope>().HookDirection;
@@ -480,7 +481,7 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     return true;
                 }
-
+                
                 Solid solid = CollideFirst<Solid>(Position + Vector2.UnitX * num);
                 if (solid != null)
                 {

@@ -11,6 +11,13 @@ namespace Celeste.Mod.Aqua.Core
     [Tracked(false)]
     public class AccelerationArea : Entity
     {
+        public enum AccelerateState
+        {
+            None,
+            Accelerate,
+            Deaccelerate,
+        }
+
         public MoveBlock.Directions Direction { get; private set; }
         public Color BorderColor { get; private set; }
         public Color ArrowColor { get; private set; }
@@ -57,25 +64,30 @@ namespace Celeste.Mod.Aqua.Core
             Depth = Depths.SolidsBelow;
         }
 
-        public bool TryAccelerate(MoveBlock block)
+        public bool EnterEntity(Entity entity)
+        {
+            return _inEntities.Add(entity);
+        }
+
+        public bool ExitEntity(Entity entity)
+        {
+            return _inEntities.Remove(entity);
+        }
+
+        public AccelerateState TryAccelerate(MoveBlock block)
         {
             float acc = (block is AquaMoveBlock amb) ? amb.Acceleration : 300.0f;
             if (IsIdenticalDirection(block.direction))
             {
                 block.targetSpeed += acc * Engine.DeltaTime;
-                return true;
+                return AccelerateState.Accelerate;
             }
             else if (IsOppositeDirection(block.direction))
             {
                 block.targetSpeed -= acc * Engine.DeltaTime;
-                return true;
+                return AccelerateState.Deaccelerate;
             }
-            return false;
-        }
-
-        public void StartBlink()
-        {
-            _blink = true;
+            return AccelerateState.None;
         }
 
         private bool IsIdenticalDirection(MoveBlock.Directions direction)
@@ -103,24 +115,19 @@ namespace Celeste.Mod.Aqua.Core
         {
             while (true)
             {
-                while (!_blink)
+                while (_inEntities.Count == 0)
                 {
                     yield return null;
                 }
 
-                _blink = false;
                 float elapsed = 0.0f;
-                while (elapsed < BlinkDuration)
+                while (_inEntities.Count > 0 || elapsed < BlinkDuration)
                 {
-                    if (_blink)
-                    {
-                        if (elapsed > BlinkDuration * 0.5f)
-                        {
-                            elapsed = BlinkDuration - elapsed;
-                        }
-                        _blink = false;
-                    }
                     elapsed += Engine.DeltaTime;
+                    if (elapsed >= BlinkDuration && _inEntities.Count > 0)
+                    {
+                        elapsed -= BlinkDuration;
+                    }
                     float t = Calc.Clamp(MathF.Sin(MathF.PI / BlinkDuration * elapsed), 0.0f, 1.0f);
                     Color curBorderColor = Color.Lerp(BorderColor, BlinkBorderColor, t);
                     Color curArrowColor = Color.Lerp(ArrowColor, BlinkArrowColor, t);
@@ -133,7 +140,6 @@ namespace Celeste.Mod.Aqua.Core
 
         private Image9Slice _border;
         private Sprite _arrow;
-        private bool _blink;
-        private List<MoveBlock> _nowIn = new List<MoveBlock>(4);
+        private HashSet<Entity> _inEntities = new HashSet<Entity>(4);
     }
 }

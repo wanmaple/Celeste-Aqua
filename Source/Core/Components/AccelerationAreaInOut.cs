@@ -6,12 +6,12 @@ namespace Celeste.Mod.Aqua.Core
 {
     public class AccelerationAreaInOut : Component
     {
-        public AccelerationAreaInOut(Action<AccelerationArea> areaIn, Action<AccelerationArea> areaOut, Action<AccelerationArea> keepIn)
+        public AccelerationAreaInOut(Action<AccelerationArea> keepIn, Action<AccelerationArea> areaIn, Action<AccelerationArea> areaOut)
             : base(true, false)
         {
+            _keepIn = keepIn;
             _areaIn = areaIn;
             _areaOut = areaOut;
-            _keepIn = keepIn;
         }
 
         public override void Update()
@@ -21,21 +21,19 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (area.CollideCheck(Entity))
                 {
-                    if (_lastIn.Add(area))
+                    if (area.EnterEntity(Entity))
                         _areaIn?.Invoke(area);
-                    else
-                        _keepIn?.Invoke(area);
+                    _keepIn?.Invoke(area);
                 }
-                else if (!area.CollideCheck(Entity) && _lastIn.Remove(area))
+                else if (!area.CollideCheck(Entity) && area.ExitEntity(Entity))
                 {
                     _areaOut?.Invoke(area);
                 }
             }
         }
 
-        private HashSet<AccelerationArea> _lastIn = new HashSet<AccelerationArea>(4);
+        private Action<AccelerationArea> _keepIn;
         private Action<AccelerationArea> _areaIn;
         private Action<AccelerationArea> _areaOut;
-        private Action<AccelerationArea> _keepIn;
     }
 }

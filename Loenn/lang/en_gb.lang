@@ -93,8 +93,9 @@ entities.Aqua/Rod Move Block.attributes.description.flag=Only Tie Rods with the 
 entities.Aqua/Rod Move Block.attributes.description.speed=Move speed of block.
 entities.Aqua/Rod Move Block.attributes.description.acceleration=Acceleration of block (pixels per second squared).
 entities.Aqua/Rod Move Block.attributes.description.steer_acceleration=Steer acceleration of block (angles per second squared).
-entities.Aqua/Rod Move Block.attributes.description.hue_offset=Hue offset (Fracted), should be in [-1, 1].
-entities.Aqua/Rod Move Block.attributes.description.saturation_offset=Saturation offset (Clamped), should be in [-1, 1].
+entities.Aqua/Rod Move Block.attributes.description.idle_color=Main color at idle state.
+entities.Aqua/Rod Move Block.attributes.description.moving_color=Main color at moving state.
+entities.Aqua/Rod Move Block.attributes.description.break_color=Main color at breaking state.
 
 # Tie Rod
 entities.Aqua/Tie Rod.attributes.description.flag=Which flag of entities to control.

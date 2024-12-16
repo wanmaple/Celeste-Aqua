@@ -19,6 +19,18 @@ RodMoveBlock.fieldInformation = {
     group = {
         fieldType = "integer",
     },
+    idle_color = {
+        fieldType = "color",
+        useAlpha = false,
+    },
+    moving_color = {
+        fieldType = "color",
+        useAlpha = false,
+    },
+    break_color = {
+        fieldType = "color",
+        useAlpha = false,
+    },
 }
 RodMoveBlock.placements = {}
 
@@ -36,8 +48,9 @@ for _, direction in ipairs(moveBlockDirections) do
                 speed = 60,
                 acceleration = 300,
                 steer_acceleration = 2880,
-                hue_offset = 0.3,
-                saturation_offset = 0.35,
+                idle_color = "c50000",
+                moving_color = "30b335",
+                break_color = "cc2541",
             }
         })
     end
@@ -95,11 +108,13 @@ function RodMoveBlock.sprite(room, entity)
 
     local highlightRectangle = DrawableRectangle.fromRectangle("fill", x + 2, y + 2, width - 4, height - 4, highlightColor)
     local midRectangle = DrawableRectangle.fromRectangle("fill", x + 8, y + 8, width - 16, height - 16, midColor)
+    highlightRectangle:setColor(entity.idle_color)
 
     local arrowSprite = DrawableSprite.fromTexture(arrowTexture, entity)
     local arrowSpriteWidth, arrowSpriteHeight = arrowSprite.meta.width, arrowSprite.meta.height
     local arrowX, arrowY = x + math.floor((width - arrowSpriteWidth) / 2), y + math.floor((height - arrowSpriteHeight) / 2)
     local arrowRectangle = DrawableRectangle.fromRectangle("fill", arrowX, arrowY, arrowSpriteWidth, arrowSpriteHeight, highlightColor)
+    arrowRectangle:setColor(entity.idle_color)
 
     arrowSprite:addPosition(math.floor(width / 2), math.floor(height / 2))
 
@@ -126,6 +141,8 @@ function RodMoveBlock.sprite(room, entity)
                 spriteRight:useRelativeQuad(rightQuadX, 0, 8, 8)
                 spriteRight:setColor(buttonColor)
 
+                spriteLeft:setColor(entity.idle_color)
+                spriteRight:setColor(entity.idle_color)
                 table.insert(sprites, spriteLeft)
                 table.insert(sprites, spriteRight)
             end
@@ -139,12 +156,14 @@ function RodMoveBlock.sprite(room, entity)
                 sprite:useRelativeQuad(quadX, 0, 8, 8)
                 sprite:setColor(buttonColor)
 
+                sprite:setColor(entity.idle_color)
                 table.insert(sprites, sprite)
             end
         end
     end
 
     for _, sprite in ipairs(ninePatch:getDrawableSprite()) do
+        sprite:setColor(entity.idle_color)
         table.insert(sprites, sprite)
     end
 

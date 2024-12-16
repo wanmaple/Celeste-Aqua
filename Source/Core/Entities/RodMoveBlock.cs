@@ -2,51 +2,26 @@
 using Monocle;
 using System.Collections;
 using Celeste.Mod.Entities;
-using Celeste.Mod.Aqua.Rendering;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Rod Move Block")]
     [Tracked(false)]
-    public class RodMoveBlock : AquaMoveBlock, IRodControllable, ICustomRenderEntity
+    public class RodMoveBlock : AquaMoveBlock, IRodControllable
     {
         public string Flag { get; private set; }
         public bool IsRunning { get; private set; }
-        public float HueOffset { get; private set; }
-        public float SaturationOffset { get; private set; }
 
         public RodMoveBlock(EntityData data, Vector2 offset)
             : base(data, offset)
         {
             Flag = data.Attr("flag");
-            HueOffset = data.Float("hue_offset");
-            SaturationOffset = data.Float("saturation_offset");
+            idleBgFill = data.HexColor("idle_color");
+            pressedBgFill = data.HexColor("moving_color");
+            breakingBgFill = data.HexColor("break_color");
             Coroutine coroutine = Get<Coroutine>();
             Remove(coroutine);
             Add(new Coroutine(RodController()));
-            _fx = FXCenter.Instance.GetFX("hue_offset");
-            if (_fx != null)
-            {
-                _fx.Parameters["HueOffset"].SetValue(HueOffset);
-                _fx.Parameters["SaturationOffset"].SetValue(SaturationOffset);
-            }
-            AddTag(RenderTags.CustomEntity);
-        }
-
-        public Effect GetEffect()
-        {
-            return _fx;
-        }
-
-        public void OnReload()
-        {
-            _fx = FXCenter.Instance.GetFX("hue_offset");
-            if (_fx != null)
-            {
-                _fx.Parameters["HueOffset"].SetValue(HueOffset);
-                _fx.Parameters["SaturationOffset"].SetValue(SaturationOffset);
-            }
         }
 
         public override void Added(Scene scene)
@@ -93,7 +68,5 @@ namespace Celeste.Mod.Aqua.Core
                 IsRunning = false;
             }
         }
-
-        protected Effect _fx;
     }
 }

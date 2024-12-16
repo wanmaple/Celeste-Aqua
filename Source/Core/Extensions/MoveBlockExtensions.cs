@@ -4,6 +4,7 @@ using Monocle;
 using Microsoft.Xna.Framework;
 using static Celeste.MoveBlock;
 using FMOD.Studio;
+using MonoMod.Utils;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -13,18 +14,24 @@ namespace Celeste.Mod.Aqua.Core
         {
             On.Celeste.MoveBlock.ctor_Vector2_int_int_Directions_bool_bool += MoveBlock_Construct;
             On.Celeste.MoveBlock.Controller += MoveBlock_Controller;
+            On.Celeste.MoveBlock.UpdateColors += MoveBlock_UpdateColors;
+            On.Celeste.MoveBlock.Render += MoveBlock_Render;
         }
 
         public static void Uninitialize()
         {
             On.Celeste.MoveBlock.ctor_Vector2_int_int_Directions_bool_bool -= MoveBlock_Construct;
             On.Celeste.MoveBlock.Controller -= MoveBlock_Controller;
+            On.Celeste.MoveBlock.UpdateColors -= MoveBlock_UpdateColors;
+            On.Celeste.MoveBlock.Render -= MoveBlock_Render;
         }
 
         private static void MoveBlock_Construct(On.Celeste.MoveBlock.orig_ctor_Vector2_int_int_Directions_bool_bool orig, MoveBlock self, Vector2 position, int width, int height, Directions direction, bool canSteer, bool fast)
         {
+            self.SetAccelerateState(AccelerationArea.AccelerateState.None);
             orig(self, position, width, height, direction, canSteer, fast);
-            self.Add(new AccelerationAreaInOut(self.OnEnterAccelerationArea, null, self.OnKeepInAccelerationArea));
+            self.Add(new AccelerationAreaInOut(self.OnKeepInAccelerationArea, null, self.OnExitAccelerationArea));
+            self.Add(new PureColorTrails(e => (e as MoveBlock).GetAccelerateState() == AccelerationArea.AccelerateState.Accelerate && self.Scene.OnInterval(0.05f), e => AccelerationColor, Vector2.Zero));
         }
 
         private static System.Collections.IEnumerator MoveBlock_Controller(On.Celeste.MoveBlock.orig_Controller orig, MoveBlock self)
@@ -241,31 +248,73 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private static void OnEnterAccelerationArea(this MoveBlock self, AccelerationArea area)
+        private static void MoveBlock_UpdateColors(On.Celeste.MoveBlock.orig_UpdateColors orig, MoveBlock self)
         {
-            if (area.TryAccelerate(self))
-                area.StartBlink();
+            if (self.state == MovementState.Breaking)
+                orig(self);
+            else if (self.GetAccelerateState() != AccelerationArea.AccelerateState.None)
+                self.UpdateColorsAcceleration();
+            else
+                orig(self);
+        }
+
+        private static void MoveBlock_Render(On.Celeste.MoveBlock.orig_Render orig, MoveBlock self)
+        {
+            PureColorTrails trails = self.Get<PureColorTrails>();
+            trails.Render();
+            orig(self);
+        }
+
+        private static void UpdateColorsAcceleration(this MoveBlock self)
+        {
+            Color value = idleBgFill;
+            if (self.GetAccelerateState() == AccelerationArea.AccelerateState.Accelerate)
+            {
+                value = AccelerationColor;
+            }
+            else if (self.GetAccelerateState() == AccelerationArea.AccelerateState.Deaccelerate)
+            {
+                value = DeaccelerationColor;
+            }
+
+            self.fillColor = Color.Lerp(self.fillColor, value, 10.0f * Engine.DeltaTime);
+            foreach (Image item in self.topButton)
+            {
+                item.Color = self.fillColor;
+            }
+
+            foreach (Image item2 in self.leftButton)
+            {
+                item2.Color = self.fillColor;
+            }
+
+            foreach (Image item3 in self.rightButton)
+            {
+                item3.Color = self.fillColor;
+            }
+        }
+
+        private static void OnExitAccelerationArea(this MoveBlock self, AccelerationArea area)
+        {
+            self.SetAccelerateState(AccelerationArea.AccelerateState.None);
         }
 
         private static void OnKeepInAccelerationArea(this MoveBlock self, AccelerationArea area)
         {
-            area.TryAccelerate(self);
+            self.SetAccelerateState(area.TryAccelerate(self));
         }
 
-        private static void MoveBlock_Update(On.Celeste.MoveBlock.orig_Update orig, MoveBlock self)
+        public static AccelerationArea.AccelerateState GetAccelerateState(this MoveBlock self)
         {
-            orig(self);
-            if (self.state == MovementState.Moving)
-            {
-                List<Entity> accAreas = self.Scene.Tracker.GetEntities<AccelerationArea>();
-                foreach (AccelerationArea area in accAreas)
-                {
-                    if (area.CollideCheck(self))
-                    {
-                        area.TryAccelerate(self);
-                    }
-                }
-            }
+            return DynamicData.For(self).Get<AccelerationArea.AccelerateState>("accelerate_state");
         }
+
+        public static void SetAccelerateState(this MoveBlock self, AccelerationArea.AccelerateState state)
+        {
+            DynamicData.For(self).Set("accelerate_state", state);
+        }
+
+        private static Color AccelerationColor = Calc.HexToColor("fbff00");
+        private static Color DeaccelerationColor = Calc.HexToColor("5298e6");
     }
 }

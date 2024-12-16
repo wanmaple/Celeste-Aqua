@@ -40,11 +40,11 @@ for _, dir in ipairs(DIRECTIONS) do
             width = 24,
             height = 24,
             direction = dir,
-            border_color = "1e7ed6",
-            arrow_color = "23b4da",
+            border_color = "4e5cff",
+            arrow_color = "4e5cff",
             blink_border_color = "ffffff",
             blink_arrow_color = "ffffff",
-            blink_duration = 0.5,
+            blink_duration = 0.7,
         },
     })
 end

@@ -479,7 +479,9 @@ namespace Celeste.Mod.Aqua.Core
                 if (Input.MoveX.Value != 0)
                 {
                     float sign = swingUp ? 1.0f : -1.0f;
-                    self.Speed += AquaModule.Settings.HookSettings.SwingStrength * swingDirection * Input.MoveX.Value * dt * sign;
+                    Vector2 strengthSpeed = AquaModule.Settings.HookSettings.SwingStrength * swingDirection * Input.MoveX.Value * dt * sign;
+                    strengthSpeed *= Calc.Clamp(_madelinesHook.SwingRadius / _madelinesHook.MaxLength, 0.1f, 1.0f);
+                    self.Speed += strengthSpeed;
                 }
             }
 

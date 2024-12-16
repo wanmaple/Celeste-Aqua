@@ -132,7 +132,11 @@
 
     <AccelerationArrow path="objects/acceleration_area/" start="idle">
       <Justify x="0.5" y="0.5" />
-      <Loop id="idle" path="icon" delay="0.1" />
+      <Loop id="idle" path="icon" delay="0.25" />
     </AccelerationArrow>
+
+    <SolidRectTrail path="objects/rect_trail/" start="trail">
+      <Anim id="trail" path="tail" delay="0.05" />
+    </SolidRectTrail>
 
 </Sprites>
