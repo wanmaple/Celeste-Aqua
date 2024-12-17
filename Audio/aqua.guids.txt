@@ -112,6 +112,7 @@
 {5cf06f89-cf18-4dfa-bc69-5e4b58095cf3} event:/char/madeline/water_move_general
 {7d656ffa-050f-4cab-bbc9-03863fa14e4f} event:/char/madeline/water_move_shallow
 {3b90c629-7dcf-467b-a438-75e3287c8ae5} event:/char/madeline/water_out
+{9250dacf-3091-42cb-8340-fb00935928c2} event:/char/madeline/unhookable
 {e1fec409-ace5-4006-8b7c-ccf9fbf1ac59} event:/char/oshiro/boss_charge
 {05362357-0f1e-4f89-9d04-8a2778451a6c} event:/char/oshiro/boss_enter_screen
 {f5fc7368-4f02-4479-a805-0efdff3633f6} event:/char/oshiro/boss_precharge

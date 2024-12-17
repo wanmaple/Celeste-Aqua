@@ -15,7 +15,7 @@ namespace Celeste.Mod.Aqua.Core
         public override void Update()
         {
             Player player = Scene.Tracker.GetEntity<Player>();
-            bool currentIn = Entity.CollideCheck(player);
+            bool currentIn = player != null && Entity.CollideCheck(player);
             if (_lastIn != currentIn)
             {
                 if (currentIn)

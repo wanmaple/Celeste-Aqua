@@ -226,6 +226,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Added(Scene scene)
         {
+            _movementCounter = Vector2.Zero;
             Player madeline = scene.Tracker.GetEntity<Player>();
             Position = madeline.Center;
             State = HookStates.Emitting;

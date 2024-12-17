@@ -100,6 +100,10 @@ entities.Aqua/Rod Move Block.attributes.description.break_color=Main color at br
 # Tie Rod
 entities.Aqua/Tie Rod.attributes.description.flag=Which flag of entities to control.
 
+# Unhookable Crystal
+entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether the spinner attaches to entities or blocks, and can be moved by them.
+entities.Aqua/Unhookable Crystal.attributes.description.color=Main color of the spinner or connector.
+
 # Booster Filter
 entities.Aqua/Booster Filter.attributes.description.color=Area main color.
 entities.Aqua/Booster Filter.attributes.description.opacity=Area main opacity.

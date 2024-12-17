@@ -74,11 +74,11 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             if (direction == Directions.Right || direction == Directions.Left)
                             {
-                                targetAngle = homeAngle + MathF.PI / 4f * (float)angleSteerSign * (float)Input.MoveY.Value;
+                                targetAngle = homeAngle + MathF.PI / 4f * (float)angleSteerSign * (float)Input.MoveY.Value * (this.IsReversed() ? -1.0f : 1.0f);
                             }
                             else
                             {
-                                targetAngle = homeAngle + MathF.PI / 4f * (float)angleSteerSign * (float)Input.MoveX.Value;
+                                targetAngle = homeAngle + MathF.PI / 4f * (float)angleSteerSign * (float)Input.MoveX.Value * (this.IsReversed() ? -1.0f : 1.0f);
                             }
                         }
                     }

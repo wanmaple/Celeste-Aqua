@@ -40,6 +40,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 AquaDebugger.LogWarning("The ConditionFunction Parameter may be incorrect. Make sure the format is 'mod:ModName/ClassName/FunctionName' and the function must be static, boolean return and accept a Level type parameter.");
             }
+            AddTag(Tags.FrozenUpdate);
         }
 
         public override void OnEnter(Player player)

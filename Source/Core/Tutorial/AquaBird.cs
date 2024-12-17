@@ -104,6 +104,25 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        public override void Update()
+        {
+            base.Update();
+            Player player = Scene.Tracker.GetEntity<Player>();
+            if (player != null)
+            {
+                if (player.Left > Right)
+                {
+                    Facing = Facings.Right;
+                    Sprite.Scale.X = (float)Facing;
+                }
+                else if (player.Right < Left)
+                {
+                    Facing = Facings.Left;
+                    Sprite.Scale.X = (float)Facing;
+                }
+            }
+        }
+
         public void TriggerShowTutorial(int index)
         {
             if (_currentActiveIndex == index)
@@ -229,6 +248,7 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             dynData["controlsWidth"] = dynData.Get<float>("controlsWidth") + (float)num;
+            gui.AddTag(Tags.FrozenUpdate);
             _guis.Add(gui);
             _trigs.Add(false);
         }
@@ -242,11 +262,9 @@ namespace Celeste.Mod.Aqua.Core
                 yield return Caw();
             }
 
-            if (this.gui != null)
-                this.gui.Open = false;
             this.gui = gui;
             gui.Open = true;
-            Scene.Add(gui);
+            Scene.Add(this.gui);
             while (gui.Scale < 1f)
             {
                 yield return null;

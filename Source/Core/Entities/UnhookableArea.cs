@@ -18,6 +18,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private bool OnInteractHook(GrapplingHook hook, Vector2 at)
         {
+            Audio.Play("event:/char/madeline/unhookable", Position);
             hook.Revoke();
             return true;
         }

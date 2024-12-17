@@ -29,16 +29,19 @@ namespace Celeste.Mod.Aqua.Core
         public override void Update()
         {
             Player player = Scene.Tracker.GetEntity<Player>();
-            Level level = player.Scene as Level;
-            if (player.CollideCheck(this) && !_playerEnter)
+            if (player != null)
             {
-                level.Frozen = true;
-                _playerEnter = true;
-            }
-            else if (_playerEnter && CheckInputs())
-            {
-                level.Frozen = false;
-                RemoveSelf();
+                Level level = player.Scene as Level;
+                if (player.CollideCheck(this) && !_playerEnter)
+                {
+                    level.Frozen = true;
+                    _playerEnter = true;
+                }
+                else if (_playerEnter && CheckInputs())
+                {
+                    level.Frozen = false;
+                    RemoveSelf();
+                }
             }
         }
 

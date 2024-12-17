@@ -12,5 +12,10 @@
 
             return false;
         }
+
+        public static bool IsLevelFrozen(Level level)
+        {
+            return level.Frozen;
+        }
     }
 }
