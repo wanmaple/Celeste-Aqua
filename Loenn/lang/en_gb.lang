@@ -10,9 +10,6 @@ entities.Aqua/Aqua Bird.attributes.description.faceLeft=Whether the bird is faci
 entities.Aqua/Aqua Bird.attributes.description.caw=Whether the bird will caw if trigger the tutorial, which will delay the occurence of the dialog.
 entities.Aqua/Aqua Bird.attributes.description.onlyOnce=Whether the tutorial only occurs once even if the stage is reload.
 
-# Aqua City Satellite
-entities.Aqua/Aqua City Satellite.attributes.description.puzzleId=Puzzle Identifier, used to recognize which Puzzle Light belongs to the puzzle.
-
 # Aqua Refill
 entities.Aqua/Aqua Refill.attributes.description.twoDash=Whether the refill should give two dashes.
 entities.Aqua/Aqua Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
@@ -23,6 +20,9 @@ entities.Aqua/Puzzle Light.attributes.description.puzzleId=Puzzle Identifier tha
 entities.Aqua/Puzzle Light.attributes.description.sequence=The puzzle light will be ordered with this attribute, used to handle logic.
 entities.Aqua/Puzzle Light.attributes.description.on=Whether the light is default on.
 entities.Aqua/Puzzle Light.attributes.description.color=The color of the light.
+
+# Puzzle City Satellite
+entities.Aqua/Puzzle City Satellite.attributes.description.puzzleId=Puzzle Identifier, used to recognize which Puzzle Light belongs to the puzzle.
 
 # Unidirectional Dash Block
 entities.Aqua/Unidirectional Dash Block.attributes.description.tiletype=Determines the visual apperance of the wall.

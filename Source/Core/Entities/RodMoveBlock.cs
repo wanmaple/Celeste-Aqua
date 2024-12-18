@@ -10,15 +10,18 @@ namespace Celeste.Mod.Aqua.Core
     public class RodMoveBlock : AquaMoveBlock, IRodControllable
     {
         public string Flag { get; private set; }
+        public Color IdleFillColor { get; private set; }
+        public Color MovingFillColor { get; private set; }
+        public Color BreakingFillColor { get; private set; }
         public bool IsRunning { get; private set; }
 
         public RodMoveBlock(EntityData data, Vector2 offset)
             : base(data, offset)
         {
             Flag = data.Attr("flag");
-            idleBgFill = data.HexColor("idle_color");
-            pressedBgFill = data.HexColor("moving_color");
-            breakingBgFill = data.HexColor("break_color");
+            IdleFillColor = data.HexColor("idle_color");
+            MovingFillColor = data.HexColor("moving_color");
+            BreakingFillColor = data.HexColor("break_color");
             Coroutine coroutine = Get<Coroutine>();
             Remove(coroutine);
             Add(new Coroutine(RodController()));

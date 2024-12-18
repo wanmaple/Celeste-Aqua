@@ -9,10 +9,10 @@ local PASS_TYPE = {
     "Green", "Red", "Both",
 }
 local ENTITY_COLORS = {
-    "bc630e", "760ebc", "993865",
+    "bc630e", "760ebc", "23c3d9",
 }
 local PARTICLE_COLORS = {
-    "bc630e", "760ebc", "993865",
+    "bc630e", "760ebc", "23c3d9",
 }
 
 BoosterFilter.name = "Aqua/Booster Filter"

@@ -1,17 +1,17 @@
 local DrawableSprite = require("structs.drawable_sprite")
 
-local AquaCitySatellite = {}
+local PuzzleCitySatellite = {}
 
-AquaCitySatellite.name = "Aqua/Aqua City Satellite"
-AquaCitySatellite.depth = 8999
-AquaCitySatellite.nodeLineRenderType = "line"
-AquaCitySatellite.nodeLimits = {1, -1}
-AquaCitySatellite.fieldInformation = {
+PuzzleCitySatellite.name = "Aqua/Puzzle City Satellite"
+PuzzleCitySatellite.depth = 8999
+PuzzleCitySatellite.nodeLineRenderType = "line"
+PuzzleCitySatellite.nodeLimits = {1, -1}
+PuzzleCitySatellite.fieldInformation = {
     puzzleId = {
         fieldType = "string",
     },
 }
-AquaCitySatellite.placements = {
+PuzzleCitySatellite.placements = {
     name = "Puzzle City Satellite",
     data = {
         puzzleId = "my_puzzle",
@@ -26,7 +26,7 @@ local COMPUTER_SCREEN_TEXTURE = "objects/citysatellite/computerscreen"
 
 local COMPUTER_OFFSET_X, COMPUTER_OFFSET_Y = 32, 24
 
-function AquaCitySatellite.sprite(room, entity)
+function PuzzleCitySatellite.sprite(room, entity)
     local dishSprite = DrawableSprite.fromTexture(DISH_TEXTURE, entity)
     dishSprite:setJustification(0.5, 1.0)
 
@@ -44,14 +44,14 @@ function AquaCitySatellite.sprite(room, entity)
     }
 end
 
-function AquaCitySatellite.nodeSprite(room, entity, node, nodeIndex)
+function PuzzleCitySatellite.nodeSprite(room, entity, node, nodeIndex)
     local gemSprite = DrawableSprite.fromTexture(GEM_TEXTURE, node)
     return gemSprite
 end
 
-function AquaCitySatellite.nodeRectangle(room, entity, node, nodeIndex)
+function PuzzleCitySatellite.nodeRectangle(room, entity, node, nodeIndex)
     local gemSprite = DrawableSprite.fromTexture(GEM_TEXTURE, node)
     return gemSprite:getRectangle()
 end
 
-return AquaCitySatellite
+return PuzzleCitySatellite

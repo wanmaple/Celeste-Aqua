@@ -104,6 +104,7 @@
 {72eb7f2d-c3e9-41b2-afc0-b4cfee087389} event:/char/madeline/summit_flytonext
 {f5babe6c-1ec1-4d4e-8934-a1809b5e26cb} event:/char/madeline/summit_sit
 {dae064c8-86f9-458b-83af-fbd8b699a3b9} event:/char/madeline/theo_collapse
+{9250dacf-3091-42cb-8340-fb00935928c2} event:/char/madeline/unhookable
 {cad411d1-889d-4fb6-85e7-210db19d1e11} event:/char/madeline/wallslide
 {cab0df89-b0d1-439c-8ac7-37db9d43e3a1} event:/char/madeline/water_dash_gen
 {fb5d35c5-47c8-439d-8d52-ec6daf91887b} event:/char/madeline/water_dash_in
@@ -112,7 +113,6 @@
 {5cf06f89-cf18-4dfa-bc69-5e4b58095cf3} event:/char/madeline/water_move_general
 {7d656ffa-050f-4cab-bbc9-03863fa14e4f} event:/char/madeline/water_move_shallow
 {3b90c629-7dcf-467b-a438-75e3287c8ae5} event:/char/madeline/water_out
-{9250dacf-3091-42cb-8340-fb00935928c2} event:/char/madeline/unhookable
 {e1fec409-ace5-4006-8b7c-ccf9fbf1ac59} event:/char/oshiro/boss_charge
 {05362357-0f1e-4f89-9d04-8a2778451a6c} event:/char/oshiro/boss_enter_screen
 {f5fc7368-4f02-4479-a805-0efdff3633f6} event:/char/oshiro/boss_precharge
@@ -498,6 +498,7 @@
 {7c01de41-a31a-43c3-9c0f-9ae85ad94c68} event:/game/general/wall_break_ice
 {92f75010-4e90-428e-834c-1315ddbd9460} event:/game/general/wall_break_stone
 {634bdd66-3f53-4679-8ced-fadfc60d412f} event:/game/general/wall_break_wood
+{6b53b3e5-bb3d-450c-90c6-f2929d587dc6} event:/game/general/stopwatch
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort

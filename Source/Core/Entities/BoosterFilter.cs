@@ -98,6 +98,10 @@ namespace Celeste.Mod.Aqua.Core
                     return false;
                 return true;
             }
+            else if (other is Platform)
+            {
+                return false;
+            }
             return true;
         }
 

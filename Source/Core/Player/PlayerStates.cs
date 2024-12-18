@@ -664,8 +664,9 @@ namespace Celeste.Mod.Aqua.Core
                             direction.Normalize();
                         }
                         float emitSpeed = AquaModule.Settings.HookSettings.EmitSpeed;
-                        self.CalculateEmitParameters(ref direction, ref emitSpeed);
-                        _madelinesHook.Emit(direction, emitSpeed);
+                        float emitSpeedCoeff = 1.0f;
+                        self.CalculateEmitParameters(ref direction, ref emitSpeedCoeff);
+                        _madelinesHook.Emit(direction, emitSpeed, emitSpeedCoeff - 1.0f);
                         self.Scene.Add(_madelinesHook);
                     }
                     if (emittingTicker.CheckRate(1.0f))
@@ -829,7 +830,7 @@ namespace Celeste.Mod.Aqua.Core
             return windCtrl.targetSpeed;
         }
 
-        private static void CalculateEmitParameters(this Player self, ref Vector2 direction, ref float speed)
+        private static void CalculateEmitParameters(this Player self, ref Vector2 direction, ref float speedCoeff)
         {
             WindController windCtrl = self.Scene.Entities.FindFirst<WindController>();
             if (windCtrl == null)
@@ -839,7 +840,7 @@ namespace Celeste.Mod.Aqua.Core
             float maxSpeedUp = 0.25f;
             direction.X *= (1.0f + windSpeed.X / 800.0f * maxSpeedUp * MathF.Sign(direction.X));
             direction.Y *= (1.0f + windSpeed.Y / 800.0f * maxSpeedUp * MathF.Sign(direction.Y));
-            speed *= direction.Length();
+            speedCoeff = direction.Length();
             direction.Normalize();
         }
 

@@ -23,7 +23,8 @@ namespace Celeste.Mod.Aqua.Core
             Collider = new Hitbox(w, h, -w * 0.5f, -h * 0.5f);
             Vector2 indicatorOffset = new Vector2(0.0f, -2.0f);
             _talker = new TalkComponent(new Rectangle(-(int)w / 2, -(int)h / 2, (int)w, (int)h), new Vector2(indicatorOffset.X, indicatorOffset.Y - h * 0.5f), OnPlayerInteract);
-            _talker.Active = false;
+            _talker.Active = _talker.Visible = false;
+            Add(_talker);
             Add(_sprite = new Sprite());
             GFX.SpriteBank.CreateOn(_sprite, "TieRod");
             _sprite.Play("idle");
@@ -48,19 +49,11 @@ namespace Celeste.Mod.Aqua.Core
             IReadOnlyList<IRodControllable> entities = RodEntityManager.Instance.GetEntitiesOfFlag(Flag);
             if (!_pending && entities != null && entities.All(e => !e.IsRunning))
             {
-                if (!_talker.Active)
-                {
-                    Add(_talker);
-                    _talker.Active = true;
-                }
+                _talker.Active = _talker.Visible = true;
             }
             else
             {
-                if (_talker.Active)
-                {
-                    Remove(_talker);
-                    _talker.Active = false;
-                }
+                _talker.Active = _talker.Visible = false;
             }
         }
 
@@ -142,8 +135,8 @@ namespace Celeste.Mod.Aqua.Core
         {
             IReadOnlyList<IRodControllable> entities = RodEntityManager.Instance.GetEntitiesOfFlag(Flag);
             SceneAs<Level>().Session.SetFlag(Flag, true);
-            // 改成Flag的方式后会有些顺序问题，延迟一帧回复pending
-            Add(Alarm.Create(Alarm.AlarmMode.Oneshot, () => _pending = false, 0.0f, true));
+            // 改成Flag的方式后会有些顺序问题，延迟重置pending
+            Add(Alarm.Create(Alarm.AlarmMode.Oneshot, () => _pending = false, 0.1f, true));
         }
 
         private Sprite _sprite;

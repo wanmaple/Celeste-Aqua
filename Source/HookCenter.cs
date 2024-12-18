@@ -35,6 +35,7 @@ namespace Celeste.Mod.Aqua
             PlayerStates.Initialize();
             GrabbyIconExtends.Initialize();
             LevelStates.Initialize();
+            TalkComponentExtensions.Initialize();
             BirdTutorialGUIHook.Initialize();
             RenderHook.Initialize();
         }
@@ -68,6 +69,7 @@ namespace Celeste.Mod.Aqua
             PlayerStates.Uninitialize();
             GrabbyIconExtends.Uninitialize();
             LevelStates.Uninitialize();
+            TalkComponentExtensions.Uninitialize();
             BirdTutorialGUIHook.Uninitialize();
             RenderHook.Uninitialize();
         }

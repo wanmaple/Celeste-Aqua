@@ -272,6 +272,18 @@ namespace Celeste.Mod.Aqua.Core
         {
             PureColorTrails trails = self.Get<PureColorTrails>();
             trails.Render();
+            if (self is RodMoveBlock rod)
+            {
+                MoveBlock.idleBgFill = rod.IdleFillColor;
+                MoveBlock.pressedBgFill = rod.MovingFillColor;
+                MoveBlock.breakingBgFill = rod.BreakingFillColor;
+            }
+            else
+            {
+                MoveBlock.idleBgFill = Calc.HexToColor("474070");
+                MoveBlock.pressedBgFill = Calc.HexToColor("30b335");
+                MoveBlock.breakingBgFill = Calc.HexToColor("cc2541");
+            }
             orig(self);
         }
 

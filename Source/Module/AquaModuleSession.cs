@@ -5,6 +5,7 @@ namespace Celeste.Mod.Aqua.Module;
 public class AquaModuleSession : EverestModuleSession
 {
     public const string CH1A_SATELLITE_SOLVED = "satellite_solved";
+    public const string CH2A_WHEEL_SOLVED = "wheel_solved";
 
     public bool HasFlag(string flag)
     {

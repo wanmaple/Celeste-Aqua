@@ -50,6 +50,7 @@ namespace Celeste.Mod.Aqua.Core
         public bool JustFixed { get; private set; } = false;
         public float AlongRopeSpeed { get; set; } = 0.0f;
         public Vector2 BouncingVelocity { get; set; }
+        public float EmitSpeedCoefficient { get; private set; }
 
         public float MaxLength => Get<HookRope>().MaxLength;
         public float LockedRadius => Get<HookRope>().LockedLength;
@@ -83,11 +84,12 @@ namespace Celeste.Mod.Aqua.Core
             return other.IsHookable();
         }
 
-        public void Emit(Vector2 direction, float speed)
+        public void Emit(Vector2 direction, float speed, float speedCoeff)
         {
             HookRope rope = Get<HookRope>();
             rope.CurrentDirection = direction;
             rope.EmitSpeed = speed;
+            EmitSpeedCoefficient = speedCoeff;
             Revoked = false;
 
             _sprite.Play(HookSprite.Emit, true);
@@ -123,7 +125,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             axis = Vector2.Normalize(axis);
             HookRope rope = Get<HookRope>();
-            BouncingVelocity = State == HookStates.Bouncing ? BouncingVelocity : rope.CurrentDirection * rope.EmitSpeed;
+            BouncingVelocity = State == HookStates.Bouncing ? BouncingVelocity : rope.CurrentDirection * rope.EmitSpeed * (1.0f + EmitSpeedCoefficient);
             float proj = Vector2.Dot(BouncingVelocity, axis);
             if (proj > 0.0f)
                 return false;
@@ -138,7 +140,7 @@ namespace Celeste.Mod.Aqua.Core
                 Vector2 doubleAxis = axis * MathF.Abs(proj) * 2.0f;
                 BouncingVelocity += doubleAxis;
             }
-            BouncingVelocity = Vector2.Normalize(BouncingVelocity) * rope.EmitSpeed;
+            BouncingVelocity = Vector2.Normalize(BouncingVelocity) * rope.EmitSpeed * (1.0f + EmitSpeedCoefficient);
             return true;
         }
 
@@ -299,7 +301,7 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     case HookStates.Emitting:
                         rope.CheckCollision(playerSeg);
-                        nextPosition = rope.DetectHookNextPosition(dt, false, CalculateSpeedCoefficient(), out changeState);
+                        nextPosition = rope.DetectHookNextPosition(dt, false, CalculateSpeedCoefficient(false), out changeState);
                         movement = nextPosition - prevPosition;
                         collided = BresenhamMove(movement, OnCollideEntity);
                         //if (!AquaMaths.IsApproximateZero(movement.X))
@@ -326,7 +328,7 @@ namespace Celeste.Mod.Aqua.Core
                     case HookStates.Revoking:
                         rope.CheckCollision(playerSeg);
                         bool revokeHook;
-                        nextPosition = rope.DetectHookNextPosition(dt, true, CalculateSpeedCoefficient(), out revokeHook);
+                        nextPosition = rope.DetectHookNextPosition(dt, true, CalculateSpeedCoefficient(true), out revokeHook);
                         Revoked = revokeHook;
                         Position = nextPosition;
                         break;
@@ -439,14 +441,15 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
-        private float CalculateSpeedCoefficient()
+        private float CalculateSpeedCoefficient(bool revoking)
         {
+            float coeff = revoking ? 1.0f - EmitSpeedCoefficient : 1.0f + EmitSpeedCoefficient;
             Water water = CollideFirst<Water>();
             if (water != null)
             {
-                return 0.5f;
+                coeff *= 0.5f;
             }
-            return 1.0f;
+            return coeff;
         }
 
         private bool BresenhamMove(Vector2 movement, Collision onCollide = null)

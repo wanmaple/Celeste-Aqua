@@ -9,11 +9,11 @@ using System.Linq;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    [CustomEntity("Aqua/Aqua City Satellite")]
+    [CustomEntity("Aqua/Puzzle City Satellite")]
     [Tracked(false)]
-    public class AquaCitySatellite : PuzzleEntity
+    public class PuzzleCitySatellite : PuzzleEntity
     {
-        public AquaCitySatellite(EntityData data, Vector2 offset)
+        public PuzzleCitySatellite(EntityData data, Vector2 offset)
             : base(data, offset)
         {
             Add(_sprite = new Image(GFX.Game["objects/citysatellite/dish"]));
@@ -61,16 +61,6 @@ namespace Celeste.Mod.Aqua.Core
             {
                 HeartGem entity = new HeartGem(BonusPosition);
                 scene.Add(entity);
-            }
-        }
-
-        public override void Awake(Scene scene)
-        {
-            base.Awake(scene);
-            List<Entity> lights = scene.Tracker.GetEntities<PuzzleLight>();
-            foreach (PuzzleLight light in lights)
-            {
-                RelatedLights.Add(light);
             }
         }
 

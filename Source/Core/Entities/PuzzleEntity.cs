@@ -58,6 +58,16 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            List<Entity> lights = scene.Tracker.GetEntities<PuzzleLight>();
+            foreach (PuzzleLight light in lights)
+            {
+                RelatedLights.Add(light);
+            }
+        }
+
         public override void Update()
         {
             if (!_puzzleClosed && IsSolved())
@@ -70,7 +80,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public virtual bool CanLitOn(PuzzleLight light)
         {
-            if (_puzzleClosed) 
+            if (_puzzleClosed)
                 return false;
 
             if (_litOnMethod != null)
@@ -94,7 +104,7 @@ namespace Celeste.Mod.Aqua.Core
 
         protected virtual bool IsSolved()
         {
-            if (_solveMethod!=null)
+            if (_solveMethod != null)
             {
                 return (bool)_solveMethod.Invoke(null, new object[] { this });
             }
