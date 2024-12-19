@@ -5,7 +5,7 @@ using Monocle;
 namespace Celeste.Mod.Aqua.Core
 {
     /// <summary>
-    /// 暂时不支持缩放和Justify，懒得写。
+    /// 暂时不支持缩放和Justify，懒得写 TODO。
     /// </summary>
     public class Image9Slice : Image
     {

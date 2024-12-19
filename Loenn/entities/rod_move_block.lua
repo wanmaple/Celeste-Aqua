@@ -16,9 +16,6 @@ RodMoveBlock.fieldInformation = {
         options = moveBlockDirections,
         editable = false
     },
-    group = {
-        fieldType = "integer",
-    },
     idle_color = {
         fieldType = "color",
         useAlpha = false,

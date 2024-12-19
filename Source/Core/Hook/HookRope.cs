@@ -151,7 +151,7 @@ namespace Celeste.Mod.Aqua.Core
             GrapplingHook hook = Entity as GrapplingHook;
             Player player = Scene.Tracker.GetEntity<Player>();
             if (player == null) 
-                return hook.ExactPosition;
+                return hook.Position;
             float currentLength = _prevLength;
             if (revoking)
             {
@@ -324,6 +324,16 @@ namespace Celeste.Mod.Aqua.Core
             RopePivot pivot = _pivots[0];
             pivot.entity = entity;
             _pivots[0] = pivot;
+        }
+
+        public void UpdateTopPivot(Vector2 position)
+        {
+            if (_pivots.Count > 0)
+            {
+                RopePivot pivot = _pivots[0];
+                pivot.point = position;
+                _pivots[0] = pivot;
+            }
         }
 
         public void SetLengthLocked(bool locked, Vector2 playerPosition)

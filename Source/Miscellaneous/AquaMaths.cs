@@ -49,6 +49,11 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return new Vector2(Fract(vec.X), Fract(vec.Y));
         }
 
+        public static Vector2 Round(Vector2 vec)
+        {
+            return new Vector2(MathF.Round(vec.X), MathF.Round(vec.Y));
+        }
+
         public static bool IsPointInsideTriangle(Vector2 pt, Vector2 tri1, Vector2 tri2, Vector2 tri3)
         {
             float d1 = Sign(pt, tri1, tri2);

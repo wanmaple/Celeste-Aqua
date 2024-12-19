@@ -59,7 +59,6 @@ namespace Celeste.Mod.Aqua.Core
         public Vector2 RopeDirection => Get<HookRope>().RopeDirection;
         public Vector2 SwingDirection => Get<HookRope>().SwingDirection;
         public Vector2 PlayerPreviousPosition => _playerPrevPosition;
-        public Vector2 ExactPosition => Position + _movementCounter;
 
         public GrapplingHook(float size, float length, RopeMaterial material = RopeMaterial.Default)
             : base(Vector2.Zero)
@@ -82,6 +81,16 @@ namespace Celeste.Mod.Aqua.Core
         public bool CanCollide(Entity other)
         {
             return other.IsHookable();
+        }
+
+        public void SetPositionRounded(Vector2 position)
+        {
+            Position = AquaMaths.Round(position);
+            HookRope rope = Get<HookRope>();
+            if (rope != null)
+            {
+                rope.UpdateTopPivot(Position);
+            }
         }
 
         public void Emit(Vector2 direction, float speed, float speedCoeff)
@@ -228,9 +237,9 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Added(Scene scene)
         {
-            _movementCounter = Vector2.Zero;
             Player madeline = scene.Tracker.GetEntity<Player>();
-            Position = madeline.Center;
+            SetPositionRounded(madeline.Center);
+            _prevPosition = Position;
             State = HookStates.Emitting;
             Active = true;
             HookRope rope = Get<HookRope>();
@@ -243,7 +252,6 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Removed(scene);
 
-            _movementCounter = Vector2.Zero;
             State = HookStates.None;
             Velocity = Acceleration = Vector2.Zero;
             Active = false;
@@ -281,8 +289,8 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             Segment playerSeg = new Segment(_playerPrevPosition, player.ExactCenter());
-            Vector2 prevPosition = ExactPosition;
-            Vector2 nextPosition = ExactPosition;
+            Vector2 prevPosition = _prevPosition;
+            Vector2 nextPosition = Position;
             Vector2 lastVelocity = Velocity;
             HookStates lastState = State;
             Entity attachEntity = rope.TopPivot.entity;
@@ -370,7 +378,7 @@ namespace Celeste.Mod.Aqua.Core
                             Revoke();
                         }
                         rope.CheckCollision(playerSeg);
-                        Velocity = ExactPosition - prevPosition;
+                        Velocity = Position - prevPosition;
                         rope.UpdateCurrentDirection();
                         _fixTimer.Tick(dt);
                         if (_fixTimer.Check())
@@ -385,6 +393,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
 
+            _prevPosition = Position;
             Velocity /= dt;
             Acceleration = (Velocity - lastVelocity) / dt;
             CheckHookColliders();
@@ -454,7 +463,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private bool BresenhamMove(Vector2 movement, Collision onCollide = null)
         {
-            _movementCounter += movement;
+            _movementCounter = movement;
             int dx = (int)MathF.Round(_movementCounter.X, MidpointRounding.ToEven);
             int dy = (int)MathF.Round(_movementCounter.Y, MidpointRounding.ToEven);
             if (dx != 0 || dy != 0)
@@ -681,6 +690,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private RopeMaterial _material;
         private Vector2 _movementCounter = Vector2.Zero;
+        private Vector2 _prevPosition;
         private Vector2 _playerPrevPosition;    // Player的PreviousPosition貌似在相对速度为0的情况下和当前Position相同
         private bool _lengthLocked = false;
         private float _elapsed = 0.0f;

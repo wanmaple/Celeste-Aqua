@@ -100,6 +100,9 @@ entities.Aqua/Rod Move Block.attributes.description.break_color=Main color at br
 # Tie Rod
 entities.Aqua/Tie Rod.attributes.description.flag=Which flag of entities to control.
 
+# Slidable Ice Block
+entities.Aqua/Slidable Ice Block.attributes.description.hook_smooth=Indicates how easy the hook will slide on the surface.
+
 # Unhookable Crystal
 entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether the spinner attaches to entities or blocks, and can be moved by them.
 entities.Aqua/Unhookable Crystal.attributes.description.color=Main color of the spinner or connector.

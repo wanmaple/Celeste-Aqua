@@ -40,12 +40,12 @@ namespace Celeste.Mod.Aqua.Core
 
         // Extended States
         StHanging = 26,
-        StElectricShocking = 27,
+        StElectricShocking,
 
         MaxStates,
     }
 
-    public static class PlayerStates
+    public static partial class PlayerStates
     {
         public static GrapplingHook MadelinesHook => _madelinesHook;
 
@@ -54,6 +54,7 @@ namespace Celeste.Mod.Aqua.Core
             IL.Celeste.Player.ctor += Player_ILConstruct;
             IL.Celeste.Player.NormalUpdate += Player_ILNormalUpdate;
             IL.Celeste.Player.OnCollideV += Player_ILOnCollideV;
+            IL.Celeste.Player.ClimbCheck += Player_ILClimbCheck;
             On.Celeste.Player.ctor += Player_Construct;
             On.Celeste.Player.SceneBegin += Player_SceneBegin;
             On.Celeste.Player.SceneEnd += Player_SceneEnd;
@@ -84,6 +85,7 @@ namespace Celeste.Mod.Aqua.Core
             IL.Celeste.Player.ctor -= Player_ILConstruct;
             IL.Celeste.Player.NormalUpdate -= Player_ILNormalUpdate;
             IL.Celeste.Player.OnCollideV -= Player_ILOnCollideV;
+            IL.Celeste.Player.ClimbCheck -= Player_ILClimbCheck;
             On.Celeste.Player.ctor -= Player_Construct;
             On.Celeste.Player.SceneBegin -= Player_SceneBegin;
             On.Celeste.Player.SceneEnd -= Player_SceneEnd;
@@ -176,6 +178,7 @@ namespace Celeste.Mod.Aqua.Core
             self.SetTimeTicker("elec_shock_ticker", 1.0f);
             DynamicData.For(self).Set("rope_is_loosen", true);
             DynamicData.For(self).Set("is_booster_dash", false);
+            self.SetSlideState(SlideStates.None);
         }
 
         private static void Player_SceneBegin(On.Celeste.Player.orig_SceneBegin orig, Player self, Scene scene)
@@ -300,7 +303,10 @@ namespace Celeste.Mod.Aqua.Core
             int nextState = PreHookUpdate(self);
             if (nextState < 0)
             {
-                nextState = orig(self);
+                if (self.CheckOnSlidable())
+                    nextState = self.SlideUpdate();
+                else
+                    nextState = orig(self);
             }
             if (nextState == (int)AquaStates.StNormal)
             {
@@ -526,6 +532,8 @@ namespace Celeste.Mod.Aqua.Core
                 climbJumpTicker.Tick(dt);
                 DynamicData.For(self).Set("rope_is_loosen", true);
                 DynamicData.For(self).Set("previous_facing", (int)self.Facing);
+                if (!self.CheckOnSlidable())
+                    self.SetSlideState(SlideStates.None);
 
                 orig(self);
 
@@ -588,8 +596,52 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (self.StateMachine.State != (int)AquaStates.StHanging)
             {
-                self.Sprite.SetHookMode(false);
-                orig(self);
+                if (self.GetSlideState() != SlideStates.None)
+                {
+                    self.Sprite.Scale = Vector2.One;
+                    switch (self.GetSlideState())
+                    {
+                        case SlideStates.LowSpeed:
+                            if (self.Sprite.CurrentAnimationID != "fliponice")
+                            {
+                                if (MathF.Sign(self.Speed.X) != (int)self.Facing)
+                                {
+                                    self.Sprite.SetHookMode(false);
+                                    self.Sprite.Play("runStumble");
+                                }
+                                else
+                                {
+                                    self.Sprite.SetHookMode(true);
+                                    self.Sprite.Play("icestumble");
+                                }
+                            }
+                            break;
+                        case SlideStates.HighSpeed:
+                            if (self.Sprite.CurrentAnimationID != "fliponice")
+                            {
+                                self.Sprite.SetHookMode(true);
+                                self.Sprite.Play("iceslide");
+                            }
+                            break;
+                        case SlideStates.Turning:
+                            if (DynamicData.For(self).Get<int>("previous_facing") == -(int)self.Facing)
+                            {
+                                self.Sprite.SetHookMode(false);
+                                self.Sprite.PlayFlipOnIce();
+                            }
+                            else if (self.Sprite.CurrentAnimationID != "fliponice")
+                            {
+                                self.Sprite.SetHookMode(false);
+                                self.Sprite.Play("skid");
+                            }    
+                            break;
+                    }
+                }
+                else
+                {
+                    self.Sprite.SetHookMode(false);
+                    orig(self);
+                }
             }
             else
             {
@@ -664,8 +716,7 @@ namespace Celeste.Mod.Aqua.Core
                             direction.Normalize();
                         }
                         float emitSpeed = AquaModule.Settings.HookSettings.EmitSpeed;
-                        float emitSpeedCoeff = 1.0f;
-                        self.CalculateEmitParameters(ref direction, ref emitSpeedCoeff);
+                        float emitSpeedCoeff = self.CalculateEmitParameters(emitSpeed * direction, ref direction);
                         _madelinesHook.Emit(direction, emitSpeed, emitSpeedCoeff - 1.0f);
                         self.Scene.Add(_madelinesHook);
                     }
@@ -830,18 +881,27 @@ namespace Celeste.Mod.Aqua.Core
             return windCtrl.targetSpeed;
         }
 
-        private static void CalculateEmitParameters(this Player self, ref Vector2 direction, ref float speedCoeff)
+        private static float CalculateEmitParameters(this Player self, Vector2 emitSpeed, ref Vector2 direction)
         {
             WindController windCtrl = self.Scene.Entities.FindFirst<WindController>();
             if (windCtrl == null)
-                return;
+                return 1.0f;
 
+            float oldSpeed = emitSpeed.Length();
             Vector2 windSpeed = windCtrl.targetSpeed;
-            float maxSpeedUp = 0.25f;
-            direction.X *= (1.0f + windSpeed.X / 800.0f * maxSpeedUp * MathF.Sign(direction.X));
-            direction.Y *= (1.0f + windSpeed.Y / 800.0f * maxSpeedUp * MathF.Sign(direction.Y));
-            speedCoeff = direction.Length();
-            direction.Normalize();
+            const float MAX_AFFECT_SPEED = 120.0f;
+            emitSpeed.X += windSpeed.X / 800.0f * MAX_AFFECT_SPEED;
+            emitSpeed.Y += windSpeed.Y / 800.0f * MAX_AFFECT_SPEED;
+            const float MAX_COEFFICIENT = 0.25f;
+            float speedCoeff = Calc.Clamp(emitSpeed.Length() / oldSpeed, 1.0f - MAX_COEFFICIENT, 1.0f + MAX_COEFFICIENT);
+            direction = Vector2.Normalize(emitSpeed);
+            return speedCoeff;
+            //float maxSpeedUp = 0.25f;
+            //direction.X *= (1.0f + windSpeed.X / 800.0f * maxSpeedUp * MathF.Sign(direction.X));
+            //direction.Y *= (1.0f + windSpeed.Y / 800.0f * maxSpeedUp * MathF.Sign(direction.Y));
+            //float speedCoeff = direction.Length();
+            //direction.Normalize();
+            //return speedCoeff;
         }
 
         private static bool IsExhausted(this Player self)

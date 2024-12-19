@@ -7,7 +7,7 @@ namespace Celeste.Mod.Aqua.Module
     public class HookSettings
     {
         [SettingIgnore]
-        [DefaultValue(6)]
+        [DefaultValue(8)]
         public int Size { get; set; }  // 钩爪大小
 
         [SettingRange(50, 150)]

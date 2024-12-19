@@ -39,9 +39,6 @@ RodZipMover.nodeVisibility = "never"
 RodZipMover.nodeLimits = {1, 1}
 RodZipMover.warnBelowSize = {16, 16}
 RodZipMover.fieldInformation = {
-    group = {
-        fieldType = "integer",
-    },
     theme = {
         options = themes,
         editable = false

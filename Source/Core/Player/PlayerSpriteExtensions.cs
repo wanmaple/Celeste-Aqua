@@ -1,4 +1,5 @@
-﻿using MonoMod.Utils;
+﻿using Monocle;
+using MonoMod.Utils;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -51,6 +52,19 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, mode);
             DynamicData.For(self).Set("is_hook_mode", false);
+        }
+
+        public static void PlayFlipOnIce(this PlayerSprite self)
+        {
+            if (!self.animations.TryGetValue("fliponice", out Sprite.Animation anim))
+            {
+                anim = new Sprite.Animation();
+                anim.Delay = 0.04f;
+                anim.Frames = self.animations["flip"].Frames;
+                anim.Goto = null;
+                self.animations.Add("fliponice", anim);
+            }
+            self.Play("fliponice");
         }
     }
 }
