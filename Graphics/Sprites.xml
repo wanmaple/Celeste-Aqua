@@ -20,8 +20,8 @@
       <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
       <Loop id="electricshock" path="electrocution" delay="0.04" />
-      <Loop id="icestumble" path="runStumble_ice" delay="0.04" />
-      <Loop id="iceslide" path="slide_ice" delay="0.04" />
+      <Loop id="icestumble" path="runStumble_ice" delay="0.1" />
+      <Loop id="iceslide" path="slide_ice" delay="0.1" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -35,8 +35,8 @@
       <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
       <Loop id="electricshock" path="electrocution" delay="0.04" />
-      <Loop id="icestumble" path="runStumble_ice" delay="0.04" />
-      <Loop id="iceslide" path="slide_ice" delay="0.04" />
+      <Loop id="icestumble" path="runStumble_ice" delay="0.1" />
+      <Loop id="iceslide" path="slide_ice" delay="0.1" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -50,8 +50,8 @@
       <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
       <Loop id="electricshock" path="electrocution" delay="0.04"  />
-      <Loop id="icestumble" path="runStumble_ice" delay="0.04" />
-      <Loop id="iceslide" path="slide_ice" delay="0.04" />
+      <Loop id="icestumble" path="runStumble_ice" delay="0.1" />
+      <Loop id="iceslide" path="slide_ice" delay="0.1" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -65,8 +65,8 @@
       <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
       <Loop id="electricshock" path="electrocution" delay="0.04" />
-      <Loop id="icestumble" path="runStumble_ice" delay="0.04" />
-      <Loop id="iceslide" path="slide_ice" delay="0.04" />
+      <Loop id="icestumble" path="runStumble_ice" delay="0.1" />
+      <Loop id="iceslide" path="slide_ice" delay="0.1" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -80,8 +80,8 @@
       <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
       <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
       <Loop id="electricshock" path="electrocution" delay="0.04" />
-      <Loop id="icestumble" path="runStumble_ice" delay="0.04" />
-      <Loop id="iceslide" path="slide_ice" delay="0.04" />
+      <Loop id="icestumble" path="runStumble_ice" delay="0.1" />
+      <Loop id="iceslide" path="slide_ice" delay="0.1" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
