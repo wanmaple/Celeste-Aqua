@@ -908,10 +908,10 @@ namespace Celeste.Mod.Aqua.Core
         {
             self.Speed.Y += Player.Gravity * dt;
             self.Speed -= _madelinesHook.Acceleration * dt * 0.8f;
-            self.Speed += self.CalculateWindSpeed() * dt * self.SceneAs<Level>().GetState().HookSettings.WindCoefficient;
+            self.Speed += self.GetWindSpeed() * dt * self.SceneAs<Level>().GetState().HookSettings.WindCoefficient;
         }
 
-        private static Vector2 CalculateWindSpeed(this Player self)
+        private static Vector2 GetWindSpeed(this Player self)
         {
             WindController windCtrl = self.Scene.Entities.FindFirst<WindController>();
             if (windCtrl == null)

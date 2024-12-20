@@ -4,6 +4,24 @@
 
 #define SAMPLE_TEXTURE(Name, texCoord) tex2D(Name##Sampler, texCoord)
 
+#define PI 3.1415926535
+#define HALF_PI 1.5707963705
+
+float SineIn(float t)
+{
+    return 1.0 - cos(PI * t);
+}
+
+float SineOut(float t)
+{
+    return sin(PI * t);
+}
+
+float SineInOut(float t)
+{
+    return 0.5 - cos(PI * t) * 0.5;
+}
+
 float3 Hue2RGB(float hue)
 {
     float r = abs(hue * 6.0 - 3.0) - 1.0f;
@@ -34,4 +52,18 @@ float3 HSL2RGB(float3 hsl)
     float3 rgb = Hue2RGB(hsl.x);
     float c = (1.0 - abs(2.0 * hsl.z - 1.0)) * hsl.y;
     return (rgb - 0.5) * c + hsl.z;
+}
+
+// 2D SDFs
+float Circle(float2 p, float r)
+{
+    return length(p) - r;
+}
+
+float Segment(float2 p, float2 a, float2 b, float l)
+{
+    float2 ap = p - a;
+    float2 ab = b - a;
+    float h = clamp(dot(ap, ab) / dot(ab, ab), 0.0, 1.0);
+    return length(ap - ab * h) - l;
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Aqua.Miscellaneous;
+using Microsoft.Xna.Framework;
 using Mono.Cecil;
 using Monocle;
 using MonoMod.Cil;
@@ -73,6 +74,10 @@ namespace Celeste.Mod.Aqua.Core
             {
                 self.Speed.Y = 0.0f;
             }
+            if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed && _madelinesHook.ReachLockedLength(self.Center) && Vector2.Dot(_madelinesHook.RopeDirection, new Vector2(MathF.Sign(self.Speed.X), 0.0f)) > 0.0f)
+            {
+                self.Speed.X = Calc.Approach(self.Speed.X, 0.0f, 60.0f * Engine.DeltaTime);
+            }
             self.Ducking = false;
             if (self.Holding != null)
             {
@@ -132,42 +137,59 @@ namespace Celeste.Mod.Aqua.Core
             {
                 maxSpeed *= 0.6f;
             }
-            if (self.moveX != 0)
+            Vector2 windSpeed = self.GetWindSpeed();
+            if (!AquaMaths.IsApproximateZero(windSpeed.X))
             {
-                if (MathF.Abs(self.Speed.X) < maxSpeed)
+                float windAcc = windSpeed.X / 800.0f * 420.0f;
+                float targetSpeed = windSpeed.X;
+                float defaultAcc = 0.0f;
+                if (MathF.Sign(self.Speed.X) == self.moveX)
                 {
-                    if (MathF.Sign(self.Speed.X) == self.moveX)
-                    {
-                        self.SetSlideState(SlideStates.LowSpeed);
-                        self.Speed.X = Calc.Approach(self.Speed.X, maxSpeed * self.moveX, 1000.0f * speedRate * Engine.DeltaTime);
-                    }
-                    else
-                    {
-                        self.SetSlideState(SlideStates.Turning);
-                        self.Speed.X = Calc.Approach(self.Speed.X, maxSpeed * self.moveX, 60.0f * speedRate * Engine.DeltaTime);
-                    }
+                    defaultAcc = 360.0f;
                 }
-                else
+                else if (MathF.Sign(self.Speed.X) == -self.moveX)
                 {
-                    if (MathF.Sign(self.Speed.X) != self.moveX)
-                    {
-                        self.SetSlideState(SlideStates.Turning);
-                        self.Speed.X = Calc.Approach(self.Speed.X, maxSpeed * self.moveX, 60.0f * speedRate * Engine.DeltaTime);
-                    }
-                    else
-                    {
-                        self.SetSlideState(SlideStates.HighSpeed);
-                    }
+                    defaultAcc = 60.0f;
                 }
-            }
-            else
-            {
-                if (MathF.Abs(self.Speed.X) == 0.0f)
-                    self.SetSlideState(SlideStates.None);
+                self.Speed.X = Calc.Approach(self.Speed.X, targetSpeed, (defaultAcc + windAcc) * speedRate * Engine.DeltaTime);
+                if (MathF.Sign(self.Speed.X) == -self.moveX)
+                    self.SetSlideState(SlideStates.Turning);
                 else if (MathF.Abs(self.Speed.X) < maxSpeed)
                     self.SetSlideState(SlideStates.LowSpeed);
                 else
                     self.SetSlideState(SlideStates.HighSpeed);
+            }
+            else
+            {
+                if (self.moveX != 0)
+                {
+                    if (MathF.Sign(self.Speed.X) == self.moveX)
+                    {
+                        if (MathF.Abs(self.Speed.X) < maxSpeed)
+                        {
+                            self.Speed.X = Calc.Approach(self.Speed.X, maxSpeed * self.moveX, 360.0f * speedRate * Engine.DeltaTime);
+                        }
+                    }
+                    else
+                    {
+                        self.Speed.X = Calc.Approach(self.Speed.X, maxSpeed * self.moveX, 60.0f * speedRate * Engine.DeltaTime);
+                    }
+                    if (MathF.Sign(self.Speed.X) == -self.moveX)
+                        self.SetSlideState(SlideStates.Turning);
+                    else if (MathF.Abs(self.Speed.X) < maxSpeed)
+                        self.SetSlideState(SlideStates.LowSpeed);
+                    else
+                        self.SetSlideState(SlideStates.HighSpeed);
+                }
+                else
+                {
+                    if (MathF.Abs(self.Speed.X) == 0.0f)
+                        self.SetSlideState(SlideStates.None);
+                    else if (MathF.Abs(self.Speed.X) < maxSpeed)
+                        self.SetSlideState(SlideStates.LowSpeed);
+                    else
+                        self.SetSlideState(SlideStates.HighSpeed);
+                }
             }
             if (Input.Jump.Pressed)
             {

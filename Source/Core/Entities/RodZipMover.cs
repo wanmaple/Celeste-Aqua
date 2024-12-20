@@ -63,12 +63,14 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Removed(scene);
             RodEntityManager.Instance.Remove(this);
+            _fx.Dispose();
         }
 
         public override void SceneEnd(Scene scene)
         {
             base.SceneEnd(scene);
             RodEntityManager.Instance.Remove(this);
+            _fx.Dispose();
         }
 
         public override void Update()
