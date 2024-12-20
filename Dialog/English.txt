@@ -1,0 +1,11 @@
+SETTINGS_FEATURE_ENABLED=Feature Enabled
+SETTINGS_HOOK_PARAMETERS=Hook Parameters
+SETTINGS_RESET_HOOK_PARAMETERS=Reset Hook Parameters (Won't take effect on UI Immediately)
+SETTINGS_AUTO_GRAB_ON=Auto Grab Hook Rope (If Possible)
+SETTINGS_THROW_HOOK_MODE=Hook Operation Mode
+SETTINGS_ROPE_LENGTH=Rope Length
+SETTINGS_EMIT_SPEED=Emission Speed
+SETTINGS_MAX_LINE_SPEED=Max Line Speed
+SETTINGS_FLY_TOWARD_SPEED=Hidden Mechanism Speed
+SETTINGS_THROW_HOOK=Emit/Revoke Grappling Hook
+SETTINGS_SWITCH_AUTO_GRAB=Toggle Auto Grabbing

@@ -3,6 +3,10 @@ local ChangeHookParameterTrigger = {}
 local PARAMETER_OPTIONS = {
     "FeatureEnabled",
     "RopeMaterial",
+    "RopeLength",
+    "EmitSpeed",
+    "MaxLineSpeed",
+    "FlyTowardSpeed",
 }
 
 ChangeHookParameterTrigger.name = "Aqua/Change Hook Parameter Trigger"

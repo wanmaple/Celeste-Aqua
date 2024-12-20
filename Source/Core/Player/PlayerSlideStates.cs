@@ -10,6 +10,8 @@ namespace Celeste.Mod.Aqua.Core
 {
     public partial class PlayerStates
     {
+        public const float SLIDE_JUMP_THRESHOLD = 200.0f;
+
         public enum SlideStates
         {
             None,
@@ -169,7 +171,10 @@ namespace Celeste.Mod.Aqua.Core
             }
             if (Input.Jump.Pressed)
             {
-                self.Jump(false, true);
+                if (MathF.Abs(self.Speed.X) < SLIDE_JUMP_THRESHOLD)
+                    self.Jump(false, true);
+                else
+                    self.SuperJump();
             }
             return (int)AquaStates.StNormal;
         }

@@ -1,5 +1,6 @@
 ﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Monocle;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -33,6 +34,30 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         state.RopeMaterial = (GrapplingHook.RopeMaterial)material;
                         PlayerStates.MadelinesHook.Material = state.RopeMaterial;
+                    }
+                    break;
+                case "RopeLength":
+                    if (int.TryParse(Value, out int len))
+                    {
+                        state.HookSettings.RopeLength = Calc.Clamp(len, 80, 120);
+                    }
+                    break;
+                case "EmitSpeed":
+                    if (int.TryParse(Value, out int emitSpeed))
+                    {
+                        state.HookSettings.EmitSpeed = Calc.Clamp(emitSpeed, 600, 1200);
+                    }
+                    break;
+                case "MaxLineSpeed":
+                    if (int.TryParse(Value, out int maxSpeed))
+                    {
+                        state.HookSettings.MaxLineSpeed = Calc.Clamp(maxSpeed, 400, 2000);
+                    }
+                    break;
+                case "FlyTowardSpeed":
+                    if (int.TryParse(Value, out int flySpeed))
+                    {
+                        state.HookSettings.FlyTowardSpeed = Calc.Clamp(flySpeed, 300, 1000);
                     }
                     break;
                 default:

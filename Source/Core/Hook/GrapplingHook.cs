@@ -95,6 +95,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public void Emit(Vector2 direction, float speed, float speedCoeff)
         {
+            AlongRopeSpeed = 0.0f;
             HookRope rope = Get<HookRope>();
             rope.CurrentDirection = direction;
             rope.EmitSpeed = speed;
@@ -189,7 +190,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public bool CanFlyToward()
         {
-            float range = AquaModule.Settings.HookSettings.FlyTowardDuration;
+            float range = (Scene as Level).GetState().HookSettings.FlyTowardDuration;
             if (JustFixed)
             {
                 if (_elapsed - _lastEmitElapsed <= range)
@@ -238,8 +239,7 @@ namespace Celeste.Mod.Aqua.Core
         public override void Added(Scene scene)
         {
             Player madeline = scene.Tracker.GetEntity<Player>();
-            SetPositionRounded(madeline.Center);
-            _prevPosition = Position;
+            Position = _prevPosition = AquaMaths.Round(madeline.Center);
             State = HookStates.Emitting;
             Active = true;
             HookRope rope = Get<HookRope>();
@@ -288,6 +288,7 @@ namespace Celeste.Mod.Aqua.Core
                 return;
             }
 
+            UpdateColliderOffset();
             Segment playerSeg = new Segment(_playerPrevPosition, player.ExactCenter());
             Vector2 prevPosition = _prevPosition;
             Vector2 nextPosition = Position;
@@ -377,6 +378,12 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             Revoke();
                         }
+                        movement = nextPosition - prevPosition;
+                        if (!AquaMaths.IsApproximateZero(movement))
+                        {
+                            Position = prevPosition;
+                            BresenhamMove(movement);
+                        }
                         rope.CheckCollision(playerSeg);
                         Velocity = Position - prevPosition;
                         rope.UpdateCurrentDirection();
@@ -413,6 +420,26 @@ namespace Celeste.Mod.Aqua.Core
             foreach (HookCollider com in Scene.Tracker.GetComponents<HookCollider>())
             {
                 com.Check(this);
+            }
+        }
+
+        private void UpdateColliderOffset()
+        {
+            if (State != HookStates.Fixed)
+            {
+                Hitbox box = Collider as Hitbox;
+                Vector2 orig = new Vector2(-box.Width * 0.5f, -box.Height * 0.5f);
+                float cosVal = MathF.Cos(MathF.PI * 0.125f);
+                Vector2 direction = HookDirection;
+                const float offset = 2.0f;
+                foreach (Vector2 dir in OFFSET_DIRECTIONS)
+                {
+                    if (Vector2.Dot(direction, dir) >= cosVal)
+                    {
+                        box.Position = AquaMaths.Round(orig - dir * offset);
+                        break;
+                    }
+                }
             }
         }
 
@@ -702,5 +729,17 @@ namespace Celeste.Mod.Aqua.Core
 
         private HookSprite _sprite;
         private Sprite _elecShockSprite;
+
+        private static readonly Vector2[] OFFSET_DIRECTIONS =
+        {
+            -Vector2.UnitY,
+            Vector2.Normalize(Vector2.One),
+            Vector2.Normalize(-Vector2.One),
+            Vector2.UnitX,
+            -Vector2.UnitX,
+            Vector2.UnitY,
+            Vector2.Normalize(new Vector2(1.0f, -1.0f)),
+            Vector2.Normalize(new Vector2(-1.0f, 1.0f)),
+        };
     }
 }

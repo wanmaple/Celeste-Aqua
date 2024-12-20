@@ -12,6 +12,7 @@ namespace Celeste.Mod.Aqua.Core
             public bool AutoGrabHookRope { get; set; }
             public bool FeatureEnabled { get; set; }
             public GrapplingHook.RopeMaterial RopeMaterial { get; set; }
+            public HookSettings HookSettings { get; set; }
 
             public LevelState(AreaData areaData)
             {
@@ -23,6 +24,7 @@ namespace Celeste.Mod.Aqua.Core
                 AutoGrabHookRope = AquaModule.Settings.AutoGrabRopeIfPossible;
                 FeatureEnabled = areaData.GetExtraMeta().FeatureEnabled;
                 RopeMaterial = (GrapplingHook.RopeMaterial)areaData.GetExtraMeta().HookMaterial;
+                HookSettings = areaData.GetExtraMeta().HookSettings.Clone();
             }
         }
 

@@ -1,16 +1,18 @@
-﻿namespace Celeste.Mod.Aqua.Core
+﻿using Celeste.Mod.Aqua.Module;
+
+namespace Celeste.Mod.Aqua.Core
 {
     public struct LevelExtras
     {
         public int HookMaterial;
         public bool FeatureEnabled;
-        public bool BreakSpeedLimits;
+        public HookSettings HookSettings;
 
         public LevelExtras()
         {
             HookMaterial = 0;
             FeatureEnabled = true;
-            BreakSpeedLimits = false;
+            HookSettings = AquaModule.Settings.HookSettings.Clone();
         }
     }
 }

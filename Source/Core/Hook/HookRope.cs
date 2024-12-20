@@ -444,7 +444,8 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             pt.Y = Calc.Clamp(pt.Y + Player.WallBoosterSpeed * Engine.DeltaTime, collider.AbsoluteTop, collider.AbsoluteBottom);
                         }
-                        pivot.point = hook.Position = pt;
+                        hook.SetPositionRounded(pt);
+                        pivot.point = hook.Position;
                         _pivots[i] = pivot;
                         _lastPivots.Increase(i);
                         ++i;
@@ -457,7 +458,7 @@ namespace Celeste.Mod.Aqua.Core
                         _lastPivots.Increase(i);
                         if (i == 0)
                         {
-                            Entity.Position = pivot.point;
+                            (Entity as GrapplingHook).SetPositionRounded(pivot.point);
                         }
                         ++i;
                     }
@@ -536,7 +537,6 @@ namespace Celeste.Mod.Aqua.Core
             if (potentials.Count > 0)
             {
                 RopePivot pivot = potentials.Min.pivot;
-                AquaDebugger.LogInfo("CheckHangable {0}", pivot);
                 addedPivots.Add(pivot);
                 ropeSeg.Point1 = pivot.point;
                 CheckCollisionHangables(pivot, currentPivot, lastSegments, addedPivots);
