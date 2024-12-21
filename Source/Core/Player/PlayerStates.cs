@@ -897,10 +897,10 @@ namespace Celeste.Mod.Aqua.Core
 
         private static bool CanEmitHook(this Player self, Vector2 direction)
         {
-            if (self.Ducking)
-                return false;
-            if (self.onGround && direction.Y > 0)
-                return false;
+            //if (self.Ducking)
+            //    return false;
+            //if (self.onGround && direction.Y > 0)
+            //    return false;
             return true;
         }
 

@@ -195,8 +195,10 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (MathF.Abs(self.Speed.X) < SLIDE_JUMP_THRESHOLD)
                     self.Jump(false, true);
-                else
+                else if ((int)self.Facing == MathF.Sign(self.Speed.X))
                     self.SuperJump();
+                else
+                    self.Jump(false, true);
             }
             return (int)AquaStates.StNormal;
         }
