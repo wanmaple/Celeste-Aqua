@@ -61,7 +61,7 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         for (int y = 1; y <= borderY; y++)
                         {
-                            Texture.Draw(RenderPosition, Origin - new Vector2(x * 8.0f, y * 8.0f), Color, Vector2.UnitY, 0.0f, center);
+                            Texture.Draw(RenderPosition, Origin - new Vector2(x * 8.0f, y * 8.0f), Color, Vector2.One, 0.0f, center);
                         }
                     }
                 }

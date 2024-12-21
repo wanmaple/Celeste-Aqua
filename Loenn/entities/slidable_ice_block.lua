@@ -13,4 +13,22 @@ SlidableIceBlock.placements = {
     },
 }
 
+local blockNinePatchOptions = {
+    mode = "fill",
+    borderMode = "repeat"
+}
+
+local TEXTURE = "objects/ice_block/ice_9tile"
+
+function SlidableIceBlock.sprite(room, entity)
+    local ninePatch = DrawableNinePatch.fromTexture(TEXTURE, blockNinePatchOptions, entity.x, entity.y, entity.width, entity.height)
+    local sprites = {}
+    for _, sprite in ipairs(ninePatch:getDrawableSprite()) do
+        sprite:setColor(entity.border_color)
+        table.insert(sprites, sprite)
+    end
+    table.insert(sprites, arrow)
+    return sprites
+end
+
 return SlidableIceBlock

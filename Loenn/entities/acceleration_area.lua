@@ -1,4 +1,3 @@
-
 local DrawableNinePatch = require("structs.drawable_nine_patch")
 local DrawableSprite = require("structs.drawable_sprite")
 local Depths = require("consts.object_depths")
