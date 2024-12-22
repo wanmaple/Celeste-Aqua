@@ -25,6 +25,8 @@
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
+        <Frames path="icestumble" hair="1,0|1,2|2,2|2,0|2,-2|1,-2|1,-1|1,-1|1,-1|1,-1|1,-3|1,-2"/>
+        <Frames path="iceslide" hair="1,-1|0,-1|0,-1|1,-1|2,-1|2,0|2,0|2,-1"/>
       </Metadata>
     </Madeline>
 
@@ -40,6 +42,8 @@
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
+        <Frames path="icestumble" hair="1,0|1,2|2,2|2,0|2,-2|1,-2|1,-1|1,-1|1,-1|1,-1|1,-3|1,-2"/>
+        <Frames path="iceslide" hair="1,-1|0,-1|0,-1|1,-1|2,-1|2,0|2,0|2,-1"/>
       </Metadata>
     </MadelineNoBackpack>
 
@@ -55,6 +59,8 @@
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
+        <Frames path="icestumble" hair="1,0|1,2|2,2|2,0|2,-2|1,-2|1,-1|1,-1|1,-1|1,-1|1,-3|1,-2"/>
+        <Frames path="iceslide" hair="1,-1|0,-1|0,-1|1,-1|2,-1|2,0|2,0|2,-1"/>
       </Metadata>
     </MadelinePlayback>
 
@@ -70,6 +76,8 @@
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
+        <Frames path="icestumble" hair="1,0|1,2|2,2|2,0|2,-2|1,-2|1,-1|1,-1|1,-1|1,-1|1,-3|1,-2"/>
+        <Frames path="iceslide" hair="1,-1|0,-1|0,-1|1,-1|2,-1|2,0|2,0|2,-1"/>
       </Metadata>
     </AquaBadeline>
 
@@ -85,6 +93,8 @@
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
+        <Frames path="icestumble" hair="1,0|1,2|2,2|2,0|2,-2|1,-2|1,-1|1,-1|1,-1|1,-1|1,-3|1,-2"/>
+        <Frames path="iceslide" hair="1,-1|0,-1|0,-1|1,-1|2,-1|2,0|2,0|2,-1"/>
       </Metadata>
     </MadelineAsBadeline>
 
