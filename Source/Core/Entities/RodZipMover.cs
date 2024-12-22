@@ -3,6 +3,7 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
+using System;
 using System.Collections;
 using static MonoMod.InlineRT.MonoModRule;
 
@@ -35,7 +36,7 @@ namespace Celeste.Mod.Aqua.Core
                 _fx.Parameters["HueOffset"].SetValue(HueOffset);
                 _fx.Parameters["SaturationOffset"].SetValue(SaturationOffset);
             }
-            AddTag(RenderTags.CustomEntity);
+            Add(new BeforeRenderHook(BeforeRender));
         }
 
         public Effect GetEffect()
@@ -57,6 +58,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Added(scene);
             RodEntityManager.Instance.Add(this);
+            _rtEff = new RenderTarget2D(Draw.SpriteBatch.GraphicsDevice, (int)Width, (int)Height, false, SurfaceFormat.Color, DepthFormat.None);
         }
 
         public override void Removed(Scene scene)
@@ -64,6 +66,7 @@ namespace Celeste.Mod.Aqua.Core
             base.Removed(scene);
             RodEntityManager.Instance.Remove(this);
             _fx.Dispose();
+            _rtEff.Dispose();
         }
 
         public override void SceneEnd(Scene scene)
@@ -71,6 +74,7 @@ namespace Celeste.Mod.Aqua.Core
             base.SceneEnd(scene);
             RodEntityManager.Instance.Remove(this);
             _fx.Dispose();
+            _rtEff.Dispose();
         }
 
         public override void Update()
@@ -82,6 +86,97 @@ namespace Celeste.Mod.Aqua.Core
                 State = !State;
             }
             base.Update();
+        }
+
+        public override void Render()
+        {
+            Vector2 position = Position;
+            Position += Shake;
+            Draw.SpriteBatch.Draw(_rtEff, Position, Color.White);
+            Position = position;
+        }
+
+        private void BeforeRender()
+        {
+            if (_fx != null)
+            {
+                var device = Draw.SpriteBatch.GraphicsDevice;
+                device.SetRenderTarget(_rtEff);
+                device.Clear(Color.Black);
+                Draw.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, _fx, Matrix.Identity);
+                RenderRT();
+                Draw.SpriteBatch.End();
+            }
+        }
+
+        private void RenderRT()
+        {
+            Draw.Rect(1f, 1f, Width - 2f, Height - 2f, Color.Black);
+            int num = 1;
+            float num2 = 0f;
+            int count = innerCogs.Count;
+            for (int i = 4; (float)i <= Height - 4f; i += 8)
+            {
+                int num3 = num;
+                for (int j = 4; (float)j <= Width - 4f; j += 8)
+                {
+                    int index = (int)(mod((num2 + (float)num * percent * MathF.PI * 4f) / (MathF.PI / 2f), 1f) * (float)count);
+                    MTexture mTexture = innerCogs[index];
+                    Rectangle rectangle = new Rectangle(0, 0, mTexture.Width, mTexture.Height);
+                    Vector2 zero = Vector2.Zero;
+                    if (j <= 4)
+                    {
+                        zero.X = 2f;
+                        rectangle.X = 2;
+                        rectangle.Width -= 2;
+                    }
+                    else if ((float)j >= Width - 4f)
+                    {
+                        zero.X = -2f;
+                        rectangle.Width -= 2;
+                    }
+
+                    if (i <= 4)
+                    {
+                        zero.Y = 2f;
+                        rectangle.Y = 2;
+                        rectangle.Height -= 2;
+                    }
+                    else if ((float)i >= Height - 4f)
+                    {
+                        zero.Y = -2f;
+                        rectangle.Height -= 2;
+                    }
+
+                    mTexture = mTexture.GetSubtexture(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, temp);
+                    mTexture.DrawCentered(new Vector2(j, i) + zero, Color.White * ((num < 0) ? 0.5f : 1f));
+                    num = -num;
+                    num2 += MathF.PI / 3f;
+                }
+
+                if (num3 == num)
+                {
+                    num = -num;
+                }
+            }
+
+            for (int k = 0; (float)k < Width / 8f; k++)
+            {
+                for (int l = 0; (float)l < Height / 8f; l++)
+                {
+                    int num4 = ((k != 0) ? (((float)k != Width / 8f - 1f) ? 1 : 2) : 0);
+                    int num5 = ((l != 0) ? (((float)l != Height / 8f - 1f) ? 1 : 2) : 0);
+                    if (num4 != 1 || num5 != 1)
+                    {
+                        edges[num4, num5].Draw(new Vector2((float)(k * 8), (float)(l * 8)));
+                    }
+                }
+            }
+
+            if (streetlight.Texture != null)
+            {
+                streetlight.Texture.Draw(streetlight.Position, streetlight.Origin, Color.White);
+            }
         }
 
         private IEnumerator RodSequence()
@@ -123,5 +218,6 @@ namespace Celeste.Mod.Aqua.Core
 
         private bool _lastState = false;
         private Effect _fx;
+        private RenderTarget2D _rtEff;
     }
 }

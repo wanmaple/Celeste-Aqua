@@ -15,8 +15,8 @@ float4 FS_Main(VertexShaderOutput input) : SV_TARGET0
 {
     float4 color = SAMPLE_TEXTURE(source, input.uv) * input.color;
     float3 hsl = RGB2HSL(color.rgb);
-    hsl.x = frac(hsl.x + HueOffset);
-    hsl.y = saturate(hsl.y + SaturationOffset);
+    hsl.x = hsl.x + HueOffset;
+    hsl.y = hsl.y + SaturationOffset;
     color.rgb = HSL2RGB(hsl);
     return color;
 }
