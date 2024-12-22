@@ -188,7 +188,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, scene);
             var levelState = (self.Scene as Level).GetState();
-            _madelinesHook = new GrapplingHook(levelState.HookSettings.Size, levelState.HookSettings.RopeLength, levelState.RopeMaterial);
+            _madelinesHook = new GrapplingHook(GrapplingHook.HOOK_SIZE, levelState.HookSettings.RopeLength, levelState.RopeMaterial);
             _loaded = true;
         }
 
@@ -204,7 +204,7 @@ namespace Celeste.Mod.Aqua.Core
             if (_loaded)
             {
                 var levelState = (self.Scene as Level).GetState();
-                _madelinesHook = new GrapplingHook(levelState.HookSettings.Size, levelState.HookSettings.RopeLength, levelState.RopeMaterial);
+                _madelinesHook = new GrapplingHook(GrapplingHook.HOOK_SIZE, levelState.HookSettings.RopeLength, levelState.RopeMaterial);
             }
             _throwHookCheck = new ThrowHookCheck(AquaModule.Settings.ThrowHook, AquaModule.Settings.ThrowHookMode);
             DynamicData.For(self).Set("previous_facing", (int)self.Facing);
