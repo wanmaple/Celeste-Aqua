@@ -21,7 +21,7 @@ namespace Celeste.Mod.Aqua.Core
             if (this.IsHookAttached())
             {
                 GrapplingHook hook = Scene.Tracker.GetEntity<GrapplingHook>();
-                if (hook.AlongRopeSpeed > 0.0f)
+                if (hook != null && hook.AlongRopeSpeed > 0.0f)
                 {
                     if (hook.Bottom == Top || hook.Top == Bottom)
                     {

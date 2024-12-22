@@ -30,8 +30,6 @@ float4 FS_Main(VertexShaderOutput input) : SV_TARGET0
     float seg3 = Segment(st - offset + off3.xx, float2(-1000.0, 1000.0), float2(1000.0, -1000.0), len * 0.5);
     float a = step(min(min(seg1, seg2), seg3), 0.0);
     float4 color = saturate(a.xxxx) * 1.0;
-    float4 bgColor = float4(105.0 / 255.0, 241.0 / 255.0, 255.0 / 255.0, 1.0);
-    color = lerp(bgColor, color, a);
     return color;
 }
 

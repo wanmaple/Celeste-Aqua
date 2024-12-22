@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Celeste.Mod.Aqua.Module;
 using Celeste.Mod.Aqua.Debug;
+using static Celeste.GaussianBlur;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -26,6 +27,7 @@ namespace Celeste.Mod.Aqua.Core
             Metal,
         }
 
+        public const float HOOK_SIZE = 8.0f;
         public const float BOUNCE_SPEED_ADDITION = 350.0f;
 
         public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
@@ -246,6 +248,20 @@ namespace Celeste.Mod.Aqua.Core
             rope.Active = rope.Visible = true;
 
             base.Added(scene);
+            // 第一帧可能相交，直接检测碰撞
+            UpdateColliderOffset(-rope.CurrentDirection);
+            Vector2 rounded = AquaMaths.Round(rope.CurrentDirection);
+            while (CollideFirst<Solid>() != null)
+            {
+                Position -= rounded;
+            }
+            if (rounded.Y > 0.0f)
+            {
+                while (CollideFirst<JumpThru>() != null)
+                {
+                    Position -= rounded;
+                }
+            }
         }
 
         public override void Removed(Scene scene)
@@ -288,7 +304,7 @@ namespace Celeste.Mod.Aqua.Core
                 return;
             }
 
-            UpdateColliderOffset();
+            UpdateColliderOffset(-rope.CurrentDirection);
             Segment playerSeg = new Segment(_playerPrevPosition, player.ExactCenter());
             Vector2 prevPosition = _prevPosition;
             Vector2 nextPosition = Position;
@@ -423,14 +439,13 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private void UpdateColliderOffset()
+        private void UpdateColliderOffset(Vector2 direction)
         {
-            if (State != HookStates.Fixed)
+            if (State == HookStates.Emitting || State == HookStates.Bouncing)
             {
                 Hitbox box = Collider as Hitbox;
                 Vector2 orig = new Vector2(-box.Width * 0.5f, -box.Height * 0.5f);
                 float cosVal = MathF.Cos(MathF.PI * 0.125f);
-                Vector2 direction = HookDirection;
                 const float offset = 2.0f;
                 foreach (Vector2 dir in OFFSET_DIRECTIONS)
                 {

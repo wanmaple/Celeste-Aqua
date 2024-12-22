@@ -17,6 +17,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 _fxHighlight.Parameters["Resolution"].SetValue(new Vector2(Width, Height));
             }
+            Add(new Image9Slice(GFX.Game["objects/ice_block/ice_9tile"], (int)Width, (int)Height, Image9Slice.RenderMode.Fill));
             Add(new BeforeRenderHook(BeforeRender));
         }
 

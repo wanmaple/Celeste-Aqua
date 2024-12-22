@@ -1,6 +1,5 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
-using Mono.Cecil;
 using Monocle;
 using MonoMod.Cil;
 using MonoMod.Utils;
@@ -140,7 +139,7 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 windSpeed = self.GetWindSpeed();
             if (!AquaMaths.IsApproximateZero(windSpeed.X))
             {
-                float windAcc = windSpeed.X / 800.0f * 420.0f;
+                float windAcc = MathF.Abs(windSpeed.X) / 800.0f * 640.0f;
                 float targetSpeed = windSpeed.X;
                 float defaultAcc = 0.0f;
                 if (MathF.Sign(self.Speed.X) == self.moveX)
@@ -195,8 +194,10 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (MathF.Abs(self.Speed.X) < SLIDE_JUMP_THRESHOLD)
                     self.Jump(false, true);
-                else
+                else if ((int)self.Facing == MathF.Sign(self.Speed.X))
                     self.SuperJump();
+                else
+                    self.Jump(false, true);
             }
             return (int)AquaStates.StNormal;
         }
