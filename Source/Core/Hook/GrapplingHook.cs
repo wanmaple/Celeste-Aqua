@@ -28,7 +28,7 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         public const float HOOK_SIZE = 8.0f;
-        public const float BOUNCE_SPEED_ADDITION = 350.0f;
+        public const float BOUNCE_SPEED_ADDITION = 300.0f;
 
         public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
         public bool ElectricShocking { get; set; } = false;
