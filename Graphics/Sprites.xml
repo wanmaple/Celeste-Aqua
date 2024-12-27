@@ -103,22 +103,22 @@
       <Loop id="idle" path="bulb" delay="0.1" frames="0-11" />
     </Aqua_PuzzleLight>
 
-    <Aqua_RefillOne path="objects/refill1/" start="idle">
+    <Aqua_RefillOne path="objects/refills/refillOne_Hookable/" start="idle">
       <Origin x="8" y="8" />
       <Loop id="idle" path="idle" delay="0.1" frames="0-4" />
     </Aqua_RefillOne>
 
-    <Aqua_RefillOneFlash path="objects/refill1/" start="flash">
+    <Aqua_RefillOneFlash path="objects/refills/refillOne_Hookable/" start="flash">
       <Origin x="8" y="8" />
       <Anim id="flash" path="flash" delay="0.05" frames="0-5" />
     </Aqua_RefillOneFlash>
 
-    <Aqua_RefillTwo path="objects/refill2/" start="idle">
+    <Aqua_RefillTwo path="objects/refills/refillTwo_Hookable/" start="idle">
       <Origin x="8" y="8" />
       <Loop id="idle" path="idle" delay="0.1" frames="0-4" />
     </Aqua_RefillTwo>
 
-    <Aqua_RefillTwoFlash path="objects/refill2/" start="flash">
+    <Aqua_RefillTwoFlash path="objects/refills/refillTwo_Hookable/" start="flash">
       <Origin x="8" y="8" />
       <Anim id="flash" path="flash" delay="0.05" frames="0-5" />
     </Aqua_RefillTwoFlash>
