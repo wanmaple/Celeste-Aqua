@@ -30,7 +30,7 @@ namespace Celeste.Mod.Aqua.Core
                 string animID = string.Empty;
                 if (twoDashes)
                 {
-                    dir = "objects/refill2/";
+                    dir = "objects/refills/refillTwo_Hookable/";
                     animID = "Aqua_RefillTwo";
                     p_shatter = P_ShatterHookable2;
                     p_glow = P_GlowHookable2;
@@ -38,7 +38,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 else
                 {
-                    dir = "objects/refill1/";
+                    dir = "objects/refills/refillOne_Hookable/";
                     animID = "Aqua_RefillOne";
                     p_shatter = P_ShatterHookable1;
                     p_glow = P_GlowHookable1;

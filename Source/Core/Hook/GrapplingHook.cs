@@ -90,18 +90,15 @@ namespace Celeste.Mod.Aqua.Core
 
         public void ChangeGameplayMode(GameplayMode mode, Level level, int initialCounter)
         {
-            if (_mode != mode)
+            _mode = mode;
+            switch (_mode)
             {
-                _mode = mode;
-                switch (_mode)
-                {
-                    case GameplayMode.Default:
-                        level.GetState().RestShootCount = int.MaxValue;
-                        break;
-                    case GameplayMode.ShootCounter:
-                        level.GetState().RestShootCount = initialCounter;
-                        break;
-                }
+                case GameplayMode.Default:
+                    level.GetState().RestShootCount = int.MaxValue;
+                    break;
+                case GameplayMode.ShootCounter:
+                    level.GetState().RestShootCount = initialCounter;
+                    break;
             }
         }
 

@@ -1,6 +1,5 @@
-﻿using Celeste.Mod.Aqua.Debug;
-using Celeste.Mod.Aqua.Module;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Monocle;
 using MonoMod.Cil;
 
 namespace Celeste.Mod.Aqua.Core
@@ -35,17 +34,47 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self);
             LevelStates.LevelState state = self.SceneAs<Level>().GetState();
-            if (AquaModule.Settings.FeatureEnabled || state.FeatureEnabled)
+            int num = 0;
+            if (state.FeatureEnabled && state.AutoGrabHookRope)
+            {
+                ++num;
+            }
+            if (state.FeatureEnabled && state.GameplayMode == GrapplingHook.GameplayMode.ShootCounter)
+            {
+                ++num;
+            }
+            if (num > 0)
             {
                 Vector2 scale = Vector2.One * (1f + self.wiggler.Value * 0.2f);
                 Player entity = self.Scene.Tracker.GetEntity<Player>();
-                if (!self.SceneAs<Level>().InCutscene && entity != null && !entity.Dead)
+                if (state.FeatureEnabled && state.AutoGrabHookRope)
                 {
-                    string texture = state.AutoGrabHookRope ? "util/grab_rope" : "util/ungrab_rope";
-                    float x = self.enabled ? 6.0f : 0.0f;
-                    if (state.AutoGrabHookRope)
+                    if (!self.SceneAs<Level>().InCutscene && entity != null && !entity.Dead)
                     {
-                        GFX.Game[texture].DrawJustified(new Vector2(entity.X + x, entity.Y - 16.0f), new Vector2(0.5f, 1.0f), Color.White, scale);
+                        string texture = state.AutoGrabHookRope ? "util/grab_rope" : "util/ungrab_rope";
+                        float x = self.enabled ? (2 - num) * 6.0f : -6.0f * (num - 1);
+                        if (state.AutoGrabHookRope)
+                        {
+                            GFX.Game[texture].DrawJustified(new Vector2(entity.X + x, entity.Y - 16.0f), new Vector2(0.5f, 1.0f), Color.White, scale);
+                        }
+                    }
+                }
+                if (state.FeatureEnabled && state.GameplayMode == GrapplingHook.GameplayMode.ShootCounter)
+                {
+                    if (!self.SceneAs<Level>().InCutscene && entity != null && !entity.Dead)
+                    {
+                        MTexture texture = GFX.Game["util/hook_count"];
+                        float x = self.enabled ? 6.0f * num : 6.0f * (num - 1);
+                        texture.DrawJustified(new Vector2(entity.X + x, entity.Y - 16.0f), new Vector2(0.5f, 1.0f), Color.White, scale);
+                        int cnt = state.RestShootCount;
+                        string numDisplay = cnt.ToString();
+                        int len = numDisplay.Length;
+                        for (int i = 0; i < len; i++)
+                        {
+                            MTexture texNum = NumberAtlas.Instance.GetNumberTextureForCharacter(numDisplay[i]);
+                            float offset = len % 2 == 0 ? -len * 2.0f + 2.0f + i * 4.0f : (len / 2) * -4.0f + i * 4.0f;
+                            texNum.DrawOutlineCentered(new Vector2(entity.X + x + 4.0f + offset, entity.Y - 20.0f), Color.White, Vector2.One);
+                        }
                     }
                 }
             }
@@ -54,9 +83,18 @@ namespace Celeste.Mod.Aqua.Core
         private static float CalculateOffset(this GrabbyIcon self)
         {
             LevelStates.LevelState state = self.SceneAs<Level>().GetState();
-            if (state.FeatureEnabled && state.AutoGrabHookRope && self.enabled)
+            int num = 0;
+            if (state.FeatureEnabled && state.AutoGrabHookRope)
             {
-                return -6.0f;
+                ++num;
+            }
+            if (state.FeatureEnabled && state.GameplayMode == GrapplingHook.GameplayMode.ShootCounter)
+            {
+                ++num;
+            }
+            if (num > 0)
+            {
+                return -6.0f * num;
             }
             return 0.0f;
         }

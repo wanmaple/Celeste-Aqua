@@ -688,7 +688,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int PreHookUpdate(Player self)
         {
-            if (!AquaModule.Settings.FeatureEnabled && !self.level.GetState().FeatureEnabled)
+            if (!self.level.GetState().FeatureEnabled)
                 return -1;
 
             float dt = Engine.DeltaTime;
@@ -854,7 +854,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int PostHookUpdate(Player self)
         {
-            if (!AquaModule.Settings.FeatureEnabled && !self.level.GetState().FeatureEnabled)
+            if (!self.level.GetState().FeatureEnabled)
                 return -1;
 
             float dt = Engine.DeltaTime;

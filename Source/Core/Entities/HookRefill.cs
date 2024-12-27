@@ -24,7 +24,7 @@ namespace Celeste.Mod.Aqua.Core
             _respawnPosition = Position;
             _respawnTicker = new TimeTicker(2.5f);
             OneUse = data.Bool("oneUse");
-            Add(_outline = new Image(GFX.Game["objects/refill_hook/outline"]));
+            Add(_outline = new Image(GFX.Game["objects/refills/refill_Hook/outline"]));
             _outline.CenterOrigin();
             _outline.Visible = false;
             Add(_sprite = new Sprite());
