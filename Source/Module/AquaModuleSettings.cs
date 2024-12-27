@@ -14,7 +14,7 @@ public class AquaModuleSettings : EverestModuleSettings
     public ButtonBinding SwitchAutoGrab { get; set; }
 
     [SettingName("SETTINGS_FEATURE_ENABLED")]
-    public bool FeatureEnabled { get; set; } = true;
+    public bool FeatureEnabled { get; set; } = false;
 
     [SettingName("SETTINGS_HOOK_PARAMETERS")]
     public HookSettings HookSettings { get; set; } = new HookSettings();
@@ -25,7 +25,10 @@ public class AquaModuleSettings : EverestModuleSettings
     public bool AutoGrabRopeIfPossible { get; set; }
 
     [SettingName("SETTINGS_THROW_HOOK_MODE")]
-    public ThrowHookModes ThrowHookMode { get; set; }
+    public ShotHookModes ThrowHookMode { get; set; }
+
+    [SettingName("SETTINGS_DEFAULT_SHOT_DIRECTION")]
+    public DefaultShotDirections DefaultShotDirection { get; set; } = DefaultShotDirections.Up;
 
     public void CreateResetHookSettingsEntry(TextMenu menu, bool inGame)
     {

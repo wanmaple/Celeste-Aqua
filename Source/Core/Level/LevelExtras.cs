@@ -7,12 +7,14 @@ namespace Celeste.Mod.Aqua.Core
         public int HookMaterial;
         public bool FeatureEnabled;
         public HookSettings HookSettings;
+        public int GameplayMode;
 
         public LevelExtras()
         {
             HookMaterial = 0;
-            FeatureEnabled = true;
+            FeatureEnabled = false;
             HookSettings = AquaModule.Settings.HookSettings.Clone();
+            GameplayMode = (int)GrapplingHook.GameplayMode.Default;
         }
     }
 }

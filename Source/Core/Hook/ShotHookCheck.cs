@@ -3,13 +3,13 @@ using Monocle;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    public class ThrowHookCheck
+    public class ShotHookCheck
     {
         public bool CanThrow
         {
             get
             {
-                if (_mode == ThrowHookModes.Default)
+                if (_mode == ShotHookModes.Default)
                     return _key.Pressed;
                 return (_lastFirstNotPressFrame >= _lastRevokedFrame) && _key.Check;
             }
@@ -19,7 +19,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             get
             {
-                if (_mode == ThrowHookModes.Default)
+                if (_mode == ShotHookModes.Default)
                     return _key.Pressed;
                 return !_key.Check;
             }
@@ -29,13 +29,13 @@ namespace Celeste.Mod.Aqua.Core
         {
             get
             {
-                if (_mode == ThrowHookModes.Default)
+                if (_mode == ShotHookModes.Default)
                     return _key.Pressed;
                 return _key.Check && _lastFirstNotPressFrame > _lastFirstPressFrame;
             }
         }
 
-        public ThrowHookCheck(ButtonBinding key, ThrowHookModes mode)
+        public ShotHookCheck(ButtonBinding key, ShotHookModes mode)
         {
             _key = key;
             _mode = mode;
@@ -71,7 +71,7 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         private ButtonBinding _key;
-        private ThrowHookModes _mode;
+        private ShotHookModes _mode;
         private ulong _lastFirstPressFrame;
         private ulong _lastFirstNotPressFrame;
         private bool _lastPressed;

@@ -23,12 +23,12 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (red)
                 {
-                    GFX.SpriteBank.CreateOn(sprite, "BoosterPurple");
+                    GFX.SpriteBank.CreateOn(sprite, "Aqua_BoosterPurple");
                     particleType = P_BurstPurple;
                 }
                 else
                 {
-                    GFX.SpriteBank.CreateOn(sprite, "BoosterOrange");
+                    GFX.SpriteBank.CreateOn(sprite, "Aqua_BoosterOrange");
                     particleType = P_BurstOrange;
                 }
                 HookInteractable com = Get<HookInteractable>();

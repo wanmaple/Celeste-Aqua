@@ -24,9 +24,17 @@ namespace Celeste.Mod.Aqua.Core
             switch (Parameter)
             {
                 case "FeatureEnabled":
-                    if (bool.TryParse(Value, out bool val))
+                    if (int.TryParse(Value, out int num) && num > 0)
                     {
-                        state.FeatureEnabled = val;
+                        state.FeatureEnabled = true;
+                    }
+                    else if (bool.TryParse(Value, out bool bl) && bl)
+                    {
+                        state.FeatureEnabled = true;
+                    }
+                    else
+                    {
+                        state.FeatureEnabled = false;
                     }
                     break;
                 case "RopeMaterial":
@@ -34,6 +42,13 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         state.RopeMaterial = (GrapplingHook.RopeMaterial)material;
                         PlayerStates.MadelinesHook.Material = state.RopeMaterial;
+                    }
+                    break;
+                case "GameplayMode":
+                    if (int.TryParse(Value, out int mode))
+                    {
+                        state.GameplayMode = (GrapplingHook.GameplayMode)mode;
+                        PlayerStates.MadelinesHook.Mode = state.GameplayMode;
                     }
                     break;
                 case "RopeLength":

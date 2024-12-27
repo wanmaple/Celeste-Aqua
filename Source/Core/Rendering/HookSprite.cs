@@ -12,7 +12,7 @@ namespace Celeste.Mod.Aqua.Core
         public HookSprite()
             : base(null, null)
         {
-            GFX.SpriteBank.CreateOn(this, "Hook");
+            GFX.SpriteBank.CreateOn(this, "Aqua_Hook");
         }
     }
 }

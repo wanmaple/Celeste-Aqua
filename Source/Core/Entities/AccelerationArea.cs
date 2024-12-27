@@ -36,7 +36,7 @@ namespace Celeste.Mod.Aqua.Core
             Add(_border = new Image9Slice(GFX.Game["objects/acceleration_area/area"], data.Width, data.Height, Image9Slice.RenderMode.Border));
             _border.SetColor(data.HexColor("border_color"));
             Add(_arrow = new Sprite());
-            GFX.SpriteBank.CreateOn(_arrow, "AccelerationArrow");
+            GFX.SpriteBank.CreateOn(_arrow, "Aqua_AccelerationArrow");
             _arrow.RenderPosition += new Vector2(data.Width * 0.5f, data.Height * 0.5f);
             _arrow.SetColor(data.HexColor("arrow_color"));
             _arrow.Play("idle");

@@ -246,7 +246,5 @@ namespace Celeste.Mod.Aqua.Core
             UpdateColors();
             flash = 1f;
         }
-
-        protected Effect _fx;
     }
 }

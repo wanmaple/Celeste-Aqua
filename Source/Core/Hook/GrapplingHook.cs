@@ -3,9 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections.Generic;
-using Celeste.Mod.Aqua.Module;
 using Celeste.Mod.Aqua.Debug;
-using static Celeste.GaussianBlur;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -27,6 +25,12 @@ namespace Celeste.Mod.Aqua.Core
             Metal,
         }
 
+        public enum GameplayMode
+        {
+            Default,
+            ShootCounter,
+        }
+
         public const float HOOK_SIZE = 8.0f;
         public const float BOUNCE_SPEED_ADDITION = 300.0f;
 
@@ -45,6 +49,27 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        public GameplayMode Mode
+        {
+            get => _mode;
+            set
+            {
+                if (_mode != value)
+                {
+                    _mode = value;
+                    switch (_mode)
+                    {
+                        case GameplayMode.Default:
+                            RestGrappleCount = int.MaxValue;
+                            break;
+                        case GameplayMode.ShootCounter:
+                            RestGrappleCount = 0;
+                            break;
+                    }
+                }
+            }
+        }
+        public int RestGrappleCount { get; set; } = int.MaxValue;
         public HookStates State { get; private set; } = HookStates.None;
         public Vector2 Velocity { get; private set; }
         public Vector2 Acceleration { get; private set; }
@@ -74,7 +99,7 @@ namespace Celeste.Mod.Aqua.Core
             Add(new HookRope(length, material));
             Add(_sprite = new HookSprite());
             Add(_elecShockSprite = new Sprite());
-            GFX.SpriteBank.CreateOn(_elecShockSprite, "HookElectricShock");
+            GFX.SpriteBank.CreateOn(_elecShockSprite, "Aqua_HookElectricShock");
             AddTag(Tags.Global);
 
             this.MakeExtraCollideCondition();
@@ -92,6 +117,18 @@ namespace Celeste.Mod.Aqua.Core
             if (rope != null)
             {
                 rope.UpdateTopPivot(Position);
+            }
+        }
+
+        public bool CanEmit()
+        {
+            switch (Mode)
+            {
+                case GameplayMode.Default:
+                default:
+                    return true;
+                case GameplayMode.ShootCounter:
+                    return RestGrappleCount > 0;
             }
         }
 
@@ -539,7 +576,6 @@ namespace Celeste.Mod.Aqua.Core
                     bool swapped = false;
                     if (absY > absX)
                     {
-                        // swap dx, dy
                         int tmp = absX;
                         absX = absY;
                         absY = tmp;
@@ -730,6 +766,7 @@ namespace Celeste.Mod.Aqua.Core
             Vector2.One,
         };
 
+        private GameplayMode _mode = GameplayMode.Default;
         private RopeMaterial _material;
         private Vector2 _movementCounter = Vector2.Zero;
         private Vector2 _prevPosition;

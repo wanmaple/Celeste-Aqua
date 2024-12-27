@@ -20,7 +20,7 @@ namespace Celeste.Mod.Aqua.Core
             if (_condition == null || _condition.Invoke(Entity))
             {
                 Color startColor = _colorFunc == null ? Color.White : _colorFunc(Entity);
-                var trail = new Trail(Entity.Position, _origin, "SolidRectTrail", "trail", startColor, new Vector2(Entity.Width / 8.0f, Entity.Height / 8.0f));
+                var trail = new Trail(Entity.Position, _origin, "Aqua_SolidRectTrail", "trail", startColor, new Vector2(Entity.Width / 8.0f, Entity.Height / 8.0f));
                 Scene.Add(trail);
             }
         }

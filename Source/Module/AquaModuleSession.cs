@@ -1,3 +1,4 @@
+using Celeste.Mod.Aqua.Core;
 using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Module;
@@ -18,4 +19,5 @@ public class AquaModuleSession : EverestModuleSession
     }
 
     public HashSet<string> flags = new HashSet<string>();
+    public LevelStates.LevelState levelState;
 }

@@ -7,6 +7,7 @@ using System;
 using MonoMod.Utils;
 using Mono.Cecil;
 using Celeste.Mod.Aqua.Debug;
+using System.Linq;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -79,7 +80,6 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.Update += Player_Update;
             On.Celeste.Player.ClimbJump += Player_ClimbJump;
             On.Celeste.Player.WindMove += Player_WindMove;
-            On.Celeste.Player.Die += Player_Die;
             On.Celeste.Player.UpdateSprite += Player_UpdateSprite;
         }
 
@@ -110,7 +110,6 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.Update -= Player_Update;
             On.Celeste.Player.ClimbJump -= Player_ClimbJump;
             On.Celeste.Player.WindMove -= Player_WindMove;
-            On.Celeste.Player.Die -= Player_Die;
             On.Celeste.Player.UpdateSprite -= Player_UpdateSprite;
         }
 
@@ -189,24 +188,24 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, scene);
             var levelState = (self.Scene as Level).GetState();
             _madelinesHook = new GrapplingHook(GrapplingHook.HOOK_SIZE, levelState.HookSettings.RopeLength, levelState.RopeMaterial);
-            _loaded = true;
+            _madelinesHook.Mode = levelState.GameplayMode;
         }
 
         private static void Player_SceneEnd(On.Celeste.Player.orig_SceneEnd orig, Player self, Scene scene)
         {
             orig(self, scene);
-            _loaded = false;
         }
 
         private static void Player_Added(On.Celeste.Player.orig_Added orig, Player self, Scene scene)
         {
             orig(self, scene);
-            if (_loaded)
+            var levelState = (self.Scene as Level).GetState();
+            if (levelState != null)
             {
-                var levelState = (self.Scene as Level).GetState();
                 _madelinesHook = new GrapplingHook(GrapplingHook.HOOK_SIZE, levelState.HookSettings.RopeLength, levelState.RopeMaterial);
+                _madelinesHook.Mode = levelState.GameplayMode;
             }
-            _throwHookCheck = new ThrowHookCheck(AquaModule.Settings.ThrowHook, AquaModule.Settings.ThrowHookMode);
+            _throwHookCheck = new ShotHookCheck(AquaModule.Settings.ThrowHook, AquaModule.Settings.ThrowHookMode);
             DynamicData.For(self).Set("previous_facing", (int)self.Facing);
         }
 
@@ -267,7 +266,6 @@ namespace Celeste.Mod.Aqua.Core
                 _madelinesHook.Revoke();
             }
 
-            self.Sprite.SetHookMode(false);
             orig(self);
         }
 
@@ -288,7 +286,6 @@ namespace Celeste.Mod.Aqua.Core
                 _madelinesHook.Revoke();
             }
 
-            self.Sprite.SetHookMode(false);
             orig(self);
         }
 
@@ -299,7 +296,6 @@ namespace Celeste.Mod.Aqua.Core
                 _madelinesHook.Revoke();
             }
 
-            self.Sprite.SetHookMode(false);
             orig(self);
         }
 
@@ -400,7 +396,6 @@ namespace Celeste.Mod.Aqua.Core
             }
             else if (self.CanDash)
             {
-                //_madelinesHook.Revoke();
                 return self.StartDash();
             }
             else if (self.IsExhausted())
@@ -504,7 +499,6 @@ namespace Celeste.Mod.Aqua.Core
             self.Speed = Vector2.Zero;
             TimeTicker ticker = self.GetTimeTicker("elec_shock_ticker");
             ticker.Reset();
-            self.Sprite.SetHookMode(true);
             self.Sprite.Play("electricshock");
             Audio.Play("event:/char/madeline/electric_shock", self.Position);
         }
@@ -537,6 +531,10 @@ namespace Celeste.Mod.Aqua.Core
                 climbJumpTicker.Tick(dt);
                 DynamicData.For(self).Set("rope_is_loosen", true);
                 DynamicData.For(self).Set("previous_facing", (int)self.Facing);
+                if (!PERMIT_SHOOT_STATES.Contains(self.StateMachine.State))
+                {
+                    DynamicData.For(self).Set("start_emitting", false);
+                }
                 if (!self.CheckOnSlidable())
                     self.SetSlideState(SlideStates.None);
 
@@ -591,12 +589,6 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, move);
         }
 
-        private static PlayerDeadBody Player_Die(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
-        {
-            self.Sprite.SetHookMode(false);
-            return orig(self, direction, evenIfInvincible, registerDeathInStats);
-        }
-
         private static void Player_UpdateSprite(On.Celeste.Player.orig_UpdateSprite orig, Player self)
         {
             if (self.StateMachine.State != (int)AquaStates.StHanging)
@@ -611,12 +603,10 @@ namespace Celeste.Mod.Aqua.Core
                             {
                                 if (MathF.Sign(self.Speed.X) != (int)self.Facing)
                                 {
-                                    self.Sprite.SetHookMode(false);
                                     self.Sprite.Play("runStumble");
                                 }
                                 else
                                 {
-                                    self.Sprite.SetHookMode(true);
                                     self.Sprite.Play("icestumble");
                                 }
                             }
@@ -624,33 +614,28 @@ namespace Celeste.Mod.Aqua.Core
                         case SlideStates.HighSpeed:
                             if (self.Sprite.CurrentAnimationID != "fliponice")
                             {
-                                self.Sprite.SetHookMode(true);
                                 self.Sprite.Play("iceslide");
                             }
                             break;
                         case SlideStates.Turning:
                             if (DynamicData.For(self).Get<int>("previous_facing") == -(int)self.Facing)
                             {
-                                self.Sprite.SetHookMode(false);
                                 self.Sprite.PlayFlipOnIce();
                             }
                             else if (self.Sprite.CurrentAnimationID != "fliponice")
                             {
-                                self.Sprite.SetHookMode(false);
                                 self.Sprite.Play("skid");
-                            }    
+                            }
                             break;
                     }
                 }
                 else
                 {
-                    self.Sprite.SetHookMode(false);
                     orig(self);
                 }
             }
             else
             {
-                self.Sprite.SetHookMode(true);
                 self.Sprite.Scale = Vector2.One;
                 int climbRopeDirection = DynamicData.For(self).Get<int>("climb_rope_direction");
                 if (DynamicData.For(self).Get<int>("previous_facing") == -(int)self.Facing)
@@ -683,7 +668,6 @@ namespace Celeste.Mod.Aqua.Core
             self.Jump(false);
             float staminaCost = levelState.HookSettings.SwingJumpStaminaCost;
             self.Stamina = MathF.Max(0.0f, self.Stamina - staminaCost);
-            AquaDebugger.LogInfo("Stamina {0}", self.Stamina);
         }
 
         private static Vector2 TurnToTangentSpeed(this Player self, Vector2 speed, Vector2 swingDirection)
@@ -697,13 +681,14 @@ namespace Celeste.Mod.Aqua.Core
         private static void FlyTowardHook(this Player self)
         {
             Vector2 ropeDirection = _madelinesHook.RopeDirection;
+            var levelState = self.level.GetState();
             float origAlongSpeed = MathF.Max(Vector2.Dot(self.Speed, -ropeDirection), 0.0f);
-            self.Speed = -ropeDirection * (self.SceneAs<Level>().GetState().HookSettings.FlyTowardSpeed + origAlongSpeed);
+            self.Speed = -ropeDirection * MathF.Min(self.SceneAs<Level>().GetState().HookSettings.FlyTowardSpeed + origAlongSpeed, levelState.HookSettings.MaxLineSpeed);
         }
 
         private static int PreHookUpdate(Player self)
         {
-            if (!AquaModule.Settings.FeatureEnabled || !self.level.GetState().FeatureEnabled)
+            if (!AquaModule.Settings.FeatureEnabled && !self.level.GetState().FeatureEnabled)
                 return -1;
 
             float dt = Engine.DeltaTime;
@@ -715,32 +700,44 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     if (!_madelinesHook.Active)
                     {
-                        Vector2 direction = new Vector2(0.0f, -1.0f);
-                        if (Input.MoveX.Value != 0 || Input.MoveY.Value != 0)
+                        Vector2 direction;
+                        switch (AquaModule.Settings.DefaultShotDirection)
                         {
-                            direction.X = Input.MoveX;
-                            direction.Y = Input.MoveY;
-                            direction.Normalize();
+                            case DefaultShotDirections.Forward:
+                                direction = Vector2.UnitX * (int)self.Facing;
+                                break;
+                            case DefaultShotDirections.ForwardUp:
+                                direction = new Vector2((int)self.Facing, -1.0f);
+                                direction.Normalize();
+                                break;
+                            case DefaultShotDirections.Up:
+                            default:
+                                direction = -Vector2.UnitY;
+                                break;
+                        }
+                        if (Input.Aim.Value != Vector2.Zero)
+                        {
+                            direction = Input.GetAimVector(self.Facing);
                         }
                         float emitSpeed = self.SceneAs<Level>().GetState().HookSettings.EmitSpeed;
                         float emitSpeedCoeff = self.CalculateEmitParameters(emitSpeed * direction, ref direction);
-                        if (self.CanEmitHook(direction))
+                        if (self.CanEmitHook(direction) && _madelinesHook.CanEmit())
                         {
                             _madelinesHook.Emit(direction, emitSpeed, emitSpeedCoeff - 1.0f);
                             self.Scene.Add(_madelinesHook);
                         }
-                        }
-                        if (emittingTicker.CheckRate(1.0f))
+                    }
+                    if (emittingTicker.CheckRate(1.0f))
                     {
                         DynamicData.For(self).Set("start_emitting", false);
-                        Engine.TimeRate = 1.0f;
+                        Engine.TimeRateB = 1.0f;
                     }
                 }
                 return -1;
             }
             if (!_madelinesHook.Active && _throwHookCheck.CanThrow && !self.IsExhausted() && self.Holding == null)
             {
-                Engine.TimeRate = 0.1f;
+                Engine.TimeRateB = 0.1f;
                 DynamicData.For(self).Set("start_emitting", true);
                 TimeTicker emittingTicker = self.GetTimeTicker("emit_ticker");
                 emittingTicker.Reset();
@@ -857,7 +854,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int PostHookUpdate(Player self)
         {
-            if (!AquaModule.Settings.FeatureEnabled || !self.level.GetState().FeatureEnabled)
+            if (!AquaModule.Settings.FeatureEnabled && !self.level.GetState().FeatureEnabled)
                 return -1;
 
             float dt = Engine.DeltaTime;
@@ -948,8 +945,14 @@ namespace Celeste.Mod.Aqua.Core
             return self.CheckStamina <= 0.0f;
         }
 
+        private static readonly int[] PERMIT_SHOOT_STATES =
+        {
+            (int)AquaStates.StNormal,
+            (int)AquaStates.StDash,
+            (int)AquaStates.StLaunch,
+        };
+
         private static GrapplingHook _madelinesHook;
-        private static ThrowHookCheck _throwHookCheck;
-        private static bool _loaded;
+        private static ShotHookCheck _throwHookCheck;
     }
 }

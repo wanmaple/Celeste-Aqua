@@ -1,8 +1,10 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
+using System;
 using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Module
 {
+    [Serializable]
     [SettingSubMenu]
     public class HookSettings
     {

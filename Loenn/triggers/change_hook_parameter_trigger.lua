@@ -2,6 +2,7 @@ local ChangeHookParameterTrigger = {}
 
 local PARAMETER_OPTIONS = {
     "FeatureEnabled",
+    "GameplayMode",
     "RopeMaterial",
     "RopeLength",
     "EmitSpeed",
@@ -14,7 +15,7 @@ ChangeHookParameterTrigger.fieldInformation = {
     parameter = {
         options = PARAMETER_OPTIONS,
         editable = false,
-    }
+    },
 }
 ChangeHookParameterTrigger.placements = {
     name = "Change Hook Parameter Trigger",

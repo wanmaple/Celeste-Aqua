@@ -24,7 +24,7 @@ namespace Celeste.Mod.Aqua.Core
 
             Add(new PlayerInOut(OnPlayerIn, null));
             Add(_spriteBulb = new Sprite());
-            GFX.SpriteBank.CreateOn(_spriteBulb, "PuzzleLight");
+            GFX.SpriteBank.CreateOn(_spriteBulb, "Aqua_PuzzleLight");
             _spriteBulb.Justify = new Vector2(0.5f, 0.5f);
             _spriteBulb.SetColor(LitColor);
             _spriteBulb.Play("idle");

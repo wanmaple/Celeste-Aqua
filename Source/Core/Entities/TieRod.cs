@@ -26,10 +26,10 @@ namespace Celeste.Mod.Aqua.Core
             _talker.Active = _talker.Visible = false;
             Add(_talker);
             Add(_sprite = new Sprite());
-            GFX.SpriteBank.CreateOn(_sprite, "TieRod");
+            GFX.SpriteBank.CreateOn(_sprite, "Aqua_TieRod");
             _sprite.Play("idle");
             Add(_topSprite = new Sprite());
-            GFX.SpriteBank.CreateOn(_topSprite, "TieRod");
+            GFX.SpriteBank.CreateOn(_topSprite, "Aqua_TieRod");
             _topSprite.Play("top_idle");
             _topSprite.SetColor(Color);
             Add(new HookInteractable(OnHookInteract));

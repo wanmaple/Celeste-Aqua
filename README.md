@@ -8,10 +8,12 @@ Grappling Hook is a powerful tool which enhances Madeline a lot. Despite some ba
 
 Varieties of old entities are made interactable with the grappling hook, a lot of new entities also give the Gameplay a lot of fun.
 
-However, we’d like to make a formal map for Aqua but it’s such a heavy work. We provide an experimental map to let you know the grappling hook well.
+We provide an experimental map to let you know the grappling hook better.
 
-If you want to make your own map based on Aqua, I haven’t written any document yet, maybe later or not. But you can ask me if you have any questions about the MOD.
+If you want to make your own map based on Aqua, I haven’t written any document yet, maybe later. But you can ask me if you have any questions about the MOD.
 
-## State
+## TODOs
 
-The MOD is still in development.
+A Gameplay mode which gives grappling a counter and can be charged when eating a custom gem.
+
+A kind of DreamBlock which can't be hooked but passed through.

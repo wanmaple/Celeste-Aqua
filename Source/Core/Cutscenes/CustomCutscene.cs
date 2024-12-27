@@ -206,14 +206,6 @@ namespace Celeste.Mod.Aqua.Core
                 if (target == "player")
                 {
                     Player player = level.Tracker.GetEntity<Player>();
-                    if (spriteId != "default")
-                    {
-                        GFX.SpriteBank.CreateOn(player.Sprite, spriteId);
-                    }
-                    else
-                    {
-                        player.Sprite.SetHookMode(false, true);
-                    }
                     player.Sprite.Play(animId);
                 }
                 else if (!string.IsNullOrEmpty(target))

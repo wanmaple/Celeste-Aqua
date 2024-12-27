@@ -31,6 +31,7 @@ namespace Celeste.Mod.Aqua
             LightningExtensions.Initialize();
             WaterExtensions.Initialize();
             HeartGemExtensions.Initialize();
+            InvisibleBarrierExtensions.Initialize();
             PlayerSpriteExtensions.Initialize();
             PlayerStates.Initialize();
             GrabbyIconExtends.Initialize();
@@ -65,6 +66,7 @@ namespace Celeste.Mod.Aqua
             LightningExtensions.Uninitialize();
             WaterExtensions.Uninitialize();
             HeartGemExtensions.Uninitialize();
+            InvisibleBarrierExtensions.Uninitialize();
             PlayerSpriteExtensions.Uninitialize();
             PlayerStates.Uninitialize();
             GrabbyIconExtends.Uninitialize();

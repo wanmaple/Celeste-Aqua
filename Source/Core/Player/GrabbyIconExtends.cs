@@ -1,4 +1,5 @@
 ﻿using Celeste.Mod.Aqua.Debug;
+using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using MonoMod.Cil;
 
@@ -34,7 +35,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self);
             LevelStates.LevelState state = self.SceneAs<Level>().GetState();
-            if (state.FeatureEnabled)
+            if (AquaModule.Settings.FeatureEnabled || state.FeatureEnabled)
             {
                 Vector2 scale = Vector2.One * (1f + self.wiggler.Value * 0.2f);
                 Player entity = self.Scene.Tracker.GetEntity<Player>();

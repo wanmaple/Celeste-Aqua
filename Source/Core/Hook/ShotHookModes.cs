@@ -1,6 +1,6 @@
 ﻿namespace Celeste.Mod.Aqua.Core
 {
-    public enum ThrowHookModes
+    public enum ShotHookModes
     {
         Default,
         Pressing,

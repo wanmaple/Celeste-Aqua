@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Sprites>
 
-    <Hook path="objects/hook/" start="emit">
+    <Aqua_Hook path="objects/hook/" start="emit">
       <Justify x="0.5" y="0.5" />
       <Anim id="emit" path="hook" frames="0" />
       <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
       <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
-    </Hook>
+    </Aqua_Hook>
 
-    <HookElectricShock path="objects/hook/" start="shocking">
+    <Aqua_HookElectricShock path="objects/hook/" start="shocking">
       <Justify x="0.5" y="0.5" />
       <Loop id="shocking" path="hook_charge" frames="0-4" delay="0.1" />
-    </HookElectricShock>
+    </Aqua_HookElectricShock>
 
-    <Madeline path="characters/player/" start="hookidle">
+    <Aqua_Madeline path="characters/player/" start="hookidle">
       <Origin x="16" y="32" />
       <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
       <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
@@ -28,9 +28,9 @@
         <Frames path="runStumble_ice" hair="1,0|1,2|2,2|2,0|2,-2|1,-2|1,-1|1,-1|1,-1|1,-1|1,-3|1,-2"/>
         <Frames path="slide_ice" hair="1,-1|0,-1|0,-1|1,-1|2,-1|2,0|2,0|2,-1"/>
       </Metadata>
-    </Madeline>
+    </Aqua_Madeline>
 
-    <MadelineNoBackpack path="characters/player_no_backpack/" start="hookidle">
+    <Aqua_MadelineNoBackpack path="characters/player_no_backpack/" start="hookidle">
       <Origin x="16" y="32" />
       <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
       <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
@@ -45,9 +45,9 @@
         <Frames path="runStumble_ice" hair="1,0|1,2|2,2|2,0|2,-2|1,-2|1,-1|1,-1|1,-1|1,-1|1,-3|1,-2"/>
         <Frames path="slide_ice" hair="1,-1|0,-1|0,-1|1,-1|2,-1|2,0|2,0|2,-1"/>
       </Metadata>
-    </MadelineNoBackpack>
+    </Aqua_MadelineNoBackpack>
 
-    <MadelinePlayback path="characters/player_playback/" start="hookidle">
+    <Aqua_MadelinePlayback path="characters/player_playback/" start="hookidle">
       <Origin x="16" y="32" />
       <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
       <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
@@ -62,9 +62,9 @@
         <Frames path="runStumble_ice" hair="1,0|1,2|2,2|2,0|2,-2|1,-2|1,-1|1,-1|1,-1|1,-1|1,-3|1,-2"/>
         <Frames path="slide_ice" hair="1,-1|0,-1|0,-1|1,-1|2,-1|2,0|2,0|2,-1"/>
       </Metadata>
-    </MadelinePlayback>
+    </Aqua_MadelinePlayback>
 
-    <AquaBadeline path="characters/badeline/" start="hookidle">
+    <Aqua_Badeline path="characters/badeline/" start="hookidle">
       <Origin x="16" y="32" />
       <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
       <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
@@ -79,9 +79,9 @@
         <Frames path="runStumble_ice" hair="1,0|1,2|2,2|2,0|2,-2|1,-2|1,-1|1,-1|1,-1|1,-1|1,-3|1,-2"/>
         <Frames path="slide_ice" hair="1,-1|0,-1|0,-1|1,-1|2,-1|2,0|2,0|2,-1"/>
       </Metadata>
-    </AquaBadeline>
+    </Aqua_Badeline>
 
-    <MadelineAsBadeline path="characters/player_badeline/" start="hookidle">
+    <Aqua_MadelineAsBadeline path="characters/player_badeline/" start="hookidle">
       <Origin x="16" y="32" />
       <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
       <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
@@ -96,51 +96,51 @@
         <Frames path="runStumble_ice" hair="1,0|1,2|2,2|2,0|2,-2|1,-2|1,-1|1,-1|1,-1|1,-1|1,-3|1,-2"/>
         <Frames path="slide_ice" hair="1,-1|0,-1|0,-1|1,-1|2,-1|2,0|2,0|2,-1"/>
       </Metadata>
-    </MadelineAsBadeline>
+    </Aqua_MadelineAsBadeline>
 
-    <PuzzleLight path="objects/puzzle_light/" start="idle">
+    <Aqua_PuzzleLight path="objects/puzzle_light/" start="idle">
       <Origin x="8" y="8" />
       <Loop id="idle" path="bulb" delay="0.1" frames="0-11" />
-    </PuzzleLight>
+    </Aqua_PuzzleLight>
 
-    <RefillOne path="objects/refill1/" start="idle">
+    <Aqua_RefillOne path="objects/refill1/" start="idle">
       <Origin x="8" y="8" />
       <Loop id="idle" path="idle" delay="0.1" frames="0-4" />
-    </RefillOne>
+    </Aqua_RefillOne>
 
-    <RefillOneFlash path="objects/refill1/" start="flash">
+    <Aqua_RefillOneFlash path="objects/refill1/" start="flash">
       <Origin x="8" y="8" />
       <Anim id="flash" path="flash" delay="0.05" frames="0-5" />
-    </RefillOneFlash>
+    </Aqua_RefillOneFlash>
 
-    <RefillTwo path="objects/refill2/" start="idle">
+    <Aqua_RefillTwo path="objects/refill2/" start="idle">
       <Origin x="8" y="8" />
       <Loop id="idle" path="idle" delay="0.1" frames="0-4" />
-    </RefillTwo>
+    </Aqua_RefillTwo>
 
-    <RefillTwoFlash path="objects/refill2/" start="flash">
+    <Aqua_RefillTwoFlash path="objects/refill2/" start="flash">
       <Origin x="8" y="8" />
       <Anim id="flash" path="flash" delay="0.05" frames="0-5" />
-    </RefillTwoFlash>
+    </Aqua_RefillTwoFlash>
 
-    <BoosterOrange path="objects/booster_orange/" start="loop">
+    <Aqua_BoosterOrange path="objects/booster_orange/" start="loop">
       <Justify x="0.5" y="0.5" />
       <Loop id="loop" path="booster" delay="0.1" frames="0-4" />
       <Loop id="inside" path="booster" delay="0.1" frames="5-8"/>
       <Loop id="spin" path="booster" delay="0.06" frames="18-25"/>
       <Anim id="pop" path="booster" delay="0.08" frames="9-17"/>
-    </BoosterOrange>
+    </Aqua_BoosterOrange>
     
-    <BoosterPurple path="objects/booster_purple/" start="loop">
+    <Aqua_BoosterPurple path="objects/booster_purple/" start="loop">
       <Justify x="0.5" y="0.5" />
       <Anim id="appear" path="booster_red" delay="0.08" frames="26-34" goto="loop"/>
       <Loop id="loop" path="booster_red" delay="0.1" frames="0-4"/>
       <Loop id="inside" path="booster_red" delay="0.1" frames="5-8"/>
       <Loop id="spin" path="booster_red" delay="0.06" frames="18-25"/>
       <Anim id="pop" path="booster_red" delay="0.08" frames="9-17"/>
-    </BoosterPurple>
+    </Aqua_BoosterPurple>
 
-    <TieRod path="objects/tie_rod/" start="idle">
+    <Aqua_TieRod path="objects/tie_rod/" start="idle">
       <Justify x="0.5" y="0.5" />
       <Anim id="idle" path="tie_rod" frames="0" />
       <Anim id="turn_left" path="tie_rod" delay="0.1" frames="0-4" />
@@ -148,15 +148,15 @@
       <Anim id="top_idle" path="tie_rod_top" frames="0" />
       <Anim id="top_turn_left" path="tie_rod_top" delay="0.1" frames="0-4" />
       <Anim id="top_turn_right" path="tie_rod_top" delay="0.1" frames="4-0" />
-    </TieRod>
+    </Aqua_TieRod>
 
-    <AccelerationArrow path="objects/acceleration_area/" start="idle">
+    <Aqua_AccelerationArrow path="objects/acceleration_area/" start="idle">
       <Justify x="0.5" y="0.5" />
       <Loop id="idle" path="icon" delay="0.25" />
-    </AccelerationArrow>
+    </Aqua_AccelerationArrow>
 
-    <SolidRectTrail path="objects/rect_trail/" start="trail">
+    <Aqua_SolidRectTrail path="objects/rect_trail/" start="trail">
       <Anim id="trail" path="tail" delay="0.05" />
-    </SolidRectTrail>
+    </Aqua_SolidRectTrail>
 
 </Sprites>

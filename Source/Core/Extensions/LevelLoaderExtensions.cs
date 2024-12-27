@@ -12,13 +12,13 @@ namespace Celeste.Mod.Aqua.Core
 
         public static void Initialize()
         {
-            IL.Celeste.LevelLoader.ctor += LevelLoader_Construct;
+            //IL.Celeste.LevelLoader.ctor += LevelLoader_Construct;
             On.Celeste.LevelLoader.LoadingThread += LevelLoader_LoadingThread;
         }
 
         public static void Uninitialize()
         {
-            IL.Celeste.LevelLoader.ctor -= LevelLoader_Construct;
+            //IL.Celeste.LevelLoader.ctor -= LevelLoader_Construct;
             On.Celeste.LevelLoader.LoadingThread -= LevelLoader_LoadingThread;
         }
 
@@ -28,11 +28,11 @@ namespace Celeste.Mod.Aqua.Core
             if (cursor.TryGotoNext(ins => ins.MatchLdstr("player_playback")))
             {
                 cursor.Index += 2;
-                ILCreateFramesMetadata(cursor, "Madeline");
-                ILCreateFramesMetadata(cursor, "MadelineNoBackpack");
-                ILCreateFramesMetadata(cursor, "MadelinePlayback");
-                ILCreateFramesMetadata(cursor, "AquaBadeline");
-                ILCreateFramesMetadata(cursor, "MadelineAsBadeline");
+                ILCreateFramesMetadata(cursor, "Aqua_Madeline");
+                ILCreateFramesMetadata(cursor, "Aqua_MadelineNoBackpack");
+                ILCreateFramesMetadata(cursor, "Aqua_MadelinePlayback");
+                ILCreateFramesMetadata(cursor, "Aqua_AquaBadeline");
+                ILCreateFramesMetadata(cursor, "Aqua_MadelineAsBadeline");
             }
         }
 

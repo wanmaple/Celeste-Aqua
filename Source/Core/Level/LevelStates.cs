@@ -1,18 +1,22 @@
 ﻿using Celeste.Mod.Aqua.Module;
-using Celeste.Mod.Aqua.Rendering;
-using Monocle;
-using MonoMod.Utils;
+using System;
 
 namespace Celeste.Mod.Aqua.Core
 {
     public static class LevelStates
     {
+        [Serializable]
         public class LevelState
         {
             public bool AutoGrabHookRope { get; set; }
             public bool FeatureEnabled { get; set; }
             public GrapplingHook.RopeMaterial RopeMaterial { get; set; }
+            public GrapplingHook.GameplayMode GameplayMode { get; set; }
             public HookSettings HookSettings { get; set; }
+
+            public LevelState()
+            {
+            }
 
             public LevelState(AreaData areaData)
             {
@@ -24,6 +28,7 @@ namespace Celeste.Mod.Aqua.Core
                 AutoGrabHookRope = AquaModule.Settings.AutoGrabRopeIfPossible;
                 FeatureEnabled = areaData.GetExtraMeta().FeatureEnabled;
                 RopeMaterial = (GrapplingHook.RopeMaterial)areaData.GetExtraMeta().HookMaterial;
+                GameplayMode = (GrapplingHook.GameplayMode)areaData.GetExtraMeta().GameplayMode;
                 HookSettings = areaData.GetExtraMeta().HookSettings.Clone();
             }
         }
@@ -42,18 +47,18 @@ namespace Celeste.Mod.Aqua.Core
 
         public static LevelState GetState(this Level self)
         {
-            return DynamicData.For(self).Get<LevelState>("state");
+            return AquaModule.Session.levelState;
         }
 
         private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader)
         {
             orig(self, playerIntro, isFromLoader);
-            LevelState state = self.GetState();
+            LevelState state = AquaModule.Session.levelState;
             if (state == null)
             {
                 AreaData areaData = AreaData.Get(self.Session.Area);
                 state = new LevelState(areaData);
-                DynamicData.For(self).Set("state", state);
+                AquaModule.Session.levelState = state;
             }
         }
 
