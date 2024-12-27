@@ -4,6 +4,7 @@ local Depths = require("consts.object_depths")
 local SlidableIceBlock = {}
 SlidableIceBlock.name = "Aqua/Slidable Ice Block"
 SlidableIceBlock.depth = 8995
+SlidableIceBlock.minimumSize = { 16, 16 }
 SlidableIceBlock.placements = {
     name = "Slidable Ice Block",
     data = {

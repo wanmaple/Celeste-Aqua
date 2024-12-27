@@ -159,4 +159,14 @@
       <Anim id="trail" path="tail" delay="0.05" />
     </Aqua_SolidRectTrail>
 
+    <Aqua_HookRefill path="objects/refill_hook/" start="idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="idle" path="idle" delay="0.1" />
+    </Aqua_HookRefill>
+    
+    <Aqua_HookRefillFlash path="objects/refill_hook/" start="flash">
+      <Justify x="0.5" y="0.5" />
+      <Anim id="flash" path="flash" delay="0.05" />
+    </Aqua_HookRefillFlash>
+
 </Sprites>

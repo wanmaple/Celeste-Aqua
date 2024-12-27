@@ -114,6 +114,9 @@ entities.Aqua/Booster Filter.attributes.description.particle_color=Area particle
 entities.Aqua/Booster Filter.attributes.description.particle_opacity=Area particle opacity.
 entities.Aqua/Booster Filter.attributes.description.can_pass=What kind of booster can pass through.
 
+# Hook Refill
+entities.Aqua/Hook Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
+
 # Aqua Bird Trigger
 triggers.Aqua/Aqua Bird Trigger.attributes.description.birdId=Identifier of the bird.
 triggers.Aqua/Aqua Bird Trigger.attributes.description.tutorialIndex=The tutorial index related to the Aqua Bird.
@@ -127,3 +130,7 @@ triggers.Aqua/Custom Cutscene Trigger.attributes.description.endingChapter=Wheth
 # Change Hook Parameter Trigger
 triggers.Aqua/Change Hook Parameter Trigger.attributes.description.parameter=Parameter name.
 triggers.Aqua/Change Hook Parameter Trigger.attributes.description.value=Parameter value, whose type depends on the parameter.
+
+# Change Gameplay Mode Trigger
+triggers.Aqua/Change Gameplay Mode Trigger.attributes.description.mode=Gameplay mode.
+triggers.Aqua/Change Gameplay Mode Trigger.attributes.description.begin_counter=Only take effect when mode is ShootCounter. The initial counter of grappling hook.

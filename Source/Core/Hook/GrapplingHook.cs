@@ -52,24 +52,7 @@ namespace Celeste.Mod.Aqua.Core
         public GameplayMode Mode
         {
             get => _mode;
-            set
-            {
-                if (_mode != value)
-                {
-                    _mode = value;
-                    switch (_mode)
-                    {
-                        case GameplayMode.Default:
-                            RestGrappleCount = int.MaxValue;
-                            break;
-                        case GameplayMode.ShootCounter:
-                            RestGrappleCount = 0;
-                            break;
-                    }
-                }
-            }
         }
-        public int RestGrappleCount { get; set; } = int.MaxValue;
         public HookStates State { get; private set; } = HookStates.None;
         public Vector2 Velocity { get; private set; }
         public Vector2 Acceleration { get; private set; }
@@ -105,6 +88,23 @@ namespace Celeste.Mod.Aqua.Core
             this.MakeExtraCollideCondition();
         }
 
+        public void ChangeGameplayMode(GameplayMode mode, Level level, int initialCounter)
+        {
+            if (_mode != mode)
+            {
+                _mode = mode;
+                switch (_mode)
+                {
+                    case GameplayMode.Default:
+                        level.GetState().RestShootCount = int.MaxValue;
+                        break;
+                    case GameplayMode.ShootCounter:
+                        level.GetState().RestShootCount = initialCounter;
+                        break;
+                }
+            }
+        }
+
         public bool CanCollide(Entity other)
         {
             return other.IsHookable();
@@ -120,7 +120,7 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public bool CanEmit()
+        public bool CanEmit(Level level)
         {
             switch (Mode)
             {
@@ -128,11 +128,11 @@ namespace Celeste.Mod.Aqua.Core
                 default:
                     return true;
                 case GameplayMode.ShootCounter:
-                    return RestGrappleCount > 0;
+                    return level.GetState().RestShootCount > 0;
             }
         }
 
-        public void Emit(Vector2 direction, float speed, float speedCoeff)
+        public void Emit(Level level, Vector2 direction, float speed, float speedCoeff)
         {
             AlongRopeSpeed = 0.0f;
             HookRope rope = Get<HookRope>();
@@ -140,6 +140,10 @@ namespace Celeste.Mod.Aqua.Core
             rope.EmitSpeed = speed;
             EmitSpeedCoefficient = speedCoeff;
             Revoked = false;
+            if (Mode == GameplayMode.ShootCounter)
+            {
+                level.GetState().RestShootCount = Math.Max(level.GetState().RestShootCount - 1, 0);
+            }
 
             _sprite.Play(HookSprite.Emit, true);
             _sprite.Rotation = _elecShockSprite.Rotation = direction.Angle();

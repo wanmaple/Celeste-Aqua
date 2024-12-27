@@ -8,6 +8,7 @@ namespace Celeste.Mod.Aqua.Core
         public bool FeatureEnabled;
         public HookSettings HookSettings;
         public int GameplayMode;
+        public int InitialShootCount;
 
         public LevelExtras()
         {
@@ -15,6 +16,7 @@ namespace Celeste.Mod.Aqua.Core
             FeatureEnabled = false;
             HookSettings = AquaModule.Settings.HookSettings.Clone();
             GameplayMode = (int)GrapplingHook.GameplayMode.Default;
+            InitialShootCount = 1;
         }
     }
 }

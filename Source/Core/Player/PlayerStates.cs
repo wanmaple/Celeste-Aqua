@@ -188,7 +188,7 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, scene);
             var levelState = (self.Scene as Level).GetState();
             _madelinesHook = new GrapplingHook(GrapplingHook.HOOK_SIZE, levelState.HookSettings.RopeLength, levelState.RopeMaterial);
-            _madelinesHook.Mode = levelState.GameplayMode;
+            _madelinesHook.ChangeGameplayMode(levelState.GameplayMode, scene as Level, levelState.InitialShootCount);
         }
 
         private static void Player_SceneEnd(On.Celeste.Player.orig_SceneEnd orig, Player self, Scene scene)
@@ -203,7 +203,7 @@ namespace Celeste.Mod.Aqua.Core
             if (levelState != null)
             {
                 _madelinesHook = new GrapplingHook(GrapplingHook.HOOK_SIZE, levelState.HookSettings.RopeLength, levelState.RopeMaterial);
-                _madelinesHook.Mode = levelState.GameplayMode;
+                _madelinesHook.ChangeGameplayMode(levelState.GameplayMode, scene as Level, levelState.InitialShootCount);
             }
             _throwHookCheck = new ShotHookCheck(AquaModule.Settings.ThrowHook, AquaModule.Settings.ThrowHookMode);
             DynamicData.For(self).Set("previous_facing", (int)self.Facing);
@@ -721,9 +721,9 @@ namespace Celeste.Mod.Aqua.Core
                         }
                         float emitSpeed = self.SceneAs<Level>().GetState().HookSettings.EmitSpeed;
                         float emitSpeedCoeff = self.CalculateEmitParameters(emitSpeed * direction, ref direction);
-                        if (self.CanEmitHook(direction) && _madelinesHook.CanEmit())
+                        if (self.CanEmitHook(direction) && _madelinesHook.CanEmit(self.level))
                         {
-                            _madelinesHook.Emit(direction, emitSpeed, emitSpeedCoeff - 1.0f);
+                            _madelinesHook.Emit(self.level, direction, emitSpeed, emitSpeedCoeff - 1.0f);
                             self.Scene.Add(_madelinesHook);
                         }
                     }

@@ -44,13 +44,6 @@ namespace Celeste.Mod.Aqua.Core
                         PlayerStates.MadelinesHook.Material = state.RopeMaterial;
                     }
                     break;
-                case "GameplayMode":
-                    if (int.TryParse(Value, out int mode))
-                    {
-                        state.GameplayMode = (GrapplingHook.GameplayMode)mode;
-                        PlayerStates.MadelinesHook.Mode = state.GameplayMode;
-                    }
-                    break;
                 case "RopeLength":
                     if (int.TryParse(Value, out int len))
                     {

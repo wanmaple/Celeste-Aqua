@@ -10,6 +10,13 @@ namespace Celeste.Mod.Aqua.Core
     [Tracked(false)]
     public class AquaRefill : Refill
     {
+        public static ParticleType P_ShatterHookable1;
+        public static ParticleType P_GlowHookable1;
+        public static ParticleType P_RegenHookable1;
+        public static ParticleType P_ShatterHookable2;
+        public static ParticleType P_GlowHookable2;
+        public static ParticleType P_RegenHookable2;
+
         public bool HookTouchable { get; private set; }
 
         public AquaRefill(Vector2 position, bool twoDashes, bool hookable, bool oneUse)
@@ -25,11 +32,17 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     dir = "objects/refill2/";
                     animID = "Aqua_RefillTwo";
+                    p_shatter = P_ShatterHookable2;
+                    p_glow = P_GlowHookable2;
+                    p_regen = P_RegenHookable2;
                 }
                 else
                 {
                     dir = "objects/refill1/";
                     animID = "Aqua_RefillOne";
+                    p_shatter = P_ShatterHookable1;
+                    p_glow = P_GlowHookable1;
+                    p_regen = P_RegenHookable1;
                 }
                 outline.Texture = GFX.Game[dir + "outline"];
                 GFX.SpriteBank.CreateOn(sprite, animID);

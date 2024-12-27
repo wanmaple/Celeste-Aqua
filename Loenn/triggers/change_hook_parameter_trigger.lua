@@ -2,7 +2,6 @@ local ChangeHookParameterTrigger = {}
 
 local PARAMETER_OPTIONS = {
     "FeatureEnabled",
-    "GameplayMode",
     "RopeMaterial",
     "RopeLength",
     "EmitSpeed",

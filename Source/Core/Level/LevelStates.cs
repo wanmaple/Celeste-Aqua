@@ -12,6 +12,8 @@ namespace Celeste.Mod.Aqua.Core
             public bool FeatureEnabled { get; set; }
             public GrapplingHook.RopeMaterial RopeMaterial { get; set; }
             public GrapplingHook.GameplayMode GameplayMode { get; set; }
+            public int InitialShootCount { get; set; }
+            public int RestShootCount { get; set; }
             public HookSettings HookSettings { get; set; }
 
             public LevelState()
@@ -29,6 +31,7 @@ namespace Celeste.Mod.Aqua.Core
                 FeatureEnabled = areaData.GetExtraMeta().FeatureEnabled;
                 RopeMaterial = (GrapplingHook.RopeMaterial)areaData.GetExtraMeta().HookMaterial;
                 GameplayMode = (GrapplingHook.GameplayMode)areaData.GetExtraMeta().GameplayMode;
+                InitialShootCount = RestShootCount = areaData.GetExtraMeta().InitialShootCount;
                 HookSettings = areaData.GetExtraMeta().HookSettings.Clone();
             }
         }
