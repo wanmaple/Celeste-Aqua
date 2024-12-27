@@ -28,7 +28,7 @@ namespace Celeste.Mod.Aqua.Core
             public void Reset(AreaData areaData)
             {
                 AutoGrabHookRope = AquaModule.Settings.AutoGrabRopeIfPossible;
-                FeatureEnabled = areaData.GetExtraMeta().FeatureEnabled;
+                FeatureEnabled = areaData.GetExtraMeta().FeatureEnabled || AquaModule.Settings.FeatureEnabled;
                 RopeMaterial = (GrapplingHook.RopeMaterial)areaData.GetExtraMeta().HookMaterial;
                 GameplayMode = (GrapplingHook.GameplayMode)areaData.GetExtraMeta().GameplayMode;
                 InitialShootCount = RestShootCount = areaData.GetExtraMeta().InitialShootCount;
