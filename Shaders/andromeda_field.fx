@@ -1,7 +1,13 @@
-#define NUM_LAYERS 3.0
+#include "common.fxh"
 
 float2 Resolution;
 float Time;
+float TimeOffset;
+float3 BaseColor;
+float3 OffsetColor;
+float Speed;
+float Angle;
+float LayerCount;
 
 struct VS_Out
 {
@@ -25,50 +31,44 @@ VS_Out VS_Main(
 	return vs_out;
 }
 
-float2x2 Rot(float a) {
-    float s=sin(a), c=cos(a);
-    return float2x2(c, -s, s, c);
-}
-
-float Star(float2 uv, float flare) {
+float star(float2 uv, float flare)
+{
     float d = length(uv);
-    float m = .06/d;
-    //col += m;
-    float rays = max(0., 1. -abs(uv.x*uv.y*1000.));
+    float m = 0.06 / (d + 1e-4);
+    float rays = max(0., 1. -abs(uv.x * uv.y * 1000.0));
     m += rays * flare;
-    uv = mul(uv, Rot(3.14159 / 4.0));
-    rays = max(0., 1. -abs(uv.x*uv.y*1000.));
-    m += rays*.3*flare;
+    uv = mul(uv, RotationMatrix(PI * 0.25));
+    rays = max(0.0, 1.0 - abs(uv.x * uv.y * 1000.0));
+    m += rays * 0.3 * flare;
     
-    m *= smoothstep(1., .2, d);
+    m *= smoothstep(1.0, 0.2, d);
     return m;
 }
 
-float Hash21(float2 p) {
-    p = frac(p*float2(109.11, 872.17));
-    p += dot(p, p+36.42);
-    return frac(p.x*p.y);
+float hash21(float2 p)
+{
+    p = frac(p * float2(109.11, 872.17));
+    p += dot(p, p + 36.42);
+    return frac(p.x * p.y);
 }
 
-float3 StarLayer(float2 uv) {
+float3 starLayer(float2 uv)
+{
     float3 col = (0.0).xxx;
-
-    float2 gv = frac(uv)-.5;
+    float2 gv = frac(uv) - 0.5;
     float2 id = floor(uv);
-    
-    for(int y=-1;y<=1;y++) {
-        for(int x=-1;x<=1;x++) {
-            float2 offs = float2(x, y);
-            
-            float n = Hash21(id+offs);
-            float size = frac(n*982.35);
-            float star = Star(gv-offs-float2(n, frac(n*46.))+.5, smoothstep(.85, 1., size)*.6);
-            
-            float3 color = sin(float3(.4, .3, .5)*frac(n*297.2)*Time)*.5+.5;
-            color = color*float3(1.+size,.5,1);
-            
-            star *= sin(Time*3.+n*6.2831)*.5+1.;
-            col += star*size*color;
+    float time = Time + TimeOffset;
+    for (int y = -1; y <= 1; y++) {
+        for (int x = -1; x <= 1; x++) {
+            float2 offset = float2(x, y);
+            float n = hash21(id + offset);
+            float size = frac(n * 982.35);
+            float d = star(gv - offset - float2(n, frac(n * 46.0)) + 0.5, smoothstep(0.85, 1.0, size) * 0.6);
+            float3 color = sin(float3(0.4, 0.3, 0.5) * frac(n * 297.2) * time) * 0.5 + 0.5;
+            // color = color * float3(1.0 + size, 0.5, 1.0);
+            color = color * (BaseColor + OffsetColor * size);
+            d *= sin(time * 3.0 + n * 6.2831) * 0.5 + 1.0;
+            col += d * size * color;
         }
     }
     return col;
@@ -80,25 +80,19 @@ float3 StarLayer(float2 uv) {
 float4 FS_Main(VS_Out input) : SV_TARGET0
 {
     float2 uv = (input.uv - 0.5 * Resolution.xy) / Resolution.y;
-    float2 M = (Resolution.xy * 0.5 - Resolution.xy) / Resolution.y;
-    float t = Time * 0.01;
-    
-    uv += M*3.;
-    
-    uv = mul(uv, Rot(t));
-    
+    float2 ratio = (Resolution.xy * 0.5 * Angle2Direction(Angle)) / Resolution.y;
+    float time = Time + TimeOffset;
+    float t = time * 0.01;
+    uv += ratio * Speed;
+    uv = mul(uv, RotationMatrix(t));
     float3 col = (0.0).xxx;
-    
-    for(float i=0.; i<1.; i+=1./NUM_LAYERS) {
-        float depth = frac(i+t);
-        
-        float scale = lerp(20., .5, depth);
-        float fade = depth*smoothstep(1., .9, depth);
-        col += StarLayer(uv*scale+i*456.1-M)*fade;
+    for (float i = 0.0; i < 1.0; i += 1.0 / LayerCount) {
+        float depth = frac(i + t);
+        float scale = lerp(20.0, 0.5, depth);
+        float fade = depth * smoothstep(1.0, 0.9, depth);
+        col += starLayer(uv * scale + i * 456.1 - ratio) * fade;
     }
-    
-    //if(gv.x > .48 || gv.y >.48) col.r=1.;
-    float4 color = float4(col,1.0);
+    float4 color = float4(col, 1.0);
     return color;
 }
 

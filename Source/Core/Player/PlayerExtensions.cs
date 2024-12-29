@@ -1,12 +1,35 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Aqua.Module;
+using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
-using static Celeste.TrackSpinner;
 
 namespace Celeste.Mod.Aqua.Core
 {
     public static class PlayerExtensions
     {
+        public static void InitializeGrapplingHook(this Player self, float size, float length, GrapplingHook.RopeMaterial material, GrapplingHook.GameplayMode mode, int initialCounter)
+        {
+            GrapplingHook hook = DynamicData.For(self).Get<GrapplingHook>("grapple_hook");
+            if (hook == null)
+            {
+                hook = new GrapplingHook(size, length, material);
+                hook.ChangeGameplayMode(mode, self.level, initialCounter);
+                DynamicData.For(self).Set("grapple_hook", hook);
+                var shootCheck = new ShotHookCheck(AquaModule.Settings.ThrowHook, AquaModule.Settings.ThrowHookMode);
+                DynamicData.For(self).Set("shoot_check", shootCheck);
+            }
+        }
+
+        public static GrapplingHook GetGrappleHook(this Player self)
+        {
+            return DynamicData.For(self).Get<GrapplingHook>("grapple_hook");
+        }
+
+        public static ShotHookCheck GetShootHookCheck(this Player self)
+        {
+            return DynamicData.For(self).Get<ShotHookCheck>("shoot_check");
+        }
+
         public static Vector2 ExactCenter(this Player self)
         {
             return self.ExactPosition + self.Center - self.Position;

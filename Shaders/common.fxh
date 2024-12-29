@@ -54,6 +54,18 @@ float3 HSL2RGB(float3 hsl)
     return (rgb - 0.5) * c + hsl.z;
 }
 
+float2 Angle2Direction(float angle)
+{
+    float s = sin(angle), c = cos(angle);
+    return float2(c, -s);
+}
+
+float2x2 RotationMatrix(float angle)
+{
+    float s = sin(angle), c = cos(angle);
+    return float2x2(c, -s, s, c);
+}
+
 // 2D SDFs
 float Circle(float2 p, float r)
 {

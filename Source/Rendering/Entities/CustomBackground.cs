@@ -29,6 +29,10 @@ namespace Celeste.Mod.Aqua.Rendering
         public override void OnReload()
         {
             _fx = FXCenter.Instance.GetFX(FXName);
+            if (_fx != null)
+            {
+                UpdateUniforms();
+            }
         }
 
         public override void Update()
@@ -49,6 +53,10 @@ namespace Celeste.Mod.Aqua.Rendering
         public override Effect GetEffect()
         {
             return _fx;
+        }
+
+        protected virtual void UpdateUniforms()
+        {
         }
 
         private Effect _fx;

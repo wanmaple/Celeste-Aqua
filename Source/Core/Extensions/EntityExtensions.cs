@@ -30,6 +30,7 @@ namespace Celeste.Mod.Aqua.Core
             self.SetHookable(false);
             self.SetHookAttached(false);
             DynamicData.For(self).Set("can_collide_method", null);
+            DynamicData.For(self).Set("unique_id", AUTO_ID++);
         }
 
         private static void Entity_Awake(On.Monocle.Entity.orig_Awake orig, Entity self, Scene scene)
@@ -42,6 +43,11 @@ namespace Celeste.Mod.Aqua.Core
         {
             DynamicData.For(self).Set("prev_position", self.Position);
             orig(self);
+        }
+
+        public static ulong GetUniqueID(this Entity self)
+        {
+            return DynamicData.For(self).Get<ulong>("unique_id");
         }
 
         public static Vector2 GetPreviousPosition(this Entity self)
@@ -129,5 +135,7 @@ namespace Celeste.Mod.Aqua.Core
             MethodInfo method = self.GetType().GetMethod("CanCollide", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             DynamicData.For(self).Set("can_collide_method", method);
         }
+
+        private static ulong AUTO_ID = 0u;
     }
 }

@@ -117,7 +117,8 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public HookRope(float maxLength, RopeMaterial material) : base(false, false)
+        public HookRope(float maxLength, RopeMaterial material) 
+            : base(true, true)
         {
             MaxLength = maxLength;
             ChangeMaterial(material);
@@ -362,7 +363,6 @@ namespace Celeste.Mod.Aqua.Core
         public override void EntityRemoved(Scene scene)
         {
             base.EntityRemoved(scene);
-
             _pivots.Clear();
         }
 

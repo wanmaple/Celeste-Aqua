@@ -13,7 +13,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static void Uninitialize()
         {
-            IL.Celeste.BirdTutorialGui.Render += BirdTutorialGui_ILRender;
+            IL.Celeste.BirdTutorialGui.Render -= BirdTutorialGui_ILRender;
         }
 
         private static void BirdTutorialGui_ILRender(ILContext il)

@@ -41,7 +41,8 @@ namespace Celeste.Mod.Aqua.Core
                     if (int.TryParse(Value, out int material))
                     {
                         state.RopeMaterial = (GrapplingHook.RopeMaterial)material;
-                        PlayerStates.MadelinesHook.Material = state.RopeMaterial;
+                        var hook = player.GetGrappleHook();
+                        hook.Material = state.RopeMaterial;
                     }
                     break;
                 case "RopeLength":

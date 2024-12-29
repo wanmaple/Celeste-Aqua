@@ -117,6 +117,11 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        public void Reset()
+        {
+            State = HookStates.None;
+        }
+
         public bool CanEmit(Level level)
         {
             switch (Mode)
@@ -283,7 +288,6 @@ namespace Celeste.Mod.Aqua.Core
             State = HookStates.Emitting;
             Active = true;
             HookRope rope = Get<HookRope>();
-            rope.Active = rope.Visible = true;
 
             base.Added(scene);
             // 第一帧可能相交，直接检测碰撞
@@ -310,8 +314,6 @@ namespace Celeste.Mod.Aqua.Core
             Velocity = Acceleration = Vector2.Zero;
             Active = false;
             JustFixed = false;
-            HookRope rope = Get<HookRope>();
-            rope.Active = rope.Visible = false;
         }
 
         public override void Awake(Scene scene)

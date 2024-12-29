@@ -111,7 +111,8 @@ namespace Celeste.Mod.Aqua.Core
 
         private void OnPlayer(Player player)
         {
-            if (PlayerStates.MadelinesHook != null && PlayerStates.MadelinesHook.Mode == GrapplingHook.GameplayMode.ShootCounter)
+            var hook = player.GetGrappleHook();
+            if (hook.Mode == GrapplingHook.GameplayMode.ShootCounter)
             {
                 SceneAs<Level>().GetState().RestShootCount++;
             }

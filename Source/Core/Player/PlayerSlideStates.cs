@@ -73,7 +73,8 @@ namespace Celeste.Mod.Aqua.Core
             {
                 self.Speed.Y = 0.0f;
             }
-            if (_madelinesHook.Active && _madelinesHook.State == GrapplingHook.HookStates.Fixed && _madelinesHook.ReachLockedLength(self.Center) && Vector2.Dot(_madelinesHook.RopeDirection, new Vector2(MathF.Sign(self.Speed.X), 0.0f)) > 0.0f)
+            var hook = self.GetGrappleHook();
+            if (hook.Active && hook.State == GrapplingHook.HookStates.Fixed && hook.ReachLockedLength(self.Center) && Vector2.Dot(hook.RopeDirection, new Vector2(MathF.Sign(self.Speed.X), 0.0f)) > 0.0f)
             {
                 self.Speed.X = Calc.Approach(self.Speed.X, 0.0f, 60.0f * Engine.DeltaTime);
             }

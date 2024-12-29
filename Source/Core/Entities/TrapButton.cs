@@ -41,7 +41,7 @@ namespace Celeste.Mod.Aqua.Core
                 default:
                     Collider = new Hitbox(14.0f, 4.0f, -7.0f, 0.0f);
                     _rotation = 0.0f;
-                    _pedestalDirection=Vector2.UnitY;
+                    _pedestalDirection = Vector2.UnitY;
                     break;
             }
             _texIdle = GFX.Game["objects/trap_button/button00"];

@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
 using System.Collections;
-using static MonoMod.InlineRT.MonoModRule;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -30,27 +29,21 @@ namespace Celeste.Mod.Aqua.Core
             Coroutine coroutine = Get<Coroutine>();
             Remove(coroutine);
             Add(new Coroutine(RodSequence()));
-            _fx = FXCenter.Instance.GetFX("hue_offset");
-            if (_fx != null)
-            {
-                _fx.Parameters["HueOffset"].SetValue(HueOffset);
-                _fx.Parameters["SaturationOffset"].SetValue(SaturationOffset);
-            }
             Add(new BeforeRenderHook(BeforeRender));
         }
 
         public Effect GetEffect()
         {
-            return _fx;
+            return RenderInfoStorage.Instance.GetEffect(this.GetUniqueID());
         }
 
         public void OnReload()
         {
-            _fx = FXCenter.Instance.GetFX("hue_offset");
-            if (_fx != null)
+            var fx = RenderInfoStorage.Instance.CreateEffect(this.GetUniqueID(), "hue_offset");
+            if (fx != null)
             {
-                _fx.Parameters["HueOffset"].SetValue(HueOffset);
-                _fx.Parameters["SaturationOffset"].SetValue(SaturationOffset);
+                fx.Parameters["HueOffset"].SetValue(HueOffset);
+                fx.Parameters["SaturationOffset"].SetValue(SaturationOffset);
             }
         }
 
@@ -58,23 +51,27 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Added(scene);
             RodEntityManager.Instance.Add(this);
-            _rtEff = new RenderTarget2D(Draw.SpriteBatch.GraphicsDevice, (int)Width, (int)Height, false, SurfaceFormat.Color, DepthFormat.None);
+            var fx = RenderInfoStorage.Instance.CreateEffect(this.GetUniqueID(), "hue_offset");
+            if (fx != null)
+            {
+                fx.Parameters["HueOffset"].SetValue(HueOffset);
+                fx.Parameters["SaturationOffset"].SetValue(SaturationOffset);
+            }
+            RenderInfoStorage.Instance.CreateSimpleRenderTarget(this.GetUniqueID(), (int)Width, (int)Height);
         }
 
         public override void Removed(Scene scene)
         {
             base.Removed(scene);
             RodEntityManager.Instance.Remove(this);
-            _fx.Dispose();
-            _rtEff.Dispose();
+            RenderInfoStorage.Instance.ReleaseAll(this.GetUniqueID());
         }
 
         public override void SceneEnd(Scene scene)
         {
             base.SceneEnd(scene);
             RodEntityManager.Instance.Remove(this);
-            _fx.Dispose();
-            _rtEff.Dispose();
+            RenderInfoStorage.Instance.ReleaseAll(this.GetUniqueID());
         }
 
         public override void Update()
@@ -85,6 +82,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 State = !State;
             }
+            PatchSpeedRunner();
             base.Update();
         }
 
@@ -92,18 +90,24 @@ namespace Celeste.Mod.Aqua.Core
         {
             Vector2 position = Position;
             Position += Shake;
-            Draw.SpriteBatch.Draw(_rtEff, Position, Color.White);
+            var rt = RenderInfoStorage.Instance.GetSimpleRenderTarget(this.GetUniqueID());
+            if (rt != null)
+            {
+                Draw.SpriteBatch.Draw(rt, Position, Color.White);
+            }
             Position = position;
         }
 
         private void BeforeRender()
         {
-            if (_fx != null)
+            Effect fx = RenderInfoStorage.Instance.GetEffect(this.GetUniqueID());
+            RenderTarget2D rt = RenderInfoStorage.Instance.GetSimpleRenderTarget(this.GetUniqueID());
+            if (fx != null && rt != null)
             {
                 var device = Draw.SpriteBatch.GraphicsDevice;
-                device.SetRenderTarget(_rtEff);
+                device.SetRenderTarget(rt);
                 device.Clear(Color.Black);
-                Draw.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, _fx, Matrix.Identity);
+                Draw.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, fx, Matrix.Identity);
                 RenderRT();
                 Draw.SpriteBatch.End();
             }
@@ -216,8 +220,26 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        private void PatchSpeedRunner()
+        {
+            // This is a patch to SpeedRunner, IDK if there is a better solution though since loading only trigger the Removed not Added.
+            Effect fx = RenderInfoStorage.Instance.GetEffect(this.GetUniqueID());
+            if (fx == null)
+            {
+                fx = RenderInfoStorage.Instance.CreateEffect(this.GetUniqueID(), "hue_offset");
+                if (fx != null)
+                {
+                    fx.Parameters["HueOffset"].SetValue(HueOffset);
+                    fx.Parameters["SaturationOffset"].SetValue(SaturationOffset);
+                }
+            }
+            RenderTarget2D rt = RenderInfoStorage.Instance.GetSimpleRenderTarget(this.GetUniqueID());
+            if (rt == null)
+            {
+                RenderInfoStorage.Instance.CreateSimpleRenderTarget(this.GetUniqueID(), (int)Width, (int)Height);
+            }
+        }
+
         private bool _lastState = false;
-        private Effect _fx;
-        private RenderTarget2D _rtEff;
     }
 }

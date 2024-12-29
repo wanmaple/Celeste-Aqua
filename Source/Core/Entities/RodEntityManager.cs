@@ -1,24 +1,18 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
+using Monocle;
 using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    public class RodEntityManager
+    public class RodEntityManager : Entity
     {
-        public static RodEntityManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new RodEntityManager();
-                return _instance;
-            }
-        }
+        public static RodEntityManager Instance => _instance;
 
         private static RodEntityManager _instance;
 
-        private RodEntityManager()
+        public RodEntityManager()
         {
+            _instance = this;
         }
 
         public IReadOnlyList<IRodControllable> GetEntitiesOfFlag(string flag)

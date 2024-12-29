@@ -31,7 +31,8 @@ namespace Celeste.Mod.Aqua.Core
             if (state != null)
             {
                 state.GameplayMode = GameplayMode;
-                PlayerStates.MadelinesHook.ChangeGameplayMode(GameplayMode, player.level, BeginCounter);
+                var hook = player.GetGrappleHook();
+                hook.ChangeGameplayMode(GameplayMode, player.level, BeginCounter);
             }
         }
     }

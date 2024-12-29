@@ -40,6 +40,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self);
             self.Level.Add(new BarrierRenderer());
+            self.Level.Add(new RodEntityManager());
         }
 
         private static void ILCreateFramesMetadata(ILCursor cursor, string spriteName)

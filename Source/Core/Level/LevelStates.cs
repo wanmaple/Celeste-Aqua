@@ -1,4 +1,5 @@
 ﻿using Celeste.Mod.Aqua.Module;
+using Celeste.Mod.Aqua.Rendering;
 using System;
 
 namespace Celeste.Mod.Aqua.Core
@@ -39,12 +40,14 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             On.Celeste.Level.LoadLevel += Level_LoadLevel;
+            On.Celeste.Level.UnloadLevel += Level_UnloadLevel;
             On.Celeste.Level.Update += Level_Update;
         }
 
         public static void Uninitialize()
         {
             On.Celeste.Level.LoadLevel -= Level_LoadLevel;
+            On.Celeste.Level.UnloadLevel -= Level_UnloadLevel;
             On.Celeste.Level.Update -= Level_Update;
         }
 
@@ -63,6 +66,14 @@ namespace Celeste.Mod.Aqua.Core
                 state = new LevelState(areaData);
                 AquaModule.Session.levelState = state;
             }
+            Player player = self.Tracker.GetEntity<Player>();
+            player.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.RestShootCount);
+        }
+
+        private static void Level_UnloadLevel(On.Celeste.Level.orig_UnloadLevel orig, Level self)
+        {
+            orig(self);
+            RenderInfoStorage.Instance.Clear();
         }
 
         private static void Level_Update(On.Celeste.Level.orig_Update orig, Level self)
