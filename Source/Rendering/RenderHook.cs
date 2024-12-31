@@ -42,9 +42,9 @@ namespace Celeste.Mod.Aqua.Rendering
                 cursor.EmitLdarg0();
                 cursor.EmitDelegate(RenderBackground);
                 // 有很多限制，由于GameplayRenderer并没有写深度，我只能靠后画了，因此可能盖掉其他非Custom的Entity。
-                cursor.Index += 4;
-                cursor.EmitLdarg0();
-                cursor.EmitDelegate(RenderCustomEntities);
+                //cursor.Index += 4;
+                //cursor.EmitLdarg0();
+                //cursor.EmitDelegate(RenderCustomEntities);
             }
         }
 
@@ -65,18 +65,14 @@ namespace Celeste.Mod.Aqua.Rendering
             var bgRender = new CustomBackgroundRenderer();
             DynamicData.For(self.Level).Set("custom_bg_renderer", bgRender);
             self.Level.Add(bgRender);
-            var customEntityRenderer = new CustomEntityRenderer();
-            DynamicData.For(self.Level).Set("custom_entity_renderer", customEntityRenderer);
-            self.Level.Add(customEntityRenderer);
         }
 
         private static void Tags_Initialize(On.Celeste.Tags.orig_Initialize orig)
         {
             orig();
             RenderTags.CustomBackground = new BitTag("CustomBackground");
-            RenderTags.CustomEntity = new BitTag("CustomEntity");
             RenderTags.CustomPostProcessing = new BitTag("CustomPostProcessing");
-            RenderTags.All = RenderTags.CustomBackground | RenderTags.CustomEntity | RenderTags.CustomPostProcessing;
+            RenderTags.All = RenderTags.CustomBackground | RenderTags.CustomPostProcessing;
         }
 
         private static void Scene_Construct(On.Monocle.Scene.orig_ctor orig, Scene self)
@@ -99,15 +95,6 @@ namespace Celeste.Mod.Aqua.Rendering
             if (bgRenderer != null)
             {
                 bgRenderer.Render(self);
-            }
-        }
-
-        private static void RenderCustomEntities(this Level self)
-        {
-            CustomEntityRenderer entityRenderer = DynamicData.For(self).Get<CustomEntityRenderer>("custom_entity_renderer");
-            if (entityRenderer != null)
-            {
-                entityRenderer.Render(self);
             }
         }
 

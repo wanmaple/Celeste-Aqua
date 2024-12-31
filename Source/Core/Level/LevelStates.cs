@@ -1,6 +1,10 @@
 ﻿using Celeste.Mod.Aqua.Module;
 using Celeste.Mod.Aqua.Rendering;
+using Monocle;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -16,6 +20,7 @@ namespace Celeste.Mod.Aqua.Core
             public int InitialShootCount { get; set; }
             public int RestShootCount { get; set; }
             public HookSettings HookSettings { get; set; }
+            public List<BackgroundData> Backgrounds { get; private set; }
 
             public LevelState()
             {
@@ -34,6 +39,7 @@ namespace Celeste.Mod.Aqua.Core
                 GameplayMode = (GrapplingHook.GameplayMode)areaData.GetExtraMeta().GameplayMode;
                 InitialShootCount = RestShootCount = areaData.GetExtraMeta().InitialShootCount;
                 HookSettings = areaData.GetExtraMeta().HookSettings.Clone();
+                Backgrounds = new List<BackgroundData>(areaData.GetExtraMeta().Backgrounds);
             }
         }
 
@@ -68,6 +74,28 @@ namespace Celeste.Mod.Aqua.Core
             }
             Player player = self.Tracker.GetEntity<Player>();
             player.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.RestShootCount);
+            if (state.Backgrounds != null)
+            {
+                foreach (BackgroundData bgData in state.Backgrounds)
+                {
+                    if (BACKGROUND_HINTS.TryGetValue(bgData.EntityName, out var pair))
+                    {
+                        Type bgType = pair.Key;
+                        if (self.Entities.FirstOrDefault(e => e.GetType() == bgType) == null)
+                        {
+                            Type paramType = pair.Value;
+                            object args = Activator.CreateInstance(paramType);
+                            var method = paramType.GetMethod("Parse", BindingFlags.Instance | BindingFlags.Public);
+                            if (method != null)
+                            {
+                                method.Invoke(args, new object[] { bgData.Uniforms, });
+                            }
+                            var entity = Activator.CreateInstance(bgType, new object[] { args, }) as Entity;
+                            self.Add(entity);
+                        }
+                    }
+                }
+            }
         }
 
         private static void Level_UnloadLevel(On.Celeste.Level.orig_UnloadLevel orig, Level self)
@@ -85,5 +113,9 @@ namespace Celeste.Mod.Aqua.Core
                 state.AutoGrabHookRope = !state.AutoGrabHookRope;
             }
         }
+
+        private static readonly Dictionary<string, KeyValuePair<Type, Type>> BACKGROUND_HINTS = new Dictionary<string, KeyValuePair<Type, Type>> {
+            { "AndromedaField", KeyValuePair.Create(typeof(AndromedaField), typeof(AndromedaFieldParameters))},
+            };
     }
 }
