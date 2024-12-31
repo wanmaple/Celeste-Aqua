@@ -54,14 +54,66 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return new Vector2(MathF.Round(vec.X), MathF.Round(vec.Y));
         }
 
-        public static bool IsPointInsideTriangle(Vector2 pt, Vector2 tri1, Vector2 tri2, Vector2 tri3)
+        public static float TriangleArea(Vector2 pt1, Vector2 pt2, Vector2 pt3)
         {
+            return 0.5f * MathF.Abs(pt1.X * (pt2.Y - pt3.Y) + pt2.X * (pt3.Y - pt1.Y) + pt3.X * (pt1.Y - pt2.Y));
+        }
+
+        public static bool IsPointOnSegment(Vector2 pt, Vector2 seg1, Vector2 seg2)
+        {
+            if (seg1 == seg2) return false;
+            float minX = MathF.Min(seg1.X, seg2.X);
+            float maxX = MathF.Max(seg1.X, seg2.X);
+            return Cross(pt - seg1, seg2 - seg1) == 0.0f && pt.X >= minX && pt.X <= maxX;
+        }
+
+        public static bool IsPointInsideTriangle(Vector2 pt, Vector2 tri1, Vector2 tri2, Vector2 tri3, bool includeEdge = false)
+        {
+            if (IsPointOnSegment(pt, tri1, tri2) || IsPointOnSegment(pt, tri2, tri3) || IsPointOnSegment(pt, tri3, tri1))
+                return includeEdge;
             float d1 = Sign(pt, tri1, tri2);
             float d2 = Sign(pt, tri2, tri3);
             float d3 = Sign(pt, tri3, tri1);
             bool hasNeg = d1 < 0.0f || d2 < 0.0f || d3 < 0.0f;
             bool hasPos = d1 > 0.0f || d2 > 0.0f || d3 > 0.0f;
             return !(hasNeg && hasPos);
+        }
+
+        public static bool IsPointInsidePolygon(Vector2 pt, bool includeEdge, params Vector2[] points)
+        {
+            unsafe
+            {
+                fixed (Vector2* ptr = points)
+                {
+                    return IsPointInsidePolygon(pt, ptr, points.Length, includeEdge);
+                }
+            }
+        }
+
+        public static unsafe bool IsPointInsidePolygon(Vector2 pt, Vector2* ptr, int num, bool includeEdge)
+        {
+            // Odd-Even rule
+            int intersects = 0;
+            for (int i = 0; i < num; i++)
+            {
+                Vector2 p1 = ptr[i];
+                Vector2 p2 = ptr[(i + 1) % num];
+                if (IsPointOnSegment(pt, p1, p2))
+                    return includeEdge;
+                if (CheckHorizontalLineIntersectsWithSegment(pt, p1, p2, 1))
+                    ++intersects;
+            }
+            return intersects % 2 == 1;
+        }
+
+        public static bool IsSegmentIntersectsSegment(Segment seg1, Segment seg2)
+        {
+            return IsSegmentIntersectsSegment(seg1.Point1, seg1.Point2, seg2.Point1, seg2.Point2);
+        }
+
+        public static bool IsSegmentIntersectsSegment(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+        {
+            return CCW(a, c, d) != CCW(b, c, d) && CCW(a, b, c) != CCW(a, b, d);
         }
 
         public static float Cross(Vector2 v1, Vector2 v2)
@@ -108,39 +160,35 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return ret;
         }
 
-
         public static Matrix TRS(Vector3 position, Quaternion rotation, Vector3 scale)
         {
             return Matrix.CreateTranslation(position) * Matrix.CreateFromQuaternion(rotation) * Matrix.CreateScale(scale);
         }
 
-        // 没有2x2矩阵可以用，用4x4的凑合一下，虽然运算量会上来
-        public static Matrix BuildMatrix(Vector2 v1, Vector2 v2)
-        {
-            return new Matrix(
-                v1.X, v2.X, 0.0f, 0.0f,
-                v1.Y, v2.Y, 0.0f, 0.0f,
-                0.0f, 0.0f, 1.0f, 0.0f,
-                0.0f, 0.0f, 0.0f, 1.0f);
-        }
-
-        // XNA真的是太离谱了，没有2x2矩阵就算了，连4x4矩阵乘以向量的功能都没有，真TM服了
-        public static Vector4 Matrix4Multiply(ref Matrix matrix, Vector4 v)
-        {
-            Vector4 row1 = new Vector4(matrix.M11, matrix.M12, matrix.M13, matrix.M14);
-            Vector4 row2 = new Vector4(matrix.M21, matrix.M22, matrix.M23, matrix.M24);
-            Vector4 row3 = new Vector4(matrix.M31, matrix.M32, matrix.M33, matrix.M34);
-            Vector4 row4 = new Vector4(matrix.M41, matrix.M42, matrix.M43, matrix.M44);
-            float x = Vector4.Dot(row1, v);
-            float y = Vector4.Dot(row2, v);
-            float z = Vector4.Dot(row3, v);
-            float w = Vector4.Dot(row4, v);
-            return new Vector4(x, y, z, w);
-        }
-
         private static float Sign(Vector2 p1, Vector2 p2, Vector2 p3)
         {
             return (p1.X - p3.X) * (p2.Y - p3.Y) - (p2.X - p3.X) * (p1.Y - p3.Y);
+        }
+
+        private static bool CheckHorizontalLineIntersectsWithSegment(Vector2 pt, Vector2 pt1, Vector2 pt2, int sign)
+        {
+            if (pt1.Y == pt2.Y)
+            {
+                return false;
+            }
+            Vector2 lowerPt = pt1.Y < pt2.Y ? pt1 : pt2;
+            Vector2 higherPt = lowerPt == pt1 ? pt2 : pt1;
+            int side = MathF.Sign(Cross(pt - lowerPt, higherPt - lowerPt));
+            if (side == sign)
+            {
+                return pt.Y >= lowerPt.Y && pt.Y < higherPt.Y;
+            }
+            return false;
+        }
+
+        private static bool CCW(Vector2 a, Vector2 b, Vector2 c)
+        {
+            return (c.Y - a.Y) * (b.X - a.X) > (b.Y - a.Y) * (c.X - a.X);
         }
     }
 }

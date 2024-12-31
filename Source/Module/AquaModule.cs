@@ -73,11 +73,6 @@ public class AquaModule : EverestModule
                     e.OnReload();
                 }
             }
-            List<Entity> drawables = level.Tracker.GetEntities<CustomShaderEntity>();
-            foreach (CustomShaderEntity drawable in drawables)
-            {
-                drawable.OnReload();
-            }
         }
     }
 

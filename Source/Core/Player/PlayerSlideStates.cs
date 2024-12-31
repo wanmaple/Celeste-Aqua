@@ -1,10 +1,14 @@
-﻿using Celeste.Mod.Aqua.Miscellaneous;
+﻿using Celeste.Mod.Aqua.Debug;
+using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
 using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -30,9 +34,27 @@ namespace Celeste.Mod.Aqua.Core
                 cursor.EmitLdarg0();
                 cursor.EmitLdarg1();
                 cursor.EmitLdarg2();
-                cursor.EmitDelegate(CheckClimbSlidable);
+                cursor.EmitDelegate<Func<Player, int, int, bool>>(CheckClimbSlidable);
                 cursor.EmitBrtrue(jumpLabel);
             }
+        }
+
+        private static void Player_ILClimbUpdate(ILContext il)
+        {
+            ILCursor cursor = new ILCursor(il);
+            if (cursor.TryGotoNext(ins => ins.MatchConvR4()))
+            {
+                cursor.Index += 4;
+                cursor.EmitLdarg0();
+                cursor.EmitDelegate<Func<Player, bool>>(CheckClimbSlidable);
+                cursor.EmitNot();
+                cursor.EmitAnd();
+            }
+        }
+
+        private static bool CheckClimbSlidable(this Player self)
+        {
+            return self.CheckClimbSlidable((int)self.Facing, 0);
         }
 
         private static bool CheckClimbSlidable(this Player self, int dir, int yAdd)
@@ -55,7 +77,7 @@ namespace Celeste.Mod.Aqua.Core
             List<Entity> slidables = self.Scene.Tracker.GetEntities<SlidableSolid>();
             foreach (SlidableSolid slidable in slidables)
             {
-                if (slidable.HasPlayerOnTop())
+                if (slidable.HasPlayerRider())
                 {
                     return true;
                 }

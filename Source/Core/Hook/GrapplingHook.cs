@@ -102,16 +102,22 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        public void SetRopeLength(float length)
+        {
+            HookRope rope = Get<HookRope>();
+            rope.ChangeLength(length);
+        }
+
         public bool CanCollide(Entity other)
         {
             return other.IsHookable();
         }
 
-        public void SetPositionRounded(Vector2 position)
+        public void SetPositionRounded(Vector2 position, bool updatePivot = true)
         {
             Position = AquaMaths.Round(position);
             HookRope rope = Get<HookRope>();
-            if (rope != null)
+            if (rope != null && updatePivot)
             {
                 rope.UpdateTopPivot(Position);
             }
@@ -284,11 +290,10 @@ namespace Celeste.Mod.Aqua.Core
         public override void Added(Scene scene)
         {
             Player madeline = scene.Tracker.GetEntity<Player>();
-            Position = _prevPosition = AquaMaths.Round(madeline.Center);
+            Position = _prevPosition = AquaMaths.Round(madeline.ExactCenter());
             State = HookStates.Emitting;
             Active = true;
             HookRope rope = Get<HookRope>();
-
             base.Added(scene);
             // 第一帧可能相交，直接检测碰撞
             UpdateColliderOffset(-rope.CurrentDirection);
@@ -309,11 +314,20 @@ namespace Celeste.Mod.Aqua.Core
         public override void Removed(Scene scene)
         {
             base.Removed(scene);
-
             State = HookStates.None;
             Velocity = Acceleration = Vector2.Zero;
             Active = false;
             JustFixed = false;
+        }
+
+        public override void SceneEnd(Scene scene)
+        {
+            base.SceneEnd(scene);
+            State = HookStates.None;
+            Velocity = Acceleration = Vector2.Zero;
+            Active = false;
+            JustFixed = false;
+            AquaDebugger.LogInfo("REVOKE");
         }
 
         public override void Awake(Scene scene)
@@ -449,7 +463,6 @@ namespace Celeste.Mod.Aqua.Core
                             Audio.Play("event:/char/madeline/hook_fixing", Position);
                             _fixTimer.Expire();
                         }
-                        _playerPrevPosition = player.ExactCenter();
                         break;
                     default:
                         break;
@@ -457,6 +470,7 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             _prevPosition = Position;
+            _playerPrevPosition = player.ExactCenter();
             Velocity /= dt;
             Acceleration = (Velocity - lastVelocity) / dt;
             CheckHookColliders();

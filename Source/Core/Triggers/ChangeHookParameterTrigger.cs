@@ -49,6 +49,8 @@ namespace Celeste.Mod.Aqua.Core
                     if (int.TryParse(Value, out int len))
                     {
                         state.HookSettings.RopeLength = Calc.Clamp(len, 80, 120);
+                        var hook = player.GetGrappleHook();
+                        hook.SetRopeLength(len);
                     }
                     break;
                 case "EmitSpeed":

@@ -20,6 +20,11 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        public static void UninitializeGrapplingHook(this Player self)
+        {
+            DynamicData.For(self).Set("grappling_hook", null);
+        }
+
         public static GrapplingHook GetGrappleHook(this Player self)
         {
             return DynamicData.For(self).Get<GrapplingHook>("grapple_hook");

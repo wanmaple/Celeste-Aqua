@@ -2,6 +2,7 @@
 using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -13,6 +14,10 @@ namespace Celeste.Mod.Aqua.Core
             _pivots.AddRange(pivots);
             _pivots.Add(new RopePivot(playerPrevPos, Cornors.Free, null));
             _indexes.Clear();
+            for (int i = 1; i <= pivots.Count(); i++)
+            {
+                _indexes.Add(i);
+            }
         }
 
         public List<Segment> GetSegments(int index)
@@ -37,20 +42,9 @@ namespace Celeste.Mod.Aqua.Core
             return _pivots[idx - 1];
         }
 
-        public void Increase(int index)
+        public void Decrease(int index)
         {
-            if (index >= _indexes.Count)
-            {
-                int num = index == 0 ? 1 : _indexes[index - 1] + 1;
-                _indexes.Add(num);
-            }
-            else
-            {
-                for (int i = index; i < _indexes.Count; i++)
-                {
-                    _indexes[i]++;
-                }
-            }
+            _indexes.RemoveAt(index);
         }
 
         public bool CheckPivotNum(int num)

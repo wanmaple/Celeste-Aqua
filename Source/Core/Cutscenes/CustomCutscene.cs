@@ -114,7 +114,7 @@ namespace Celeste.Mod.Aqua.Core
             string[] lines = content.Split("{break}");
             foreach (string line in lines)
             {
-                if (string.IsNullOrEmpty(line))
+                if (string.IsNullOrWhiteSpace(line))
                     continue;
 
                 string[] splits = line.Trim().Split(' ');

@@ -207,7 +207,7 @@ namespace Celeste.Mod.Aqua.Core
                 item.StopMoving();
             }
 
-            while (CollideCheck<Actor>() || CollideCheck<Solid>())
+            while (CollideCheck<Actor>() || CollideCheck<Solid>() || CollideCheck<GrapplingHook>() || this.IntersectsWithRope())
             {
                 yield return null;
             }

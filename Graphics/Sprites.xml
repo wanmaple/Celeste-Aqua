@@ -13,15 +13,15 @@
       <Loop id="shocking" path="hook_charge" frames="0-4" delay="0.1" />
     </Aqua_HookElectricShock>
 
-    <Aqua_Madeline path="characters/player/" start="hookidle">
+    <Aqua_Madeline path="characters/player/" start="aqua_hookidle">
       <Origin x="16" y="32" />
-      <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
-      <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
-      <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-      <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
-      <Loop id="electricshock" path="electrocution" delay="0.04" />
-      <Loop id="icestumble" path="runStumble_ice" delay="0.1" />
-      <Loop id="iceslide" path="slide_ice" delay="0.1" />
+      <Loop id="aqua_hookidle" path="climb_hook" delay="0.04" frames="0" />
+      <Loop id="aqua_hookup" path="climb_hook" delay="0.04" frames="0-7" />
+      <Loop id="aqua_hookdown" path="climb_hook" delay="0.04" frames="0" />
+      <Anim id="aqua_hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="aqua_hookidle"/>
+      <Loop id="aqua_electricshock" path="electrocution" delay="0.04" />
+      <Loop id="aqua_icestumble" path="runStumble_ice" delay="0.1" />
+      <Loop id="aqua_iceslide" path="slide_ice" delay="0.1" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -30,15 +30,15 @@
       </Metadata>
     </Aqua_Madeline>
 
-    <Aqua_MadelineNoBackpack path="characters/player_no_backpack/" start="hookidle">
+    <Aqua_MadelineNoBackpack path="characters/player_no_backpack/" start="aqua_hookidle">
       <Origin x="16" y="32" />
-      <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
-      <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
-      <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-      <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
-      <Loop id="electricshock" path="electrocution" delay="0.04" />
-      <Loop id="icestumble" path="runStumble_ice" delay="0.1" />
-      <Loop id="iceslide" path="slide_ice" delay="0.1" />
+      <Loop id="aqua_hookidle" path="climb_hook" delay="0.04" frames="0" />
+      <Loop id="aqua_hookup" path="climb_hook" delay="0.04" frames="0-7" />
+      <Loop id="aqua_hookdown" path="climb_hook" delay="0.04" frames="0" />
+      <Anim id="aqua_hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="aqua_hookidle"/>
+      <Loop id="aqua_electricshock" path="electrocution" delay="0.04" />
+      <Loop id="aqua_icestumble" path="runStumble_ice" delay="0.1" />
+      <Loop id="aqua_iceslide" path="slide_ice" delay="0.1" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -47,15 +47,15 @@
       </Metadata>
     </Aqua_MadelineNoBackpack>
 
-    <Aqua_MadelinePlayback path="characters/player_playback/" start="hookidle">
+    <Aqua_MadelinePlayback path="characters/player_playback/" start="aqua_hookidle">
       <Origin x="16" y="32" />
-      <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
-      <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
-      <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-      <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
-      <Loop id="electricshock" path="electrocution" delay="0.04"  />
-      <Loop id="icestumble" path="runStumble_ice" delay="0.1" />
-      <Loop id="iceslide" path="slide_ice" delay="0.1" />
+      <Loop id="aqua_hookidle" path="climb_hook" delay="0.04" frames="0" />
+      <Loop id="aqua_hookup" path="climb_hook" delay="0.04" frames="0-7" />
+      <Loop id="aqua_hookdown" path="climb_hook" delay="0.04" frames="0" />
+      <Anim id="aqua_hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="aqua_hookidle"/>
+      <Loop id="aqua_electricshock" path="electrocution" delay="0.04" />
+      <Loop id="aqua_icestumble" path="runStumble_ice" delay="0.1" />
+      <Loop id="aqua_iceslide" path="slide_ice" delay="0.1" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -64,15 +64,15 @@
       </Metadata>
     </Aqua_MadelinePlayback>
 
-    <Aqua_Badeline path="characters/badeline/" start="hookidle">
+    <Aqua_Badeline path="characters/badeline/" start="aqua_hookidle">
       <Origin x="16" y="32" />
-      <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
-      <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
-      <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-      <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
-      <Loop id="electricshock" path="electrocution" delay="0.04" />
-      <Loop id="icestumble" path="runStumble_ice" delay="0.1" />
-      <Loop id="iceslide" path="slide_ice" delay="0.1" />
+      <Loop id="aqua_hookidle" path="climb_hook" delay="0.04" frames="0" />
+      <Loop id="aqua_hookup" path="climb_hook" delay="0.04" frames="0-7" />
+      <Loop id="aqua_hookdown" path="climb_hook" delay="0.04" frames="0" />
+      <Anim id="aqua_hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="aqua_hookidle"/>
+      <Loop id="aqua_electricshock" path="electrocution" delay="0.04" />
+      <Loop id="aqua_icestumble" path="runStumble_ice" delay="0.1" />
+      <Loop id="aqua_iceslide" path="slide_ice" delay="0.1" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>
@@ -81,15 +81,15 @@
       </Metadata>
     </Aqua_Badeline>
 
-    <Aqua_MadelineAsBadeline path="characters/player_badeline/" start="hookidle">
+    <Aqua_MadelineAsBadeline path="characters/player_badeline/" start="aqua_hookidle">
       <Origin x="16" y="32" />
-      <Loop id="hookidle" path="climb_hook" delay="0.04" frames="0" />
-      <Loop id="hookup" path="climb_hook" delay="0.04" frames="0-7" />
-      <Loop id="hookdown" path="climb_hook" delay="0.04" frames="0" />
-      <Anim id="hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="hookidle"/>
-      <Loop id="electricshock" path="electrocution" delay="0.04" />
-      <Loop id="icestumble" path="runStumble_ice" delay="0.1" />
-      <Loop id="iceslide" path="slide_ice" delay="0.1" />
+      <Loop id="aqua_hookidle" path="climb_hook" delay="0.04" frames="0" />
+      <Loop id="aqua_hookup" path="climb_hook" delay="0.04" frames="0-7" />
+      <Loop id="aqua_hookdown" path="climb_hook" delay="0.04" frames="0" />
+      <Anim id="aqua_hookflip" path="flip_hook" delay="0.04" frames="0-6" goto="aqua_hookidle"/>
+      <Loop id="aqua_electricshock" path="electrocution" delay="0.04" />
+      <Loop id="aqua_icestumble" path="runStumble_ice" delay="0.1" />
+      <Loop id="aqua_iceslide" path="slide_ice" delay="0.1" />
       <Metadata>
         <Frames path="climb_hook" hair="0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2|0,-2"/>
         <Frames path="flip_hook" hair="0,-2:2|0,-2:2|0,-2:1|0,-2:1|0,-2|0,-2|0,-2"/>

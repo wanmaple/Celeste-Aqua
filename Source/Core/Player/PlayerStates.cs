@@ -58,6 +58,7 @@ namespace Celeste.Mod.Aqua.Core
             IL.Celeste.Player.NormalUpdate += Player_ILNormalUpdate;
             IL.Celeste.Player.OnCollideV += Player_ILOnCollideV;
             IL.Celeste.Player.ClimbCheck += Player_ILClimbCheck;
+            IL.Celeste.Player.ClimbUpdate += Player_ILClimbUpdate;
             On.Celeste.Player.ctor += Player_Construct;
             On.Celeste.Player.Added += Player_Added;
             On.Celeste.Player.Removed += Player_Removed;
@@ -76,6 +77,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.PickupCoroutine += Player_PickupCoroutine;
             On.Celeste.Player.Update += Player_Update;
             On.Celeste.Player.WindMove += Player_WindMove;
+            On.Celeste.Player.ClimbJump += Player_ClimbJump;
             On.Celeste.Player.UpdateSprite += Player_UpdateSprite;
         }
 
@@ -85,6 +87,7 @@ namespace Celeste.Mod.Aqua.Core
             IL.Celeste.Player.NormalUpdate -= Player_ILNormalUpdate;
             IL.Celeste.Player.OnCollideV -= Player_ILOnCollideV;
             IL.Celeste.Player.ClimbCheck -= Player_ILClimbCheck;
+            IL.Celeste.Player.ClimbUpdate -= Player_ILClimbUpdate;
             On.Celeste.Player.ctor -= Player_Construct;
             On.Celeste.Player.Added -= Player_Added;
             On.Celeste.Player.Removed -= Player_Removed;
@@ -103,6 +106,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.PickupCoroutine -= Player_PickupCoroutine;
             On.Celeste.Player.Update -= Player_Update;
             On.Celeste.Player.WindMove -= Player_WindMove;
+            On.Celeste.Player.ClimbJump -= Player_ClimbJump;
             On.Celeste.Player.UpdateSprite -= Player_UpdateSprite;
         }
 
@@ -486,7 +490,7 @@ namespace Celeste.Mod.Aqua.Core
             self.Speed = Vector2.Zero;
             TimeTicker ticker = self.GetTimeTicker("elec_shock_ticker");
             ticker.Reset();
-            self.Sprite.Play("electricshock");
+            self.Sprite.Play("aqua_electricshock");
             Audio.Play("event:/char/madeline/electric_shock", self.Position);
         }
 
@@ -569,6 +573,18 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, move);
         }
 
+        private static void Player_ClimbJump(On.Celeste.Player.orig_ClimbJump orig, Player self)
+        {
+            // Since the climb jump is conflict with grabbing rope, simply revoke it.
+            var hook = self.GetGrappleHook();
+            if (hook.Active && hook.State != GrapplingHook.HookStates.Revoking)
+            {
+                hook.Revoke();
+            }
+
+            orig(self);
+        }
+
         private static void Player_UpdateSprite(On.Celeste.Player.orig_UpdateSprite orig, Player self)
         {
             if (self.StateMachine.State != (int)AquaStates.StHanging)
@@ -587,14 +603,14 @@ namespace Celeste.Mod.Aqua.Core
                                 }
                                 else
                                 {
-                                    self.Sprite.Play("icestumble");
+                                    self.Sprite.Play("aqua_icestumble");
                                 }
                             }
                             break;
                         case SlideStates.HighSpeed:
                             if (self.Sprite.CurrentAnimationID != "fliponice")
                             {
-                                self.Sprite.Play("iceslide");
+                                self.Sprite.Play("aqua_iceslide");
                             }
                             break;
                         case SlideStates.Turning:
@@ -620,21 +636,21 @@ namespace Celeste.Mod.Aqua.Core
                 int climbRopeDirection = DynamicData.For(self).Get<int>("climb_rope_direction");
                 if (DynamicData.For(self).Get<int>("previous_facing") == -(int)self.Facing)
                 {
-                    self.Sprite.Play("hookflip", true);
+                    self.Sprite.Play("aqua_hookflip", true);
                 }
-                else if (self.Sprite.CurrentAnimationID != "hookflip")
+                else if (self.Sprite.CurrentAnimationID != "aqua_hookflip")
                 {
                     if (climbRopeDirection < 0)
                     {
-                        self.Sprite.Play("hookup");
+                        self.Sprite.Play("aqua_hookup");
                     }
                     else if (climbRopeDirection > 0)
                     {
-                        self.Sprite.Play("hookdown");
+                        self.Sprite.Play("aqua_hookdown");
                     }
                     else
                     {
-                        self.Sprite.Play("hookidle");
+                        self.Sprite.Play("aqua_hookidle");
                     }
                 }
             }

@@ -31,7 +31,7 @@ namespace Celeste.Mod.Aqua.Module
         public int SwingStrength { get; set; }    // 摆荡力度
 
         [SettingName("SETTINGS_MAX_LINE_SPEED")]
-        [SettingRange(400, 600)]
+        [SettingRange(400, 2000, true)]
         [DefaultValue(450)]
         public int MaxLineSpeed { get; set; }   // 最大线速度
 
@@ -59,7 +59,7 @@ namespace Celeste.Mod.Aqua.Module
         public float FlyTowardDuration { get; set; } = 0.15f;
 
         [SettingName("SETTINGS_FLY_TOWARD_SPEED")]
-        [SettingRange(300, 400, true)]
+        [SettingRange(300, 1000, true)]
         [DefaultValue(325)]
         public int FlyTowardSpeed { get; set; }
 
