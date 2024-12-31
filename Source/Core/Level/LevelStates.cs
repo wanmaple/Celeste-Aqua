@@ -73,7 +73,7 @@ namespace Celeste.Mod.Aqua.Core
                 AquaModule.Session.levelState = state;
             }
             Player player = self.Tracker.GetEntity<Player>();
-            player.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.RestShootCount);
+            player.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.InitialShootCount);
             if (state.Backgrounds != null)
             {
                 foreach (BackgroundData bgData in state.Backgrounds)

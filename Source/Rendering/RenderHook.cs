@@ -38,13 +38,21 @@ namespace Celeste.Mod.Aqua.Rendering
             ILCursor cursor = new ILCursor(il);
             if (cursor.TryGotoNext(ins => ins.MatchCallvirt(_methodRender)))
             {
-                cursor.Index -= 3;
-                cursor.EmitLdarg0();
-                cursor.EmitDelegate(RenderBackground);
-                // 有很多限制，由于GameplayRenderer并没有写深度，我只能靠后画了，因此可能盖掉其他非Custom的Entity。
-                //cursor.Index += 4;
-                //cursor.EmitLdarg0();
-                //cursor.EmitDelegate(RenderCustomEntities);
+                cursor.Index++;
+                if (cursor.TryGotoNext(ins => ins.MatchCallvirt(_methodRender)))
+                {
+                    cursor.Index++;
+                    if (cursor.TryGotoNext(ins => ins.MatchCallvirt(_methodRender)))
+                    {
+                        cursor.Index -= 3;
+                        cursor.EmitLdarg0();
+                        cursor.EmitDelegate(RenderBackground);
+                        // 有很多限制，由于GameplayRenderer并没有写深度，我只能靠后画了，因此可能盖掉其他非Custom的Entity。
+                        //cursor.Index += 4;
+                        //cursor.EmitLdarg0();
+                        //cursor.EmitDelegate(RenderCustomEntities);
+                    }
+                }
             }
         }
 

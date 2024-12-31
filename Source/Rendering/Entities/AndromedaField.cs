@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Rendering
 {
-    public struct AndromedaFieldParameters
+    public class AndromedaFieldParameters
     {
         public float TimeOffset { get; set; }
         public Color BaseColor { get; set; }

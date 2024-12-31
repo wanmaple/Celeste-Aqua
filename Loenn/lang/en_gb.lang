@@ -117,6 +117,9 @@ entities.Aqua/Booster Filter.attributes.description.can_pass=What kind of booste
 # Hook Refill
 entities.Aqua/Hook Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
 
+# Decal Assigner
+entities.Aqua/Decal Assigner.attributes.description.command=Which ability to assign to the covered decals.
+
 # Aqua Bird Trigger
 triggers.Aqua/Aqua Bird Trigger.attributes.description.birdId=Identifier of the bird.
 triggers.Aqua/Aqua Bird Trigger.attributes.description.tutorialIndex=The tutorial index related to the Aqua Bird.

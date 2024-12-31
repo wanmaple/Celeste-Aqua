@@ -194,6 +194,12 @@ namespace Celeste.Mod.Aqua.Core
             {
                 scene.Remove(hook);
             }
+            var state = (scene as Level).GetState();
+            if (state != null)
+            {
+                state.RestShootCount = state.InitialShootCount;
+                hook.ChangeGameplayMode(state.GameplayMode, scene as Level, state.InitialShootCount);
+            }
 
             orig(self, scene);
         }

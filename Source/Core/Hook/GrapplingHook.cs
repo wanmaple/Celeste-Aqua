@@ -61,6 +61,7 @@ namespace Celeste.Mod.Aqua.Core
         public float AlongRopeSpeed { get; set; } = 0.0f;
         public Vector2 BouncingVelocity { get; set; }
         public float EmitSpeedCoefficient { get; private set; }
+        public float EmitSpeedMultiplier { get; set; } = 1.0f;
 
         public float MaxLength => Get<HookRope>().MaxLength;
         public float LockedRadius => Get<HookRope>().LockedLength;
@@ -147,6 +148,7 @@ namespace Celeste.Mod.Aqua.Core
             rope.CurrentDirection = direction;
             rope.EmitSpeed = speed;
             EmitSpeedCoefficient = speedCoeff;
+            EmitSpeedMultiplier = 1.0f;
             Revoked = false;
             if (Mode == GameplayMode.ShootCounter)
             {
@@ -549,6 +551,7 @@ namespace Celeste.Mod.Aqua.Core
         private float CalculateSpeedCoefficient(bool revoking)
         {
             float coeff = revoking ? 1.0f - EmitSpeedCoefficient : 1.0f + EmitSpeedCoefficient;
+            coeff *= EmitSpeedMultiplier;
             Water water = CollideFirst<Water>();
             if (water != null)
             {

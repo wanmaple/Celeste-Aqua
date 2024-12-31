@@ -1,9 +1,7 @@
-﻿using Celeste.Mod.Aqua.Miscellaneous;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
-using System;
 
 namespace Celeste.Mod.Aqua.Rendering
 {
