@@ -116,6 +116,7 @@ entities.Aqua/Booster Filter.attributes.description.can_pass=What kind of booste
 
 # Hook Refill
 entities.Aqua/Hook Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
+entities.Aqua/Hook Refill.attributes.description.chargeTwo=Whether the refill will charge two countings.
 
 # Decal Assigner
 entities.Aqua/Decal Assigner.attributes.description.command=Which ability to assign to the covered decals.

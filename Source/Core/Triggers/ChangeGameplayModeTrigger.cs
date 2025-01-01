@@ -31,6 +31,7 @@ namespace Celeste.Mod.Aqua.Core
             if (state != null)
             {
                 state.GameplayMode = GameplayMode;
+                state.InitialShootCount = state.RestShootCount = BeginCounter;
                 var hook = player.GetGrappleHook();
                 hook.ChangeGameplayMode(GameplayMode, player.level, BeginCounter);
             }

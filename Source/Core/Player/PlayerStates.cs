@@ -49,6 +49,7 @@ namespace Celeste.Mod.Aqua.Core
 
     public static partial class PlayerStates
     {
+        public const float SPEED_CHECK_GRAPPLING_SWING_DOWN = 250.0f;
         public const float ROPE_MAX_PULL_NOT_ON_GROUND = 80.0f;
         public const float ROPE_MAX_PULL_ON_GROUND = 235.0f;
 
@@ -132,7 +133,27 @@ namespace Celeste.Mod.Aqua.Core
                 cursor.EmitDelegate(CalculateNormalMoveCoefficient);
                 cursor.EmitMul();
                 cursor.EmitStloc(6);
+
+                ILLabel label = null;
+                if (cursor.TryGotoNext(ins => ins.MatchLdloc(7), ins => ins.MatchBltUn(out label)))
+                {
+                    AquaDebugger.LogInfo("##############");
+                    cursor.Index += 2;
+                    cursor.EmitLdarg0();
+                    cursor.EmitDelegate(IsEmittingHook);
+                    cursor.EmitBrtrue(label);
+                }
             }
+        }
+
+        private static bool IsEmittingHook(this Player self)
+        {
+            GrapplingHook hook = self.GetGrappleHook();
+            if (hook != null && hook.Active && (hook.State == GrapplingHook.HookStates.Emitting || hook.State == GrapplingHook.HookStates.Bouncing))
+            {
+                return true;
+            }
+            return false;
         }
 
         private static float CalculateNormalMoveCoefficient(this Player self)
@@ -386,6 +407,8 @@ namespace Celeste.Mod.Aqua.Core
             var hook = self.GetGrappleHook();
             var shotCheck = self.GetShootHookCheck();
             Vector2 ropeDirection = hook.RopeDirection;
+            Vector2 swingDirection = hook.SwingDirection;
+            TimeTicker breakTicker = self.GetTimeTicker("hook_break_ticker");
             bool swingUp = AquaMaths.Cross(Vector2.UnitX, ropeDirection) >= 0.0f;
             if (hook.State != GrapplingHook.HookStates.Fixed)
             {
@@ -422,29 +445,41 @@ namespace Celeste.Mod.Aqua.Core
                 self.SwingJump(dt);
                 return (int)AquaStates.StNormal;
             }
-
-            DynamicData.For(self).Set("climb_rope_direction", 0);
-            if (self.onGround)
+            else if (!swingUp)
             {
-                hook.AlongRopeSpeed = 0.0f;
-                return (int)AquaStates.StNormal;
-            }
-            else
-            {
-                Vector2 swingDirection = hook.SwingDirection;
-                self.HandleHangingSpeed(dt);
-                float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
-                hook.AlongRopeSpeed = speedAlongRope;
-                TimeTicker breakTicker = self.GetTimeTicker("hook_break_ticker");
-                if (speedAlongRope >= 0.0f)
+                float speedTangent = MathF.Abs(Vector2.Dot(self.Speed, swingDirection));
+                if (speedTangent >= SPEED_CHECK_GRAPPLING_SWING_DOWN)
                 {
-                    hook.SetRopeLengthLocked(true, self.Center);
-                    DynamicData.For(self).Set("rope_is_loosen", false);
                     if (Input.Jump.Pressed)
                     {
                         self.SwingJump(dt);
                         return (int)AquaStates.StNormal;
                     }
+                }
+                else
+                {
+                    hook.SetRopeLengthLocked(false, self.Center);
+                    breakTicker.Reset();
+                    return (int)AquaStates.StNormal;
+                }
+            }
+
+            DynamicData.For(self).Set("climb_rope_direction", 0);
+            if (self.onGround)
+            {
+                hook.AlongRopeSpeed = 0.0f;
+                breakTicker.Reset();
+                return (int)AquaStates.StNormal;
+            }
+            else
+            {
+                self.HandleHangingSpeed(dt);
+                float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
+                hook.AlongRopeSpeed = speedAlongRope;
+                if (speedAlongRope >= 0.0f)
+                {
+                    hook.SetRopeLengthLocked(true, self.Center);
+                    DynamicData.For(self).Set("rope_is_loosen", false);
                     if (speedAlongRope > ROPE_MAX_PULL_NOT_ON_GROUND)
                     {
                         breakTicker.Tick(dt);
@@ -463,11 +498,6 @@ namespace Celeste.Mod.Aqua.Core
                 else
                 {
                     hook.SetRopeLengthLocked(false, self.Center);
-                    breakTicker.Reset();
-                    if (!swingUp)
-                    {
-                        return (int)AquaStates.StNormal;
-                    }
                 }
                 if (swingUp)
                 {
@@ -667,7 +697,9 @@ namespace Celeste.Mod.Aqua.Core
             var hook = self.GetGrappleHook();
             hook.Revoke();
             var levelState = self.SceneAs<Level>().GetState();
-            self.LiftSpeed = self.Speed * new Vector2(levelState.HookSettings.SwingJumpXPercent / 100.0f, levelState.HookSettings.SwingJumpYPercent / 100.0f);
+            const float X_LIFT = 0.0f;
+            const float Y_LIFT = 1.1f;
+            self.LiftSpeed = self.Speed * new Vector2(X_LIFT, Y_LIFT);
             self.Jump(false);
             float staminaCost = levelState.HookSettings.SwingJumpStaminaCost;
             self.Stamina = MathF.Max(0.0f, self.Stamina - staminaCost);
@@ -863,11 +895,17 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         return (int)AquaStates.StHanging;
                     }
-                    float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
-                    if (speedAlongRope >= 0.0f)
+                    Vector2 swingDirection = hook.SwingDirection;
+                    float speedTangent = MathF.Abs(Vector2.Dot(self.Speed, swingDirection));
+                    if (speedTangent >= SPEED_CHECK_GRAPPLING_SWING_DOWN)
                     {
                         return (int)AquaStates.StHanging;
                     }
+                    //float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
+                    //if (speedAlongRope >= 0.0f)
+                    //{
+                    //    return (int)AquaStates.StHanging;
+                    //}
                 }
                 if (!self.onGround && hook.State == GrapplingHook.HookStates.Fixed)
                 {

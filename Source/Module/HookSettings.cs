@@ -36,14 +36,6 @@ namespace Celeste.Mod.Aqua.Module
         public int MaxLineSpeed { get; set; }   // 最大线速度
 
         [SettingIgnore]
-        [DefaultValue(0)]
-        public int SwingJumpXPercent { get; set; } // 钩爪摆荡跳X方向的额外速度倍率
-
-        [SettingIgnore]
-        [DefaultValue(100)]
-        public int SwingJumpYPercent { get; set; } // 钩爪摆荡跳Y方向的额外速度倍率
-
-        [SettingIgnore]
         [DefaultValue(5)]
         public int ClimbUpStaminaCost { get; set; } // 钩爪抓取上爬体力消耗
 

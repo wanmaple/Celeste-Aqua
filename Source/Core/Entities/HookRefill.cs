@@ -16,6 +16,7 @@ namespace Celeste.Mod.Aqua.Core
         public static ParticleType P_Regen;
 
         public bool OneUse { get; private set; }
+        public bool ChargeTwo { get; private set; }
 
         public HookRefill(EntityData data, Vector2 offset)
             : base(data.Position + offset)
@@ -24,13 +25,23 @@ namespace Celeste.Mod.Aqua.Core
             _respawnPosition = Position;
             _respawnTicker = new TimeTicker(2.5f);
             OneUse = data.Bool("oneUse");
-            Add(_outline = new Image(GFX.Game["objects/refills/refill_Hook/outline"]));
+            ChargeTwo = data.Bool("chargeTwo");
+            string outline = "objects/refills/refill_Hook/outline";
+            string spriteName = "Aqua_HookRefill";
+            string spriteFlashName = "Aqua_HookRefillFlash";
+            if (ChargeTwo)
+            {
+                outline= "objects/refills/refillTwo_Hook/outline";
+                spriteName = "Aqua_HookRefillTwo";
+                spriteFlashName = "Aqua_HookRefillTwoFlash";
+            }
+            Add(_outline = new Image(GFX.Game[outline]));
             _outline.CenterOrigin();
             _outline.Visible = false;
             Add(_sprite = new Sprite());
-            GFX.SpriteBank.CreateOn(_sprite, "Aqua_HookRefill");
+            GFX.SpriteBank.CreateOn(_sprite, spriteName);
             Add(_flash = new Sprite());
-            GFX.SpriteBank.CreateOn(_flash, "Aqua_HookRefillFlash");
+            GFX.SpriteBank.CreateOn(_flash, spriteFlashName);
             _flash.OnFinish = delegate
             {
                 _flash.Visible = false;
@@ -114,7 +125,7 @@ namespace Celeste.Mod.Aqua.Core
             var hook = player.GetGrappleHook();
             if (hook.Mode == GrapplingHook.GameplayMode.ShootCounter)
             {
-                SceneAs<Level>().GetState().RestShootCount++;
+                SceneAs<Level>().GetState().RestShootCount += (ChargeTwo ? 2 : 1);
             }
             Audio.Play("event:/game/general/diamond_touch", Position);
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);

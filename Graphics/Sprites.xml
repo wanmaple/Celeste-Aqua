@@ -133,6 +133,16 @@
       <Anim id="flash" path="flash" delay="0.05" />
     </Aqua_HookRefillFlash>
 
+    <Aqua_HookRefillTwo path="objects/refills/refillTwo_Hook/" start="idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="idle" path="idle" delay="0.1" />
+    </Aqua_HookRefillTwo>
+    
+    <Aqua_HookRefillTwoFlash path="objects/refills/refillTwo_Hook/" start="flash">
+      <Justify x="0.5" y="0.5" />
+      <Anim id="flash" path="flash" delay="0.05" />
+    </Aqua_HookRefillTwoFlash>
+
     <Aqua_BoosterOrange path="objects/booster_orange/" start="loop">
       <Justify x="0.5" y="0.5" />
       <Loop id="loop" path="booster" delay="0.1" frames="0-4" />

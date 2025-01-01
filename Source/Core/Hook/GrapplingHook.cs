@@ -381,10 +381,11 @@ namespace Celeste.Mod.Aqua.Core
                 switch (State)
                 {
                     case HookStates.Emitting:
-                        rope.CheckCollision(playerSeg);
                         nextPosition = rope.DetectHookNextPosition(dt, false, CalculateSpeedCoefficient(false), out changeState);
                         movement = nextPosition - prevPosition;
                         collided = BresenhamMove(movement, OnCollideEntity);
+                        rope.UpdateTopPivot(Position);
+                        rope.CheckCollision(playerSeg);
                         //if (!AquaMaths.IsApproximateZero(movement.X))
                         //{
                         //    collided = collided || MoveH(movement.X, OnCollideEntity);
@@ -414,7 +415,6 @@ namespace Celeste.Mod.Aqua.Core
                         Position = nextPosition;
                         break;
                     case HookStates.Bouncing:
-                        rope.CheckCollision(playerSeg);
                         movement = BouncingVelocity * dt;
                         float currentLength = rope._prevLength + movement.Length();
                         if (currentLength > rope.MaxLength)
@@ -423,6 +423,8 @@ namespace Celeste.Mod.Aqua.Core
                             changeState = true;
                         }
                         collided = BresenhamMove(movement, OnCollideEntity);
+                        rope.UpdateTopPivot(Position);
+                        rope.CheckCollision(playerSeg);
                         //if (!AquaMaths.IsApproximateZero(movement.X))
                         //{
                         //    collided = collided || MoveH(movement.X, OnCollideEntity);
