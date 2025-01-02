@@ -7,18 +7,21 @@ using System.Collections;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    [CustomEntity("Aqua/Hook Refill")]
+    [CustomEntity("Aqua/Grappling Refill")]
     [Tracked(true)]
-    public class HookRefill : Entity
+    public class GrapplingRefill : Entity
     {
         public static ParticleType P_Shatter;
         public static ParticleType P_Glow;
         public static ParticleType P_Regen;
+        public static ParticleType P_Shatter2;
+        public static ParticleType P_Glow2;
+        public static ParticleType P_Regen2;
 
         public bool OneUse { get; private set; }
         public bool ChargeTwo { get; private set; }
 
-        public HookRefill(EntityData data, Vector2 offset)
+        public GrapplingRefill(EntityData data, Vector2 offset)
             : base(data.Position + offset)
         {
             Collider = new Hitbox(16.0f, 16.0f, -8.0f, -8.0f);
@@ -79,7 +82,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             else if (Scene.OnInterval(0.1f))
             {
-                level.ParticlesFG.Emit(HookRefill.P_Glow, 1, Position, Vector2.One * 5.0f);
+                level.ParticlesFG.Emit(ChargeTwo ? P_Glow2 : P_Glow, 1, Position, Vector2.One * 5.0f);
             }
 
             UpdateY();
@@ -111,7 +114,7 @@ namespace Celeste.Mod.Aqua.Core
                 Depth = -100;
                 _wiggler.Start();
                 Audio.Play("event:/game/general/diamond_return", Position);
-                SceneAs<Level>().ParticlesFG.Emit(HookRefill.P_Regen, 16, Position, Vector2.One * 2.0f);
+                SceneAs<Level>().ParticlesFG.Emit(ChargeTwo ? P_Regen2 : P_Regen, 16, Position, Vector2.One * 2.0f);
             }
         }
 
@@ -165,8 +168,8 @@ namespace Celeste.Mod.Aqua.Core
             Depth = 8999;
             yield return 0.05f;
             float num = player.Speed.Angle();
-            level.ParticlesFG.Emit(HookRefill.P_Shatter, 5, Position, Vector2.One * 4f, num - MathF.PI / 2f);
-            level.ParticlesFG.Emit(HookRefill.P_Shatter, 5, Position, Vector2.One * 4f, num + MathF.PI / 2f);
+            level.ParticlesFG.Emit(ChargeTwo ? P_Shatter2 : P_Shatter, 5, Position, Vector2.One * 4f, num - MathF.PI / 2f);
+            level.ParticlesFG.Emit(ChargeTwo ? P_Shatter2 : P_Shatter, 5, Position, Vector2.One * 4f, num + MathF.PI / 2f);
             SlashFx.Burst(Position, num);
             if (OneUse)
             {

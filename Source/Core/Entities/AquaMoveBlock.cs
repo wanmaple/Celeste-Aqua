@@ -34,7 +34,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 triggered = false;
                 state = MovementState.Idling;
-                while (!triggered && !HasPlayerRider() && !this.IsHookAttached())
+                while (!triggered && !HasPlayerRider())
                 {
                     yield return null;
                 }

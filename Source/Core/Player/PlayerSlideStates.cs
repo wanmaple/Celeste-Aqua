@@ -77,7 +77,7 @@ namespace Celeste.Mod.Aqua.Core
             List<Entity> slidables = self.Scene.Tracker.GetEntities<SlidableSolid>();
             foreach (SlidableSolid slidable in slidables)
             {
-                if (slidable.HasPlayerRider())
+                if (slidable.GetPlayerRider() != null)
                 {
                     return true;
                 }

@@ -85,7 +85,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             Audio.Play("event:/char/madeline/unhookable", Position);
             hook.Revoke();
-            return false;
+            return true;
         }
 
         private void CreateSpritesEx()

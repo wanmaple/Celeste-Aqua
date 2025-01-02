@@ -68,20 +68,35 @@ namespace Celeste.Mod.Aqua.Core
                 Color = Calc.HexToColor("912ed4"),
                 Color2 = Calc.HexToColor("4b1680"),
             };
-            HookRefill.P_Shatter = new ParticleType(Refill.P_Shatter)
+            GrapplingRefill.P_Shatter = new ParticleType(Refill.P_Shatter)
             {
                 Color = Calc.HexToColor("909cb0"),
                 Color2 = Calc.HexToColor("515672"),
             };
-            HookRefill.P_Glow = new ParticleType(Refill.P_Glow)
+            GrapplingRefill.P_Glow = new ParticleType(Refill.P_Glow)
             {
                 Color = Calc.HexToColor("909cb0"),
                 Color2 = Calc.HexToColor("515672"),
             };
-            HookRefill.P_Regen = new ParticleType(Refill.P_Regen)
+            GrapplingRefill.P_Regen = new ParticleType(Refill.P_Regen)
             {
                 Color = Calc.HexToColor("909cb0"),
                 Color2 = Calc.HexToColor("515672"),
+            };
+            GrapplingRefill.P_Shatter2 = new ParticleType(Refill.P_Shatter)
+            {
+                Color = Calc.HexToColor("d0bee9"),
+                Color2 = Calc.HexToColor("8e7ca6"),
+            };
+            GrapplingRefill.P_Glow2 = new ParticleType(Refill.P_Glow)
+            {
+                Color = Calc.HexToColor("d0bee9"),
+                Color2 = Calc.HexToColor("8e7ca6"),
+            };
+            GrapplingRefill.P_Regen2 = new ParticleType(Refill.P_Regen)
+            {
+                Color = Calc.HexToColor("d0bee9"),
+                Color2 = Calc.HexToColor("8e7ca6"),
             };
         }
     }

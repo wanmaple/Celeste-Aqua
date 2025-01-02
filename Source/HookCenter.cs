@@ -1,5 +1,4 @@
 ﻿using Celeste.Mod.Aqua.Core;
-using Celeste.Mod.Aqua.Core.Extensions;
 using Celeste.Mod.Aqua.Rendering;
 
 namespace Celeste.Mod.Aqua
@@ -14,9 +13,9 @@ namespace Celeste.Mod.Aqua
             ParticleTypesExtensions.Initialize();
             EntityExtensions.Initialize();
             PlatformExtensions.Initialize();
-            FallingBlockExtensions.Initialize();
-            ZipMoverExtensions.Initialize();
+            SolidExtensions.Initialize();
             CrumblePlatformExtensions.Initialize();
+            FallingBlockExtensions.Initialize();
             MoveBlockExtensions.Initialize();
             BounceBlockExtensions.Initialize();
             SpringExtensions.Initialize();
@@ -29,7 +28,6 @@ namespace Celeste.Mod.Aqua
             CassetteBlockExtensions.Initialize();
             FloatySpaceBlockExtensions.Initialize();
             DreamBlockExtensions.Initialize();
-            CoreModeToggleExtensions.Initialize();
             LightningExtensions.Initialize();
             WaterExtensions.Initialize();
             HeartGemExtensions.Initialize();
@@ -51,9 +49,9 @@ namespace Celeste.Mod.Aqua
             ParticleTypesExtensions.Uninitialize();
             EntityExtensions.Uninitialize();
             PlatformExtensions.Uninitialize();
-            FallingBlockExtensions.Uninitialize();
-            ZipMoverExtensions.Uninitialize();
+            SolidExtensions.Uninitialize();
             CrumblePlatformExtensions.Uninitialize();
+            FallingBlockExtensions.Uninitialize();
             MoveBlockExtensions.Uninitialize();
             BounceBlockExtensions.Uninitialize();
             SpringExtensions.Uninitialize();
@@ -66,7 +64,6 @@ namespace Celeste.Mod.Aqua
             CassetteBlockExtensions.Uninitialize();
             FloatySpaceBlockExtensions.Uninitialize();
             DreamBlockExtensions.Uninitialize();
-            CoreModeToggleExtensions.Uninitialize();
             LightningExtensions.Uninitialize();
             WaterExtensions.Uninitialize();
             HeartGemExtensions.Uninitialize();

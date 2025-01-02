@@ -138,3 +138,9 @@ triggers.Aqua/Change Hook Parameter Trigger.attributes.description.value=Paramet
 # Change Gameplay Mode Trigger
 triggers.Aqua/Change Gameplay Mode Trigger.attributes.description.mode=Gameplay mode.
 triggers.Aqua/Change Gameplay Mode Trigger.attributes.description.begin_counter=Only take effect when mode is ShootCounter. The initial counter of grappling hook.
+
+# Dream Toggle Trigger
+triggers.Aqua/Dream Toggle Trigger.attributes.description.fullRoutine=Whether the Dream Block should play the whole animation, rather than just instantly looking ready.
+triggers.Aqua/Dream Toggle Trigger.attributes.description.activate=Whether the Dream Block should become usable.
+triggers.Aqua/Dream Toggle Trigger.attributes.description.fastAnimation=Whether a faster animation should be used.
+triggers.Aqua/Dream Toggle Trigger.attributes.description.once=Whether trigger only once.

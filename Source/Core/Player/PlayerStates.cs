@@ -50,6 +50,7 @@ namespace Celeste.Mod.Aqua.Core
     public static partial class PlayerStates
     {
         public const float SPEED_CHECK_GRAPPLING_SWING_DOWN = 250.0f;
+        public const float SPEED_CHECK_2_GRAPPLING_SWING_DOWN = 160.0f;
         public const float ROPE_MAX_PULL_NOT_ON_GROUND = 80.0f;
         public const float ROPE_MAX_PULL_ON_GROUND = 235.0f;
 
@@ -448,7 +449,7 @@ namespace Celeste.Mod.Aqua.Core
             else if (!swingUp)
             {
                 float speedTangent = MathF.Abs(Vector2.Dot(self.Speed, swingDirection));
-                if (speedTangent >= SPEED_CHECK_GRAPPLING_SWING_DOWN)
+                if (speedTangent >= SPEED_CHECK_2_GRAPPLING_SWING_DOWN)
                 {
                     if (Input.Jump.Pressed)
                     {
