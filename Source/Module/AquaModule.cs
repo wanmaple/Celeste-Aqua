@@ -1,8 +1,6 @@
-﻿using Celeste.Mod.Aqua.Core;
-using Celeste.Mod.Aqua.Rendering;
+﻿using Celeste.Mod.Aqua.Rendering;
 using Monocle;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 

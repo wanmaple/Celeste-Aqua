@@ -26,14 +26,20 @@ namespace Celeste.Mod.Aqua.Core
             if (cursor.TryGotoNext(ins => ins.MatchCallvirt(method)))
             {
                 cursor.Index++;
+                cursor.EmitPop();
                 cursor.EmitLdarg0();
                 cursor.EmitDelegate(IsPlayerHanging);
-                cursor.EmitOr();
+                //cursor.EmitOr();
             }
         }
 
         private static bool IsPlayerHanging(FloatySpaceBlock self)
         {
+            // Since I hook the HasPlayerRider method, the logic should be changed though.
+            if (self.GetPlayerRider() != null)
+            {
+                return true;
+            }
             Player player = self.Scene.Tracker.GetEntity<Player>();
             if (player != null)
             {

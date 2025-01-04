@@ -4,6 +4,7 @@ using Monocle;
 using MonoMod.Utils;
 using System;
 using System.Collections;
+using System.Dynamic;
 using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
@@ -15,6 +16,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Monocle.Entity.ctor_Vector2 += Entity_Construct;
             On.Monocle.Entity.Awake += Entity_Awake;
             On.Monocle.Entity.Update += Entity_Update;
+            //On.Monocle.Entity.Added += Entity_Added;
         }
 
         public static void Uninitialize()
@@ -22,6 +24,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Monocle.Entity.ctor_Vector2 -= Entity_Construct;
             On.Monocle.Entity.Awake -= Entity_Awake;
             On.Monocle.Entity.Update -= Entity_Update;
+            //On.Monocle.Entity.Added -= Entity_Added;
         }
 
         private static void Entity_Construct(On.Monocle.Entity.orig_ctor_Vector2 orig, Entity self, Vector2 position)
@@ -43,6 +46,59 @@ namespace Celeste.Mod.Aqua.Core
         {
             DynamicData.For(self).Set("prev_position", self.Position);
             orig(self);
+        }
+
+        //private static void Entity_Added(On.Monocle.Entity.orig_Added orig, Entity self, Scene scene)
+        //{
+        //    orig(self, scene);
+        //    if (!(self is Platform) && self.Collidable && self.Collider != null)
+        //    {
+        //        Level level = scene as Level;
+        //        if (level != null)
+        //        {
+        //            AreaData areaData = AreaData.Get(level.Session.Area);
+        //            if (areaData != null)
+        //            {
+        //                LevelExtras extras = areaData.GetExtraMeta();
+        //                if (extras.SimpleHookableEntities.Contains(self.GetType().FullName))
+        //                {
+        //                    self.MakeSelfEnableToHookToPlayer();
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+
+        public static void MakeSelfEnableToHookToPlayer(this Entity self)
+        {
+            self.SetHookable(true);
+            var moveToward = new MoveToward(null, 0.0f, true, true);
+            moveToward.Active = false;
+            self.Add(moveToward);
+            DynamicData.For(self).Set("move_toward", moveToward);
+            HookInteractable com = self.Get<HookInteractable>();
+            if (com != null)
+            {
+                com.Interaction = self.OnSimpleHookToPlayer;
+            }
+            else
+            {
+                self.Add(new HookInteractable(self.OnSimpleHookToPlayer));
+            }
+        }
+
+        private static bool OnSimpleHookToPlayer(this Entity self, GrapplingHook hook, Vector2 at)
+        {
+            if (hook.State == GrapplingHook.HookStates.Emitting || hook.State == GrapplingHook.HookStates.Bouncing)
+            {
+                hook.Revoke();
+                MoveToward moveToward = DynamicData.For(self).Get<MoveToward>("move_toward");
+                moveToward.Target = hook;
+                moveToward.BaseSpeed = 100000.0f;
+                moveToward.Active = true;
+                return true;
+            }
+            return false;
         }
 
         public static ulong GetUniqueID(this Entity self)

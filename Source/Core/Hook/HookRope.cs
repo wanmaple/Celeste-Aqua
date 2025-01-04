@@ -1,10 +1,12 @@
 ﻿using Celeste.Mod.Aqua.Debug;
 using Celeste.Mod.Aqua.Miscellaneous;
+using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using static Celeste.Mod.Aqua.Core.GrapplingHook;
 
 namespace Celeste.Mod.Aqua.Core
@@ -303,27 +305,27 @@ namespace Celeste.Mod.Aqua.Core
                     player.MoveV(movement.Y);
                 }
                 float afterLength = CalculateRopeLength(player.ExactCenter());
-                if (afterLength - _lockLength <= 1.5f)  // 保证大于1.414即可
+                if (afterLength - _lockLength <= 1.5f)  // Make sure it's greater than 1.414
                 {
                     return false;
                 }
                 return true;
             }
-            else if (player.StateMachine.State == (int)AquaStates.StHanging && !DynamicData.For(player).Get<bool>("rope_is_loosen") && length < _lockLength - 1.5f)
-            {
-                float lengthDiff = length - _lockLength;
-                Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
-                Vector2 movement = ropeDirection * -MathF.Ceiling(-lengthDiff);
-                player.movementCounter = Vector2.Zero;
-                if (!AquaMaths.IsApproximateZero(movement.X))
-                {
-                    player.MoveH(movement.X);
-                }
-                if (!AquaMaths.IsApproximateZero(movement.Y))
-                {
-                    player.MoveV(movement.Y);
-                }
-            }
+            //else if (player.StateMachine.State == (int)AquaStates.StHanging && !DynamicData.For(player).Get<bool>("rope_is_loosen") && length < _lockLength - 1.5f)
+            //{
+            //    float lengthDiff = length - _lockLength;
+            //    Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
+            //    Vector2 movement = ropeDirection * -MathF.Ceiling(-lengthDiff);
+            //    player.movementCounter = Vector2.Zero;
+            //    if (!AquaMaths.IsApproximateZero(movement.X))
+            //    {
+            //        player.MoveH(movement.X);
+            //    }
+            //    if (!AquaMaths.IsApproximateZero(movement.Y))
+            //    {
+            //        player.MoveV(movement.Y);
+            //    }
+            //}
 
             return false;
         }
@@ -350,6 +352,18 @@ namespace Celeste.Mod.Aqua.Core
             if (locked)
             {
                 _lockLength = MathF.Min(CalculateRopeLength(playerPosition), MaxLength);
+            }
+            else
+            {
+                _lockLength = MaxLength;
+            }
+        }
+
+        public void SetLengthLocked(bool locked, float length)
+        {
+            if (locked)
+            {
+                _lockLength = length;
             }
             else
             {
@@ -468,7 +482,26 @@ namespace Celeste.Mod.Aqua.Core
                     //}
                     else
                     {
-                        Vector2 moveVec = solid.Position - solid.GetPreviousPosition();
+                        // FloatySpaceBlock has some special logic.
+                        Vector2 curPos = solid.Position;
+                        Vector2 prevPos = solid.GetPreviousPosition();
+                        if (solid is FloatySpaceBlock floaty && floaty.master != null)
+                        {
+                            curPos = floaty.master.Position;
+                            prevPos = floaty.master.GetPreviousPosition();
+                        }
+                        if (ModPatches.ConnectionEntityPatches.Contains(solid.GetType().FullName))
+                        {
+                            // Connection entity compatibility.
+                            var fieldMaster = solid.GetType().BaseType.GetField("master", BindingFlags.Instance | BindingFlags.NonPublic);
+                            object master = fieldMaster.GetValue(solid);
+                            if (master != null)
+                            {
+                                curPos = (master as Entity).Position;
+                                prevPos = (master as Entity).GetPreviousPosition();
+                            }
+                        }
+                        Vector2 moveVec = curPos - prevPos;
                         pivot.point += moveVec;
                         _pivots[i] = pivot;
                         if (i == 0)
@@ -741,7 +774,7 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
-        private float CalculateRopeLength(Vector2 playerPosition)
+        public float CalculateRopeLength(Vector2 playerPosition)
         {
             float length = 0.0f;
             if (_pivots.Count <= 1)

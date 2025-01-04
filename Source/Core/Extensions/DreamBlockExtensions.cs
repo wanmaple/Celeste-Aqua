@@ -41,9 +41,9 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void OnHookIn(this DreamBlock self, GrapplingHook hook)
         {
+            hook.EmitSpeedMultiplier *= DREAM_BLOCK_HOOK_ACCELERATION;
             if (self.playerHasDreamDash)
             {
-                hook.EmitSpeedMultiplier *= DREAM_BLOCK_HOOK_ACCELERATION;
                 Audio.Play("event:/char/madeline/dreamblock_enter");
                 SoundSource hookInSound = DynamicData.For(self).Get<SoundSource>("hook_in_sound");
                 hookInSound.Play("event:/char/madeline/dreamblock_travel");

@@ -71,6 +71,9 @@ namespace Celeste.Mod.Aqua.Core
         public Vector2 SwingDirection => Get<HookRope>().SwingDirection;
         public Vector2 PlayerPreviousPosition => _playerPrevPosition;
 
+        // Misc stuffs
+        public float UserLockedLength { get; set; }
+
         public GrapplingHook(float size, float length, RopeMaterial material = RopeMaterial.Default)
             : base(Vector2.Zero)
         {
@@ -207,12 +210,24 @@ namespace Celeste.Mod.Aqua.Core
             return true;
         }
 
+        public float CalculateRopeLength(Vector2 playerPosition)
+        {
+            HookRope rope = Get<HookRope>();
+            return rope.CalculateRopeLength(playerPosition);
+        }
+
         public void SetRopeLengthLocked(bool locked, Vector2 playerPosition)
         {
             if (locked && _lengthLocked == locked) return;
             _lengthLocked = locked;
             HookRope rope = Get<HookRope>();
             rope.SetLengthLocked(locked, playerPosition);
+        }
+
+        public void SetLockedLengthDirectly(float length)
+        {
+            HookRope rope = Get<HookRope>();
+            rope.SetLengthLocked(true, length);
         }
 
         public void AddLockedRopeLength(float diff)
@@ -320,6 +335,7 @@ namespace Celeste.Mod.Aqua.Core
             Velocity = Acceleration = Vector2.Zero;
             Active = false;
             JustFixed = false;
+            UserLockedLength = 0.0f;
         }
 
         public override void SceneEnd(Scene scene)

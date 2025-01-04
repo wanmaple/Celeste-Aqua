@@ -20,13 +20,15 @@ namespace Celeste.Mod.Aqua.Core
         }
         public float BaseSpeed { get; set; }
         public bool FasterAsTarget { get; set; }
+        public bool DeactiveOnCollidePlayer { get; set; }
 
-        public MoveToward(Entity target, float baseSpeed, bool fasterAsTarget = true)
+        public MoveToward(Entity target, float baseSpeed, bool fasterAsTarget = true, bool deactiveOnCollidePlayer = false)
             : base(true, false)
         {
             Target = target;
             BaseSpeed = baseSpeed;
             FasterAsTarget = fasterAsTarget;
+            DeactiveOnCollidePlayer = deactiveOnCollidePlayer;
         }
 
         public override void Update()
@@ -52,6 +54,15 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
             _targetPrevPosition = Target.Center;
+
+            if (DeactiveOnCollidePlayer)
+            {
+                Player player = Entity.Scene.Tracker.GetEntity<Player>();
+                if (player != null && player.CollideCheck(Entity))
+                {
+                    Active = false;
+                }
+            }
         }
 
         private Vector2 _targetPrevPosition;
