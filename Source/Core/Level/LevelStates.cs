@@ -119,6 +119,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static readonly Dictionary<string, KeyValuePair<Type, Type>> BACKGROUND_HINTS = new Dictionary<string, KeyValuePair<Type, Type>> {
             { "AndromedaField", KeyValuePair.Create(typeof(AndromedaField), typeof(AndromedaFieldParameters))},
+            {"SelfCircuit", KeyValuePair.Create(typeof(SelfCircuit), typeof(SelfCircuitParameters))},
             };
     }
 }

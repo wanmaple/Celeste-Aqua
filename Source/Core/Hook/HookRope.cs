@@ -115,7 +115,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
 
                 Vector2 ropeDirection = RopeDirection;
-                return new Vector2(ropeDirection.Y, -ropeDirection.X);
+                return new Vector2(ropeDirection.Y, -ropeDirection.X) * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f);
             }
         }
 
@@ -295,6 +295,7 @@ namespace Celeste.Mod.Aqua.Core
                 float lengthDiff = length - _lockLength;
                 Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
                 Vector2 movement = ropeDirection * MathF.Ceiling(lengthDiff);
+                movement.Y *= (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f);
                 player.movementCounter = Vector2.Zero;
                 if (!AquaMaths.IsApproximateZero(movement.X))
                 {
@@ -589,9 +590,24 @@ namespace Celeste.Mod.Aqua.Core
 
         private void CheckCollisionSolid(RopePivot prevPivot, RopePivot currentPivot, IList<Segment> lastSegments, Solid solid, SortedSet<PotentialPoint> potentials)
         {
+            Collider collider = solid.Collider;
+            if (collider is ColliderList list)
+            {
+                foreach (Collider single in list.colliders)
+                {
+                    HandleSingleCollider(single, prevPivot, currentPivot, lastSegments, solid, potentials);
+                }
+            }
+            else
+            {
+                HandleSingleCollider(collider, prevPivot, currentPivot, lastSegments, solid, potentials);
+            }
+        }
+
+        private void HandleSingleCollider(Collider collider, RopePivot prevPivot, RopePivot currentPivot, IList<Segment> lastSegments, Solid solid, SortedSet<PotentialPoint> potentials)
+        {
             Segment curRopeSeg = new Segment(prevPivot.point, currentPivot.point);
             Vector2 moveVec = solid.Position - solid.GetPreviousPosition();
-            Collider collider = solid.Collider;
             if (collider is Hitbox box)
             {
                 Vector2 tl = new Vector2(box.AbsoluteLeft, box.AbsoluteTop);

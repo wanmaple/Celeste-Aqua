@@ -19,14 +19,6 @@ namespace Celeste.Mod.Aqua.Module
         public int EmitSpeed { get; set; }  // 钩爪的发射速度
 
         [SettingIgnore]
-        [DefaultValue(45)]
-        public int RollingSpeedUp { get; set; }   // 上爬速度
-
-        [SettingIgnore]
-        [DefaultValue(80)]
-        public int RollingSpeedDown { get; set; } // 下爬速度
-
-        [SettingIgnore]
         [DefaultValue(60)]
         public int SwingStrength { get; set; }    // 摆荡力度
 

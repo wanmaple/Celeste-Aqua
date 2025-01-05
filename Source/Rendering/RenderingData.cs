@@ -10,6 +10,7 @@ namespace Celeste.Mod.Aqua.Rendering
     {
         public enum UniformTypes
         {
+            Boolean,
             Integer,
             Color,
             Float,
@@ -27,6 +28,8 @@ namespace Celeste.Mod.Aqua.Rendering
             string[] splits = UniformValue.Split(',');
             switch (UniformType)
             {
+                case UniformTypes.Boolean:
+                    return bool.Parse(splits[0]);
                 case UniformTypes.Integer:
                     return int.Parse(splits[0]);
                 case UniformTypes.Color:

@@ -47,10 +47,13 @@ namespace Celeste.Mod.Aqua.Rendering
                         cursor.Index -= 3;
                         cursor.EmitLdarg0();
                         cursor.EmitDelegate(RenderBackground);
-                        // 有很多限制，由于GameplayRenderer并没有写深度，我只能靠后画了，因此可能盖掉其他非Custom的Entity。
-                        //cursor.Index += 4;
-                        //cursor.EmitLdarg0();
-                        //cursor.EmitDelegate(RenderCustomEntities);
+                        cursor.Index += 4;
+                        if (cursor.TryGotoNext(ins => ins.MatchCallvirt(_methodRender)))
+                        {
+                            cursor.Index++;
+                            cursor.EmitLdarg0();
+                            cursor.EmitDelegate(RenderForeground);
+                        }
                     }
                 }
             }
@@ -70,17 +73,21 @@ namespace Celeste.Mod.Aqua.Rendering
         private static void LevelLoader_LoadingThread(On.Celeste.LevelLoader.orig_LoadingThread orig, LevelLoader self)
         {
             orig(self);
-            var bgRender = new CustomBackgroundRenderer();
-            DynamicData.For(self.Level).Set("custom_bg_renderer", bgRender);
-            self.Level.Add(bgRender);
+            var bgRenderer = new CustomBackgroundRenderer();
+            DynamicData.For(self.Level).Set("custom_bg_renderer", bgRenderer);
+            self.Level.Add(bgRenderer);
+            var fgRenderer = new CustomForegroundRenderer();
+            DynamicData.For(self.Level).Set("custom_fg_renderer", fgRenderer);
+            self.Level.Add(fgRenderer);
         }
 
         private static void Tags_Initialize(On.Celeste.Tags.orig_Initialize orig)
         {
             orig();
             RenderTags.CustomBackground = new BitTag("CustomBackground");
+            RenderTags.CustomForeground = new BitTag("CustomForeground");
             RenderTags.CustomPostProcessing = new BitTag("CustomPostProcessing");
-            RenderTags.All = RenderTags.CustomBackground | RenderTags.CustomPostProcessing;
+            RenderTags.All = RenderTags.CustomBackground | RenderTags.CustomForeground | RenderTags.CustomPostProcessing;
         }
 
         private static void Scene_Construct(On.Monocle.Scene.orig_ctor orig, Scene self)
@@ -103,6 +110,15 @@ namespace Celeste.Mod.Aqua.Rendering
             if (bgRenderer != null)
             {
                 bgRenderer.Render(self);
+            }
+        }
+
+        private static void RenderForeground(this Level self)
+        {
+            CustomForegroundRenderer fgRenderer = DynamicData.For(self).Get<CustomForegroundRenderer>("custom_fg_renderer");
+            if (fgRenderer != null)
+            {
+                fgRenderer.Render(self);
             }
         }
 

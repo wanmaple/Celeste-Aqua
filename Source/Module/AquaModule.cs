@@ -35,16 +35,16 @@ public class AquaModule : EverestModule
 
     public override void Load()
     {
-        // TODO: apply any hooks that should always be active
         HookCenter.Hook();
+        ModInterop.Initialize();
         Everest.Events.AssetReload.OnBeforeReload += AssetReload_OnBeforeReload;
         Everest.Events.AssetReload.OnAfterReload += AssetReload_OnAfterReload;
     }
 
     public override void Unload()
     {
-        // TODO: unapply any hooks applied in Load()
         HookCenter.Unhook();
+        ModInterop.Uninitialize();
         Everest.Events.AssetReload.OnBeforeReload -= AssetReload_OnBeforeReload;
         Everest.Events.AssetReload.OnAfterReload -= AssetReload_OnAfterReload;
     }

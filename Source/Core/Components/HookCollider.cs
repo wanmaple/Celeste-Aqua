@@ -6,10 +6,12 @@ namespace Celeste.Mod.Aqua.Core
     [Tracked(false)]
     public class HookCollider : Component
     {
+        public Action<GrapplingHook> Callback { get; set; }
+
         public HookCollider(Action<GrapplingHook> callback)
             : base(false, false)
         {
-            _callback = callback;
+            Callback = callback;
         }
 
         public bool Check(GrapplingHook hook)
@@ -17,13 +19,11 @@ namespace Celeste.Mod.Aqua.Core
             Collider collider = Entity.Collider;
             if (hook.CollideCheck(Entity))
             {
-                _callback(hook);
+                Callback(hook);
                 return true;
             }
 
             return false;
         }
-
-        private Action<GrapplingHook> _callback;
     }
 }

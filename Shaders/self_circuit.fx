@@ -1,9 +1,15 @@
-#define PI 3.14159
-#define rot(a) float2x2(cos(a), -sin(a), sin(a), cos(a)) // col1a col1b col2a col2b
-#define TIME_DIV 1.5
+#include "common.fxh"
 
 float2 Resolution;
 float Time;
+float TimeRatio;
+float PeriodAngle;
+float RandomStrength;
+float3 BackgroundColor1;
+float3 BackgroundColor2;
+float3 BackgroundColor3;
+float3 LineColor1;
+float3 LineColor2;
 
 struct VS_Out
 {
@@ -28,7 +34,7 @@ VS_Out VS_Main(
 }
 
 float2 random2(float2 p) {
-    return frac(sin(float2(dot(p,float2(127.1,311.7)),dot(p,float2(269.5,183.3))))*43758.5453);
+    return frac(sin(float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)))) * 43758.5453);
 }
 
 float voronoi(float2 uv) 
@@ -36,16 +42,13 @@ float voronoi(float2 uv)
     float2 cell = floor(uv);
     float2 fraction = frac(uv);
     float ret = 100.;
-    
-    float t = Time / TIME_DIV;
-    float change = floor(t / 2.) + frac(t) * floor(fmod(t, 2.));
-    
+    float t = Time * TimeRatio;
+    float change = floor(t / 2.0) + frac(t) * floor(fmod(t, 2.0));
     for (int i = -1; i <= 1; i++) {
-        for (int j = -1; j <=1; j++) {
+        for (int j = -1; j <= 1; j++) {
         	float2 neighbor = float2(float(i), float(j));
             float2 rand = random2(cell + neighbor);
-            float t = Time / 1.5;
-            rand = 0.5 + 0.5 * sin(change * 4. + 2. * PI * rand);
+            rand = 0.5 + 0.5 * sin(change * RandomStrength + 2.0 * PI * rand);
             float2 toCenter = neighbor + rand - fraction;
             ret = min(ret, max(abs(toCenter.x), abs(toCenter.y)));
         }
@@ -56,9 +59,8 @@ float voronoi(float2 uv)
 
 float2 gradient(in float2 x, float thickness)
 {
-	float2 h = float2(thickness, 0.);
-    return float2(voronoi(x + h.xy) - voronoi(x - h.xy),
-               voronoi(x + h.yx) - voronoi(x - h.yx)) / (2. * h.x);
+	float2 h = float2(thickness, 0.0);
+    return float2(voronoi(x + h.xy) - voronoi(x - h.xy), voronoi(x + h.yx) - voronoi(x - h.yx)) / (2.0 * h.x);
 }
 
 //-----------------------------------------------------------------------------
@@ -69,26 +71,18 @@ float4 FS_Main(VS_Out input) : SV_TARGET0
 	float2 uv = input.uv;
     uv.x *= Resolution.x / Resolution.y;
     
-    float t = Time / TIME_DIV;
-    float change = floor(t / 2.) + frac(t) * floor(fmod(t, 2.));
-    float colSwitch = sin(change * PI / 2.);
-    
-    uv -= .5;
-    uv = mul(uv, rot(change * PI / 2.));
-    uv += .5;
-    
+    float t = Time * TimeRatio;
+    float change = floor(t / 2.0) + frac(t) * floor(fmod(t, 2.0));
+    float colSwitch = sin(change * PI / 2.0);
+    uv -= 0.5;
+    uv = mul(uv, RotationMatrix(change * PeriodAngle));
+    uv += 0.5;
     uv *= 2.85;
-    
-    float val = voronoi(uv) / length(gradient(uv, .02));
+    float val = voronoi(uv) / length(gradient(uv, 0.02));
     float colVal = pow(val, 1.1) * 1.05;
-    
-    float3 color = lerp(float3(0., colVal, 0.), 
-                        lerp(float3(0., 0., colVal), float3(colVal, 0., 0.), clamp(colSwitch, .0, 1.)),
-                        clamp(colSwitch + 1., 0., 1.));
-    color = lerp(lerp(float3(.45, .0, .8), 
-                        lerp(float3(.85, .2, .2), float3(.5, .85, .55), clamp(colSwitch, .0, 1.)),
-                        clamp(colSwitch + 1., 0., 1.)),
-                        color, colVal);
+    float3 color = lerp(colVal * LineColor1, colVal * LineColor2, saturate(colSwitch));
+    color = lerp(lerp(BackgroundColor1, lerp(BackgroundColor2, BackgroundColor3, saturate(colSwitch)),
+        saturate(colSwitch + 1.0)), color, colVal);
     return float4(color, 1.0);
 }
 

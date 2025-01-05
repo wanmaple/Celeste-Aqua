@@ -312,20 +312,10 @@ namespace Celeste.Mod.Aqua.Core
             Active = true;
             HookRope rope = Get<HookRope>();
             base.Added(scene);
-            // 第一帧可能相交，直接检测碰撞
+            // Collision check
             UpdateColliderOffset(-rope.CurrentDirection);
             Vector2 rounded = AquaMaths.Round(rope.CurrentDirection);
-            while (CollideFirst<Solid>() != null)
-            {
-                Position -= rounded;
-            }
-            if (rounded.Y > 0.0f)
-            {
-                while (CollideFirst<JumpThru>() != null)
-                {
-                    Position -= rounded;
-                }
-            }
+            CheckCollisionWhileShooting(rounded);
         }
 
         public override void Removed(Scene scene)
@@ -790,6 +780,82 @@ namespace Celeste.Mod.Aqua.Core
                     return idx;
             }
             return -1;
+        }
+
+        private void CheckCollisionWhileShooting(Vector2 rounded)
+        {
+            // Use some tricks here (Only y coordinate could cause issue while shoot at crouching state)
+            bool collided = CollideFirst<Solid>() != null || (rounded.Y > 0 && CollideFirst<JumpThru>() != null);
+            const int OFFSET = 2;
+            if (rounded.Y != 0)
+            {
+                for (int i = 0; i < HookSize / 2 - 3 + OFFSET; i++)
+                {
+                    Position -= Vector2.UnitY * rounded.Y;
+                    if (CollideFirst<Solid>() == null && (rounded.Y < 0 || CollideFirst<JumpThru>() == null))
+                    {
+                        collided = false;
+                        break;
+                    }
+                }
+            }
+            if (collided)
+            {
+                for (int i = 0; i < OFFSET; i++)
+                {
+                    Position -= Vector2.UnitX * rounded.X;
+                    if (CollideFirst<Solid>() == null)
+                    {
+                        collided = false;
+                        break;
+                    }
+                }
+                if (collided)
+                {
+                    // Must be a crouching shoot.
+                    Position += Vector2.UnitX * OFFSET * rounded.X;
+                    Vector2 basePos = Position;
+                    for (int i = 1; i <= HookSize / 2 - 1; i++)
+                    {
+                        Position = basePos - Vector2.UnitY * i;
+                        if (CollideFirst<Solid>() == null)
+                        {
+                            collided = false;
+                            break;
+                        }
+                        for (int j = 0; j < OFFSET; j++)
+                        {
+                            Position -= Vector2.UnitX * rounded.X;
+                            if (CollideFirst<Solid>() == null)
+                            {
+                                collided = false;
+                                break;
+                            }
+                        }
+                        if (collided)
+                        {
+                            Position = basePos + Vector2.UnitY * i;
+                            if (CollideFirst<Solid>() == null)
+                            {
+                                collided = false;
+                                break;
+                            }
+                            for (int j = 0; j < OFFSET; j++)
+                            {
+                                Position -= Vector2.UnitX * rounded.X;
+                                if (CollideFirst<Solid>() == null)
+                                {
+                                    collided = false;
+                                    break;
+                                }
+                            }
+                            if (!collided)
+                                break;
+                        }
+                    }
+                }
+            }
+            AquaDebugger.Assert(!collided, "Something not handled?");
         }
 
         private static readonly Vector2[] EIGHT_DIRECTIONS = new Vector2[]

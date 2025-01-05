@@ -25,6 +25,7 @@ namespace Celeste.Mod.Aqua
             SeekerExtensions.Initialize();
             PufferExtensions.Initialize();
             FireBallExtensions.Initialize();
+            FireBarrierExtensions.Initialize();
             CassetteBlockExtensions.Initialize();
             FloatySpaceBlockExtensions.Initialize();
             DreamBlockExtensions.Initialize();
@@ -61,6 +62,7 @@ namespace Celeste.Mod.Aqua
             SeekerExtensions.Uninitialize();
             PufferExtensions.Uninitialize();
             FireBallExtensions.Uninitialize();
+            FireBarrierExtensions.Uninitialize();
             CassetteBlockExtensions.Uninitialize();
             FloatySpaceBlockExtensions.Uninitialize();
             DreamBlockExtensions.Uninitialize();
