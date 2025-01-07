@@ -13,6 +13,10 @@ public class AquaModuleSettings : EverestModuleSettings
     [DefaultButtonBinding(Buttons.Y, Keys.Tab)]
     public ButtonBinding SwitchAutoGrab { get; set; }
 
+    [SettingName("SETTINGS_BACKWARD_DOWN_SHOOT")]
+    [DefaultButtonBinding(Buttons.RightShoulder, Keys.B)]
+    public ButtonBinding BackwardDownShoot { get; set; }
+
     [SettingName("SETTINGS_FEATURE_ENABLED")]
     public bool FeatureEnabled { get; set; } = false;
 

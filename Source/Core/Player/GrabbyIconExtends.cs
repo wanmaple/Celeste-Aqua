@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Aqua.Module;
+using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Cil;
 
@@ -47,6 +48,8 @@ namespace Celeste.Mod.Aqua.Core
             {
                 Vector2 scale = Vector2.One * (1f + self.wiggler.Value * 0.2f);
                 Player entity = self.Scene.Tracker.GetEntity<Player>();
+                float yFlip = ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f;
+                float yExtra = ModInterop.GravityHelper.IsPlayerGravityInverted() ? entity.Height : 0.0f;
                 if (state.FeatureEnabled && state.AutoGrabHookRope)
                 {
                     if (!self.SceneAs<Level>().InCutscene && entity != null && !entity.Dead)
@@ -55,7 +58,7 @@ namespace Celeste.Mod.Aqua.Core
                         float x = self.enabled ? (2 - num) * 6.0f : -6.0f * (num - 1);
                         if (state.AutoGrabHookRope)
                         {
-                            GFX.Game[texture].DrawJustified(new Vector2(entity.X + x, entity.Y - 16.0f), new Vector2(0.5f, 1.0f), Color.White, scale);
+                            GFX.Game[texture].DrawJustified(new Vector2(entity.X + x, entity.Y - 16.0f * yFlip + yExtra), new Vector2(0.5f, 1.0f), Color.White, scale);
                         }
                     }
                 }
@@ -65,7 +68,7 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         MTexture texture = GFX.Game["util/hook_count"];
                         float x = self.enabled ? 6.0f * num : 6.0f * (num - 1);
-                        texture.DrawJustified(new Vector2(entity.X + x, entity.Y - 16.0f), new Vector2(0.5f, 1.0f), Color.White, scale);
+                        texture.DrawJustified(new Vector2(entity.X + x, entity.Y - 16.0f * yFlip + yExtra), new Vector2(0.5f, 1.0f), Color.White, scale);
                         int cnt = state.RestShootCount;
                         string numDisplay = cnt.ToString();
                         int len = numDisplay.Length;
@@ -73,7 +76,7 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             MTexture texNum = NumberAtlas.Instance.GetNumberTextureForCharacter(numDisplay[i]);
                             float offset = len % 2 == 0 ? -len * 2.0f + 2.0f + i * 4.0f : (len / 2) * -4.0f + i * 4.0f;
-                            texNum.DrawOutlineCentered(new Vector2(entity.X + x + 4.0f + offset, entity.Y - 20.0f), Color.White, Vector2.One);
+                            texNum.DrawOutlineCentered(new Vector2(entity.X + x + 4.0f + offset, entity.Y - 20.0f * yFlip + yExtra), Color.White, Vector2.One);
                         }
                     }
                 }

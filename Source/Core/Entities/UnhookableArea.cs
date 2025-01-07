@@ -14,6 +14,12 @@ namespace Celeste.Mod.Aqua.Core
             Collider = new Hitbox(data.Width, data.Height);
             this.SetHookable(true);
             Add(new HookInteractable(OnInteractHook));
+            if (data.Bool("attachToSolid"))
+            {
+                var staticMover = new StaticMover();
+                staticMover.SolidChecker = solid => CollideCheck(solid);
+                Add(staticMover);
+            }
         }
 
         private bool OnInteractHook(GrapplingHook hook, Vector2 at)

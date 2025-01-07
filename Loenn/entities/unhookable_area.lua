@@ -11,6 +11,7 @@ UnhookableArea.placements = {
     data = {
         width = 8,
         height = 8,
+        attachToSolid = false,
     },
 }
 

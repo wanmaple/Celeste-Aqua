@@ -47,43 +47,44 @@ namespace Celeste.Mod.Aqua.Core
 
         private bool CheckInputs()
         {
+            Player player = Scene.Tracker.GetEntity<Player>();
             bool ret = true;
             foreach (string identifier in ListenInputs)
             {
                 switch (identifier)
                 {
                     case "Up":
-                        ret = ret && Input.MoveY.Value < 0;
+                        ret = ret && Input.GetAimVector().Y < 0.0f;
                         break;
                     case "Down":
-                        ret = ret && Input.MoveY.Value > 0;
+                        ret = ret && Input.GetAimVector().Y > 0;
                         break;
                     case "Left":
-                        ret = ret && Input.MoveX.Value < 0;
+                        ret = ret && Input.GetAimVector().X < 0;
                         break;
                     case "Right":
-                        ret = ret && Input.MoveX.Value > 0;
+                        ret = ret && Input.GetAimVector().X > 0;
                         break;
                     case "UpLeft":
-                        ret = ret && Input.MoveX.Value < 0 && Input.MoveY.Value < 0;
+                        ret = ret && Input.GetAimVector().X < 0 && Input.GetAimVector().Y < 0;
                         break;
                     case "UpRight":
-                        ret = ret && Input.MoveX.Value > 0 && Input.MoveY.Value < 0;
+                        ret = ret && Input.GetAimVector().X > 0 && Input.GetAimVector().Y < 0;
                         break;
                     case "DownLeft":
-                        ret = ret && Input.MoveX.Value < 0 && Input.MoveY.Value > 0;
+                        ret = ret && Input.GetAimVector().X < 0 && Input.GetAimVector().Y > 0;
                         break;
                     case "DownRight":
-                        ret = ret && Input.MoveX.Value > 0 && Input.MoveY.Value > 0;
+                        ret = ret && Input.GetAimVector().X > 0 && Input.GetAimVector().Y > 0;
                         break;
                     case "Dash":
-                        ret = ret && Input.Dash.Check;
+                        ret = ret && Input.Dash.Pressed;
                         break;
                     case "Jump":
-                        ret = ret && Input.Jump.Check;
+                        ret = ret && Input.Jump.Pressed;
                         break;
                     case "Grab":
-                        ret = ret && Input.Grab.Check;
+                        ret = ret && Input.Grab.Pressed;
                         break;
                     default:
                         if (identifier.StartsWith("mod:"))
