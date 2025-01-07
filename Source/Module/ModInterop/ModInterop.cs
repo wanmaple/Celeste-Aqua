@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using MonoMod.ModInterop;
 
 namespace Celeste.Mod.Aqua.Module
 {
@@ -9,6 +9,7 @@ namespace Celeste.Mod.Aqua.Module
 
         public static void Initialize()
         {
+            typeof(AquaExports).ModInterop();
             _interopGravityHelper.Load();
         }
 

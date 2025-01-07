@@ -11,7 +11,7 @@ namespace Celeste.Mod.Aqua.Module
         public const int GRAVITY_INVERTED = 1;
         public const int GRAVITY_TOGGLE = 2;
 
-        [ModExportName("GravityHelper")]
+        [ModImportName("GravityHelper")]
         public static class GravityHelperImports
         {
             public static Func<int> GetPlayerGravity;

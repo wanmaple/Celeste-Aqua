@@ -6,7 +6,7 @@ using System;
 
 namespace Celeste.Mod.Aqua.Module
 {
-    [ModExportName("AQUA")]
+    [ModExportName("Aqua")]
     public static class AquaExports
     {
         public static Entity GetGrapplingHook(Player player)
@@ -37,7 +37,7 @@ namespace Celeste.Mod.Aqua.Module
 
         public static void ShootGrapplingHook(Entity hook, Level level, Vector2 direction, float speed, float speedCoefficient)
         {
-            if (hook is GrapplingHook e)
+            if (hook is GrapplingHook e && !e.Active)
                 e.Emit(level, direction, speed, speedCoefficient);
         }
 

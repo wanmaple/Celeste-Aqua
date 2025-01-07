@@ -135,11 +135,6 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public void Reset()
-        {
-            State = HookStates.None;
-        }
-
         public bool CanEmit(Level level)
         {
             switch (Mode)
