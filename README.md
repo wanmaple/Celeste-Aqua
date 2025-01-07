@@ -10,16 +10,16 @@ Varieties of old entities are made interactable with the grappling hook, a lot o
 
 ## MOD Interop
 
-AQUA provides some functions to help you make your custom entities interactable with the grappling hook. You can check it here.
+AQUA provides some functions to help you make your custom entities interactable with the grappling hook. You can check it [here](https://github.com/wanmaple/Celeste-Aqua/wiki/Custom-with-Aqua).
 
 AQUA will also add compatibilities to some popular MODs, but it’s such a heavy work. I’ll handle them step by step.
 
 ## Mapping
 
-Mapping stuffs with AQUA could be found here.
+Mapping stuffs with AQUA could be found [here](https://github.com/wanmaple/Celeste-Aqua/wiki/Mapping-with-Aqua).
 
 ## TODOs
 
 - Interaction with holdables.
 - Other entities interactable with grappling hook.
-- Lots of other MODs' compatibilities.
+- Lots of compatibilities for other MODs.
