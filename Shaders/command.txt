@@ -1,1 +1,1 @@
-fxc /T fx_2_0 /Fo Shaders/test.cso Shaders/test.fx
+fxc /T fx_2_0 /Fo Graphics/Shaders/test.cso Shaders/test.fx

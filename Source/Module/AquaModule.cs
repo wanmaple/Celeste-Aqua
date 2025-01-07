@@ -84,7 +84,7 @@ public class AquaModule : EverestModule
         ModContent mod = Everest.Content.Mods.First(mod => mod.Name == ModConstants.MOD_NAME);
         foreach (ModAsset asset in mod.List)
         {
-            if (asset.PathVirtual.StartsWith("Shaders/") && Path.GetExtension(asset.PathVirtual) == ".cso")
+            if (asset.PathVirtual.StartsWith("Graphics/Shaders/") && Path.GetExtension(asset.PathVirtual) == ".cso")
             {
                 string shaderName = Path.GetFileNameWithoutExtension(asset.PathVirtual);
                 FXCenter.Instance.PrepareLoad(shaderName, asset);

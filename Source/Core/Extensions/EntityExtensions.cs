@@ -48,6 +48,21 @@ namespace Celeste.Mod.Aqua.Core
             orig(self);
         }
 
+        public static Entity CollideFirstOutside(this Entity self, Type type, Vector2 at)
+        {
+            if (self.Scene.Tracker.Entities.TryGetValue(type, out var entities))
+            {
+                foreach (Entity entity in entities)
+                {
+                    if (!Collide.Check(self, entity) && Collide.Check(self, entity, at))
+                    {
+                        return entity;
+                    }
+                }
+            }
+            return null;
+        }
+
         //private static void Entity_Added(On.Monocle.Entity.orig_Added orig, Entity self, Scene scene)
         //{
         //    orig(self, scene);

@@ -3,8 +3,6 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections;
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace Celeste.Mod.Aqua.Core
 {

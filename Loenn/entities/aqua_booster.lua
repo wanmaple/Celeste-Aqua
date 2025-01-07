@@ -1,13 +1,25 @@
 local AquaBooster = {}
 
+local INTERNAL_SKINS = {
+    "Aqua_BoosterOrange",
+    "Aqua_BoosterPurple",
+}
+
 AquaBooster.name = "Aqua/Aqua Booster"
 AquaBooster.depth = -8500
+AquaBooster.fieldInformation = {
+    sprite = {
+        options = INTERNAL_SKINS,
+        editable = true,
+    },
+}
 AquaBooster.placements = {
     {
         name = "Booster (Orange)",
         data = {
             red = false,
             hookable = true,
+            sprite = "Aqua_BoosterOrange",
         },
     },
     {
@@ -15,6 +27,7 @@ AquaBooster.placements = {
         data = {
             red = true,
             hookable = true,
+            sprite = "Aqua_BoosterPurple",
         },
     },
 }

@@ -4,12 +4,20 @@ using Monocle;
 using System;
 using System.Collections.Generic;
 using Celeste.Mod.Aqua.Debug;
+using Celeste.Mod.Aqua.Module;
+using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
 {
     [Tracked(false)]
     public class GrapplingHook : Entity
     {
+        private struct CustomCollisionData
+        {
+            public Vector2 Direction;
+            public Entity Hit;
+        }
+
         public enum HookStates : byte
         {
             None = 0,
@@ -522,7 +530,7 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private void OnCollideEntity(CollisionData collisionData)
+        private void OnCollideEntity(CustomCollisionData collisionData)
         {
             HookRope rope = Get<HookRope>();
             Entity hitEntity = collisionData.Hit;
@@ -568,7 +576,7 @@ namespace Celeste.Mod.Aqua.Core
             return coeff;
         }
 
-        private bool BresenhamMove(Vector2 movement, Collision onCollide = null)
+        private bool BresenhamMove(Vector2 movement, Action<CustomCollisionData> onCollide = null)
         {
             _movementCounter = movement;
             int dx = (int)MathF.Round(_movementCounter.X, MidpointRounding.ToEven);
@@ -657,7 +665,7 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
-        private bool StepMoveH(int step, Collision onCollide)
+        private bool StepMoveH(int step, Action<CustomCollisionData> onCollide)
         {
             if (CheckInteractables(Position + Vector2.UnitX * step))
             {
@@ -668,20 +676,51 @@ namespace Celeste.Mod.Aqua.Core
             if (solid != null)
             {
                 _movementCounter.X = 0f;
-                onCollide?.Invoke(new CollisionData
+                onCollide?.Invoke(new CustomCollisionData
                 {
                     Direction = Vector2.UnitX * step,
                     Hit = solid,
-                    Pusher = null,
                 });
 
                 return true;
             }
+
+            Type sideType = ModInterop.MaxHelpingHand.GetType("Celeste.Mod.MaxHelpingHand.Entities.SidewaysJumpThru");
+            if (sideType != null)
+            {
+                var sideJumpthrus = Scene.Tracker.Entities[sideType];
+                if (sideJumpthrus.Count > 0)
+                {
+                    FieldInfo fieldLeft2Right = sideType.GetField("AllowLeftToRight", BindingFlags.Instance | BindingFlags.Public);
+                    if (fieldLeft2Right != null)
+                    {
+                        foreach (Entity jumpthru in sideJumpthrus)
+                        {
+                            bool left2right = (bool)fieldLeft2Right.GetValue(jumpthru);
+                            if ((!left2right && step > 0) || (left2right && step < 0))
+                            {
+                                jumpthru.SetHookable(true);
+                                if (!Collide.Check(this, jumpthru) && Collide.Check(this, jumpthru, Position + Vector2.UnitX * step))
+                                {
+                                    _movementCounter.X = 0f;
+                                    onCollide?.Invoke(new CustomCollisionData
+                                    {
+                                        Direction = Vector2.UnitX * step,
+                                        Hit = jumpthru,
+                                    });
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             _movementCounter.X -= step;
             return false;
         }
 
-        private bool StepMoveV(int step, Collision onCollide)
+        private bool StepMoveV(int step, Action<CustomCollisionData> onCollide)
         {
             if (CheckInteractables(Position + Vector2.UnitY * step))
             {
@@ -689,17 +728,16 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             Platform platform = CollideFirst<Solid>(Position + Vector2.UnitY * step);
-            CollisionData data;
+            CustomCollisionData data;
             if (platform != null)
             {
                 _movementCounter.Y = 0f;
                 if (onCollide != null)
                 {
-                    data = new CollisionData
+                    data = new CustomCollisionData
                     {
                         Direction = Vector2.UnitY * step,
                         Hit = platform,
-                        Pusher = null,
                     };
                     onCollide(data);
                 }
@@ -715,16 +753,38 @@ namespace Celeste.Mod.Aqua.Core
                     _movementCounter.Y = 0f;
                     if (onCollide != null)
                     {
-                        data = new CollisionData
+                        data = new CustomCollisionData
                         {
                             Direction = Vector2.UnitY * step,
                             Hit = platform,
-                            Pusher = null,
                         };
                         onCollide(data);
                     }
 
                     return true;
+                }
+            }
+            else
+            {
+                Type downsideType = ModInterop.MaxHelpingHand.GetType("Celeste.Mod.MaxHelpingHand.Entities.UpsideDownJumpThru");
+                if (downsideType != null)
+                {
+                    platform = this.CollideFirstOutside(downsideType, Position + Vector2.UnitY * step) as Platform;
+                    if (platform != null)
+                    {
+                        _movementCounter.Y = 0f;
+                        if (onCollide != null)
+                        {
+                            data = new CustomCollisionData
+                            {
+                                Direction = Vector2.UnitY * step,
+                                Hit = platform,
+                            };
+                            onCollide(data);
+                        }
+
+                        return true;
+                    }
                 }
             }
             _movementCounter.Y -= step;

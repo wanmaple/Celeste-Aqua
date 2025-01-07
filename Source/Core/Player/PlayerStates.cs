@@ -14,31 +14,31 @@ namespace Celeste.Mod.Aqua.Core
 {
     public enum AquaStates
     {
-        StNormal = 0, // 正常
-        StClimb = 1, // 攀爬
-        StDash = 2, // 冲刺
-        StBoost = 4, // 绿泡泡中
-        StRedDash = 5, // 红泡泡中
-        StHitSquash = 6, // 红泡泡撞墙或撞地
-        StLaunch = 7, // 被弹球、鱼弹开
-        StPickup = 8, // 捡起抓取物
-        StDreamDash = 9, // 穿果冻
-        StSummitLaunch = 10, // badeline最后一次上抛
-        StDummy = 11, // 剧情过场状态
-        StIntroWalk = 12, // Walk类型的Intro
-        StIntroJump = 13, // Jump类型的Intro(1a)
-        StIntroRespawn = 14, // Respawn类型的Intro(重生)
-        StIntroWakeUp = 15, // WakeUp类型的Intro(2a)
-        StBirdDashTutorial = 16, // 序章教冲刺时冲刺结束后进入的状态
-        StFrozen = 17, // 暂停的状态？
-        StReflectionFall = 18, // 6a-2掉落剧情段
-        StStarFly = 19, // 羽毛飞行
-        StTempleFall = 20, // 5a镜子后的掉落段
-        StCassetteFly = 21, // 捡到磁带后的泡泡包裹段
-        StAttract = 22, // 6a badeline boss靠近时的吸引段
-        StIntroMoonJump = 23, // 9a开场上升剧情段
-        StFlingBird = 24, // 9a鸟扔状态
-        StIntroThinkForABit = 25, // 9a Intro
+        StNormal = 0, // Normal
+        StClimb = 1, // Climbing
+        StDash = 2, // Dashing
+        StBoost = 4, // In the green booster
+        StRedDash = 5, // In the red booster
+        StHitSquash = 6, // While red booster hits wall or something.
+        StLaunch = 7, // Bounced by the bumper/puffle etc.
+        StPickup = 8, // Picking holdables.
+        StDreamDash = 9, // Dream dashing.
+        StSummitLaunch = 10, // Last up throwing by Badeline.
+        StDummy = 11, // For some cutscenes I think.
+        StIntroWalk = 12,
+        StIntroJump = 13,
+        StIntroRespawn = 14,
+        StIntroWakeUp = 15,
+        StBirdDashTutorial = 16,
+        StFrozen = 17,
+        StReflectionFall = 18, // Falling sceneary in 6a-2.
+        StStarFly = 19, // Feather flying.
+        StTempleFall = 20, // Falling sceneary in 5a.
+        StCassetteFly = 21, // Wrapped by bubbles when obtaining the casette.
+        StAttract = 22, // Attraction in 6a badeline boss
+        StIntroMoonJump = 23, // 9a begining.
+        StFlingBird = 24, // Throwed by bird in 9a.
+        StIntroThinkForABit = 25,
 
         // Extended States
         StHanging = 26,
@@ -472,12 +472,6 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             DynamicData.For(self).Set("climb_rope_direction", 0);
-            if (self.onGround)
-            {
-                hook.AlongRopeSpeed = 0.0f;
-                return (int)AquaStates.StNormal;
-            }
-
             if (ModInterop.GravityHelper.IsPlayerGravityInverted())
                 self.Speed.Y = -self.Speed.Y;
             self.HandleHangingSpeed(dt);
@@ -512,6 +506,25 @@ namespace Celeste.Mod.Aqua.Core
             {
                 float rollingSpeed = inputY > 0 ? 80.0f : -45.0f;
                 hook.AddLockedRopeLength(rollingSpeed * dt);
+                // Since the enforcing will handle the up climbing more smoothly as well as i'm not glad to see the climbing speed affects on the swing jump, we only handle down climbing here.
+                if (inputY > 0)
+                {
+                    self.Speed += ropeDirection * rollingSpeed;
+                    if (self.onGround)
+                    {
+                        return (int)AquaStates.StNormal;
+                    }
+                }
+                else
+                {
+                    // For some reason, I'd like to avoid up spikes collision while climbing up.
+                    // I need a more elegant way to handle this, TODO.
+                    self.Speed -= ropeDirection;
+                }
+            }
+            else if (self.onGround)
+            {
+                return (int)AquaStates.StNormal;
             }
             if (Input.MoveX.Value != 0)
             {
@@ -879,7 +892,7 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     dashHangingTicker.Tick(dt);
                 }
-                if (!self.onGround && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()) && (Input.GrabCheck || self.level.GetState().AutoGrabHookRope))
+                if ((!self.onGround || Input.MoveY.Value < 0) && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()) && (Input.GrabCheck || self.level.GetState().AutoGrabHookRope))
                 {
                     Vector2 ropeDirection = hook.RopeDirection;
                     bool swingUp = IsRopeSwingingUp(ropeDirection);
@@ -898,7 +911,7 @@ namespace Celeste.Mod.Aqua.Core
                         return (int)AquaStates.StHanging;
                     }
                 }
-                if (!self.onGround && hook.State == GrapplingHook.HookStates.Fixed)
+                if (!self.onGround)
                 {
                     // NormalUpdate限制太多，这种情况下强制改为之前计算的速度
                     if (hook.ReachLockedLength(self.Center))

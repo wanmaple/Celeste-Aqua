@@ -48,7 +48,7 @@ namespace Celeste.Mod.Aqua.Core
                 case "RopeLength":
                     if (int.TryParse(Value, out int len))
                     {
-                        state.HookSettings.RopeLength = Calc.Clamp(len, 80, 120);
+                        state.HookSettings.RopeLength = Calc.Clamp(len, 80, 200);
                         var hook = player.GetGrappleHook();
                         hook.SetRopeLength(len);
                     }
@@ -68,7 +68,7 @@ namespace Celeste.Mod.Aqua.Core
                 case "FlyTowardSpeed":
                     if (int.TryParse(Value, out int flySpeed))
                     {
-                        state.HookSettings.FlyTowardSpeed = Calc.Clamp(flySpeed, 300, 1000);
+                        state.HookSettings.FlyTowardSpeed = Calc.Clamp(flySpeed, 300, 500);
                     }
                     break;
                 default:
