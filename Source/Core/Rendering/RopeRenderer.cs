@@ -9,6 +9,7 @@ namespace Celeste.Mod.Aqua.Core
     public class RopeRenderer
     {
         public bool ElectricShocking { get; set; }
+        public Color RopeColor { get; set; } = Color.White;
 
         public RopeRenderer(MTexture texture)
         {
@@ -57,7 +58,7 @@ namespace Celeste.Mod.Aqua.Core
                 while (length > 0.0f)
                 {
                     Rectangle rect = new Rectangle(start, 0, Math.Min((int)MathF.Ceiling(length), step), texture.Height);
-                    texture.Draw(position, origin, Color.White, Vector2.One, angle, rect);
+                    texture.Draw(position, origin, RopeColor, Vector2.One, angle, rect);
                     position += direction * step;
                     length -= step;
                 }

@@ -43,6 +43,7 @@ namespace Celeste.Mod.Aqua.Core
         public const float BOUNCE_SPEED_ADDITION = 300.0f;
 
         public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
+        public HookSprite Sprite => _sprite;
         public bool ElectricShocking { get; set; } = false;
         public RopeMaterial Material
         {
@@ -221,7 +222,6 @@ namespace Celeste.Mod.Aqua.Core
 
         public void SetRopeLengthLocked(bool locked, Vector2 playerPosition)
         {
-            if (locked && _lengthLocked == locked) return;
             _lengthLocked = locked;
             HookRope rope = Get<HookRope>();
             rope.SetLengthLocked(locked, playerPosition);
@@ -229,6 +229,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public void SetLockedLengthDirectly(float length)
         {
+            _lengthLocked = true;
             HookRope rope = Get<HookRope>();
             rope.SetLengthLocked(true, length);
         }
@@ -762,6 +763,26 @@ namespace Celeste.Mod.Aqua.Core
             else
             {
                 Type downsideType = ModInterop.MaxHelpingHand.GetType("Celeste.Mod.MaxHelpingHand.Entities.UpsideDownJumpThru");
+                if (downsideType != null)
+                {
+                    platform = this.CollideFirstOutside(downsideType, Position + Vector2.UnitY * step) as Platform;
+                    if (platform != null)
+                    {
+                        _movementCounter.Y = 0f;
+                        if (onCollide != null)
+                        {
+                            data = new CustomCollisionData
+                            {
+                                Direction = Vector2.UnitY * step,
+                                Hit = platform,
+                            };
+                            onCollide(data);
+                        }
+
+                        return true;
+                    }
+                }
+                downsideType = ModInterop.GravityHelper.GetType("Celeste.Mod.GravityHelper.Entities.UpsideDownJumpThru");
                 if (downsideType != null)
                 {
                     platform = this.CollideFirstOutside(downsideType, Position + Vector2.UnitY * step) as Platform;

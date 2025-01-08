@@ -36,7 +36,7 @@ namespace Celeste.Mod.Aqua.Core
             orig(self);
             LevelStates.LevelState state = self.SceneAs<Level>().GetState();
             int num = 0;
-            if (state.FeatureEnabled && state.AutoGrabHookRope)
+            if (state.FeatureEnabled && AquaModule.Settings.AutoGrabRopeIfPossible)
             {
                 ++num;
             }
@@ -50,13 +50,13 @@ namespace Celeste.Mod.Aqua.Core
                 Player entity = self.Scene.Tracker.GetEntity<Player>();
                 float yFlip = ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f;
                 float yExtra = ModInterop.GravityHelper.IsPlayerGravityInverted() ? entity.Height : 0.0f;
-                if (state.FeatureEnabled && state.AutoGrabHookRope)
+                if (state.FeatureEnabled && AquaModule.Settings.AutoGrabRopeIfPossible)
                 {
                     if (!self.SceneAs<Level>().InCutscene && entity != null && !entity.Dead)
                     {
-                        string texture = state.AutoGrabHookRope ? "util/grab_rope" : "util/ungrab_rope";
+                        string texture = AquaModule.Settings.AutoGrabRopeIfPossible ? "util/grab_rope" : "util/ungrab_rope";
                         float x = self.enabled ? (2 - num) * 6.0f : -6.0f * (num - 1);
-                        if (state.AutoGrabHookRope)
+                        if (AquaModule.Settings.AutoGrabRopeIfPossible)
                         {
                             GFX.Game[texture].DrawJustified(new Vector2(entity.X + x, entity.Y - 16.0f * yFlip + yExtra), new Vector2(0.5f, 1.0f), Color.White, scale);
                         }
@@ -87,7 +87,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             LevelStates.LevelState state = self.SceneAs<Level>().GetState();
             int num = 0;
-            if (state.FeatureEnabled && state.AutoGrabHookRope)
+            if (state.FeatureEnabled && AquaModule.Settings.AutoGrabRopeIfPossible)
             {
                 ++num;
             }

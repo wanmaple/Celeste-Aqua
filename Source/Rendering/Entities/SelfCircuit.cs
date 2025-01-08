@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using Celeste.Mod.Aqua.Module;
+using Celeste.Mod.Aqua.Debug;
 
 namespace Celeste.Mod.Aqua.Rendering
 {

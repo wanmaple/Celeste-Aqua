@@ -13,7 +13,6 @@ namespace Celeste.Mod.Aqua.Core
         [Serializable]
         public class LevelState
         {
-            public bool AutoGrabHookRope { get; set; }
             public bool FeatureEnabled { get; set; }
             public GrapplingHook.RopeMaterial RopeMaterial { get; set; }
             public GrapplingHook.GameplayMode GameplayMode { get; set; }
@@ -33,7 +32,6 @@ namespace Celeste.Mod.Aqua.Core
 
             public void Reset(AreaData areaData)
             {
-                AutoGrabHookRope = AquaModule.Settings.AutoGrabRopeIfPossible;
                 FeatureEnabled = areaData.GetExtraMeta().FeatureEnabled || AquaModule.Settings.FeatureEnabled;
                 RopeMaterial = (GrapplingHook.RopeMaterial)areaData.GetExtraMeta().HookMaterial;
                 GameplayMode = (GrapplingHook.GameplayMode)areaData.GetExtraMeta().GameplayMode;
@@ -112,8 +110,7 @@ namespace Celeste.Mod.Aqua.Core
             orig(self);
             if (AquaModule.Settings.SwitchAutoGrab.Pressed)
             {
-                var state = self.GetState();
-                state.AutoGrabHookRope = !state.AutoGrabHookRope;
+                AquaModule.Settings.AutoGrabRopeIfPossible = !AquaModule.Settings.AutoGrabRopeIfPossible;
             }
         }
 

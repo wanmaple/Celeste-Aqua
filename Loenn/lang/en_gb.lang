@@ -153,3 +153,12 @@ triggers.Aqua/Dream Toggle Trigger.attributes.description.fullRoutine=Whether th
 triggers.Aqua/Dream Toggle Trigger.attributes.description.activate=Whether the Dream Block should become usable.
 triggers.Aqua/Dream Toggle Trigger.attributes.description.fastAnimation=Whether a faster animation should be used.
 triggers.Aqua/Dream Toggle Trigger.attributes.description.once=Whether trigger only once.
+
+# Presentation Trigger
+triggers.Aqua/Presentation Trigger.attributes.description.presentation=Presentation name, it should be put in 'Maps/Presentations/', don't add extension.
+triggers.Aqua/Presentation Trigger.attributes.description.player_color=The color of player playback.
+triggers.Aqua/Presentation Trigger.attributes.description.hook_color=The color of grappling hook playback.
+triggers.Aqua/Presentation Trigger.attributes.description.loop=Whether to loop the presentation.
+triggers.Aqua/Presentation Trigger.attributes.description.loop_interval=Interval between loops, only works when looped.
+triggers.Aqua/Presentation Trigger.attributes.description.trail_interval=Interval of trail occurence.
+triggers.Aqua/Presentation Trigger.attributes.description.trail_lifetime=How much time the trail costs to fade out.

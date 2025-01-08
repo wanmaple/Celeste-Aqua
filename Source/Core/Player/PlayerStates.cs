@@ -395,7 +395,7 @@ namespace Celeste.Mod.Aqua.Core
             else
             {
                 hook.SetRopeLengthLocked(true, self.Center);
-                hook.UserLockedLength = hook.CalculateRopeLength(self.Center);
+                hook.UserLockedLength = hook.LockedRadius;
             }
             DynamicData.For(self).Set("climb_rope_direction", 0);
         }
@@ -437,7 +437,7 @@ namespace Celeste.Mod.Aqua.Core
                 hook.Revoke();
                 return (int)AquaStates.StNormal;
             }
-            else if (!Input.GrabCheck && !(self.level.GetState().AutoGrabHookRope))
+            else if (!Input.GrabCheck && !AquaModule.Settings.AutoGrabRopeIfPossible)
             {
                 return (int)AquaStates.StNormal;
             }
@@ -621,7 +621,7 @@ namespace Celeste.Mod.Aqua.Core
                 GrapplingHook hook = self.GetGrappleHook();
                 if (hook != null)
                 {
-                    if ((!Input.GrabCheck && !self.level.GetState().AutoGrabHookRope) || self.onGround || !hook.Active || hook.State != GrapplingHook.HookStates.Fixed || (self.StateMachine.State != (int)AquaStates.StNormal && self.StateMachine.State != (int)AquaStates.StHanging))
+                    if ((!Input.GrabCheck && !AquaModule.Settings.AutoGrabRopeIfPossible) || self.onGround || !hook.Active || hook.State != GrapplingHook.HookStates.Fixed || (self.StateMachine.State != (int)AquaStates.StNormal && self.StateMachine.State != (int)AquaStates.StHanging))
                     {
                         hook.UserLockedLength = 0.0f;
                     }
@@ -898,7 +898,15 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     dashHangingTicker.Tick(dt);
                 }
-                if ((!self.onGround || Input.MoveY.Value < 0) && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()) && (Input.GrabCheck || self.level.GetState().AutoGrabHookRope))
+                else if (self.StateMachine.State == (int)AquaStates.StNormal)
+                {
+                    float length = hook.CalculateRopeLength(self.Center);
+                    if (hook.UserLockedLength > 0.0f && length > hook.UserLockedLength)
+                    {
+                        hook.UserLockedLength = length;
+                    }
+                }
+                if ((!self.onGround || Input.MoveY.Value < 0) && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()) && (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible))
                 {
                     Vector2 ropeDirection = hook.RopeDirection;
                     bool swingUp = IsRopeSwingingUp(ropeDirection);
