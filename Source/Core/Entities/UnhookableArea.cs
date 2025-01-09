@@ -18,6 +18,9 @@ namespace Celeste.Mod.Aqua.Core
             {
                 var staticMover = new StaticMover();
                 staticMover.SolidChecker = solid => CollideCheck(solid);
+                staticMover.OnEnable = OnEnable;
+                staticMover.OnDisable = OnDisable;
+                staticMover.OnDestroy = OnDestroy;
                 Add(staticMover);
             }
         }
@@ -27,6 +30,21 @@ namespace Celeste.Mod.Aqua.Core
             Audio.Play("event:/char/madeline/unhookable", Position);
             hook.Revoke();
             return true;
+        }
+
+        private void OnEnable()
+        {
+            Collidable = true;
+        }
+
+        private void OnDisable()
+        {
+            Collidable = false;
+        }
+
+        private void OnDestroy()
+        {
+            Collidable = false;
         }
     }
 }

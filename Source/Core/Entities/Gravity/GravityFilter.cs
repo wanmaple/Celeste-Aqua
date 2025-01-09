@@ -1,4 +1,4 @@
-﻿using Celeste.Mod.Aqua.Debug;
+﻿using Celeste.Mod.Aqua.Module;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -6,20 +6,18 @@ using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    [CustomEntity("Aqua/Booster Filter")]
-    [Tracked(false)]
-    public class BoosterFilter : Solid, IBarrierRenderable
+    [CustomEntity("Aqua/Gravity Filter")]
+    public class GravityFilter : Solid, IBarrierRenderable
     {
         Vector2 IBarrierRenderable.Position => this.Position;
         public Color Color { get; private set; }
-        public Color ParticleColor { get; private set; }
-        public bool CanPassGreenBooster { get; private set; }
-        public bool CanPassRedBooster { get; private set; }
         public float Flash { get; private set; } = 0.0f;
         public float Solidify { get; private set; } = 0.0f;
         bool IBarrierRenderable.Visible => this.Visible;
+        public Color ParticleColor { get; private set; }
+        public bool EnableOnGravityInverted { get; private set; }
 
-        public BoosterFilter(EntityData data, Vector2 offset)
+        public GravityFilter(EntityData data, Vector2 offset)
             : base(data.Position + offset, data.Width, data.Height, true)
         {
             Color mainColor = data.HexColor("color", new Color(0.15f, 0.15f, 0.15f));
@@ -30,21 +28,15 @@ namespace Celeste.Mod.Aqua.Core
             float particleOpacity = data.Float("particle_opacity", 0.5f);
             particleColor.A = (byte)(particleOpacity * 255);
             ParticleColor = particleColor;
-            switch (data.Attr("can_pass", "Both"))
+            switch (data.Attr("gravity", "Normal"))
             {
-                case "Green":
-                    CanPassGreenBooster = true;
+                case "Inverted":
+                    EnableOnGravityInverted = true;
                     break;
-                case "Red":
-                    CanPassRedBooster = true;
-                    break;
-                case "Both":
                 default:
-                    CanPassGreenBooster = CanPassRedBooster = true;
+                    EnableOnGravityInverted = false;
                     break;
             }
-            this.MakeExtraCollideCondition();
-            this.SetHookable(false);
             for (int i = 0; (float)i < Width * Height / 16f; i++)
             {
                 _particlePositions.Add(new Vector2(Calc.Random.NextFloat(Width - 1f), Calc.Random.NextFloat(Height - 1f)));
@@ -64,14 +56,27 @@ namespace Celeste.Mod.Aqua.Core
             scene.Tracker.GetEntity<BarrierRenderer>().Untrack(this);
         }
 
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            bool currentGravityInverted = ModInterop.GravityHelper.IsPlayerGravityInverted();
+            bool enabled = currentGravityInverted == EnableOnGravityInverted;
+            SetEnabled(enabled);
+        }
+
         public override void Update()
         {
+            bool currentGravityInverted = ModInterop.GravityHelper.IsPlayerGravityInverted();
+            bool enabled = currentGravityInverted == EnableOnGravityInverted;
+            SetEnabled(enabled);
+            float sign = _enabled ? 1.0f : -1.0f;
+            Solidify = Calc.Clamp(Solidify + Engine.DeltaTime * 4.0f * sign, 0.0f, 1.0f);
             int num = SPEEDS.Length;
             float height = Height;
             int i = 0;
             for (int count = _particlePositions.Count; i < count; i++)
             {
-                Vector2 value = _particlePositions[i] + Vector2.UnitY * SPEEDS[i % num] * Engine.DeltaTime;
+                Vector2 value = _particlePositions[i] + Vector2.UnitY * SPEEDS[i % num] * Engine.DeltaTime * (1.0f - Solidify);
                 value.Y %= height - 1f;
                 _particlePositions[i] = value;
             }
@@ -87,21 +92,14 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private bool CanCollide(Entity other)
+        private void SetEnabled(bool enabled)
         {
-            if (other is Player player)
+            if (enabled != _enabled)
             {
-                if (CanPassGreenBooster && player.IsBoosterDash())
-                    return false;
-                if (CanPassRedBooster && player.StateMachine.State == (int)AquaStates.StRedDash)
-                    return false;
-                return true;
+                _enabled = enabled;
+                Collidable = _enabled;
+                this.SetHookable(_enabled);
             }
-            else if (other is Platform)
-            {
-                return false;
-            }
-            return true;
         }
 
         private void OnPlayerCollide(Player player)
@@ -110,6 +108,7 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         private List<Vector2> _particlePositions = new List<Vector2>(16);
+        private bool _enabled = true;
 
         public static readonly float[] SPEEDS = new float[3] { 12f, 20f, 40f };
     }

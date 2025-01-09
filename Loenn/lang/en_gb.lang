@@ -130,6 +130,45 @@ entities.Aqua/Gravity Booster.attributes.description.red=Whether the booster is 
 entities.Aqua/Gravity Booster.attributes.description.hookable=Whether the booster is interactable with the grappling hook.
 entities.Aqua/Gravity Booster.attributes.description.sprite=Custom sprite name, leave empty leads to default sprite.
 
+# Gravity Filter
+entities.Aqua/Gravity Filter.attributes.description.color=Area main color.
+entities.Aqua/Gravity Filter.attributes.description.opacity=Area main opacity.
+entities.Aqua/Gravity Filter.attributes.description.particle_color=Area particle color.
+entities.Aqua/Gravity Filter.attributes.description.particle_opacity=Area particle opacity.
+entities.Aqua/Gravity Filter.attributes.description.gravity=Which kind of gravity circumstance can't be passed through.
+
+# Gravity Spikes Up
+entities.Aqua/Gravity Spike Up.placements.name.up_default=Gravity Spikes (Up, Default)
+entities.Aqua/Gravity Spike Up.placements.name.up_outline=Gravity Spikes (Up, Outline)
+entities.Aqua/Gravity Spike Up.attributes.description.type=Determines the visual appearance of the spike.
+entities.Aqua/Gravity Spike Up.attributes.description.color=Color of the spikes.
+entities.Aqua/Gravity Spike Up.attributes.description.gravity=The spikes will be active in specific gravity circumstance.
+entities.Aqua/Gravity Spike Up.attributes.description.disable_type=The disable style of the spikes, same use of type attribute.
+
+# Gravity Spikes Right
+entities.Aqua/Gravity Spike Right.placements.name.right_default=Gravity Spikes (Right, Default)
+entities.Aqua/Gravity Spike Right.placements.name.right_outline=Gravity Spikes (Right, Outline)
+entities.Aqua/Gravity Spike Right.attributes.description.type=Determines the visual appearance of the spike.
+entities.Aqua/Gravity Spike Right.attributes.description.color=Color of the spikes.
+entities.Aqua/Gravity Spike Right.attributes.description.gravity=The spikes will be active in specific gravity circumstance.
+entities.Aqua/Gravity Spike Right.attributes.description.disable_type=The disable style of the spikes, same use of type attribute.
+
+# Gravity Spikes Down
+entities.Aqua/Gravity Spike Down.placements.name.down_default=Gravity Spikes (Down, Default)
+entities.Aqua/Gravity Spike Down.placements.name.down_outline=Gravity Spikes (Down, Outline)
+entities.Aqua/Gravity Spike Down.attributes.description.type=Determines the visual appearance of the spike.
+entities.Aqua/Gravity Spike Down.attributes.description.color=Color of the spikes.
+entities.Aqua/Gravity Spike Down.attributes.description.gravity=The spikes will be active in specific gravity circumstance.
+entities.Aqua/Gravity Spike Down.attributes.description.disable_type=The disable style of the spikes, same use of type attribute.
+
+# Gravity Spikes Left
+entities.Aqua/Gravity Spike Left.placements.name.left_default=Gravity Spikes (Left, Default)
+entities.Aqua/Gravity Spike Left.placements.name.left_outline=Gravity Spikes (Left, Outline)
+entities.Aqua/Gravity Spike Left.attributes.description.type=Determines the visual appearance of the spike.
+entities.Aqua/Gravity Spike Left.attributes.description.color=Color of the spikes.
+entities.Aqua/Gravity Spike Left.attributes.description.gravity=The spikes will be active in specific gravity circumstance.
+entities.Aqua/Gravity Spike Left.attributes.description.disable_type=The disable style of the spikes, same use of type attribute.
+
 # Aqua Bird Trigger
 triggers.Aqua/Aqua Bird Trigger.attributes.description.birdId=Identifier of the bird.
 triggers.Aqua/Aqua Bird Trigger.attributes.description.tutorialIndex=The tutorial index related to the Aqua Bird.

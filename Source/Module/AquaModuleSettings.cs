@@ -1,5 +1,6 @@
 using Celeste.Mod.Aqua.Core;
 using Microsoft.Xna.Framework.Input;
+using Monocle;
 
 namespace Celeste.Mod.Aqua.Module;
 
@@ -18,7 +19,24 @@ public class AquaModuleSettings : EverestModuleSettings
     public ButtonBinding BackwardDownShoot { get; set; }
 
     [SettingName("SETTINGS_FEATURE_ENABLED")]
-    public bool FeatureEnabled { get; set; } = false;
+    public bool FeatureEnabled
+    {
+        get => _featureEnabled;
+        set
+        {
+            if (_featureEnabled != value)
+            {
+                _featureEnabled = value;
+                // not a good way.
+                if (Engine.Instance.scene is Level level)
+                {
+                    level.SyncPropertyIfPossible(state => state.FeatureEnabled = _featureEnabled);
+                }
+            }
+        }
+    }
+
+    private bool _featureEnabled = false;
 
     [SettingName("SETTINGS_HOOK_PARAMETERS")]
     public HookSettings HookSettings { get; set; } = new HookSettings();

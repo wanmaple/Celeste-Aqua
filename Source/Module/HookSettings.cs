@@ -1,4 +1,6 @@
-﻿using Celeste.Mod.Aqua.Miscellaneous;
+﻿using Celeste.Mod.Aqua.Core;
+using Celeste.Mod.Aqua.Miscellaneous;
+using Monocle;
 using System;
 using System.Reflection;
 
@@ -9,43 +11,116 @@ namespace Celeste.Mod.Aqua.Module
     public class HookSettings
     {
         [SettingName("SETTINGS_ROPE_LENGTH")]
-        [SettingRange(50, 150)]
+        [SettingRange(50, 200)]
         [DefaultValue(80)]
-        public int RopeLength { get; set; }  // 钩绳的最大长度
+        public int RopeLength
+        {
+            get => _ropeLength;
+            set
+            {
+                if (_ropeLength != value)
+                {
+                    _ropeLength = value;
+                    if (Engine.Instance.scene is Level level)
+                    {
+                        level.SyncPropertyIfPossible(state =>
+                        {
+                            state.HookSettings._ropeLength = _ropeLength;
+                            Player player = level.Tracker.GetEntity<Player>();
+                            if (player != null)
+                            {
+                                var hook = player.GetGrappleHook();
+                                hook.SetRopeLength(_ropeLength);
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        private int _ropeLength = 80;
 
         [SettingName("SETTINGS_EMIT_SPEED")]
-        [SettingRange(400, 800, true)]
+        [SettingRange(600, 2000, true)]
         [DefaultValue(600)]
-        public int EmitSpeed { get; set; }  // 钩爪的发射速度
+        public int EmitSpeed
+        {
+            get => _emitSpeed;
+            set
+            {
+                if (_emitSpeed != value)
+                {
+                    _emitSpeed = value;
+                    if (Engine.Instance.scene is Level level)
+                    {
+                        level.SyncPropertyIfPossible(state => state.HookSettings._emitSpeed = _emitSpeed);
+                    }
+                }
+            }
+        }
+
+        private int _emitSpeed = 600;
 
         [SettingIgnore]
         [DefaultValue(60)]
-        public int SwingStrength { get; set; }    // 摆荡力度
+        public int SwingStrength { get; set; }
 
         [SettingName("SETTINGS_MAX_LINE_SPEED")]
         [SettingRange(400, 2000, true)]
         [DefaultValue(450)]
-        public int MaxLineSpeed { get; set; }   // 最大线速度
+        public int MaxLineSpeed
+        {
+            get => _maxLineSpeed;
+            set
+            {
+                if (_maxLineSpeed != value)
+                {
+                    _maxLineSpeed = value;
+                    if (Engine.Instance.scene is Level level)
+                    {
+                        level.SyncPropertyIfPossible(state => state.HookSettings._maxLineSpeed = _maxLineSpeed);
+                    }
+                }
+            }
+        }
+
+        private int _maxLineSpeed = 450;
 
         [SettingIgnore]
         [DefaultValue(5)]
-        public int ClimbUpStaminaCost { get; set; } // 钩爪抓取上爬体力消耗
+        public int ClimbUpStaminaCost { get; set; }
 
         [SettingIgnore]
         [DefaultValue(1)]
-        public int GrabingStaminaCost { get; set; } // 钩爪抓取不动时体力消耗
+        public int GrabingStaminaCost { get; set; }
 
         [SettingIgnore]
         [DefaultValue(20)]
-        public int SwingJumpStaminaCost { get; set; }    // 摆荡跳体力消耗
+        public int SwingJumpStaminaCost { get; set; }
 
         [SettingIgnore]
         public float FlyTowardDuration { get; set; } = 0.15f;
 
         [SettingName("SETTINGS_FLY_TOWARD_SPEED")]
-        [SettingRange(300, 1000, true)]
+        [SettingRange(300, 500, true)]
         [DefaultValue(325)]
-        public int FlyTowardSpeed { get; set; }
+        public int FlyTowardSpeed
+        {
+            get => _flyTowardSpeed;
+            set
+            {
+                if (_flyTowardSpeed != value)
+                {
+                    _flyTowardSpeed = value;
+                    if (Engine.Instance.scene is Level level)
+                    {
+                        level.SyncPropertyIfPossible(state => state.HookSettings._flyTowardSpeed = _flyTowardSpeed);
+                    }
+                }
+            }
+        }
+
+        private int _flyTowardSpeed = 325;
 
         [SettingIgnore]
         [DefaultValue(2)]

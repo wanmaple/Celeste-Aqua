@@ -114,6 +114,17 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        public static void SyncPropertyIfPossible(this Level self, Action<LevelState> action)
+        {
+            AreaData areaData = AreaData.Get(self.Session.Area);
+            LevelExtras extras = areaData.GetExtraMeta();
+            LevelState state = self.GetState();
+            if (!extras.DisableUserCustomParameters && state != null)
+            {
+                action?.Invoke(state);
+            }
+        }
+
         private static readonly Dictionary<string, KeyValuePair<Type, Type>> BACKGROUND_HINTS = new Dictionary<string, KeyValuePair<Type, Type>> {
             { "AndromedaField", KeyValuePair.Create(typeof(AndromedaField), typeof(AndromedaFieldParameters))},
             {"SelfCircuit", KeyValuePair.Create(typeof(SelfCircuit), typeof(SelfCircuitParameters))},

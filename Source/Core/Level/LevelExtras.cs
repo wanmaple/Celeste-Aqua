@@ -8,6 +8,7 @@ namespace Celeste.Mod.Aqua.Core
     {
         public int HookMaterial;
         public bool FeatureEnabled;
+        public bool DisableUserCustomParameters;
         public HookSettings HookSettings;
         public int GameplayMode;
         public int InitialShootCount;
@@ -17,7 +18,8 @@ namespace Celeste.Mod.Aqua.Core
         {
             HookMaterial = 0;
             FeatureEnabled = false;
-            HookSettings = AquaModule.Settings.HookSettings.Clone();
+            DisableUserCustomParameters = false;
+            HookSettings = AquaModule.Settings.HookSettings;
             GameplayMode = (int)GrapplingHook.GameplayMode.Default;
             InitialShootCount = 1;
             Backgrounds = new List<BackgroundData>(4);

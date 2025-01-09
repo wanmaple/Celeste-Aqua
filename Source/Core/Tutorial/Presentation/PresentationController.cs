@@ -97,16 +97,14 @@ namespace Celeste.Mod.Aqua.Core
                     return;
                 }
             }
-            if (Scene.OnInterval(TrailInterval))
-            {
-                var trail = new PresentationPlayer(TrailLifetime);
-                trail.SetColor(PlayerColor);
-                Scene.Add(trail);
-                trail.Apply(_presentation.Frames[_currentFrame].PlayerFrame);
-                _trails.Add(trail);
-            }
             _playbackPlayer.Apply(_presentation.Frames[_currentFrame].PlayerFrame);
             _playbackHook.Apply(_presentation.Frames[_currentFrame].HookFrame);
+            if (Scene.OnInterval(TrailInterval))
+            {
+                var trail = _playbackPlayer.CreateTrail(TrailLifetime);
+                Scene.Add(trail);
+                _trails.Add(trail);
+            }
             ++_currentFrame;
         }
 

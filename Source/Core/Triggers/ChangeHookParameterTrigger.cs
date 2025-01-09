@@ -56,7 +56,7 @@ namespace Celeste.Mod.Aqua.Core
                 case "EmitSpeed":
                     if (int.TryParse(Value, out int emitSpeed))
                     {
-                        state.HookSettings.EmitSpeed = Calc.Clamp(emitSpeed, 600, 1200);
+                        state.HookSettings.EmitSpeed = Calc.Clamp(emitSpeed, 600, 2000);
                     }
                     break;
                 case "MaxLineSpeed":
