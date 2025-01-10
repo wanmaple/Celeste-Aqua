@@ -43,6 +43,8 @@ namespace Celeste.Mod.Aqua.Core
 
         public static void Initialize()
         {
+            On.Celeste.Level.Begin += Level_Begin;
+            On.Celeste.Level.End += Level_End;
             On.Celeste.Level.LoadLevel += Level_LoadLevel;
             On.Celeste.Level.UnloadLevel += Level_UnloadLevel;
             On.Celeste.Level.Update += Level_Update;
@@ -50,6 +52,8 @@ namespace Celeste.Mod.Aqua.Core
 
         public static void Uninitialize()
         {
+            On.Celeste.Level.Begin -= Level_Begin;
+            On.Celeste.Level.End -= Level_End;
             On.Celeste.Level.LoadLevel -= Level_LoadLevel;
             On.Celeste.Level.UnloadLevel -= Level_UnloadLevel;
             On.Celeste.Level.Update -= Level_Update;
@@ -58,6 +62,20 @@ namespace Celeste.Mod.Aqua.Core
         public static LevelState GetState(this Level self)
         {
             return AquaModule.Session.levelState;
+        }
+
+        private static void Level_Begin(On.Celeste.Level.orig_Begin orig, Level self)
+        {
+            orig(self);
+            AquaModule.Settings.FeatureEnableChanged += self.AquaSettings_FeatureEnableChanged;
+            AquaModule.Settings.HookSettings.ParameterChanged += self. AquaHookSettings_ParameterChanged;
+        }
+
+        private static void Level_End(On.Celeste.Level.orig_End orig, Level self)
+        {
+            orig(self);
+            AquaModule.Settings.FeatureEnableChanged -= self.AquaSettings_FeatureEnableChanged;
+            AquaModule.Settings.HookSettings.ParameterChanged -= self.AquaHookSettings_ParameterChanged;
         }
 
         private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader)
@@ -103,6 +121,57 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self);
             RenderInfoStorage.Instance.Clear();
+        }
+
+        private static void AquaSettings_FeatureEnableChanged(this Level self, bool enabled)
+        {
+            AreaData areaData = AreaData.Get(self.Session.Area);
+            LevelExtras extras = areaData.GetExtraMeta();
+            if (!extras.DisableUserCustomParameters)
+            {
+                LevelState state = self.GetState();
+                if (state != null)
+                {
+                    state.FeatureEnabled = enabled;
+                }
+            }
+        }
+
+        private static void AquaHookSettings_ParameterChanged(this Level self, string parameter, int value)
+        {
+            AreaData areaData = AreaData.Get(self.Session.Area);
+            LevelExtras extras = areaData.GetExtraMeta();
+            if (!extras.DisableUserCustomParameters)
+            {
+                LevelState state = self.GetState();
+                if (state != null)
+                {
+                    switch (parameter)
+                    {
+                        case "RopeLength":
+                            state.HookSettings.RopeLength = value;
+                            Player player = self.Tracker.GetEntity<Player>();
+                            if (player != null)
+                            {
+                                GrapplingHook hook = player.GetGrappleHook();
+                                if (hook != null)
+                                {
+                                    hook.SetRopeLength(value);
+                                }
+                            }
+                            break;
+                        case "EmitSpeed":
+                            state.HookSettings.EmitSpeed = value;
+                            break;
+                        case "MaxLineSpeed":
+                            state.HookSettings.MaxLineSpeed = value;
+                            break;
+                        case "FlyTowardSpeed":
+                            state.HookSettings.FlyTowardSpeed = value;
+                            break;
+                    }
+                }
+            }
         }
 
         private static void Level_Update(On.Celeste.Level.orig_Update orig, Level self)

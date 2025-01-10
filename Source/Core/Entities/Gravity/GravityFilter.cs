@@ -16,13 +16,16 @@ namespace Celeste.Mod.Aqua.Core
         bool IBarrierRenderable.Visible => this.Visible;
         public Color ParticleColor { get; private set; }
         public bool EnableOnGravityInverted { get; private set; }
+        public float ActiveOpacity { get; private set; }
+        public float SolidOpacity { get; private set; }
 
         public GravityFilter(EntityData data, Vector2 offset)
             : base(data.Position + offset, data.Width, data.Height, true)
         {
             Color mainColor = data.HexColor("color", new Color(0.15f, 0.15f, 0.15f));
-            float opacity = data.Float("opacity", 0.15f);
-            mainColor.A = (byte)(opacity * 255);
+            ActiveOpacity = data.Float("active_opacity", 0.15f);
+            SolidOpacity = data.Float("solidify_opacity", 0.8f);
+            mainColor.A = (byte)(ActiveOpacity * 255);
             Color = mainColor;
             Color particleColor = data.HexColor("particle_color", new Color(0.5f, 0.5f, 0.5f));
             float particleOpacity = data.Float("particle_opacity", 0.5f);
@@ -71,6 +74,10 @@ namespace Celeste.Mod.Aqua.Core
             SetEnabled(enabled);
             float sign = _enabled ? 1.0f : -1.0f;
             Solidify = Calc.Clamp(Solidify + Engine.DeltaTime * 4.0f * sign, 0.0f, 1.0f);
+            Color color = Color;
+            float alpha = MathHelper.Lerp(ActiveOpacity, SolidOpacity, Solidify);
+            color.A = (byte)(alpha * 255.0f);
+            Color = color;
             int num = SPEEDS.Length;
             float height = Height;
             int i = 0;
@@ -90,6 +97,11 @@ namespace Celeste.Mod.Aqua.Core
             {
                 Draw.Pixel.Draw(Position + particle, Vector2.Zero, ParticleColor);
             }
+        }
+
+        public override int GetLandSoundIndex(Entity entity)
+        {
+            return 11;
         }
 
         private void SetEnabled(bool enabled)

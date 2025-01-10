@@ -9,10 +9,23 @@ namespace Celeste.Mod.Aqua.Core
         public const string Revoke = "revoke";
         public const string Hit = "hit";
 
-        public HookSprite()
+        public enum HookSpriteMode
+        {
+            Default,
+            Playback,
+        }
+
+        public HookSprite(HookSpriteMode mode)
             : base(null, null)
         {
-            GFX.SpriteBank.CreateOn(this, "Aqua_Hook");
+            string spriteName = "Aqua_Hook";
+            switch (mode)
+            {
+                case HookSpriteMode.Playback:
+                    spriteName = "Aqua_HookPlayback";
+                    break;
+            }
+            GFX.SpriteBank.CreateOn(this, spriteName);
         }
     }
 }

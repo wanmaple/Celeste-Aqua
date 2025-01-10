@@ -53,12 +53,12 @@ namespace Celeste.Mod.Aqua.Core
             if (GravityType == GravityHelperInterop.GRAVITY_INVERTED || (GravityType == GravityHelperInterop.GRAVITY_TOGGLE && currentGravity == GravityHelperInterop.GRAVITY_NORMAL))
             {
                 _rippleSprite.Y = -RIPPLE_OFFSET;
-                _rippleSprite.Scale.Y = 1.0f;
+                _rippleSprite.Scale.Y = sprite.Scale.Y = 1.0f;
             }
             else if (GravityType == GravityHelperInterop.GRAVITY_NORMAL || (GravityType == GravityHelperInterop.GRAVITY_TOGGLE && currentGravity == GravityHelperInterop.GRAVITY_INVERTED))
             {
                 _rippleSprite.Y = RIPPLE_OFFSET;
-                _rippleSprite.Scale.Y = -1.0f;
+                _rippleSprite.Scale.Y = sprite.Scale.Y = -1.0f;
             }
 
             if (GravityType == GravityHelperInterop.GRAVITY_TOGGLE)

@@ -790,6 +790,10 @@ namespace Celeste.Mod.Aqua.Core
                             direction = new Vector2(-(int)self.Facing, 1.0f);
                             direction.Normalize();
                         }
+                        else if (DynamicData.For(self).Get<bool>("down_shoot"))
+                        {   
+                            direction = Vector2.UnitY;
+                        }
                         else if (Input.Aim.Value != Vector2.Zero)
                         {
                             direction = Input.GetAimVector(self.Facing);
@@ -811,10 +815,11 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 return -1;
             }
-            if (!hook.Active && (shotCheck.CanThrow || AquaModule.Settings.BackwardDownShoot.Pressed) && !self.IsExhausted() && self.Holding == null)
+            if (!hook.Active && (shotCheck.CanThrow || AquaModule.Settings.DownShoot.Pressed || AquaModule.Settings.BackwardDownShoot.Pressed) && !self.IsExhausted() && self.Holding == null)
             {
                 Engine.TimeRateB = 0.1f;
                 DynamicData.For(self).Set("start_emitting", true);
+                DynamicData.For(self).Set("down_shoot", AquaModule.Settings.DownShoot.Pressed);
                 DynamicData.For(self).Set("backward_down_shoot", AquaModule.Settings.BackwardDownShoot.Pressed);
                 TimeTicker emittingTicker = self.GetTimeTicker("emit_ticker");
                 emittingTicker.Reset();

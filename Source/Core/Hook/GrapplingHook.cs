@@ -93,7 +93,7 @@ namespace Celeste.Mod.Aqua.Core
             Collider = new Hitbox(size, size, -size * 0.5f, -size * 0.5f);
 
             Add(new HookRope(length, material));
-            Add(_sprite = new HookSprite());
+            Add(_sprite = new HookSprite(HookSprite.HookSpriteMode.Default));
             Add(_elecShockSprite = new Sprite());
             GFX.SpriteBank.CreateOn(_elecShockSprite, "Aqua_HookElectricShock");
             AddTag(Tags.Global);

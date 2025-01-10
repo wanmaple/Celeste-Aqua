@@ -10,7 +10,7 @@ namespace Celeste.Mod.Aqua.Core
     {
         public PresentationGrapplingHook()
         {
-            Add(_sprite = new HookSprite());
+            Add(_sprite = new HookSprite(HookSprite.HookSpriteMode.Playback));
             _ropeRenderer = new RopeRenderer(GFX.Game["objects/hook/rope_white"]);
         }
 

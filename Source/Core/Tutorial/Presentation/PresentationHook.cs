@@ -39,7 +39,7 @@ namespace Celeste.Mod.Aqua.Core
                     else
                     {
                         _tempData = PresentationRecorder.Instance.EndRecording();
-                        //_tempData.Trim();
+                        _tempData.Trim();
                     }
                 }
                 else if (MInput.Keyboard.Pressed(Keys.Delete))

@@ -132,7 +132,8 @@ entities.Aqua/Gravity Booster.attributes.description.sprite=Custom sprite name, 
 
 # Gravity Filter
 entities.Aqua/Gravity Filter.attributes.description.color=Area main color.
-entities.Aqua/Gravity Filter.attributes.description.opacity=Area main opacity.
+entities.Aqua/Gravity Filter.attributes.description.active_opacity=Area opacity when activated.
+entities.Aqua/Gravity Filter.attributes.description.solidify_opacity=Area opacity when solidified.
 entities.Aqua/Gravity Filter.attributes.description.particle_color=Area particle color.
 entities.Aqua/Gravity Filter.attributes.description.particle_opacity=Area particle opacity.
 entities.Aqua/Gravity Filter.attributes.description.gravity=Which kind of gravity circumstance can't be passed through.

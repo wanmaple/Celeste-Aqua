@@ -8,6 +8,13 @@
       <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
     </Aqua_Hook>
 
+    <Aqua_HookPlayback path="objects/hook/playback/" start="emit">
+      <Justify x="0.5" y="0.5" />
+      <Anim id="emit" path="hook" frames="0" />
+      <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
+      <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
+    </Aqua_HookPlayback>
+
     <Aqua_HookElectricShock path="objects/hook/" start="shocking">
       <Justify x="0.5" y="0.5" />
       <Loop id="shocking" path="hook_charge" frames="0-4" delay="0.1" />

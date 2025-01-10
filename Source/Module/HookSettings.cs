@@ -1,5 +1,4 @@
-﻿using Celeste.Mod.Aqua.Core;
-using Celeste.Mod.Aqua.Miscellaneous;
+﻿using Celeste.Mod.Aqua.Miscellaneous;
 using Monocle;
 using System;
 using System.Reflection;
@@ -10,6 +9,10 @@ namespace Celeste.Mod.Aqua.Module
     [SettingSubMenu]
     public class HookSettings
     {
+        public delegate void ParameterChangedHandler(string parameter, int value);
+
+        public event ParameterChangedHandler ParameterChanged;
+
         [SettingName("SETTINGS_ROPE_LENGTH")]
         [SettingRange(50, 200)]
         [DefaultValue(80)]
@@ -21,19 +24,7 @@ namespace Celeste.Mod.Aqua.Module
                 if (_ropeLength != value)
                 {
                     _ropeLength = value;
-                    if (Engine.Instance.scene is Level level)
-                    {
-                        level.SyncPropertyIfPossible(state =>
-                        {
-                            state.HookSettings._ropeLength = _ropeLength;
-                            Player player = level.Tracker.GetEntity<Player>();
-                            if (player != null)
-                            {
-                                var hook = player.GetGrappleHook();
-                                hook.SetRopeLength(_ropeLength);
-                            }
-                        });
-                    }
+                    ParameterChanged?.Invoke("RopeLength", _ropeLength);
                 }
             }
         }
@@ -51,10 +42,7 @@ namespace Celeste.Mod.Aqua.Module
                 if (_emitSpeed != value)
                 {
                     _emitSpeed = value;
-                    if (Engine.Instance.scene is Level level)
-                    {
-                        level.SyncPropertyIfPossible(state => state.HookSettings._emitSpeed = _emitSpeed);
-                    }
+                    ParameterChanged?.Invoke("EmitSpeed", _emitSpeed);
                 }
             }
         }
@@ -76,10 +64,7 @@ namespace Celeste.Mod.Aqua.Module
                 if (_maxLineSpeed != value)
                 {
                     _maxLineSpeed = value;
-                    if (Engine.Instance.scene is Level level)
-                    {
-                        level.SyncPropertyIfPossible(state => state.HookSettings._maxLineSpeed = _maxLineSpeed);
-                    }
+                    ParameterChanged?.Invoke("MaxLineSpeed", _maxLineSpeed);
                 }
             }
         }
@@ -112,10 +97,7 @@ namespace Celeste.Mod.Aqua.Module
                 if (_flyTowardSpeed != value)
                 {
                     _flyTowardSpeed = value;
-                    if (Engine.Instance.scene is Level level)
-                    {
-                        level.SyncPropertyIfPossible(state => state.HookSettings._flyTowardSpeed = _flyTowardSpeed);
-                    }
+                    ParameterChanged?.Invoke("FlyTowardSpeed", _flyTowardSpeed);
                 }
             }
         }
