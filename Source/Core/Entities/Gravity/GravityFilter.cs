@@ -110,6 +110,14 @@ namespace Celeste.Mod.Aqua.Core
             {
                 _enabled = enabled;
                 Collidable = _enabled;
+                if (_enabled)
+                {
+                    EnableStaticMovers();
+                }
+                else
+                {
+                    DisableStaticMovers();
+                }
                 this.SetHookable(_enabled);
             }
         }

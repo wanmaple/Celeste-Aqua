@@ -194,6 +194,7 @@ namespace Celeste.Mod.Aqua.Core
             self.SetTimeTicker("bullet_time_ticker", 0.0f);
             self.SetTimeTicker("dash_hanging_ticker", 0.05f);
             self.SetTimeTicker("emit_ticker", 0.05f);
+            self.SetTimeTicker("swing_jump_keeping_ticker", 0.05f);
             self.SetTimeTicker("elec_shock_ticker", 1.0f);
             DynamicData.For(self).Set("rope_is_loosen", true);
             DynamicData.For(self).Set("is_booster_dash", false);
@@ -387,7 +388,10 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void Player_HangingBegin(this Player self)
         {
+            TimeTicker keepTicker = self.GetTimeTicker("swing_jump_keeping_ticker");
+            keepTicker.Reset();
             var hook = self.GetGrappleHook();
+            DynamicData.For(self).Set("lift_speed_y", MathF.Min(self.Speed.Y, 0.0f));
             if (hook.UserLockedLength > 0.0f)
             {
                 hook.SetLockedLengthDirectly(hook.UserLockedLength);
@@ -415,6 +419,12 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 ropeDirection = hook.RopeDirection;
             Vector2 swingDirection = hook.SwingDirection;
             bool swingUp = IsRopeSwingingUp(ropeDirection);
+            TimeTicker keepTicker = self.GetTimeTicker("swing_jump_keeping_ticker");
+            keepTicker.Tick(dt);
+            if (keepTicker.Check())
+            {
+                DynamicData.For(self).Set("lift_speed_y", 0.0f);
+            }
             if (hook.State != GrapplingHook.HookStates.Fixed)
             {
                 return (int)AquaStates.StNormal;
@@ -727,7 +737,9 @@ namespace Celeste.Mod.Aqua.Core
             var levelState = self.SceneAs<Level>().GetState();
             const float X_LIFT = 0.0f;
             const float Y_LIFT = 1.1f;
-            self.LiftSpeed = self.Speed * new Vector2(X_LIFT, Y_LIFT * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f));
+            float keepedLiftY = DynamicData.For(self).Get<float>("lift_speed_y");
+            Vector2 speed = new Vector2(self.Speed.X, MathF.Min(self.Speed.Y, keepedLiftY));
+            self.LiftSpeed = speed * new Vector2(X_LIFT, Y_LIFT * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f));
             self.Jump(false);
             float staminaCost = levelState.HookSettings.SwingJumpStaminaCost;
             self.Stamina = MathF.Max(0.0f, self.Stamina - staminaCost);
@@ -791,7 +803,7 @@ namespace Celeste.Mod.Aqua.Core
                             direction.Normalize();
                         }
                         else if (DynamicData.For(self).Get<bool>("down_shoot"))
-                        {   
+                        {
                             direction = Vector2.UnitY;
                         }
                         else if (Input.Aim.Value != Vector2.Zero)
@@ -925,7 +937,8 @@ namespace Celeste.Mod.Aqua.Core
                     float speedTangent = MathF.Abs(Vector2.Dot(self.Speed, swingDirection));
                     if (ModInterop.GravityHelper.IsPlayerGravityInverted())
                         self.Speed.Y = -self.Speed.Y;
-                    if (speedTangent >= SPEED_CHECK_GRAPPLING_SWING_DOWN)
+                    float threshold = SPEED_CHECK_GRAPPLING_SWING_DOWN;
+                    if (speedTangent >= threshold)
                     {
                         return (int)AquaStates.StHanging;
                     }

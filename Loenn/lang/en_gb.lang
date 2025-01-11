@@ -145,6 +145,7 @@ entities.Aqua/Gravity Spike Up.attributes.description.type=Determines the visual
 entities.Aqua/Gravity Spike Up.attributes.description.color=Color of the spikes.
 entities.Aqua/Gravity Spike Up.attributes.description.gravity=The spikes will be active in specific gravity circumstance.
 entities.Aqua/Gravity Spike Up.attributes.description.disable_type=The disable style of the spikes, same use of type attribute.
+entities.Aqua/Gravity Spike Up.attributes.description.attach=Whether to attach to solid or jump through.
 
 # Gravity Spikes Right
 entities.Aqua/Gravity Spike Right.placements.name.right_default=Gravity Spikes (Right, Default)

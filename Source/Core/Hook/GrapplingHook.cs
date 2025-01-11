@@ -743,7 +743,7 @@ namespace Celeste.Mod.Aqua.Core
 
             if (step > 0)
             {
-                platform = CollideFirstOutside<JumpThru>(Position + Vector2.UnitY * step);
+                platform = this.CollideFirstOutside(typeof(JumpThru), Position + Vector2.UnitY * step, ModInterop.DownsideJumpthruTypes) as Platform;
                 if (platform != null)
                 {
                     _movementCounter.Y = 0f;
@@ -762,29 +762,10 @@ namespace Celeste.Mod.Aqua.Core
             }
             else
             {
-                Type downsideType = ModInterop.MaxHelpingHand.GetType("Celeste.Mod.MaxHelpingHand.Entities.UpsideDownJumpThru");
-                if (downsideType != null)
+                Type[] downsideTypes = ModInterop.DownsideJumpthruTypes;
+                for (int i = 0; i < downsideTypes.Length; i++)
                 {
-                    platform = this.CollideFirstOutside(downsideType, Position + Vector2.UnitY * step) as Platform;
-                    if (platform != null)
-                    {
-                        _movementCounter.Y = 0f;
-                        if (onCollide != null)
-                        {
-                            data = new CustomCollisionData
-                            {
-                                Direction = Vector2.UnitY * step,
-                                Hit = platform,
-                            };
-                            onCollide(data);
-                        }
-
-                        return true;
-                    }
-                }
-                downsideType = ModInterop.GravityHelper.GetType("Celeste.Mod.GravityHelper.Entities.UpsideDownJumpThru");
-                if (downsideType != null)
-                {
+                    Type downsideType = downsideTypes[i];
                     platform = this.CollideFirstOutside(downsideType, Position + Vector2.UnitY * step) as Platform;
                     if (platform != null)
                     {

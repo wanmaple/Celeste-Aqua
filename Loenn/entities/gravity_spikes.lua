@@ -21,12 +21,10 @@ local spikeRight = SpikeHelper.createEntityHandler("Aqua/Gravity Spike Right", "
 local spikes = { spikeUp, spikeDown, spikeLeft, spikeRight, }
 for i, spike in ipairs(spikes) do
     for _, placement in ipairs(spike.placements) do
-        for k, v in pairs(placement.data) do
-            print("##############", k)
-        end
         placement.data["color"] = "ffffff"
         placement.data["gravity"] = "Normal"
         placement.data["disable_type"] = "outline_disable"
+        placement.data["attach"] = false
     end
     spike.fieldInformation["color"] = { fieldType = "color", useAlpha = false, }
     spike.fieldInformation["gravity"] = { options = GRAVITY_OPTIONS, editable = false, }

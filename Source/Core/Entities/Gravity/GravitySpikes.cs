@@ -7,9 +7,9 @@ using System.Collections.Generic;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity(
-        "Aqua/Gravity Spike Up = LoadUp", 
-        "Aqua/Gravity Spike Right = LoadRight", 
-        "Aqua/Gravity Spike Down = LoadDown", 
+        "Aqua/Gravity Spike Up = LoadUp",
+        "Aqua/Gravity Spike Right = LoadRight",
+        "Aqua/Gravity Spike Down = LoadDown",
         "Aqua/Gravity Spike Left = LoadLeft"
         )]
     public class GravitySpikes : Spikes
@@ -37,6 +37,20 @@ namespace Celeste.Mod.Aqua.Core
                     break;
             }
             DisableType = data.Attr("disable_type");
+            StaticMover staticMover = Get<StaticMover>();
+            bool attach = data.Bool("attach");
+            if (!attach)
+            {
+                Remove(staticMover);
+            }
+            else
+            {
+                if (staticMover != null)
+                {
+                    staticMover.OnEnable = OnEnabled;
+                    staticMover.OnDisable = OnDisabled;
+                }
+            }
         }
 
         public override void Added(Scene scene)
@@ -83,6 +97,18 @@ namespace Celeste.Mod.Aqua.Core
                     image.Texture = _enabled ? _defaultTexture : _disableTexture;
                 }
             }
+        }
+
+        private void OnEnabled()
+        {
+            base.OnEnable();
+            SetSpikeColor(SpikeColor);
+        }
+
+        private void OnDisabled()
+        {
+            base.OnDisable();
+            SetSpikeColor(SpikeColor);
         }
 
         private List<Image> _images = new List<Image>();
