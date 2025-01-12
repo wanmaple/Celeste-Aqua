@@ -214,6 +214,13 @@ namespace Celeste.Mod.Aqua.Core
             return true;
         }
 
+        public void BounceTo(Vector2 direction)
+        {
+            HookRope rope = Get<HookRope>();
+            BouncingVelocity = direction * rope.EmitSpeed * (1.0f + EmitSpeedCoefficient);
+            State = HookStates.Bouncing;
+        }
+
         public float CalculateRopeLength(Vector2 playerPosition)
         {
             HookRope rope = Get<HookRope>();

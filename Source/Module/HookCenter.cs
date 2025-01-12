@@ -1,7 +1,7 @@
 ﻿using Celeste.Mod.Aqua.Core;
 using Celeste.Mod.Aqua.Rendering;
 
-namespace Celeste.Mod.Aqua
+namespace Celeste.Mod.Aqua.Module
 {
     public class HookCenter
     {

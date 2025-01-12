@@ -54,6 +54,41 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return new Vector2(MathF.Round(vec.X), MathF.Round(vec.Y));
         }
 
+        public static Vector2 TurnToDirection8(Vector2 direction)
+        {
+            float half45 = MathF.PI / 8.0f;
+            float cosHalf45 = MathF.Cos(half45);
+            float dotX = Vector2.Dot(direction, Vector2.UnitX);
+            if (MathF.Abs(dotX) >= cosHalf45)
+            {
+                return dotX > 0.0f ? Vector2.UnitX : -Vector2.UnitX;
+            }
+            float dotY = Vector2.Dot(direction, Vector2.UnitY);
+            if (MathF.Abs(dotY) >= cosHalf45)
+            {
+                return dotY > 0.0f ? Vector2.UnitY : -Vector2.UnitY;
+            }
+            Vector2 ret;
+            if (direction.X > 0.0f && direction.Y > 0.0f)
+            {
+                ret = new Vector2(1.0f, 1.0f);
+            }
+            else if (direction.X > 0.0f && direction.Y < 0.0f)
+            {
+                ret = new Vector2(1.0f, -1.0f);
+            }
+            else if (direction.X < 0.0f && direction.Y > 0.0f)
+            {
+                ret = new Vector2(-1.0f, 1.0f);
+            }
+            else
+            {
+                ret = new Vector2(-1.0f, -1.0f);
+            }
+            ret.Normalize();
+            return ret;
+        }
+
         public static float TriangleArea(Vector2 pt1, Vector2 pt2, Vector2 pt3)
         {
             return 0.5f * MathF.Abs(pt1.X * (pt2.Y - pt3.Y) + pt2.X * (pt3.Y - pt1.Y) + pt3.X * (pt1.Y - pt2.Y));

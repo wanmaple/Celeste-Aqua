@@ -14,6 +14,10 @@ AQUA provides some functions to help you make your custom entities interactable 
 
 AQUA will also add compatibilities to some popular MODs, but it’s such a heavy work. I’ll handle them step by step.
 
+Current supported third-party MODs:
+- Gravity Helper: Works well in the inversed gravity circumstance.
+- Maddie's Helping Hand: Different sides of jump throughs.
+
 ## Mapping
 
 Mapping stuffs with AQUA could be found [here](https://github.com/wanmaple/Celeste-Aqua/wiki/Mapping-with-Aqua).

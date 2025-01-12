@@ -768,6 +768,8 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int PreHookUpdate(Player self)
         {
+            if (self.level.GetState() == null)
+                return -1;
             if (!self.level.GetState().FeatureEnabled)
                 return -1;
 
@@ -903,6 +905,8 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int PostHookUpdate(Player self)
         {
+            if (self.level.GetState() == null)
+                return -1;
             if (!self.level.GetState().FeatureEnabled)
                 return -1;
 

@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Aqua.Module;
+﻿using Celeste.Mod.Aqua.Miscellaneous;
+using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -26,12 +27,10 @@ namespace Celeste.Mod.Aqua.Core
         private static bool OnInteractHook(this Bumper self, GrapplingHook hook, Vector2 at)
         {
             Vector2 direction = Vector2.Normalize(at - self.Center);
-            if (hook.Bounce(direction, GrapplingHook.BOUNCE_SPEED_ADDITION))
-            {
-                self.Hit(direction);
-                return true;
-            }
-            return false;
+            direction = AquaMaths.TurnToDirection8(direction);
+            hook.BounceTo(direction);
+            self.Hit(direction);
+            return true;
         }
 
         private static void Hit(this Bumper self, Vector2 direction)

@@ -36,6 +36,7 @@ public class AquaModule : EverestModule
     public override void Load()
     {
         HookCenter.Hook();
+        BackdropCenter.Initialize();
         ModInterop.Initialize();
         Everest.Events.AssetReload.OnBeforeReload += AssetReload_OnBeforeReload;
         Everest.Events.AssetReload.OnAfterReload += AssetReload_OnAfterReload;
@@ -44,6 +45,7 @@ public class AquaModule : EverestModule
     public override void Unload()
     {
         HookCenter.Unhook();
+        BackdropCenter.Uninitialize();
         ModInterop.Uninitialize();
         Everest.Events.AssetReload.OnBeforeReload -= AssetReload_OnBeforeReload;
         Everest.Events.AssetReload.OnAfterReload -= AssetReload_OnAfterReload;
