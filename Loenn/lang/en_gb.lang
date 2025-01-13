@@ -117,6 +117,7 @@ entities.Aqua/Booster Filter.attributes.description.opacity=Area main opacity.
 entities.Aqua/Booster Filter.attributes.description.particle_color=Area particle color.
 entities.Aqua/Booster Filter.attributes.description.particle_opacity=Area particle opacity.
 entities.Aqua/Booster Filter.attributes.description.can_pass=What kind of booster can pass through.
+entities.Aqua/Booster Filter.attributes.description.collide_solids=Whether the filter will collide solids.
 
 # Hook Refill
 entities.Aqua/Hook Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
@@ -137,6 +138,7 @@ entities.Aqua/Gravity Filter.attributes.description.solidify_opacity=Area opacit
 entities.Aqua/Gravity Filter.attributes.description.particle_color=Area particle color.
 entities.Aqua/Gravity Filter.attributes.description.particle_opacity=Area particle opacity.
 entities.Aqua/Gravity Filter.attributes.description.gravity=Which kind of gravity circumstance can't be passed through.
+entities.Aqua/Gravity Filter.attributes.description.collide_solids=Whether the filter will collide solids.
 
 # Gravity Spikes Up
 entities.Aqua/Gravity Spike Up.placements.name.up_default=Gravity Spikes (Up, Default)

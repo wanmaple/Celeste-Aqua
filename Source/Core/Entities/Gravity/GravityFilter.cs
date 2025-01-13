@@ -18,6 +18,7 @@ namespace Celeste.Mod.Aqua.Core
         public bool EnableOnGravityInverted { get; private set; }
         public float ActiveOpacity { get; private set; }
         public float SolidOpacity { get; private set; }
+        public bool CollideSolids { get; private set; }
 
         public GravityFilter(EntityData data, Vector2 offset)
             : base(data.Position + offset, data.Width, data.Height, true)
@@ -25,6 +26,8 @@ namespace Celeste.Mod.Aqua.Core
             Color mainColor = data.HexColor("color", new Color(0.15f, 0.15f, 0.15f));
             ActiveOpacity = data.Float("active_opacity", 0.15f);
             SolidOpacity = data.Float("solidify_opacity", 0.8f);
+            CollideSolids = data.Bool("collide_solids", false);
+            this.MakeExtraCollideCondition();
             mainColor.A = (byte)(ActiveOpacity * 255);
             Color = mainColor;
             Color particleColor = data.HexColor("particle_color", new Color(0.5f, 0.5f, 0.5f));
@@ -125,6 +128,17 @@ namespace Celeste.Mod.Aqua.Core
         private void OnPlayerCollide(Player player)
         {
             player.Die(Vector2.Zero);
+        }
+
+        private bool CanCollide(Entity other)
+        {
+            if (CollideSolids)
+                return true;
+            if (other is Platform)
+            {
+                return false;
+            }
+            return true;
         }
 
         private List<Vector2> _particlePositions = new List<Vector2>(16);

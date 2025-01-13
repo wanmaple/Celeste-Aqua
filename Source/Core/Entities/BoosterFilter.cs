@@ -18,6 +18,7 @@ namespace Celeste.Mod.Aqua.Core
         public float Flash { get; private set; } = 0.0f;
         public float Solidify { get; private set; } = 0.0f;
         bool IBarrierRenderable.Visible => this.Visible;
+        public bool CollideSolids { get; private set; }
 
         public BoosterFilter(EntityData data, Vector2 offset)
             : base(data.Position + offset, data.Width, data.Height, true)
@@ -43,6 +44,7 @@ namespace Celeste.Mod.Aqua.Core
                     CanPassGreenBooster = CanPassRedBooster = true;
                     break;
             }
+            CollideSolids = data.Bool("collide_solids", false);
             this.MakeExtraCollideCondition();
             this.SetHookable(false);
             for (int i = 0; (float)i < Width * Height / 16f; i++)
@@ -99,7 +101,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             else if (other is Platform)
             {
-                return false;
+                return CollideSolids;
             }
             return true;
         }

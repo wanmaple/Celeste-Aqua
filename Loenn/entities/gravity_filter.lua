@@ -38,6 +38,7 @@ for i, gravityType in ipairs(GRAVITY_OPTIONS) do
             particle_color = gravityType == "Inverted" and "007bff" or "ff0000",
             particle_opacity = 0.5,
             gravity = gravityType,
+            collide_solids = false,
         },
     })
 end

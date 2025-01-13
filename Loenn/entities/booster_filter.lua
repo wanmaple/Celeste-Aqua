@@ -42,6 +42,7 @@ for i, passType in ipairs(PASS_TYPE) do
             particle_color = PARTICLE_COLORS[i],
             particle_opacity = 0.5,
             can_pass = passType,
+            collide_solids = false,
         },
     })
 end
