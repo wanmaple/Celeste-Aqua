@@ -49,6 +49,14 @@ namespace Celeste.Mod.Aqua.Core
             _texPedestal = GFX.Game["objects/trap_button/button_pedestal"];
             Depth = -10000;
             this.SetHookable(true);
+            var staticMover = new StaticMover();
+            staticMover.SolidChecker = solid => CollideCheckOutside(solid, Position + _pedestalDirection);
+            staticMover.JumpThruChecker = jumpthru => CollideCheck(jumpthru, Position + Vector2.UnitY);
+            staticMover.OnShake = OnShake;
+            staticMover.OnEnable = OnEnable;
+            staticMover.OnDisable = OnDisable;
+            staticMover.OnDestroy = OnDestroy;
+            Add(staticMover);
         }
 
         public override void Update()
@@ -91,13 +99,33 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 justify = new Vector2(0.5f, 0.0f);
             if (Pressed)
             {
-                Draw.SpriteBatch.Draw(_texPressed.Texture.Texture_Safe, Position + _pedestalDirection, _texPressed.ClipRect, Color, _rotation, new Vector2(_texPressed.Width * justify.X, _texPressed.Height * justify.Y), 1.0f, SpriteEffects.None, depth);
+                Draw.SpriteBatch.Draw(_texPressed.Texture.Texture_Safe, Position + _pedestalDirection + _imageOffset, _texPressed.ClipRect, Color, _rotation, new Vector2(_texPressed.Width * justify.X, _texPressed.Height * justify.Y), 1.0f, SpriteEffects.None, depth);
             }
             else
             {
-                Draw.SpriteBatch.Draw(_texIdle.Texture.Texture_Safe, Position, _texIdle.ClipRect, Color, _rotation, new Vector2(_texIdle.Width * justify.X, _texIdle.Height * justify.Y), 1.0f, SpriteEffects.None, depth);
+                Draw.SpriteBatch.Draw(_texIdle.Texture.Texture_Safe, Position + _imageOffset, _texIdle.ClipRect, Color, _rotation, new Vector2(_texIdle.Width * justify.X, _texIdle.Height * justify.Y), 1.0f, SpriteEffects.None, depth);
             }
-            Draw.SpriteBatch.Draw(_texPedestal.Texture.Texture_Safe, Position + _pedestalDirection * 3.0f, _texPedestal.ClipRect, Color.White, _rotation, new Vector2(_texPedestal.Width * justify.X, _texPedestal.Height * justify.Y), 1.0f, SpriteEffects.None, depth);
+            Draw.SpriteBatch.Draw(_texPedestal.Texture.Texture_Safe, Position + _pedestalDirection * 3.0f + _imageOffset, _texPedestal.ClipRect, Color.White, _rotation, new Vector2(_texPedestal.Width * justify.X, _texPedestal.Height * justify.Y), 1.0f, SpriteEffects.None, depth);
+        }
+
+        private void OnShake(Vector2 amount)
+        {
+            _imageOffset += amount;
+        }
+
+        private void OnEnable()
+        {
+            Collidable = Visible = true;
+        }
+
+        private void OnDisable()
+        {
+            Collidable = Visible = false;
+        }
+
+        private void OnDestroy()
+        {
+            Collidable = Visible = false;
         }
 
         private float _rotation;
@@ -105,5 +133,6 @@ namespace Celeste.Mod.Aqua.Core
         private MTexture _texIdle;
         private MTexture _texPressed;
         private MTexture _texPedestal;
+        private Vector2 _imageOffset = Vector2.Zero;
     }
 }

@@ -53,7 +53,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             hook.Revoke();
             Audio.Play(self.red ? "event:/game/05_mirror_temple/redbooster_reappear" : "event:/game/04_cliffside/greenbooster_reappear", self.Position);
-            self.Add(new Coroutine(self.UndraggableRoutine(self.sprite, Vector2.Normalize(at - self.Center), 0.4f, 8.0f)));
+            self.Add(new Coroutine(self.UndraggableRoutine(self.sprite, Calc.SafeNormalize(at - self.Center), 0.4f, 8.0f)));
             return true;
         }
     }

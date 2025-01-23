@@ -86,9 +86,9 @@ namespace Celeste.Mod.Aqua.Core
                     Vector2 direction = player.ExactCenter() - TopPivot.point;
                     if (AquaMaths.IsApproximateZero(direction))
                         return -Vector2.UnitY;
-                    return Vector2.Normalize(direction);
+                    return Calc.SafeNormalize(direction);
                 }
-                return Vector2.Normalize(_pivots[1].point - TopPivot.point);
+                return Calc.SafeNormalize(_pivots[1].point - TopPivot.point);
             }
         }
         public Vector2 RopeDirection
@@ -102,7 +102,7 @@ namespace Celeste.Mod.Aqua.Core
 
                 Player player = Scene.Tracker.GetEntity<Player>();
                 if (player == null) return Vector2.UnitX;
-                return Vector2.Normalize(player.ExactCenter() - BottomPivot.point);
+                return Calc.SafeNormalize(player.ExactCenter() - BottomPivot.point);
             }
         }
         public Vector2 SwingDirection
@@ -195,7 +195,7 @@ namespace Celeste.Mod.Aqua.Core
                 if (ropeLength >= currentLength)
                 {
                     toRmIdx = i;
-                    CurrentDirection = Vector2.Normalize(pivot - lastPos);
+                    CurrentDirection = Calc.SafeNormalize(pivot - lastPos);
                     nextPosition = lastPos + CurrentDirection * (currentLength - lastRopeLength);
                     break;
                 }
@@ -227,11 +227,11 @@ namespace Celeste.Mod.Aqua.Core
             {
                 Player player = Scene.Tracker.GetEntity<Player>();
                 if (player == null) return;
-                CurrentDirection = Vector2.Normalize(TopPivot.point - player.ExactCenter());
+                CurrentDirection = Calc.SafeNormalize(TopPivot.point - player.ExactCenter());
             }
             else
             {
-                CurrentDirection = Vector2.Normalize(TopPivot.point - _pivots[1].point);
+                CurrentDirection = Calc.SafeNormalize(TopPivot.point - _pivots[1].point);
             }
         }
 
@@ -293,7 +293,7 @@ namespace Celeste.Mod.Aqua.Core
             if (length > _lockLength)
             {
                 float lengthDiff = length - _lockLength;
-                Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
+                Vector2 ropeDirection = Calc.SafeNormalize(BottomPivot.point - playerSeg.Point2);
                 Vector2 movement = ropeDirection * MathF.Ceiling(lengthDiff);
                 movement.Y *= (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f);
                 player.movementCounter = Vector2.Zero;
@@ -315,7 +315,7 @@ namespace Celeste.Mod.Aqua.Core
             //else if (player.StateMachine.State == (int)AquaStates.StHanging && !DynamicData.For(player).Get<bool>("rope_is_loosen") && length < _lockLength - 1.5f)
             //{
             //    float lengthDiff = length - _lockLength;
-            //    Vector2 ropeDirection = Vector2.Normalize(BottomPivot.point - playerSeg.Point2);
+            //    Vector2 ropeDirection = Calc.SafeNormalize(BottomPivot.point - playerSeg.Point2);
             //    Vector2 movement = ropeDirection * -MathF.Ceiling(-lengthDiff);
             //    player.movementCounter = Vector2.Zero;
             //    if (!AquaMaths.IsApproximateZero(movement.X))

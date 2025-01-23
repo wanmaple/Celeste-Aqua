@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Celeste.Mod.Aqua.Debug;
 using Celeste.Mod.Aqua.Module;
 using System.Reflection;
+using static MonoMod.InlineRT.MonoModRule;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -16,6 +17,12 @@ namespace Celeste.Mod.Aqua.Core
         {
             public Vector2 Direction;
             public Entity Hit;
+        }
+
+        private struct MoveResult
+        {
+            public bool Hit;
+            public bool Moved;
         }
 
         public enum HookStates : byte
@@ -193,7 +200,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public bool Bounce(Vector2 axis, float speed)
         {
-            axis = Vector2.Normalize(axis);
+            axis = Calc.SafeNormalize(axis);
             HookRope rope = Get<HookRope>();
             BouncingVelocity = State == HookStates.Bouncing ? BouncingVelocity : rope.CurrentDirection * rope.EmitSpeed * (1.0f + EmitSpeedCoefficient);
             float proj = Vector2.Dot(BouncingVelocity, axis);
@@ -210,7 +217,7 @@ namespace Celeste.Mod.Aqua.Core
                 Vector2 doubleAxis = axis * MathF.Abs(proj) * 2.0f;
                 BouncingVelocity += doubleAxis;
             }
-            BouncingVelocity = Vector2.Normalize(BouncingVelocity) * rope.EmitSpeed * (1.0f + EmitSpeedCoefficient);
+            BouncingVelocity = Calc.SafeNormalize(BouncingVelocity) * rope.EmitSpeed * (1.0f + EmitSpeedCoefficient);
             return true;
         }
 
@@ -269,10 +276,9 @@ namespace Celeste.Mod.Aqua.Core
 
         public bool CanFlyToward()
         {
-            float range = (Scene as Level).GetState().HookSettings.FlyTowardDuration;
             if (JustFixed)
             {
-                if (_elapsed - _lastEmitElapsed <= range)
+                if (_elapsed - _lastEmitElapsed <= 0.2f)
                 {
                     _lastEmitElapsed = float.MinValue;
                     return true;
@@ -280,7 +286,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             else
             {
-                if (_elapsed - _fixElapsed <= range)
+                if (_elapsed - _fixElapsed <= 0.15f)
                 {
                     _fixElapsed = float.MinValue;
                     return true;
@@ -436,7 +442,7 @@ namespace Celeste.Mod.Aqua.Core
                         float currentLength = rope._prevLength + movement.Length();
                         if (currentLength > rope.MaxLength)
                         {
-                            movement = Vector2.Normalize(movement) * (movement.Length() - (currentLength - rope.MaxLength));
+                            movement = Calc.SafeNormalize(movement) * (movement.Length() - (currentLength - rope.MaxLength));
                             changeState = true;
                         }
                         collided = BresenhamMove(movement, OnCollideEntity);
@@ -492,8 +498,15 @@ namespace Celeste.Mod.Aqua.Core
 
             _prevPosition = Position;
             _playerPrevPosition = player.ExactCenter();
-            Velocity /= dt;
-            Acceleration = (Velocity - lastVelocity) / dt;
+            if (AquaMaths.IsApproximateZero(dt))
+            {
+                Velocity = Acceleration = Vector2.Zero;
+            }
+            else
+            {
+                Velocity /= dt;
+                Acceleration = (Velocity - lastVelocity) / dt;
+            }
             CheckHookColliders();
             base.Update();
             if (State == HookStates.Emitting || State == HookStates.Revoking)
@@ -591,10 +604,12 @@ namespace Celeste.Mod.Aqua.Core
                     int step = MathF.Sign(dy);
                     while (dy != 0)
                     {
-                        if (StepMoveV(step, onCollide))
+                        MoveResult result = StepMoveV(step, onCollide);
+                        if (result.Hit)
                             return true;
                         dy -= step;
-                        Y += step;
+                        if (result.Moved)
+                            Y += step;
                     }
                 }
                 else if (dy == 0)
@@ -602,10 +617,12 @@ namespace Celeste.Mod.Aqua.Core
                     int step = MathF.Sign(dx);
                     while (dx != 0)
                     {
-                        if (StepMoveH(step, onCollide))
+                        MoveResult result = StepMoveH(step, onCollide);
+                        if (result.Hit)
                             return true;
                         dx -= step;
-                        X += step;
+                        if (result.Moved)
+                            X += step;
                     }
                 }
                 else
@@ -627,10 +644,11 @@ namespace Celeste.Mod.Aqua.Core
                     do
                     {
                         error += 2 * absY;
+                        MoveResult result = new MoveResult();
                         if (error >= 2 * absX)
                         {
                             error -= 2 * absX;
-                            if ((!swapped && StepMoveV(stepY, onCollide)) || (swapped && StepMoveH(stepX, onCollide)))
+                            if ((!swapped && (result = StepMoveV(stepY, onCollide)).Hit) || (swapped && (result = StepMoveH(stepX, onCollide)).Hit))
                             {
                                 if (swapped)
                                     _movementCounter.X = 0.0f;
@@ -640,13 +658,16 @@ namespace Celeste.Mod.Aqua.Core
                             }
                             else
                             {
-                                if (!swapped)
-                                    Y += stepY;
-                                else
-                                    X += stepX;
+                                if (result.Moved)
+                                {
+                                    if (!swapped)
+                                        Y += stepY;
+                                    else
+                                        X += stepX;
+                                }
                             }
                         }
-                        if ((!swapped && StepMoveH(stepX, onCollide)) || (swapped && StepMoveV(stepY, onCollide)))
+                        if ((!swapped && (result = StepMoveH(stepX, onCollide)).Hit) || (swapped && (result = StepMoveV(stepY, onCollide)).Hit))
                         {
                             if (swapped)
                                 _movementCounter.Y = 0.0f;
@@ -656,10 +677,13 @@ namespace Celeste.Mod.Aqua.Core
                         }
                         else
                         {
-                            if (!swapped)
-                                X += stepX;
-                            else
-                                Y += stepY;
+                            if (result.Moved)
+                            {
+                                if (!swapped)
+                                    X += stepX;
+                                else
+                                    Y += stepY;
+                            }
                         }
                         absX--;
                     } while (absX != 0);
@@ -668,24 +692,23 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
-        private bool StepMoveH(int step, Action<CustomCollisionData> onCollide)
+        private MoveResult StepMoveH(int step, Action<CustomCollisionData> onCollide)
         {
             if (CheckInteractables(Position + Vector2.UnitX * step))
             {
-                return true;
+                return new MoveResult
+                {
+                    Hit = true,
+                    Moved = false,
+                };
             }
 
             Solid solid = CollideFirst<Solid>(Position + Vector2.UnitX * step);
             if (solid != null)
             {
                 _movementCounter.X = 0f;
-                onCollide?.Invoke(new CustomCollisionData
-                {
-                    Direction = Vector2.UnitX * step,
-                    Hit = solid,
-                });
-
-                return true;
+                CustomCollisionData data;
+                return DoCollideOrNot(solid, Vector2.UnitX * step, onCollide, out data);
             }
 
             Type sideType = ModInterop.MaxHelpingHand.GetType("Celeste.Mod.MaxHelpingHand.Entities.SidewaysJumpThru");
@@ -706,12 +729,8 @@ namespace Celeste.Mod.Aqua.Core
                                 if (!Collide.Check(this, jumpthru) && Collide.Check(this, jumpthru, Position + Vector2.UnitX * step))
                                 {
                                     _movementCounter.X = 0f;
-                                    onCollide?.Invoke(new CustomCollisionData
-                                    {
-                                        Direction = Vector2.UnitX * step,
-                                        Hit = jumpthru,
-                                    });
-                                    return true;
+                                    CustomCollisionData data;
+                                    return DoCollideOrNot(jumpthru, Vector2.UnitX * step, onCollide, out data);
                                 }
                             }
                         }
@@ -720,14 +739,18 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             _movementCounter.X -= step;
-            return false;
+            return new MoveResult { Hit = false, Moved = true, };
         }
 
-        private bool StepMoveV(int step, Action<CustomCollisionData> onCollide)
+        private MoveResult StepMoveV(int step, Action<CustomCollisionData> onCollide)
         {
             if (CheckInteractables(Position + Vector2.UnitY * step))
             {
-                return true;
+                return new MoveResult
+                {
+                    Hit = true,
+                    Moved = false,
+                };
             }
 
             Platform platform = CollideFirst<Solid>(Position + Vector2.UnitY * step);
@@ -735,17 +758,7 @@ namespace Celeste.Mod.Aqua.Core
             if (platform != null)
             {
                 _movementCounter.Y = 0f;
-                if (onCollide != null)
-                {
-                    data = new CustomCollisionData
-                    {
-                        Direction = Vector2.UnitY * step,
-                        Hit = platform,
-                    };
-                    onCollide(data);
-                }
-
-                return true;
+                return DoCollideOrNot(platform, Vector2.UnitY * step, onCollide, out data);
             }
 
             if (step > 0)
@@ -754,17 +767,7 @@ namespace Celeste.Mod.Aqua.Core
                 if (platform != null)
                 {
                     _movementCounter.Y = 0f;
-                    if (onCollide != null)
-                    {
-                        data = new CustomCollisionData
-                        {
-                            Direction = Vector2.UnitY * step,
-                            Hit = platform,
-                        };
-                        onCollide(data);
-                    }
-
-                    return true;
+                    return DoCollideOrNot(platform, Vector2.UnitY * step, onCollide, out data);
                 }
             }
             else
@@ -777,22 +780,40 @@ namespace Celeste.Mod.Aqua.Core
                     if (platform != null)
                     {
                         _movementCounter.Y = 0f;
-                        if (onCollide != null)
-                        {
-                            data = new CustomCollisionData
-                            {
-                                Direction = Vector2.UnitY * step,
-                                Hit = platform,
-                            };
-                            onCollide(data);
-                        }
-
-                        return true;
+                        return DoCollideOrNot(platform, Vector2.UnitY * step, onCollide, out data);
                     }
                 }
             }
             _movementCounter.Y -= step;
-            return false;
+            return new MoveResult { Hit = false, Moved = true, };
+        }
+
+        private MoveResult DoCollideOrNot(Entity entity, Vector2 direction, Action<CustomCollisionData> onCollide, out CustomCollisionData data)
+        {
+            data = new CustomCollisionData();
+            Vector2 hookDir = Calc.AngleToVector(_sprite.Rotation, 1.0f);
+            if (Vector2.Dot(hookDir, direction) > 0.0f)
+            {
+                if (onCollide != null)
+                {
+                    data = new CustomCollisionData
+                    {
+                        Direction = direction,
+                        Hit = entity,
+                    };
+                    onCollide(data);
+                }
+                return new MoveResult
+                {
+                    Hit = true,
+                    Moved = true,
+                };
+            }
+            return new MoveResult
+            {
+                Hit = false,
+                Moved = false,
+            };
         }
 
         private bool CheckInteractables(Vector2 at)
@@ -953,13 +974,13 @@ namespace Celeste.Mod.Aqua.Core
         private static readonly Vector2[] OFFSET_DIRECTIONS =
         {
             -Vector2.UnitY,
-            Vector2.Normalize(Vector2.One),
-            Vector2.Normalize(-Vector2.One),
+            Calc.SafeNormalize(Vector2.One),
+            Calc.SafeNormalize(-Vector2.One),
             Vector2.UnitX,
             -Vector2.UnitX,
             Vector2.UnitY,
-            Vector2.Normalize(new Vector2(1.0f, -1.0f)),
-            Vector2.Normalize(new Vector2(-1.0f, 1.0f)),
+            Calc.SafeNormalize(new Vector2(1.0f, -1.0f)),
+            Calc.SafeNormalize(new Vector2(-1.0f, 1.0f)),
         };
     }
 }

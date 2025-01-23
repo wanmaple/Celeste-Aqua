@@ -26,7 +26,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             hook.Revoke();
             Audio.Play("event:/new_content/game/10_farewell/puffer_boop", self.Position);
-            self.Add(new Coroutine(self.UndraggableRoutine(self.sprite, Vector2.Normalize(at - self.Center), 0.4f, 8.0f)));
+            self.Add(new Coroutine(self.UndraggableRoutine(self.sprite, Calc.SafeNormalize(at - self.Center), 0.4f, 8.0f)));
             return true;
         }
     }

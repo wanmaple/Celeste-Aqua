@@ -26,7 +26,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static bool OnInteractHook(this Bumper self, GrapplingHook hook, Vector2 at)
         {
-            Vector2 direction = Vector2.Normalize(at - self.Center);
+            Vector2 direction = Calc.SafeNormalize(at - self.Center);
             direction = AquaMaths.TurnToDirection8(direction);
             hook.BounceTo(direction);
             self.Hit(direction);

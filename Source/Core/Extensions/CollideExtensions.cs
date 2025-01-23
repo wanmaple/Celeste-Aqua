@@ -16,16 +16,12 @@ namespace Celeste.Mod.Aqua.Core
 
         private static bool Collide_CheckTwoEntities(On.Monocle.Collide.orig_Check_Entity_Entity orig, Entity a, Entity b)
         {
-            if (a.Collider == null || b.Collider == null)
+            if (orig(a, b))
             {
+                if (a.CanCollide(b) && b.CanCollide(a))
+                    return true;
                 return false;
             }
-
-            if (a != b && b.Collidable && a.CanCollide(b) && b.CanCollide(a))
-            {
-                return a.Collider.Collide(b);
-            }
-
             return false;
         }
     }

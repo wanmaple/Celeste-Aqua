@@ -39,6 +39,11 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return IsApproximateZero(vec.X) && IsApproximateZero(vec.Y);
         }
 
+        public static Vector2 Abs(Vector2 vec)
+        {
+            return new Vector2(MathF.Abs(vec.X), MathF.Abs(vec.Y));
+        }
+
         public static float Fract(float num)
         {
             return num - (int)num;

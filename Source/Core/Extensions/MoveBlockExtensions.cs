@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
 using Monocle;
 using Microsoft.Xna.Framework;
-using static Celeste.MoveBlock;
-using FMOD.Studio;
 using MonoMod.Utils;
+using static Celeste.MoveBlock;
 
 namespace Celeste.Mod.Aqua.Core
 {

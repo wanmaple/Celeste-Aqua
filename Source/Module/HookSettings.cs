@@ -83,9 +83,6 @@ namespace Celeste.Mod.Aqua.Module
         [DefaultValue(20)]
         public int SwingJumpStaminaCost { get; set; }
 
-        [SettingIgnore]
-        public float FlyTowardDuration { get; set; } = 0.15f;
-
         [SettingName("SETTINGS_FLY_TOWARD_SPEED")]
         [SettingRange(300, 500, true)]
         [DefaultValue(325)]

@@ -40,7 +40,7 @@ namespace Celeste.Mod.Aqua.Core
             float targetSpeed = (Target.Center - _targetPrevPosition).Length() / dt;
             float finalSpeed = BaseSpeed + targetSpeed;
             Vector2 entityToTarget = Target.Center - Entity.Center;
-            Vector2 direction = Vector2.Normalize(entityToTarget);
+            Vector2 direction = Calc.SafeNormalize(entityToTarget);
             if (!AquaMaths.IsApproximateZero(direction))
             {
                 Vector2 movement = direction * finalSpeed * dt;

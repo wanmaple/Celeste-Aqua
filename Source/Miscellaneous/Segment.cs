@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Monocle;
 using System;
 
 namespace Celeste.Mod.Aqua.Miscellaneous
@@ -9,7 +10,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         public Vector2 Point2 { get; set; }
 
         public Vector2 Vector => Point2 - Point1;
-        public Vector2 Direction => Vector2.Normalize(Vector);
+        public Vector2 Direction => Calc.SafeNormalize(Vector);
         public float Length => Vector.Length();
 
         public Segment(Vector2 pt1, Vector2 pt2)

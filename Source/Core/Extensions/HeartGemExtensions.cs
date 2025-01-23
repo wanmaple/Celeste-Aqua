@@ -8,11 +8,13 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             On.Celeste.HeartGem.ctor_Vector2 += HeartGem_Construct;
+            On.Celeste.SaveData.RegisterHeartGem += SaveData_RegisterHeartGem;
         }
 
         public static void Uninitialize()
         {
             On.Celeste.HeartGem.ctor_Vector2 -= HeartGem_Construct;
+            On.Celeste.SaveData.RegisterHeartGem -= SaveData_RegisterHeartGem;
         }
 
         private static void HeartGem_Construct(On.Celeste.HeartGem.orig_ctor_Vector2 orig, HeartGem self, Vector2 position)
@@ -20,6 +22,24 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, position);
             self.SetHookable(true);
             self.Add(new HookCollider(self.OnHookCollide));
+        }
+
+        private static void SaveData_RegisterHeartGem(On.Celeste.SaveData.orig_RegisterHeartGem orig, SaveData self, AreaKey area)
+        {
+            Level level = (Engine.Instance.scene as Level);
+            if (level != null)
+            {
+                Player player = level.Tracker.GetEntity<Player>();
+                if (player != null)
+                {
+                    GrapplingHook hook = player.GetGrappleHook();
+                    if (hook != null && hook.State == GrapplingHook.HookStates.Fixed)
+                    {
+                        hook.Revoke();
+                    }
+                }
+            }
+            orig(self, area);
         }
 
         private static void OnHookCollide(this HeartGem self, GrapplingHook hook)

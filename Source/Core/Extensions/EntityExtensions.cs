@@ -16,7 +16,6 @@ namespace Celeste.Mod.Aqua.Core
             On.Monocle.Entity.ctor_Vector2 += Entity_Construct;
             On.Monocle.Entity.Awake += Entity_Awake;
             On.Monocle.Entity.Update += Entity_Update;
-            //On.Monocle.Entity.Added += Entity_Added;
         }
 
         public static void Uninitialize()
@@ -24,7 +23,6 @@ namespace Celeste.Mod.Aqua.Core
             On.Monocle.Entity.ctor_Vector2 -= Entity_Construct;
             On.Monocle.Entity.Awake -= Entity_Awake;
             On.Monocle.Entity.Update -= Entity_Update;
-            //On.Monocle.Entity.Added -= Entity_Added;
         }
 
         private static void Entity_Construct(On.Monocle.Entity.orig_ctor_Vector2 orig, Entity self, Vector2 position)
@@ -87,27 +85,6 @@ namespace Celeste.Mod.Aqua.Core
             }
             return null;
         }
-
-        //private static void Entity_Added(On.Monocle.Entity.orig_Added orig, Entity self, Scene scene)
-        //{
-        //    orig(self, scene);
-        //    if (!(self is Platform) && self.Collidable && self.Collider != null)
-        //    {
-        //        Level level = scene as Level;
-        //        if (level != null)
-        //        {
-        //            AreaData areaData = AreaData.Get(level.Session.Area);
-        //            if (areaData != null)
-        //            {
-        //                LevelExtras extras = areaData.GetExtraMeta();
-        //                if (extras.SimpleHookableEntities.Contains(self.GetType().FullName))
-        //                {
-        //                    self.MakeSelfEnableToHookToPlayer();
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
 
         public static void MakeSelfEnableToHookToPlayer(this Entity self)
         {
