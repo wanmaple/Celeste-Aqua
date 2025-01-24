@@ -39,6 +39,7 @@ for i, texture in ipairs(textures) do
             height = 16,
             sprite = texture,
             flag = "Trap1",
+            open_time = 2.0,
             close_time = 1.0,
             color = "ff0000",
         }

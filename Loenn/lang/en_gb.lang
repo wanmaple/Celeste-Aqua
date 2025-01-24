@@ -77,7 +77,8 @@ entities.Aqua/Trap Button.attributes.description.direction=Button direction (Up/
 # Trap Gate
 entities.Aqua/Trap Gate.attributes.description.sprite=Gate style.
 entities.Aqua/Trap Gate.attributes.description.flag=The gate will open if all Trap Buttons with the same flag are pressed.
-entities.Aqua/Trap Gate.attributes.description.close_time=How much time it takes to close.
+entities.Aqua/Trap Gate.attributes.description.open_time=How much time it takes to open the door.
+entities.Aqua/Trap Gate.attributes.description.close_time=How much time it takes to close the door.
 entities.Aqua/Trap Gate.attributes.description.color=Gate color.
 
 # Rod Zip Mover

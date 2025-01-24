@@ -8,7 +8,16 @@ namespace Celeste.Mod.Aqua.Module
     {
         public static GravityHelperInterop GravityHelper => _interopGravityHelper;
         public static MaxHelpingHandInterop MaxHelpingHand => _interopMaxHelpingHand;
-        public static Type[] DownsideJumpthruTypes
+        public static IReadOnlyList<Type> SidewaysJumpthruTypes
+        {
+            get
+            {
+                if (_sidewaysJumpthruTypes == null)
+                    CacheModTypes();
+                return _sidewaysJumpthruTypes;
+            }
+        }
+        public static IReadOnlyList<Type> DownsideJumpthruTypes
         {
             get
             {
@@ -38,10 +47,16 @@ namespace Celeste.Mod.Aqua.Module
             if (downsideJumpthru2 != null)
                 downsideJumpthruTypes.Add(downsideJumpthru2);
             _downsideJumpthruTypes = downsideJumpthruTypes.ToArray();
+            Type sidewayJumpthru1 = MaxHelpingHand.GetType("Celeste.Mod.MaxHelpingHand.Entities.SidewaysJumpThru");
+            var sidewaysJumpthruTypes = new List<Type>(1);
+            if (sidewayJumpthru1 != null)
+                sidewaysJumpthruTypes.Add(sidewayJumpthru1);
+            _sidewaysJumpthruTypes = sidewaysJumpthruTypes.ToArray();
         }
 
         private static GravityHelperInterop _interopGravityHelper = new GravityHelperInterop();
         private static MaxHelpingHandInterop _interopMaxHelpingHand = new MaxHelpingHandInterop();
         private static Type[] _downsideJumpthruTypes;
+        private static Type[] _sidewaysJumpthruTypes;
     }
 }

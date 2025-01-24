@@ -4,7 +4,7 @@ using Monocle;
 using MonoMod.Utils;
 using System;
 using System.Collections;
-using System.Dynamic;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
@@ -46,20 +46,60 @@ namespace Celeste.Mod.Aqua.Core
             orig(self);
         }
 
-        public static Entity CollideFirstOutside(this Entity self, Type type, Vector2 at, params Type[] excludeTypes)
+        public static Entity CollideFirst(this Entity self, Type type, IReadOnlyList<Type> excludeTypes)
         {
             if (self.Scene.Tracker.Entities.TryGetValue(type, out var entities))
             {
                 foreach (Entity entity in entities)
                 {
                     bool excluded = false;
-                    foreach(Type excludeType in excludeTypes)
+                    foreach (Type excludeType in excludeTypes)
                     {
                         if (entity.GetType().IsAssignableTo(excludeType))
                         {
                             excluded = true;
                             break;
-                        }    
+                        }
+                    }
+                    if (excluded) continue;
+                    if (Collide.Check(self, entity))
+                    {
+                        return entity;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static Entity CollideFirst(this Entity self, Type type)
+        {
+            if (self.Scene.Tracker.Entities.TryGetValue(type, out var entities))
+            {
+                foreach (Entity entity in entities)
+                {
+                    if (Collide.Check(self, entity))
+                    {
+                        return entity;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static Entity CollideFirstOutside(this Entity self, Type type, Vector2 at, IReadOnlyList<Type> excludeTypes)
+        {
+            if (self.Scene.Tracker.Entities.TryGetValue(type, out var entities))
+            {
+                foreach (Entity entity in entities)
+                {
+                    bool excluded = false;
+                    foreach (Type excludeType in excludeTypes)
+                    {
+                        if (entity.GetType().IsAssignableTo(excludeType))
+                        {
+                            excluded = true;
+                            break;
+                        }
                     }
                     if (excluded) continue;
                     if (!Collide.Check(self, entity) && Collide.Check(self, entity, at))

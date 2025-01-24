@@ -1,9 +1,11 @@
-﻿using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Aqua.Module;
+using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -11,6 +13,15 @@ namespace Celeste.Mod.Aqua.Core
     [Tracked(false)]
     public class TrapButton : Entity
     {
+        public enum Directions
+        {
+            Up,
+            Down,
+            Left,
+            Right,
+        }
+
+        public Directions Direction { get; set; }
         public bool Pressed { get; private set; }
         public string Flag { get; private set; }
         public Color Color { get; private set; }
@@ -23,22 +34,26 @@ namespace Celeste.Mod.Aqua.Core
             switch (data.Attr("direction"))
             {
                 case "Down":
+                    Direction = Directions.Down;
                     Collider = new Hitbox(14.0f, 4.0f, -7.0f, -4.0f);
                     _rotation = MathF.PI;
                     _pedestalDirection = -Vector2.UnitY;
                     break;
                 case "Left":
+                    Direction = Directions.Left;
                     Collider = new Hitbox(4.0f, 14.0f, 0.0f, -7.0f);
                     _rotation = -MathF.PI * 0.5f;
                     _pedestalDirection = Vector2.UnitX;
                     break;
                 case "Right":
+                    Direction = Directions.Right;
                     Collider = new Hitbox(4.0f, 14.0f, -4.0f, -7.0f);
                     _rotation = MathF.PI * 0.5f;
                     _pedestalDirection = -Vector2.UnitX;
                     break;
                 case "Up":
                 default:
+                    Direction = Directions.Up;
                     Collider = new Hitbox(14.0f, 4.0f, -7.0f, 0.0f);
                     _rotation = 0.0f;
                     _pedestalDirection = Vector2.UnitY;
@@ -64,9 +79,60 @@ namespace Celeste.Mod.Aqua.Core
             base.Update();
             Entity collideEntity = CollideFirst<Solid>();
             if (collideEntity == null)
-                collideEntity = CollideFirst<Player>();
+                collideEntity = CollideFirst<Actor>();
             if (collideEntity == null)
                 collideEntity = CollideFirst<GrapplingHook>();
+            if (collideEntity == null)
+            {
+                // jumpthrus.
+                switch (Direction)
+                {
+                    case Directions.Down:
+                        collideEntity = this.CollideFirst(typeof(JumpThru), ModInterop.DownsideJumpthruTypes);
+                        break;
+                    case Directions.Up:
+                        var downsideTypes = ModInterop.DownsideJumpthruTypes;
+                        foreach (Type downsideType in downsideTypes)
+                        {
+                            collideEntity = this.CollideFirst(downsideType);
+                            if (collideEntity != null)
+                                break;
+                        }
+                        break;
+                    case Directions.Left:
+                    case Directions.Right:
+                        var sidewaysTypes = ModInterop.SidewaysJumpthruTypes;
+                        for (int i = 0; i < sidewaysTypes.Count; i++)
+                        {
+                            Type sidewaysType = sidewaysTypes[i];
+                            var sideJumpthrus = Scene.Tracker.Entities[sidewaysType];
+                            if (sideJumpthrus.Count > 0)
+                            {
+                                FieldInfo fieldLeft2Right = sidewaysType.GetField("AllowLeftToRight", BindingFlags.Instance | BindingFlags.Public);
+                                if (fieldLeft2Right != null)
+                                {
+                                    foreach (Entity jumpthru in sideJumpthrus)
+                                    {
+                                        bool left2right = (bool)fieldLeft2Right.GetValue(jumpthru);
+                                        if ((left2right && Direction == Directions.Left) || (!left2right && Direction == Directions.Right))
+                                        {
+                                            if (CollideCheck(jumpthru))
+                                            {
+                                                collideEntity = jumpthru;
+                                                break;
+                                            }
+                                        }
+                                        if (collideEntity != null)
+                                            break;
+                                    }
+                                }
+                            }
+                            if (collideEntity != null)
+                                break;
+                        }
+                        break;
+                }
+            }
             if (collideEntity != null)
             {
                 Pressed = true;

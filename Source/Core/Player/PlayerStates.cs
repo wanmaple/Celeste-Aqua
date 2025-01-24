@@ -733,6 +733,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void SwingJump(this Player self, float dt)
         {
+            Input.Jump.ConsumeBuffer();
             var hook = self.GetGrappleHook();
             hook.Revoke();
             var levelState = self.SceneAs<Level>().GetState();
@@ -751,6 +752,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (AquaMaths.IsApproximateZero(speed))
                 return Vector2.Zero;
+            speed = Calc.SafeNormalize(speed) * MathF.Floor(speed.Length() / 10.0f) * 10.0f;
             float xSign = MathF.Sign(speed.X);
             float ySign = MathF.Sign(speed.Y);
             speed = AquaMaths.Abs(speed);
@@ -1087,7 +1089,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static bool IsRopeSwingingUp(Vector2 direction)
         {
-            return AquaMaths.Cross(Vector2.UnitX, direction) * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f) >= 0.0f;
+            return AquaMaths.Cross(Vector2.UnitX, direction) * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f) > 0.0f;
         }
 
         private static bool IsExhausted(this Player self)

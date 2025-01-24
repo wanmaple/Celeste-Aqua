@@ -54,7 +54,6 @@ namespace Celeste.Mod.Aqua.Rendering
 
         protected virtual void UpdateUniforms()
         {
-            _fx.Parameters["Noise"].SetValue(GFX.Game["general/noise2"].Texture.Texture_Safe);
         }
 
         private Effect _fx;

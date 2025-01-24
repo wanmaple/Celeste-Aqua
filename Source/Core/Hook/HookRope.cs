@@ -68,7 +68,7 @@ namespace Celeste.Mod.Aqua.Core
 
                 Player player = Scene.Tracker.GetEntity<Player>();
                 if (player == null) return 0.0f;
-                return (BottomPivot.point - player.ExactCenter()).Length();
+                return (BottomPivot.point - player.Center).Length();
             }
         }
         public Vector2 HookDirection
@@ -83,7 +83,7 @@ namespace Celeste.Mod.Aqua.Core
                 Player player = Scene.Tracker.GetEntity<Player>();
                 if (_pivots.Count == 1)
                 {
-                    Vector2 direction = player.ExactCenter() - TopPivot.point;
+                    Vector2 direction = player.Center - TopPivot.point;
                     if (AquaMaths.IsApproximateZero(direction))
                         return -Vector2.UnitY;
                     return Calc.SafeNormalize(direction);
@@ -102,7 +102,7 @@ namespace Celeste.Mod.Aqua.Core
 
                 Player player = Scene.Tracker.GetEntity<Player>();
                 if (player == null) return Vector2.UnitX;
-                return Calc.SafeNormalize(player.ExactCenter() - BottomPivot.point);
+                return Calc.SafeNormalize(player.Center - BottomPivot.point);
             }
         }
         public Vector2 SwingDirection

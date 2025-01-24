@@ -194,7 +194,6 @@ namespace Celeste.Mod.Aqua.Core
             _fixElapsed = _elapsed;
 
             _sprite.Play(HookSprite.Hit, true);
-            _fixTimer.Reset();
             Input.Rumble(RumbleStrength.Light, RumbleLength.Short);
         }
 
@@ -484,12 +483,6 @@ namespace Celeste.Mod.Aqua.Core
                         rope.CheckCollision(playerSeg);
                         Velocity = Position - prevPosition;
                         rope.UpdateCurrentDirection();
-                        _fixTimer.Tick(dt);
-                        if (_fixTimer.Check())
-                        {
-                            Audio.Play("event:/char/madeline/hook_fixing", Position);
-                            _fixTimer.Expire();
-                        }
                         break;
                     default:
                         break;
@@ -711,13 +704,14 @@ namespace Celeste.Mod.Aqua.Core
                 return DoCollideOrNot(solid, Vector2.UnitX * step, onCollide, out data);
             }
 
-            Type sideType = ModInterop.MaxHelpingHand.GetType("Celeste.Mod.MaxHelpingHand.Entities.SidewaysJumpThru");
-            if (sideType != null)
+            var sidewaysTypes = ModInterop.SidewaysJumpthruTypes;
+            for (int i = 0; i < sidewaysTypes.Count; i++)
             {
-                var sideJumpthrus = Scene.Tracker.Entities[sideType];
+                Type sidewaysType = sidewaysTypes[i];
+                var sideJumpthrus = Scene.Tracker.Entities[sidewaysType];
                 if (sideJumpthrus.Count > 0)
                 {
-                    FieldInfo fieldLeft2Right = sideType.GetField("AllowLeftToRight", BindingFlags.Instance | BindingFlags.Public);
+                    FieldInfo fieldLeft2Right = sidewaysType.GetField("AllowLeftToRight", BindingFlags.Instance | BindingFlags.Public);
                     if (fieldLeft2Right != null)
                     {
                         foreach (Entity jumpthru in sideJumpthrus)
@@ -772,8 +766,8 @@ namespace Celeste.Mod.Aqua.Core
             }
             else
             {
-                Type[] downsideTypes = ModInterop.DownsideJumpthruTypes;
-                for (int i = 0; i < downsideTypes.Length; i++)
+                var downsideTypes = ModInterop.DownsideJumpthruTypes;
+                for (int i = 0; i < downsideTypes.Count; i++)
                 {
                     Type downsideType = downsideTypes[i];
                     platform = this.CollideFirstOutside(downsideType, Position + Vector2.UnitY * step) as Platform;
@@ -966,7 +960,6 @@ namespace Celeste.Mod.Aqua.Core
         private float _fixElapsed;
         private bool _hitUnhookable = false;
         private bool _hitInteractable = false;
-        private TimeTicker _fixTimer = new TimeTicker(0.08f);
 
         private HookSprite _sprite;
         private Sprite _elecShockSprite;

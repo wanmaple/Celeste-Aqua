@@ -14,13 +14,15 @@ namespace Celeste.Mod.Aqua.Core
         public static ParticleType P_Dust;
 
         public string Flag { get; private set; }
+        public float OpenTime { get; private set; }
         public float CloseTime { get; private set; }
 
         public TrapGate(EntityData data, Vector2 offset)
             : base(data.Position + offset, data.Width, data.Height, true)
         {
             Flag = data.Attr("flag");
-            CloseTime = MathF.Max(data.Float("close_time"), 0.5f);
+            OpenTime = MathF.Max(data.Float("open_time"), 0.1f);
+            CloseTime = MathF.Max(data.Float("close_time"), 0.1f);
             _openPosition = data.Nodes[0] + offset;
             _closePosition = Position;
             Add(_icon = new Sprite(GFX.Game, "objects/switchgate/icon"));
@@ -103,16 +105,9 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 start = Position;
             yield return 0.1f;
             Audio.Play("event:/game/general/touchswitch_gate_open", Position);
-            StartShaking(0.5f);
-            while (_icon.Rate < 1.0f)
-            {
-                _icon.Rate += Engine.DeltaTime * 2.0f;
-                yield return null;
-            }
-
-            yield return 0.1f;
+            _icon.Rate = 1.0f;
             int particleAt = 0;
-            float duration = (position - start).Length() / (position - _closePosition).Length() * 2.0f;
+            float duration = (position - start).Length() / (position - _closePosition).Length() * OpenTime;
             _tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeOut, duration, true);
             _tween.OnUpdate = delegate (Tween t)
             {
@@ -199,13 +194,6 @@ namespace Celeste.Mod.Aqua.Core
 
             Collidable = collidable;
             Audio.Play("event:/game/general/touchswitch_gate_finish", Position);
-            StartShaking(0.2f);
-            while (_icon.Rate > 0.0f)
-            {
-                _icon.Rate -= Engine.DeltaTime * 4.0f;
-                yield return null;
-            }
-
             _icon.Rate = 0f;
             _icon.SetAnimationFrame(0);
             _wiggler.Start();
@@ -228,7 +216,6 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 start = Position;
             yield return 0.1f;
             Audio.Play("event:/game/general/touchswitch_gate_open", Position);
-            //StartShaking(0.5f);
             _icon.Rate = 1.0f;
             int particleAt = 0;
             float duration = (position - start).Length() / (position - _openPosition).Length() * CloseTime;
@@ -318,13 +305,6 @@ namespace Celeste.Mod.Aqua.Core
 
             Collidable = collidable;
             Audio.Play("event:/game/general/touchswitch_gate_finish", Position);
-            StartShaking(0.2f);
-            while (_icon.Rate > 0.0f)
-            {
-                _icon.Rate -= Engine.DeltaTime * 4.0f;
-                yield return null;
-            }
-
             _icon.Rate = 0.0f;
             _icon.SetAnimationFrame(0);
             _wiggler.Start();
