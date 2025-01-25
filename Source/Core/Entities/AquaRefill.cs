@@ -23,7 +23,6 @@ namespace Celeste.Mod.Aqua.Core
             : base(position, twoDashes, oneUse)
         {
             HookTouchable = hookable;
-            _respawnPosition = Position;
             if (HookTouchable)
             {
                 string dir = string.Empty;
@@ -49,10 +48,8 @@ namespace Celeste.Mod.Aqua.Core
                 GFX.SpriteBank.CreateOn(flash, animID + "Flash");
                 this.SetHookable(true);
             }
-            PlayerCollider old = Get<PlayerCollider>();
-            old.OnCollide = OnPlayerCollide;
             Add(new HookInteractable(OnHookInteract));
-            Add(_moveToward = new MoveToward(null, 0.0f, true));
+            Add(_moveToward = new MoveToward(null, true));
             _moveToward.Active = false;
         }
 
@@ -61,24 +58,9 @@ namespace Celeste.Mod.Aqua.Core
         {
         }
 
-        private void OnPlayerCollide(Player player)
-        {
-            if (player.UseRefill(twoDashes))
-            {
-                Audio.Play(twoDashes ? "event:/new_content/game/10_farewell/pinkdiamond_touch" : "event:/game/general/diamond_touch", Position);
-                Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
-                Collidable = false;
-                outline.Position = _respawnPosition - Position;
-                Add(new Coroutine(RefillAndResetRoutine(player)));
-                respawnTimer = 2.5f;
-                _hookCollided = false;
-                _moveToward.Active = false;
-            }
-        }
-
         private bool OnHookInteract(GrapplingHook hook, Vector2 at)
         {
-            if (!HookTouchable || _hookCollided)
+            if (!HookTouchable)
                 return false;
 
             Player player = Scene.Tracker.GetEntity<Player>();
@@ -86,23 +68,12 @@ namespace Celeste.Mod.Aqua.Core
             {
                 hook.Revoke();
                 _moveToward.Target = hook;
-                _moveToward.BaseSpeed = 100000.0f;
                 _moveToward.Active = true;
-                _hookCollided = true;
                 return true;
             }
             return false;
         }
 
-        private IEnumerator RefillAndResetRoutine(Player player)
-        {
-            yield return RefillRoutine(player);
-            outline.Position = Vector2.Zero;
-            Position = _respawnPosition;
-        }
-
-        private bool _hookCollided = false;
-        private Vector2 _respawnPosition;
         private MoveToward _moveToward;
     }
 }

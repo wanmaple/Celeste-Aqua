@@ -126,10 +126,10 @@ namespace Celeste.Mod.Aqua.Core
             return null;
         }
 
-        public static void MakeSelfEnableToHookToPlayer(this Entity self)
+        public static void MakeSelfEnableGrabToPlayer(this Entity self)
         {
             self.SetHookable(true);
-            var moveToward = new MoveToward(null, 0.0f, true, true);
+            var moveToward = new MoveToward(null, true);
             moveToward.Active = false;
             self.Add(moveToward);
             DynamicData.For(self).Set("move_toward", moveToward);
@@ -151,7 +151,6 @@ namespace Celeste.Mod.Aqua.Core
                 hook.Revoke();
                 MoveToward moveToward = DynamicData.For(self).Get<MoveToward>("move_toward");
                 moveToward.Target = hook;
-                moveToward.BaseSpeed = 100000.0f;
                 moveToward.Active = true;
                 return true;
             }

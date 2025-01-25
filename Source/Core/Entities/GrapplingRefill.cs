@@ -61,7 +61,7 @@ namespace Celeste.Mod.Aqua.Core
             UpdateY();
             Add(new PlayerCollider(OnPlayer));
             Add(new HookInteractable(OnHookInteract));
-            Add(_moveToward = new MoveToward(null, 0.0f, true));
+            Add(_moveToward = new MoveToward(null, true));
             _moveToward.Active = false;
             this.SetHookable(true);
             Depth = -100;
@@ -136,20 +136,14 @@ namespace Celeste.Mod.Aqua.Core
             _outline.Position = _respawnPosition - Position;
             Add(new Coroutine(RefillAndResetRoutine(player)));
             _respawnTicker.Reset();
-            _hookCollided = false;
             _moveToward.Active = false;
         }
 
         private bool OnHookInteract(GrapplingHook hook, Vector2 at)
         {
-            if (_hookCollided || hook.Mode != GrapplingHook.GameplayMode.ShootCounter)
-                return false;
-
             hook.Revoke();
             _moveToward.Target = hook;
-            _moveToward.BaseSpeed = 100000.0f;
             _moveToward.Active = true;
-            _hookCollided = true;
             return true;
         }
 
@@ -188,7 +182,6 @@ namespace Celeste.Mod.Aqua.Core
         private SineWave _sine;
         private MoveToward _moveToward;
         private Vector2 _respawnPosition;
-        private bool _hookCollided;
         private TimeTicker _respawnTicker;
     }
 }

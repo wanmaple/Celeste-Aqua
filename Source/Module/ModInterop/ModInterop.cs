@@ -8,6 +8,7 @@ namespace Celeste.Mod.Aqua.Module
     {
         public static GravityHelperInterop GravityHelper => _interopGravityHelper;
         public static MaxHelpingHandInterop MaxHelpingHand => _interopMaxHelpingHand;
+        public static FactoryHelperInterop FactoryHelper => _interopFactoryHelper;
         public static IReadOnlyList<Type> SidewaysJumpthruTypes
         {
             get
@@ -24,6 +25,15 @@ namespace Celeste.Mod.Aqua.Module
                 if (_downsideJumpthruTypes == null)
                     CacheModTypes();
                 return _downsideJumpthruTypes;
+            }
+        }
+        public static Type ConveyorType
+        {
+            get
+            {
+                if (_conveyorType == null)
+                    CacheModTypes();
+                return _conveyorType;
             }
         }
 
@@ -52,11 +62,14 @@ namespace Celeste.Mod.Aqua.Module
             if (sidewayJumpthru1 != null)
                 sidewaysJumpthruTypes.Add(sidewayJumpthru1);
             _sidewaysJumpthruTypes = sidewaysJumpthruTypes.ToArray();
+            _conveyorType = FactoryHelper.GetType("FactoryHelper.Entities.Conveyor");
         }
 
         private static GravityHelperInterop _interopGravityHelper = new GravityHelperInterop();
         private static MaxHelpingHandInterop _interopMaxHelpingHand = new MaxHelpingHandInterop();
+        private static FactoryHelperInterop _interopFactoryHelper = new FactoryHelperInterop();
         private static Type[] _downsideJumpthruTypes;
         private static Type[] _sidewaysJumpthruTypes;
+        private static Type _conveyorType;
     }
 }

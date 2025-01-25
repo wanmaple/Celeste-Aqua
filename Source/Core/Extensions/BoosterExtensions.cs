@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Aqua.Debug;
+using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Cil;
 using System;
+using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -9,6 +12,7 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             On.Celeste.Booster.ctor_Vector2_bool += Booster_Construct;
+            On.Celeste.Booster.PlayerReleased += Booster_PlayerReleased;
             On.Celeste.Booster.Respawn += Booster_Respawn;
             On.Celeste.Booster.AppearParticles += Booster_AppearParticles;
         }
@@ -16,6 +20,7 @@ namespace Celeste.Mod.Aqua.Core
         public static void Uninitialize()
         {
             On.Celeste.Booster.ctor_Vector2_bool -= Booster_Construct;
+            On.Celeste.Booster.PlayerReleased -= Booster_PlayerReleased;
             On.Celeste.Booster.Respawn -= Booster_Respawn;
             On.Celeste.Booster.AppearParticles -= Booster_AppearParticles;
         }
@@ -27,9 +32,16 @@ namespace Celeste.Mod.Aqua.Core
             self.SetHookable(true);
         }
 
+        private static void Booster_PlayerReleased(On.Celeste.Booster.orig_PlayerReleased orig, Booster self)
+        {
+            orig(self);
+            self.SetHookable(false);
+        }
+
         private static void Booster_Respawn(On.Celeste.Booster.orig_Respawn orig, Booster self)
         {
-            self.Position = self.outline.Position;
+            self.ResetPosition();
+            self.SetHookable(true);
             orig(self);
         }
 
@@ -47,6 +59,11 @@ namespace Celeste.Mod.Aqua.Core
             {
                 orig(self);
             }
+        }
+
+        private static void ResetPosition(this Booster self)
+        {
+            self.Position = self.outline.Position;
         }
 
         private static bool OnHookCollide(this Booster self, GrapplingHook hook, Vector2 at)

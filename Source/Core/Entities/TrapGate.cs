@@ -328,7 +328,6 @@ namespace Celeste.Mod.Aqua.Core
         private Wiggler _wiggler;
         private Vector2 _openPosition;
         private Vector2 _closePosition;
-        private SoundSource _openSfx;
         private bool _on;
         private Coroutine _anim;
         private Tween _tween;

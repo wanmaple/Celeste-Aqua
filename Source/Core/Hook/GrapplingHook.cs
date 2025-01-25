@@ -844,6 +844,22 @@ namespace Celeste.Mod.Aqua.Core
             {
                 index = platform.GetLandSoundIndex(this);
             }
+            else
+            {
+                var sidewaysJumpthruTypes = ModInterop.SidewaysJumpthruTypes;
+                foreach (Type type in sidewaysJumpthruTypes)
+                {
+                    if (entity.GetType().IsAssignableTo(type))
+                    {
+                        FieldInfo field = type.GetField("surfaceIndex", BindingFlags.Instance | BindingFlags.NonPublic);
+                        if (field != null)
+                        {
+                            index = (int)field.GetValue(entity);
+                            break;
+                        }
+                    }
+                }
+            }
             Audio.Play(SurfaceIndex.GetPathFromIndex(index) + "/hooking", Position, "surface_index", index);
             AquaDebugger.LogInfo("Play Sound {0}", index);
         }

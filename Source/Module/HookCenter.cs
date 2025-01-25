@@ -21,6 +21,7 @@ namespace Celeste.Mod.Aqua.Module
             BounceBlockExtensions.Initialize();
             SpringExtensions.Initialize();
             BumperExtensions.Initialize();
+            RefillExtensions.Initialize();
             BoosterExtensions.Initialize();
             AngryOshiroExtensions.Initialize();
             SeekerExtensions.Initialize();
@@ -60,6 +61,7 @@ namespace Celeste.Mod.Aqua.Module
             BounceBlockExtensions.Uninitialize();
             SpringExtensions.Uninitialize();
             BumperExtensions.Uninitialize();
+            RefillExtensions.Uninitialize();
             BoosterExtensions.Uninitialize();
             AngryOshiroExtensions.Uninitialize();
             SeekerExtensions.Uninitialize();

@@ -8,7 +8,6 @@ using MonoMod.Utils;
 using Mono.Cecil;
 using Celeste.Mod.Aqua.Debug;
 using System.Linq;
-using System.IO.Pipes;
 using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
@@ -752,7 +751,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (AquaMaths.IsApproximateZero(speed))
                 return Vector2.Zero;
-            speed = Calc.SafeNormalize(speed) * MathF.Floor(speed.Length() / 10.0f) * 10.0f;
+            speed = Calc.SafeNormalize(speed) * MathF.Round(speed.Length() / 10.0f) * 10.0f;
             float xSign = MathF.Sign(speed.X);
             float ySign = MathF.Sign(speed.Y);
             speed = AquaMaths.Abs(speed);
@@ -774,15 +773,6 @@ namespace Celeste.Mod.Aqua.Core
             speed *= new Vector2(xSign, ySign);
             return speed;
         }
-
-        private static KeyValuePair<float, Vector2>[] ACCURACY_RANGE_LIST =
-        {
-            new KeyValuePair<float, Vector2>(10.0f * Calc.DegToRad, Vector2.UnitX),
-            new KeyValuePair<float, Vector2>(30.0f * Calc.DegToRad, new Vector2(MathF.Cos(22.5f * Calc.DegToRad), MathF.Sin(22.5f * Calc.DegToRad))),
-            new KeyValuePair<float, Vector2>(55.0f * Calc.DegToRad, new Vector2(MathF.Cos(45.0f * Calc.DegToRad), MathF.Sin(45.0f * Calc.DegToRad))),
-            new KeyValuePair<float, Vector2>(75.0f * Calc.DegToRad, new Vector2(MathF.Cos(67.5f * Calc.DegToRad), MathF.Sin(67.5f * Calc.DegToRad))),
-            new KeyValuePair<float, Vector2>(90.0f * Calc.DegToRad, Vector2.UnitY),
-        };
 
         private static Vector2 TurnToTangentSpeed(this Player self, Vector2 speed, Vector2 swingDirection)
         {
@@ -1102,6 +1092,15 @@ namespace Celeste.Mod.Aqua.Core
             (int)AquaStates.StNormal,
             (int)AquaStates.StDash,
             (int)AquaStates.StLaunch,
+        };
+
+        private static KeyValuePair<float, Vector2>[] ACCURACY_RANGE_LIST =
+        {
+            new KeyValuePair<float, Vector2>(10.0f * Calc.DegToRad, Vector2.UnitX),
+            new KeyValuePair<float, Vector2>(30.0f * Calc.DegToRad, new Vector2(MathF.Cos(22.5f * Calc.DegToRad), MathF.Sin(22.5f * Calc.DegToRad))),
+            new KeyValuePair<float, Vector2>(55.0f * Calc.DegToRad, new Vector2(MathF.Cos(45.0f * Calc.DegToRad), MathF.Sin(45.0f * Calc.DegToRad))),
+            new KeyValuePair<float, Vector2>(75.0f * Calc.DegToRad, new Vector2(MathF.Cos(67.5f * Calc.DegToRad), MathF.Sin(67.5f * Calc.DegToRad))),
+            new KeyValuePair<float, Vector2>(90.0f * Calc.DegToRad, Vector2.UnitY),
         };
     }
 }

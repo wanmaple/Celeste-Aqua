@@ -44,7 +44,7 @@ namespace Celeste.Mod.Aqua.Core
                 com.Interaction = OnHookGrab;
                 PlayerCollider com2 = Get<PlayerCollider>();
                 com2.OnCollide = OnPlayerEx;
-                Add(_moveToward = new MoveToward(null, 0.0f, true));
+                Add(_moveToward = new MoveToward(null, true));
                 _moveToward.Active = false;
             }
             else if (GFX.SpriteBank.Has(skin))
@@ -71,7 +71,6 @@ namespace Celeste.Mod.Aqua.Core
                 Audio.Play(red ? "event:/game/05_mirror_temple/redbooster_reappear" : "event:/game/04_cliffside/greenbooster_reappear", Position);
                 hook.Revoke();
                 _moveToward.Target = hook;
-                _moveToward.BaseSpeed = 100000.0f;
                 _moveToward.Active = true;
                 _grabbing = true;
                 return true;

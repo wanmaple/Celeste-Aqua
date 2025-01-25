@@ -124,6 +124,12 @@ entities.Aqua/Booster Filter.attributes.description.collide_solids=Whether the f
 entities.Aqua/Hook Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
 entities.Aqua/Hook Refill.attributes.description.chargeTwo=Whether the refill will charge two countings.
 
+# Grapple Interaction Assigner
+entities.Aqua/Grapple Interaction Assigner.attributes.description.interaction_type=What kind of interaction to be assigned.\nGrabToPlayer: make the entity be able to hooked to player.
+
+# Acceleration Ability Assigner
+entities.Aqua/Acceleration Ability Assigner.attributes.description.acceleration=The acceleration value to be assigned.
+
 # Decal Assigner
 entities.Aqua/Decal Assigner.attributes.description.command=Which ability to assign to the covered decals.
 

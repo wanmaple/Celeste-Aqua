@@ -4,6 +4,7 @@ using Monocle;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using static Celeste.GaussianBlur;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -104,6 +105,13 @@ namespace Celeste.Mod.Aqua.Core
             return AccelerateState.None;
         }
 
+        public void CommonAccelerate(Solid solid, float acceleration)
+        {
+            Vector2 acc = GetAccelerateDirection() * acceleration * Engine.DeltaTime;
+            solid.MoveH(0.5f * acc.X * Engine.DeltaTime * Engine.DeltaTime);
+            solid.MoveV(0.5f * acc.Y * Engine.DeltaTime * Engine.DeltaTime);
+        }
+
         private bool IsIdenticalDirection(MoveBlock.Directions direction)
         {
             return Direction == direction;
@@ -123,6 +131,22 @@ namespace Celeste.Mod.Aqua.Core
                     return direction == MoveBlock.Directions.Up;
             }
             return false;
+        }
+
+        private Vector2 GetAccelerateDirection()
+        {
+            switch (Direction)
+            {
+                case MoveBlock.Directions.Left:
+                    return -Vector2.UnitX;
+                case MoveBlock.Directions.Right:
+                    return Vector2.UnitX;
+                case MoveBlock.Directions.Up:
+                    return -Vector2.UnitY;
+                case MoveBlock.Directions.Down:
+                    return Vector2.UnitY;
+            }
+            return Vector2.Zero;
         }
 
         private IEnumerator Blink()

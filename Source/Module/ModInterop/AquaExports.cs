@@ -57,6 +57,16 @@ namespace Celeste.Mod.Aqua.Module
             entity.SetHookable(hookable);
         }
 
+        public static bool IsHookAttached(Entity entity)
+        {
+            return entity.IsHookAttached();
+        }
+
+        public static bool IsIntersectsWithRope(Entity entity)
+        {
+            return entity.IntersectsWithRope();
+        }
+
         public static void RegisterGrapplingHookCollision(Entity entity, Action<Entity> action)
         {
             var handler = new Action<GrapplingHook>(action);
