@@ -10,16 +10,18 @@ namespace Celeste.Mod.Aqua.Core
     {
         public Color PlayerColor { get; set; }
         public Color HookColor { get; set; }
+        public Color DashColor { get; set; }
         public bool Loop { get; set; }
         public float TrailInterval { get; set; }
         public float TrailLifetime { get; set; }
         public float LoopInterval { get; set; }
 
-        public PresentationController(PresentationData presentation, Color playerColor, Color hookColor, bool loop, float trailInterval, float trailLifetime, float loopInterval)
+        public PresentationController(PresentationData presentation, Color playerColor, Color hookColor, Color dashColor, bool loop, float trailInterval, float trailLifetime, float loopInterval)
         {
             _presentation = presentation;
             PlayerColor = playerColor;
             HookColor = hookColor;
+            DashColor = dashColor;
             Loop = loop;
             TrailInterval = trailInterval;
             TrailLifetime = trailLifetime;
@@ -31,7 +33,8 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Awake(scene);
             _playbackPlayer = new PresentationPlayer(0.0f);
-            _playbackPlayer.SetColor(PlayerColor);
+            _playbackPlayer.PlayerColor = PlayerColor;
+            _playbackPlayer.DashColor = DashColor;
             scene.Add(_playbackPlayer);
             _playbackHook = new PresentationGrapplingHook();
             _playbackHook.SetColor(HookColor);

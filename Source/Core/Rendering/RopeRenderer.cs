@@ -11,9 +11,10 @@ namespace Celeste.Mod.Aqua.Core
         public bool ElectricShocking { get; set; }
         public Color RopeColor { get; set; } = Color.White;
 
-        public RopeRenderer(MTexture texture)
+        public RopeRenderer(string spriteName)
         {
-            _texture = texture;
+            _sprite = new Sprite();
+            GFX.SpriteBank.CreateOn(_sprite, spriteName);
             _elecShockTextures = new MTexture[5];
             for (int i = 0; i <= 4; ++i)
             {
@@ -29,9 +30,9 @@ namespace Celeste.Mod.Aqua.Core
 
         public void Render(IReadOnlyList<Segment> segments)
         {
-            if (_texture != null)
+            if (_sprite != null)
             {
-                RenderSteps(segments, _texture);
+                RenderSteps(segments, _sprite.GetFrame("idle", 0));
             }
             if (ElectricShocking)
             {
@@ -66,7 +67,7 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         private float _elapsed;
-        private MTexture _texture;
+        private Sprite _sprite;
         private int _elecShockIndex;
         private MTexture[] _elecShockTextures;
     }

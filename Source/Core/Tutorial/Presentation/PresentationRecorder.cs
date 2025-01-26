@@ -62,7 +62,7 @@ namespace Celeste.Mod.Aqua.Core
                     Gravity = ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1 : 1,
                     AnimationID = player.Sprite.CurrentAnimationID,
                     AnimationFrame = player.Sprite.CurrentAnimationFrame,
-                    HairCount = player.Sprite.HairCount,
+                    State = player.StateMachine.State,
                     HairFacing = (int)player.Hair.Facing,
                     Scale = player.Sprite.Scale,
                     RenderPosition = player.Sprite.RenderPosition,

@@ -10,6 +10,10 @@ PresentationTrigger.fieldInformation = {
         fieldType = "color",
         useAlpha = false,
     },
+    dash_color = {
+        fieldType = "color",
+        useAlpha = false,
+    },
 }
 PresentationTrigger.placements = {
     name = "Presentation Trigger",
@@ -19,6 +23,7 @@ PresentationTrigger.placements = {
         presentation = "",
         player_color = "a42d2d",
         hook_color = "ffff00",
+        dash_color = "ffffff",
         loop = true,
         loop_interval = 1.0,
         trail_interval = 0.1,

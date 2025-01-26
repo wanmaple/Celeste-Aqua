@@ -126,6 +126,7 @@ entities.Aqua/Hook Refill.attributes.description.chargeTwo=Whether the refill wi
 
 # Grapple Interaction Assigner
 entities.Aqua/Grapple Interaction Assigner.attributes.description.interaction_type=What kind of interaction to be assigned.\nGrabToPlayer: make the entity be able to hooked to player.
+entities.Aqua/Grapple Interaction Assigner.attributes.description.blacklist=The blacklist entities or mods simply used word containing check, case insensitive.\ne.g. 'FactoryHelper' will ignore all entities in FactoryHelper, 'Booster' will ignore all entities with booster in the name.\nNot sure the name in leonn always satisfies, you can ask the mod author for its class name if not worked.
 
 # Acceleration Ability Assigner
 entities.Aqua/Acceleration Ability Assigner.attributes.description.acceleration=The acceleration value to be assigned.
@@ -208,6 +209,7 @@ triggers.Aqua/Dream Toggle Trigger.attributes.description.once=Whether trigger o
 triggers.Aqua/Presentation Trigger.attributes.description.presentation=Presentation name, it should be put in 'Maps/Presentations/', don't add extension.
 triggers.Aqua/Presentation Trigger.attributes.description.player_color=The color of player playback.
 triggers.Aqua/Presentation Trigger.attributes.description.hook_color=The color of grappling hook playback.
+triggers.Aqua/Presentation Trigger.attributes.description.dash_color=The color of player when dashing.
 triggers.Aqua/Presentation Trigger.attributes.description.loop=Whether to loop the presentation.
 triggers.Aqua/Presentation Trigger.attributes.description.loop_interval=Interval between loops, only works when looped.
 triggers.Aqua/Presentation Trigger.attributes.description.trail_interval=Interval of trail occurence.

@@ -13,6 +13,7 @@ namespace Celeste.Mod.Aqua.Core
         public string PresentationName { get; set; }
         public Color PlayerColor { get; set; }
         public Color HookColor { get; set; }
+        public Color DashColor { get; set; }
         public bool Loop { get; set; }
         public float LoopInterval { get; set; }
         public float TrailInterval { get; set; }
@@ -24,6 +25,7 @@ namespace Celeste.Mod.Aqua.Core
             PresentationName = data.Attr("presentation");
             PlayerColor = data.HexColor("player_color", Calc.HexToColor("a42d2d"));
             HookColor = data.HexColor("hook_color", Calc.HexToColor("ffff00"));
+            DashColor = data.HexColor("dash_color", Calc.HexToColor("ffffff"));
             Loop = data.Bool("loop");
             LoopInterval = data.Float("loop_interval", 1.0f);
             TrailInterval = data.Float("trail_interval", 0.1f);
@@ -33,7 +35,6 @@ namespace Celeste.Mod.Aqua.Core
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            Level level = scene as Level;
             string presentationPath = "Maps/Presentations/" + PresentationName;
             if (Everest.Content.TryGet(presentationPath, out ModAsset metadata))
             {
@@ -76,7 +77,7 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     controller.RemoveSelf();
                 }
-                Scene.Add(new PresentationController(_presentation, PlayerColor, HookColor, Loop, TrailInterval, TrailLifetime, LoopInterval));
+                Scene.Add(new PresentationController(_presentation, PlayerColor, HookColor, DashColor, Loop, TrailInterval, TrailLifetime, LoopInterval));
             }
         }
 

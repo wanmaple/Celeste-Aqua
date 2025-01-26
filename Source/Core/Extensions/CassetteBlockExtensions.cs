@@ -8,17 +8,17 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             On.Celeste.CassetteBlock.BlockedCheck += CassetteBlock_BlockedCheck;
-            On.Celeste.CassetteBlock.SetActivatedSilently += CassetteBlock_SetActivatedSilently;
-            On.Celeste.CassetteBlock.WillToggle += CassetteBlock_WillToggle;
-            On.Celeste.CassetteBlockManager.SetActiveIndex += CassetteBlockManager_SetActiveIndex;
+            //On.Celeste.CassetteBlock.SetActivatedSilently += CassetteBlock_SetActivatedSilently;
+            //On.Celeste.CassetteBlock.WillToggle += CassetteBlock_WillToggle;
+            //On.Celeste.CassetteBlockManager.SetActiveIndex += CassetteBlockManager_SetActiveIndex;
         }
 
         public static void Uninitialize()
         {
             On.Celeste.CassetteBlock.BlockedCheck -= CassetteBlock_BlockedCheck;
-            On.Celeste.CassetteBlock.SetActivatedSilently -= CassetteBlock_SetActivatedSilently;
-            On.Celeste.CassetteBlock.WillToggle -= CassetteBlock_WillToggle;
-            On.Celeste.CassetteBlockManager.SetActiveIndex -= CassetteBlockManager_SetActiveIndex;
+            //On.Celeste.CassetteBlock.SetActivatedSilently -= CassetteBlock_SetActivatedSilently;
+            //On.Celeste.CassetteBlock.WillToggle -= CassetteBlock_WillToggle;
+            //On.Celeste.CassetteBlockManager.SetActiveIndex -= CassetteBlockManager_SetActiveIndex;
         }
 
         private static bool CassetteBlock_BlockedCheck(On.Celeste.CassetteBlock.orig_BlockedCheck orig, CassetteBlock self)
@@ -40,21 +40,37 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void CassetteBlock_WillToggle(On.Celeste.CassetteBlock.orig_WillToggle orig, CassetteBlock self)
         {
-            self.ShiftSize(self.IsCassetteActive() ? 1 : (-1));
-            self.UpdateVisualState();
+            var state = self.SceneAs<Level>().GetState();
+            if (state != null && state.FeatureEnabled)
+            {
+                self.ShiftSize(self.IsCassetteActive() ? 1 : (-1));
+                self.UpdateVisualState();
+            }
+            else
+            {
+                orig(self);
+            }
         }
 
         private static void CassetteBlockManager_SetActiveIndex(On.Celeste.CassetteBlockManager.orig_SetActiveIndex orig, CassetteBlockManager self, int index)
         {
-            foreach (CassetteBlock entity in self.Scene.Tracker.GetEntities<CassetteBlock>())
+            var state = self.SceneAs<Level>().GetState();
+            if (state != null && state.FeatureEnabled)
             {
-                entity.Activated = entity.Index == index;
-                entity.SetCassetteActive(entity.Index == index);
-            }
+                foreach (CassetteBlock entity in self.Scene.Tracker.GetEntities<CassetteBlock>())
+                {
+                    entity.Activated = entity.Index == index;
+                    entity.SetCassetteActive(entity.Index == index);
+                }
 
-            foreach (CassetteListener component in self.Scene.Tracker.GetComponents<CassetteListener>())
+                foreach (CassetteListener component in self.Scene.Tracker.GetComponents<CassetteListener>())
+                {
+                    component.SetActivated(component.Index == index);
+                }
+            }
+            else
             {
-                component.SetActivated(component.Index == index);
+                orig(self, index);
             }
         }
 

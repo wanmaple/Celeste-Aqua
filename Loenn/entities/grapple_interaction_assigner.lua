@@ -25,6 +25,7 @@ for _, option in ipairs(ASSIGN_OPTIONS) do
             width = 16,
             height = 16,
             interaction_type = option,
+            blacklist = "",
         },
     })
 end

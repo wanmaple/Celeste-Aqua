@@ -15,6 +15,21 @@
       <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
     </Aqua_HookPlayback>
 
+    <Aqua_Rope path="objects/hook/" start="idle">
+      <Justify x="0.0" y="0.5" />
+      <Anim id="idle" path="rope" frames="0" />
+    </Aqua_Rope>
+
+    <Aqua_RopeMetal path="objects/hook/" start="idle">
+      <Justify x="0.0" y="0.5" />
+      <Anim id="idle" path="rope_metal" frames="0" />
+    </Aqua_RopeMetal>
+
+    <Aqua_RopeWhite path="objects/hook/playback/" start="idle">
+      <Justify x="0.0" y="0.5" />
+      <Anim id="idle" path="rope" frames="0" />
+    </Aqua_RopeWhite>
+
     <Aqua_HookElectricShock path="objects/hook/" start="shocking">
       <Justify x="0.5" y="0.5" />
       <Loop id="shocking" path="hook_charge" frames="0-4" delay="0.1" />

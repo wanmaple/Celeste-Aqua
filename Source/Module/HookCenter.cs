@@ -36,6 +36,7 @@ namespace Celeste.Mod.Aqua.Module
             HeartGemExtensions.Initialize();
             InvisibleBarrierExtensions.Initialize();
             PlayerSpriteExtensions.Initialize();
+            PlayerHairExtensions.Initialize();
             PlayerStates.Initialize();
             GrabbyIconExtends.Initialize();
             LevelStates.Initialize();
@@ -76,6 +77,7 @@ namespace Celeste.Mod.Aqua.Module
             HeartGemExtensions.Uninitialize();
             InvisibleBarrierExtensions.Uninitialize();
             PlayerSpriteExtensions.Uninitialize();
+            PlayerHairExtensions.Uninitialize();
             PlayerStates.Uninitialize();
             GrabbyIconExtends.Uninitialize();
             LevelStates.Uninitialize();

@@ -133,18 +133,18 @@ namespace Celeste.Mod.Aqua.Core
 
         public void ChangeMaterial(RopeMaterial material)
         {
-            MTexture ropeTexture = null;
+            string spriteName = string.Empty;
             switch (material)
             {
                 case RopeMaterial.Metal:
-                    ropeTexture = GFX.Game["objects/hook/rope_metal"];
+                    spriteName = "Aqua_RopeMetal";
                     break;
                 case RopeMaterial.Default:
                 default:
-                    ropeTexture = GFX.Game["objects/hook/rope"];
+                    spriteName = "Aqua_Rope";
                     break;
             }
-            _renderer = new RopeRenderer(ropeTexture);
+            _renderer = new RopeRenderer(spriteName);
         }
 
         public Vector2 DetectHookNextPosition(float dt, bool revoking, float speedCoeff, out bool changeState)

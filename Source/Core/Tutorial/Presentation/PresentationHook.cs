@@ -48,7 +48,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 if (MInput.Keyboard.Pressed(Keys.Home) && _tempData != null)
                 {
-                    level.Add(new PresentationController(_tempData, Calc.HexToColor("a42d2d"), Calc.HexToColor("ffff00"), true, 0.1f, 0.45f, 1.0f));
+                    level.Add(new PresentationController(_tempData, Calc.HexToColor("a42d2d"), Calc.HexToColor("ffff00"), Color.White, true, 0.1f, 0.45f, 1.0f));
                 }
                 else if (MInput.Keyboard.Pressed(Keys.End))
                 {

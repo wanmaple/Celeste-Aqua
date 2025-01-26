@@ -3,6 +3,8 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -17,6 +19,7 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         public GrappleInteractions InteractionType { get; private set; }
+        public IReadOnlyList<string> Blacklist { get; private set; }
 
         public GrappleInteractionAssigner(EntityData data, Vector2 offset)
             : base(data.Position + offset)
@@ -34,6 +37,17 @@ namespace Celeste.Mod.Aqua.Core
                     InteractionType = GrappleInteractions.None;
                     break;
             }
+            string blacklist = data.Attr("blacklist");
+            if (!string.IsNullOrWhiteSpace(blacklist))
+            {
+                string[] array = blacklist.Split(',').Select(str => str.Trim()).Where(str => !string.IsNullOrEmpty(str)).ToArray();
+                Blacklist = array;
+            }
+            else
+            {
+                Blacklist = Array.Empty<string>();
+            }
+            
             this.MakeExtraCollideCondition();
         }
 
@@ -44,12 +58,25 @@ namespace Celeste.Mod.Aqua.Core
             {
                 foreach (Entity entity in Scene.Entities)
                 {
-                    if (CollideCheck(entity))
+                    if (CollideCheck(entity) && !IsInBlacklist(entity))
                     {
                         AssignInteractionToEntity(entity);
                     }
                 }
             }
+        }
+
+        private bool IsInBlacklist(Entity entity)
+        {
+            string fullname = entity.GetType().FullName;
+            foreach (string black in Blacklist)
+            {
+                if (fullname.Contains(black, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void AssignInteractionToEntity(Entity entity)

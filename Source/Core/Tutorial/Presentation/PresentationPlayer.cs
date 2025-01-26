@@ -1,12 +1,15 @@
 ﻿using Celeste.Mod.Aqua.Debug;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System;
 
 namespace Celeste.Mod.Aqua.Core
 {
     public class PresentationPlayer : Entity
     {
+        public Color PlayerColor { get; set; }
+        public Color DashColor { get; set; }
+        public PlayerSprite PlayerSprite => _sprite;
+
         public PresentationPlayer CreateTrail(float lifetime)
         {
             var clone = new PresentationPlayer(lifetime);
@@ -36,6 +39,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             _lifetime = lifetime;
             _sprite = new PlayerSprite(PlayerSpriteMode.Playback);
+            _sprite.HairCount = 4;
             Add(_hair = new PlayerHair(_sprite));
             _hair.Color = Player.NormalHairColor;
             Add(_sprite);
@@ -66,8 +70,14 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        public override void DebugRender(Camera camera)
+        {
+            Draw.Circle(Position, 2.0f, Color.Purple, 16);
+        }
+
         public void Apply(PlayerFrameData frame)
         {
+            _currentFrame = frame;
             if (_sprite.Has(frame.AnimationID))
             {
                 _sprite.Play(frame.AnimationID);
@@ -82,19 +92,15 @@ namespace Celeste.Mod.Aqua.Core
             _sprite.Scale = frame.Scale;
             _sprite.Scale.X *= frame.Facing;
             _sprite.Scale.Y *= frame.Gravity;
-            _sprite.HairCount = frame.HairCount;
+            AquaDebugger.LogInfo(frame.State.ToString());
             _sprite.RenderPosition = frame.RenderPosition;
             _hair.Facing = (Facings)frame.HairFacing;
-        }
-
-        public void SetColor(Color color)
-        {
-            _sprite.Color = color;
-            _hair.Color = color;
+            _sprite.Color = _hair.Color = frame.State == (int)AquaStates.StDash ? DashColor : PlayerColor;
         }
 
         private PlayerSprite _sprite;
         private PlayerHair _hair;
+        private PlayerFrameData _currentFrame;
         private float _lifetime;
         private float _elapsed = 0.0f;
     }

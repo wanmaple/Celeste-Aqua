@@ -1,5 +1,6 @@
 ﻿using Celeste.Mod.Aqua.Module;
 using Celeste.Mod.Aqua.Rendering;
+using Microsoft.Xna.Framework.Input;
 using Monocle;
 using System;
 using System.Collections.Generic;
