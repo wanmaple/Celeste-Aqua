@@ -6,6 +6,9 @@ using static Celeste.BounceBlock;
 
 namespace Celeste.Mod.Aqua.Core
 {
+    /// <summary>
+    /// I really don't know how to make this work using IL hook, it's just too complicated.
+    /// </summary>
     public static class BounceBlockExtensions
     {
         static BounceBlockExtensions()

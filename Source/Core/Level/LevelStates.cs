@@ -178,7 +178,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void Level_Update(On.Celeste.Level.orig_Update orig, Level self)
         {
             orig(self);
-            if (AquaModule.Settings.SwitchAutoGrab.Pressed)
+            if (!self.FrozenOrPaused && AquaModule.Settings.SwitchAutoGrab.Pressed)
             {
                 AquaModule.Settings.AutoGrabRopeIfPossible = !AquaModule.Settings.AutoGrabRopeIfPossible;
             }

@@ -292,9 +292,22 @@ namespace Celeste.Mod.Aqua.Core
             float length = CalculateRopeLength(playerSeg.Point2);
             if (length > _lockLength)
             {
+                if (player.StateMachine.State == (int)AquaStates.StRedDash || player.StateMachine.State == (int)AquaStates.StDreamDash)
+                {
+                    if (!Input.GrabCheck && !AquaModule.Settings.AutoGrabRopeIfPossible)
+                    {
+                        return true;
+                    }
+                }
                 float lengthDiff = length - _lockLength;
                 Vector2 ropeDirection = Calc.SafeNormalize(BottomPivot.point - playerSeg.Point2);
                 Vector2 movement = ropeDirection * MathF.Ceiling(lengthDiff);
+                if (player.StateMachine.State == (int)AquaStates.StRedDash || player.StateMachine.State == (int)AquaStates.StDreamDash)
+                {
+                    float connectedLen = CalculateLengthConnectedPivots();
+                    Vector2 preferPosition = BottomPivot.point - ropeDirection * (_lockLength - connectedLen);
+                    movement = preferPosition - playerSeg.Point2;
+                }
                 movement.Y *= (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f);
                 player.movementCounter = Vector2.Zero;
                 if (!AquaMaths.IsApproximateZero(movement.X))
@@ -312,21 +325,6 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 return true;
             }
-            //else if (player.StateMachine.State == (int)AquaStates.StHanging && !DynamicData.For(player).Get<bool>("rope_is_loosen") && length < _lockLength - 1.5f)
-            //{
-            //    float lengthDiff = length - _lockLength;
-            //    Vector2 ropeDirection = Calc.SafeNormalize(BottomPivot.point - playerSeg.Point2);
-            //    Vector2 movement = ropeDirection * -MathF.Ceiling(-lengthDiff);
-            //    player.movementCounter = Vector2.Zero;
-            //    if (!AquaMaths.IsApproximateZero(movement.X))
-            //    {
-            //        player.MoveH(movement.X);
-            //    }
-            //    if (!AquaMaths.IsApproximateZero(movement.Y))
-            //    {
-            //        player.MoveV(movement.Y);
-            //    }
-            //}
 
             return false;
         }
@@ -787,18 +785,24 @@ namespace Celeste.Mod.Aqua.Core
 
         public float CalculateRopeLength(Vector2 playerPosition)
         {
-            float length = 0.0f;
             if (_pivots.Count <= 1)
             {
                 return (BottomPivot.point - playerPosition).Length();
             }
 
+            float length = CalculateLengthConnectedPivots();
+            length += (BottomPivot.point - playerPosition).Length();
+            return length;
+        }
+
+        public float CalculateLengthConnectedPivots()
+        {
+            float length = 0.0f;
             for (int i = 1; i < _pivots.Count; ++i)
             {
                 Segment seg = new Segment(_pivots[i].point, _pivots[i - 1].point);
                 length += seg.Length;
             }
-            length += (BottomPivot.point - playerPosition).Length();
             return length;
         }
 
