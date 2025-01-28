@@ -18,6 +18,7 @@ namespace Celeste.Mod.Aqua.Module
             CrumblePlatformExtensions.Initialize();
             FallingBlockExtensions.Initialize();
             MoveBlockExtensions.Initialize();
+            CrushBlockExtensions.Initialize();
             BounceBlockExtensions.Initialize();
             SpringExtensions.Initialize();
             BumperExtensions.Initialize();
@@ -59,6 +60,7 @@ namespace Celeste.Mod.Aqua.Module
             CrumblePlatformExtensions.Uninitialize();
             FallingBlockExtensions.Uninitialize();
             MoveBlockExtensions.Uninitialize();
+            CrushBlockExtensions.Uninitialize();
             BounceBlockExtensions.Uninitialize();
             SpringExtensions.Uninitialize();
             BumperExtensions.Uninitialize();

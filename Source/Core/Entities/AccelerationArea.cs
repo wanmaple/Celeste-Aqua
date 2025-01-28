@@ -4,7 +4,6 @@ using Monocle;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using static Celeste.GaussianBlur;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -105,6 +104,31 @@ namespace Celeste.Mod.Aqua.Core
             return AccelerateState.None;
         }
 
+        public AccelerateState TryAccelerate(CrushBlock block)
+        {
+            float acc = CrushBlock.CrushAccel;
+            float sign = block.crushDir.X == 0.0f ? block.crushDir.Y : block.crushDir.X;
+            Vector2 movement = block.Position - block.GetPreviousPosition();
+            float movementSign = movement.X == 0.0f ? movement.Y : movement.X;
+            if (IsIdenticalDirection(block.crushDir))
+            {
+                block.AddExtraSpeed(acc * Engine.DeltaTime);
+                if (movementSign * sign > 0.0f)
+                    return AccelerateState.Accelerate;
+                else
+                    return AccelerateState.Deaccelerate;
+            }
+            else if (IsOppositeDirection(block.crushDir))
+            {
+                block.AddExtraSpeed(-acc * Engine.DeltaTime);
+                if (movementSign * sign < 0.0f)
+                    return AccelerateState.Accelerate;
+                else
+                    return AccelerateState.Deaccelerate;
+            }
+            return AccelerateState.None;
+        }
+
         public void CommonAccelerate(Solid solid, float acceleration)
         {
             Vector2 acc = GetAccelerateDirection() * acceleration * Engine.DeltaTime;
@@ -115,6 +139,11 @@ namespace Celeste.Mod.Aqua.Core
         private bool IsIdenticalDirection(MoveBlock.Directions direction)
         {
             return Direction == direction;
+        }
+
+        private bool IsIdenticalDirection(Vector2 direction)
+        {
+            return Vector2.Dot(GetAccelerateDirection(), direction) > 0.0f;
         }
 
         private bool IsOppositeDirection(MoveBlock.Directions direction)
@@ -131,6 +160,11 @@ namespace Celeste.Mod.Aqua.Core
                     return direction == MoveBlock.Directions.Up;
             }
             return false;
+        }
+
+        private bool IsOppositeDirection(Vector2 direction)
+        {
+            return Vector2.Dot(GetAccelerateDirection(), direction) < 0.0f;
         }
 
         private Vector2 GetAccelerateDirection()

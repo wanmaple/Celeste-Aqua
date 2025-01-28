@@ -720,7 +720,8 @@ namespace Celeste.Mod.Aqua.Core
                 GrapplingHook hook = self.GetGrappleHook();
                 if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
                 {
-                    if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
+                    // force do a swing jump?
+                    //if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                     {
                         // replace dream jump to swing jump.
                         possible = true;

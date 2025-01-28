@@ -114,16 +114,6 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public static AccelerationArea.AccelerateState GetAccelerateState(this MoveBlock self)
-        {
-            return DynamicData.For(self).Get<AccelerationArea.AccelerateState>("accelerate_state");
-        }
-
-        public static void SetAccelerateState(this MoveBlock self, AccelerationArea.AccelerateState state)
-        {
-            DynamicData.For(self).Set("accelerate_state", state);
-        }
-
         public static bool IsReversed(this MoveBlock self)
         {
             return DynamicData.For(self).Get<bool>("reversed");

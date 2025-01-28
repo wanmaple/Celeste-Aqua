@@ -4,7 +4,6 @@ using Monocle;
 using MonoMod.Utils;
 using System;
 using System.Reflection;
-using System.Xml.Schema;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -141,6 +140,16 @@ namespace Celeste.Mod.Aqua.Core
         public static void SetJustAttached(this Solid self, bool value)
         {
             DynamicData.For(self).Set("just_attached", value);
+        }
+
+        public static AccelerationArea.AccelerateState GetAccelerateState(this Solid self)
+        {
+            return DynamicData.For(self).Get<AccelerationArea.AccelerateState>("accelerate_state");
+        }
+
+        public static void SetAccelerateState(this Solid self, AccelerationArea.AccelerateState state)
+        {
+            DynamicData.For(self).Set("accelerate_state", state);
         }
 
         private static PropertyInfo _propConveyorMovingLeft;
