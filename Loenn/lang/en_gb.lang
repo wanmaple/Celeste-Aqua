@@ -181,6 +181,10 @@ entities.Aqua/Gravity Spike Left.attributes.description.color=Color of the spike
 entities.Aqua/Gravity Spike Left.attributes.description.gravity=The spikes will be active in specific gravity circumstance.
 entities.Aqua/Gravity Spike Left.attributes.description.disable_type=The disable style of the spikes, same use of type attribute.
 
+# Outline Display
+entities.Aqua/Outline Display.placements.name.texture_path=Outline texture.
+entities.Aqua/Outline Display.placements.name.color=Outline color.
+
 # Aqua Bird Trigger
 triggers.Aqua/Aqua Bird Trigger.attributes.description.birdId=Identifier of the bird.
 triggers.Aqua/Aqua Bird Trigger.attributes.description.tutorialIndex=The tutorial index related to the Aqua Bird.

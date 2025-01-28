@@ -206,6 +206,7 @@ namespace Celeste.Mod.Aqua.Core
             self.SetTimeTicker("boost_speed_save_ticker", 0.5f);
             self.SetTimeTicker("swing_jump_keeping_ticker", 0.1f);
             self.SetTimeTicker("elec_shock_ticker", 1.0f);
+            DynamicData.For(self).Set("lift_speed_y", 0.0f);
             DynamicData.For(self).Set("rope_is_loosen", true);
             DynamicData.For(self).Set("is_booster_dash", false);
             self.SetSlideState(SlideStates.None);
@@ -822,7 +823,6 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void SwingJump(this Player self, float dt)
         {
-            Celeste.Freeze(0.05f);
             Input.Jump.ConsumeBuffer();
             var hook = self.GetGrappleHook();
             hook.Revoke();
@@ -831,7 +831,7 @@ namespace Celeste.Mod.Aqua.Core
             const float Y_LIFT = 1.0f;
             float keepedLiftY = DynamicData.For(self).Get<float>("lift_speed_y");
             Vector2 speed = new Vector2(self.Speed.X, MathF.Min(self.Speed.Y, keepedLiftY));
-            speed = TurnToMoreAccurateSpeed(speed);
+            speed = TurnToMoreAccurateSpeed(speed, SWING_JUMP_ACCURACY_RANGE_LIST);
             self.LiftSpeed = speed * new Vector2(X_LIFT, Y_LIFT * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f));
             self.dreamJump = false;
             self.Jump(false);
@@ -847,7 +847,7 @@ namespace Celeste.Mod.Aqua.Core
             self.Stamina = MathF.Max(0.0f, self.Stamina - staminaCost);
         }
 
-        private static Vector2 TurnToMoreAccurateSpeed(Vector2 speed)
+        private static Vector2 TurnToMoreAccurateSpeed(Vector2 speed, KeyValuePair<float, Vector2>[] accuracyConfig)
         {
             if (AquaMaths.IsApproximateZero(speed))
                 return Vector2.Zero;
@@ -857,9 +857,9 @@ namespace Celeste.Mod.Aqua.Core
             speed = AquaMaths.Abs(speed);
             float len = speed.Length();
             float start = 0.0f;
-            for (int i = 0; i < ACCURACY_RANGE_LIST.Length; i++)
+            for (int i = 0; i < accuracyConfig.Length; i++)
             {
-                var pair = ACCURACY_RANGE_LIST[i];
+                var pair = accuracyConfig[i];
                 float end = pair.Key;
                 Vector2 vStart = Calc.AngleToVector(start, 1.0f);
                 Vector2 vEnd = Calc.AngleToVector(end, 1.0f);
@@ -1002,11 +1002,11 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 if (direction.Y > 0.0f)
                 {
-                    Celeste.Freeze(0.1f);
+                    Celeste.Freeze(0.05f);
                 }
                 else
                 {
-                    Celeste.Freeze(0.05f);
+                    Celeste.Freeze(0.025f);
                 }
                 direction.Y *= ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f;
                 float emitSpeed = self.SceneAs<Level>().GetState().HookSettings.EmitSpeed;
@@ -1229,11 +1229,13 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 else
                 {
+                    self.Speed = TurnToMoreAccurateSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
                     self.SetSpecialSwingDirection(0.0f);
                 }
             }
             else
             {
+                self.Speed = TurnToMoreAccurateSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
                 self.SetSpecialSwingDirection(0.0f);
             }
         }
@@ -1301,12 +1303,21 @@ namespace Celeste.Mod.Aqua.Core
             (int)AquaStates.StLaunch,
         };
 
-        private static KeyValuePair<float, Vector2>[] ACCURACY_RANGE_LIST =
+        private static KeyValuePair<float, Vector2>[] SWING_JUMP_ACCURACY_RANGE_LIST =
         {
             new KeyValuePair<float, Vector2>(10.0f * Calc.DegToRad, Vector2.UnitX),
             new KeyValuePair<float, Vector2>(30.0f * Calc.DegToRad, new Vector2(MathF.Cos(22.5f * Calc.DegToRad), MathF.Sin(22.5f * Calc.DegToRad))),
             new KeyValuePair<float, Vector2>(55.0f * Calc.DegToRad, new Vector2(MathF.Cos(45.0f * Calc.DegToRad), MathF.Sin(45.0f * Calc.DegToRad))),
             new KeyValuePair<float, Vector2>(75.0f * Calc.DegToRad, new Vector2(MathF.Cos(67.5f * Calc.DegToRad), MathF.Sin(67.5f * Calc.DegToRad))),
+            new KeyValuePair<float, Vector2>(90.0f * Calc.DegToRad, Vector2.UnitY),
+        };
+
+        private static KeyValuePair<float, Vector2>[] UNIFORM_ACCURACY_RANGE_LIST =
+        {
+            new KeyValuePair<float, Vector2>(11.25f * Calc.DegToRad, Vector2.UnitX),
+            new KeyValuePair<float, Vector2>(33.75f * Calc.DegToRad, new Vector2(MathF.Cos(22.5f * Calc.DegToRad), MathF.Sin(22.5f * Calc.DegToRad))),
+            new KeyValuePair<float, Vector2>(56.25f * Calc.DegToRad, new Vector2(MathF.Cos(45.0f * Calc.DegToRad), MathF.Sin(45.0f * Calc.DegToRad))),
+            new KeyValuePair<float, Vector2>(78.75f * Calc.DegToRad, new Vector2(MathF.Cos(67.5f * Calc.DegToRad), MathF.Sin(67.5f * Calc.DegToRad))),
             new KeyValuePair<float, Vector2>(90.0f * Calc.DegToRad, Vector2.UnitY),
         };
     }
