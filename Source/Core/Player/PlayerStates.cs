@@ -1220,23 +1220,36 @@ namespace Celeste.Mod.Aqua.Core
             GrapplingHook hook = self.GetGrappleHook();
             if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
             {
-                if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
+                if (AquaModule.Settings.ThrowHook.Pressed)
                 {
-                    if (self.GetSpecialSwingDirection() != 0.0f)
-                    {
-                        self.Speed = hook.SwingDirection * self.GetSpecialSwingDirection() * self.GetSpecialSwingSpeed();
-                    }
+                    hook.Revoke();
+                    self.Speed = TurnToMoreAccurateSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
+                    self.SetSpecialSwingDirection(0.0f);
                 }
                 else
                 {
-                    self.Speed = TurnToMoreAccurateSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
-                    self.SetSpecialSwingDirection(0.0f);
+                    if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
+                    {
+                        if (self.GetSpecialSwingDirection() != 0.0f)
+                        {
+                            self.Speed = hook.SwingDirection * self.GetSpecialSwingDirection() * self.GetSpecialSwingSpeed();
+                        }
+                    }
+                    else
+                    {
+                        self.Speed = TurnToMoreAccurateSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
+                        self.SetSpecialSwingDirection(0.0f);
+                    }
                 }
             }
             else
             {
                 self.Speed = TurnToMoreAccurateSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
                 self.SetSpecialSwingDirection(0.0f);
+            }
+            if (!AquaMaths.IsApproximateZero(self.Speed))
+            {
+                self.DashDir = Vector2.Normalize(self.Speed);
             }
         }
 
