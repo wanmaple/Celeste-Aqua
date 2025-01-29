@@ -516,7 +516,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 return (int)AquaStates.StNormal;
             }
-            else if (Input.GrabCheck && self.ClimbCheck((int)self.Facing))
+            else if (Input.GrabCheck && self.ClimbCheck((int)self.Facing) && !self.DashAttacking)
             {
                 return (int)AquaStates.StClimb;
             }
@@ -971,7 +971,9 @@ namespace Celeste.Mod.Aqua.Core
             //    emittingTicker.Reset();
             //    return -1;
             //} 
-            if (!hook.Active && (shotCheck.CanThrow || AquaModule.Settings.DownShoot.Pressed || AquaModule.Settings.BackwardDownShoot.Pressed) && !self.IsExhausted() && self.Holding == null && hook.CanEmit(self.level))
+            bool downGrapplePressed = AquaModule.Settings.DownShoot.Pressed;
+            bool backwardDownGrapplePressed = AquaModule.Settings.BackwardDownShoot.Pressed;
+            if (!hook.Active && (shotCheck.CanThrow || downGrapplePressed || backwardDownGrapplePressed) && !self.IsExhausted() && self.Holding == null && hook.CanEmit(self.level))
             {
                 Vector2 direction;
                 switch (AquaModule.Settings.DefaultShotDirection)
@@ -988,12 +990,12 @@ namespace Celeste.Mod.Aqua.Core
                         direction = -Vector2.UnitY;
                         break;
                 }
-                if (AquaModule.Settings.BackwardDownShoot.Pressed)
+                if (downGrapplePressed)
                 {
                     direction = new Vector2(-(int)self.Facing, 1.0f);
                     direction.Normalize();
                 }
-                else if (AquaModule.Settings.DownShoot.Pressed)
+                else if (backwardDownGrapplePressed)
                 {
                     direction = Vector2.UnitY;
                 }

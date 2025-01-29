@@ -187,16 +187,16 @@ namespace Celeste.Mod.Aqua.Core
         {
             while (true)
             {
-                while (_inEntities.Count == 0)
+                while (AcceleratingEntityCount() == 0)
                 {
                     yield return null;
                 }
 
                 float elapsed = 0.0f;
-                while (_inEntities.Count > 0 || elapsed < BlinkDuration)
+                while (AcceleratingEntityCount() > 0 || elapsed < BlinkDuration)
                 {
                     elapsed += Engine.DeltaTime;
-                    if (elapsed >= BlinkDuration && _inEntities.Count > 0)
+                    if (elapsed >= BlinkDuration && AcceleratingEntityCount() > 0)
                     {
                         elapsed -= BlinkDuration;
                     }
@@ -208,6 +208,27 @@ namespace Celeste.Mod.Aqua.Core
                     yield return null;
                 }
             }
+        }
+
+        private int AcceleratingEntityCount()
+        {
+            int accCnt = 0;
+            foreach (Entity entity in _inEntities)
+            {
+                if (entity.Active)
+                {
+                    if (entity is Solid solid)
+                    {
+                        if (solid.GetAccelerateState() != AccelerateState.None)
+                            ++accCnt;
+                    }
+                    else
+                    {
+                        ++accCnt;
+                    }
+                }
+            }
+            return accCnt;
         }
 
         private Image9Slice _border;
