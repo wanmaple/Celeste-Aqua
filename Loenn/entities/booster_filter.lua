@@ -25,6 +25,9 @@ BoosterFilter.fieldInformation = {
         fieldType = "color",
         useAlpha = false,
     },
+    land_sound_index = {
+        fieldType = "integer",
+    },
     can_pass = {
         options = PASS_TYPE,
         editable = false,
@@ -43,6 +46,7 @@ for i, passType in ipairs(PASS_TYPE) do
             particle_opacity = 0.5,
             can_pass = passType,
             collide_solids = false,
+            land_sound_index = 11,
         },
     })
 end

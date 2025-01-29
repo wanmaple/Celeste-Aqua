@@ -8,8 +8,6 @@ using MonoMod.Utils;
 using Mono.Cecil;
 using Celeste.Mod.Aqua.Debug;
 using System.Collections.Generic;
-using MonoMod.RuntimeDetour;
-using static Celeste.TrackSpinner;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -209,6 +207,7 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("lift_speed_y", 0.0f);
             DynamicData.For(self).Set("rope_is_loosen", true);
             DynamicData.For(self).Set("is_booster_dash", false);
+            DynamicData.For(self).Set("shooting", false);
             self.SetSlideState(SlideStates.None);
             self.SetSavedSwingSpeed(Vector2.Zero);
             self.SetSpecialSwingDirection(0.0f);
@@ -971,10 +970,9 @@ namespace Celeste.Mod.Aqua.Core
             //    emittingTicker.Reset();
             //    return -1;
             //} 
-            bool downGrapplePressed = AquaModule.Settings.DownShoot.Pressed;
-            bool backwardDownGrapplePressed = AquaModule.Settings.BackwardDownShoot.Pressed;
-            if (!hook.Active && (shotCheck.CanThrow || downGrapplePressed || backwardDownGrapplePressed) && !self.IsExhausted() && self.Holding == null && hook.CanEmit(self.level))
+            if (DynamicData.For(self).Get<bool>("shooting"))
             {
+                DynamicData.For(self).Set("shooting", false);
                 Vector2 direction;
                 switch (AquaModule.Settings.DefaultShotDirection)
                 {
@@ -990,12 +988,12 @@ namespace Celeste.Mod.Aqua.Core
                         direction = -Vector2.UnitY;
                         break;
                 }
-                if (downGrapplePressed)
+                if (DynamicData.For(self).Get<bool>("backward_down_shoot"))
                 {
                     direction = new Vector2(-(int)self.Facing, 1.0f);
                     direction.Normalize();
                 }
-                else if (backwardDownGrapplePressed)
+                else if (DynamicData.For(self).Get<bool>("down_shoot"))
                 {
                     direction = Vector2.UnitY;
                 }
@@ -1003,19 +1001,21 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     direction = Input.GetAimVector(self.Facing);
                 }
-                if (direction.Y > 0.0f)
-                {
-                    Celeste.Freeze(0.05f);
-                }
-                else
-                {
-                    Celeste.Freeze(0.025f);
-                }
                 direction.Y *= ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f;
                 float emitSpeed = self.SceneAs<Level>().GetState().HookSettings.EmitSpeed;
                 float emitSpeedCoeff = self.CalculateEmitParameters(emitSpeed * direction, ref direction);
                 hook.Emit(self.level, direction, emitSpeed, emitSpeedCoeff - 1.0f);
                 self.Scene.Add(hook);
+                return -1;
+            }
+            bool downGrapplePressed = AquaModule.Settings.DownShoot.Pressed;
+            bool backwardDownGrapplePressed = AquaModule.Settings.BackwardDownShoot.Pressed;
+            if (!hook.Active && (shotCheck.CanThrow || downGrapplePressed || backwardDownGrapplePressed) && !self.IsExhausted() && self.Holding == null && hook.CanEmit(self.level))
+            {
+                Celeste.Freeze(0.03f);
+                DynamicData.For(self).Set("shooting", true);
+                DynamicData.For(self).Set("down_shoot", downGrapplePressed);
+                DynamicData.For(self).Set("backward_down_shoot", backwardDownGrapplePressed);
             }
 
             if (hook.Active)
@@ -1207,7 +1207,8 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                 {
-                    float sign = MathF.Sign(Vector2.Dot(speed, hook.SwingDirection));
+                    Vector2 swingDir = hook.SwingDirection;
+                    float sign = MathF.Sign(Vector2.Dot(speed, swingDir));
                     if (AquaMaths.IsApproximateZero(sign))
                     {
                         sign = 0.0f;
@@ -1235,7 +1236,13 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         if (self.GetSpecialSwingDirection() != 0.0f)
                         {
-                            self.Speed = hook.SwingDirection * self.GetSpecialSwingDirection() * self.GetSpecialSwingSpeed();
+                            Vector2 swingDir = hook.SwingDirection;
+                            self.Speed = swingDir * self.GetSpecialSwingDirection() * self.GetSpecialSwingSpeed();
+                            if (self.StateMachine.State == (int)AquaStates.StRedDash && ModInterop.GravityHelper.IsPlayerGravityInverted())
+                            {
+                                // seems red bubble speed won't be handled in GravityHelper
+                                self.Speed.Y *= -1.0f;
+                            }
                         }
                     }
                     else
