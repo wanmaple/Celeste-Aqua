@@ -207,7 +207,6 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("lift_speed_y", 0.0f);
             DynamicData.For(self).Set("rope_is_loosen", true);
             DynamicData.For(self).Set("is_booster_dash", false);
-            DynamicData.For(self).Set("shooting", false);
             self.SetSlideState(SlideStates.None);
             self.SetSavedSwingSpeed(Vector2.Zero);
             self.SetSpecialSwingDirection(0.0f);
@@ -504,7 +503,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             else if (shotCheck.CanFlyTowards && hook.CanFlyToward())
             {
-                FlyTowardHook(self);
+                self.FlyTowardHook();
             }
             else if (shotCheck.CanRevoke)
             {
@@ -888,6 +887,7 @@ namespace Celeste.Mod.Aqua.Core
             if (ModInterop.GravityHelper.IsPlayerGravityInverted())
                 self.Speed.Y = -self.Speed.Y;
             var hook = self.GetGrappleHook();
+            hook.ResetFlyTowardThings();
             Vector2 ropeDirection = hook.RopeDirection;
             var levelState = self.level.GetState();
             float origAlongSpeed = MathF.Max(Vector2.Dot(self.Speed, -ropeDirection), 0.0f);
@@ -970,9 +970,10 @@ namespace Celeste.Mod.Aqua.Core
             //    emittingTicker.Reset();
             //    return -1;
             //} 
-            if (DynamicData.For(self).Get<bool>("shooting"))
+            bool downGrapplePressed = AquaModule.Settings.DownShoot.Pressed;
+            bool backwardDownGrapplePressed = AquaModule.Settings.BackwardDownShoot.Pressed;
+            if (!hook.Active && (shotCheck.CanThrow || downGrapplePressed || backwardDownGrapplePressed) && !self.IsExhausted() && self.Holding == null && hook.CanEmit(self.level))
             {
-                DynamicData.For(self).Set("shooting", false);
                 Vector2 direction;
                 switch (AquaModule.Settings.DefaultShotDirection)
                 {
@@ -988,12 +989,12 @@ namespace Celeste.Mod.Aqua.Core
                         direction = -Vector2.UnitY;
                         break;
                 }
-                if (DynamicData.For(self).Get<bool>("backward_down_shoot"))
+                if (backwardDownGrapplePressed)
                 {
                     direction = new Vector2(-(int)self.Facing, 1.0f);
                     direction.Normalize();
                 }
-                else if (DynamicData.For(self).Get<bool>("down_shoot"))
+                else if (downGrapplePressed)
                 {
                     direction = Vector2.UnitY;
                 }
@@ -1001,21 +1002,19 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     direction = Input.GetAimVector(self.Facing);
                 }
+                if (direction.Y > 0.0f)
+                {
+                    Celeste.Freeze(0.05f);
+                }
+                else
+                {
+                    Celeste.Freeze(0.03f);
+                }
                 direction.Y *= ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f;
                 float emitSpeed = self.SceneAs<Level>().GetState().HookSettings.EmitSpeed;
                 float emitSpeedCoeff = self.CalculateEmitParameters(emitSpeed * direction, ref direction);
                 hook.Emit(self.level, direction, emitSpeed, emitSpeedCoeff - 1.0f);
                 self.Scene.Add(hook);
-                return -1;
-            }
-            bool downGrapplePressed = AquaModule.Settings.DownShoot.Pressed;
-            bool backwardDownGrapplePressed = AquaModule.Settings.BackwardDownShoot.Pressed;
-            if (!hook.Active && (shotCheck.CanThrow || downGrapplePressed || backwardDownGrapplePressed) && !self.IsExhausted() && self.Holding == null && hook.CanEmit(self.level))
-            {
-                Celeste.Freeze(0.03f);
-                DynamicData.For(self).Set("shooting", true);
-                DynamicData.For(self).Set("down_shoot", downGrapplePressed);
-                DynamicData.For(self).Set("backward_down_shoot", backwardDownGrapplePressed);
             }
 
             if (hook.Active)
@@ -1026,7 +1025,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 else if (hook.JustFixed && (hook.CanFlyToward() || shotCheck.CanFlyTowards))
                 {
-                    FlyTowardHook(self);
+                    self.FlyTowardHook();
                 }
                 else if (shotCheck.CanRevoke || shotCheck.CanFlyTowards)
                 {
@@ -1038,7 +1037,7 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         if (shotCheck.CanFlyTowards && hook.CanFlyToward())
                         {
-                            FlyTowardHook(self);
+                            self.FlyTowardHook();
                         }
                         else if (shotCheck.CanRevoke)
                         {
@@ -1138,15 +1137,6 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
             return -1;
-        }
-
-        private static bool CanEmitHook(this Player self, Vector2 direction)
-        {
-            //if (self.Ducking)
-            //    return false;
-            //if (self.onGround && direction.Y > 0)
-            //    return false;
-            return true;
         }
 
         private static void HandleHangingSpeed(this Player self, float dt)

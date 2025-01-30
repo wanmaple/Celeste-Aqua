@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using Celeste.Mod.Aqua.Debug;
 using Celeste.Mod.Aqua.Module;
 using System.Reflection;
-using static MonoMod.InlineRT.MonoModRule;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -279,7 +278,6 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (_elapsed - _lastEmitElapsed <= 0.2f)
                 {
-                    _lastEmitElapsed = float.MinValue;
                     return true;
                 }
             }
@@ -287,11 +285,16 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (_elapsed - _fixElapsed <= 0.15f)
                 {
-                    _fixElapsed = float.MinValue;
                     return true;
                 }
             }
             return false;
+        }
+
+        public void ResetFlyTowardThings()
+        {
+            _lastEmitElapsed = float.MinValue;
+            _fixElapsed = float.MinValue;
         }
 
         public bool IsRopeIntersectsWith(Entity entity)
