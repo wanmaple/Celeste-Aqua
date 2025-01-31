@@ -2,6 +2,16 @@ local AquaRefill = {}
 
 AquaRefill.name = "Aqua/Aqua Refill"
 AquaRefill.depth = -100
+AquaRefill.fieldInformation = {
+    particle_color1 = {
+        fieldType = "color",
+        useAlpha = "false",
+    },
+    particle_color2 = {
+        fieldType = "color",
+        useAlpha = "false",
+    },
+}
 AquaRefill.placements = {
     {
         name = "Refill (One Dash)",
@@ -9,6 +19,12 @@ AquaRefill.placements = {
             twoDash = false,
             oneUse = false,
             hookable = true,
+            respawn_time = 2.5,
+            refill_sprite = "",
+            outline_texture = "",
+            particle_color1 = "f19310",
+            particle_color2 = "824c00",
+            use_default_sprite = true,
         },
     },
     {
@@ -17,6 +33,12 @@ AquaRefill.placements = {
             twoDash = true,
             oneUse = false,
             hookable = true,
+            respawn_time = 2.5,
+            refill_sprite = "",
+            outline_texture = "",
+            particle_color1 = "912ed4",
+            particle_color2 = "4b1680",
+            use_default_sprite = true,
         },
     },
 }

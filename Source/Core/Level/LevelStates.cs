@@ -1,6 +1,5 @@
 ﻿using Celeste.Mod.Aqua.Module;
 using Celeste.Mod.Aqua.Rendering;
-using Microsoft.Xna.Framework.Input;
 using Monocle;
 using System;
 using System.Collections.Generic;
@@ -19,6 +18,8 @@ namespace Celeste.Mod.Aqua.Core
             public GrapplingHook.GameplayMode GameplayMode { get; set; }
             public int InitialShootCount { get; set; }
             public int RestShootCount { get; set; }
+            public int MaxShootCount { get; set; }
+            public bool ResetCountInTransition { get; set; }
             public HookSettings HookSettings { get; set; }
             public List<BackgroundData> Backgrounds { get; private set; }
 
@@ -37,6 +38,8 @@ namespace Celeste.Mod.Aqua.Core
                 RopeMaterial = (GrapplingHook.RopeMaterial)areaData.GetExtraMeta().HookMaterial;
                 GameplayMode = (GrapplingHook.GameplayMode)areaData.GetExtraMeta().GameplayMode;
                 InitialShootCount = RestShootCount = areaData.GetExtraMeta().InitialShootCount;
+                MaxShootCount = areaData.GetExtraMeta().MaxShootCount;
+                ResetCountInTransition = areaData.GetExtraMeta().ResetCountInTransition;
                 HookSettings = areaData.GetExtraMeta().HookSettings.Clone();
                 Backgrounds = new List<BackgroundData>(areaData.GetExtraMeta().Backgrounds);
             }
@@ -93,6 +96,10 @@ namespace Celeste.Mod.Aqua.Core
             if (player != null)
             {
                 player.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.InitialShootCount);
+            }
+            if (state.ResetCountInTransition)
+            {
+                state.RestShootCount = state.InitialShootCount;
             }
             if (state.Backgrounds != null)
             {

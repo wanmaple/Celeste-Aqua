@@ -12,6 +12,8 @@ namespace Celeste.Mod.Aqua.Core
         public HookSettings HookSettings;
         public int GameplayMode;
         public int InitialShootCount;
+        public int MaxShootCount;
+        public bool ResetCountInTransition;
         public List<BackgroundData> Backgrounds;
 
         public LevelExtras()
@@ -22,6 +24,8 @@ namespace Celeste.Mod.Aqua.Core
             HookSettings = AquaModule.Settings.HookSettings;
             GameplayMode = (int)GrapplingHook.GameplayMode.Default;
             InitialShootCount = 1;
+            MaxShootCount = -1;
+            ResetCountInTransition = true;
             Backgrounds = new List<BackgroundData>(4);
         }
     }

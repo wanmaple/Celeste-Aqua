@@ -38,66 +38,6 @@ namespace Celeste.Mod.Aqua.Core
             {
                 Color = Calc.HexToColor("760ebc"),
             };
-            AquaRefill.P_ShatterHookable1 = new ParticleType(Refill.P_Shatter)
-            {
-                Color = Calc.HexToColor("f19310"),
-                Color2 = Calc.HexToColor("824c00"),
-            };
-            AquaRefill.P_GlowHookable1 = new ParticleType(Refill.P_Glow)
-            {
-                Color = Calc.HexToColor("f19310"),
-                Color2 = Calc.HexToColor("824c00"),
-            };
-            AquaRefill.P_RegenHookable1 = new ParticleType(Refill.P_Regen)
-            {
-                Color = Calc.HexToColor("f19310"),
-                Color2 = Calc.HexToColor("824c00"),
-            };
-            AquaRefill.P_ShatterHookable2 = new ParticleType(Refill.P_ShatterTwo)
-            {
-                Color = Calc.HexToColor("912ed4"),
-                Color2 = Calc.HexToColor("4b1680"),
-            };
-            AquaRefill.P_GlowHookable2 = new ParticleType(Refill.P_GlowTwo)
-            {
-                Color = Calc.HexToColor("912ed4"),
-                Color2 = Calc.HexToColor("4b1680"),
-            };
-            AquaRefill.P_RegenHookable2 = new ParticleType(Refill.P_Regen)
-            {
-                Color = Calc.HexToColor("912ed4"),
-                Color2 = Calc.HexToColor("4b1680"),
-            };
-            GrapplingRefill.P_Shatter = new ParticleType(Refill.P_Shatter)
-            {
-                Color = Calc.HexToColor("909cb0"),
-                Color2 = Calc.HexToColor("515672"),
-            };
-            GrapplingRefill.P_Glow = new ParticleType(Refill.P_Glow)
-            {
-                Color = Calc.HexToColor("909cb0"),
-                Color2 = Calc.HexToColor("515672"),
-            };
-            GrapplingRefill.P_Regen = new ParticleType(Refill.P_Regen)
-            {
-                Color = Calc.HexToColor("909cb0"),
-                Color2 = Calc.HexToColor("515672"),
-            };
-            GrapplingRefill.P_Shatter2 = new ParticleType(Refill.P_Shatter)
-            {
-                Color = Calc.HexToColor("d0bee9"),
-                Color2 = Calc.HexToColor("8e7ca6"),
-            };
-            GrapplingRefill.P_Glow2 = new ParticleType(Refill.P_Glow)
-            {
-                Color = Calc.HexToColor("d0bee9"),
-                Color2 = Calc.HexToColor("8e7ca6"),
-            };
-            GrapplingRefill.P_Regen2 = new ParticleType(Refill.P_Regen)
-            {
-                Color = Calc.HexToColor("d0bee9"),
-                Color2 = Calc.HexToColor("8e7ca6"),
-            };
         }
     }
 }

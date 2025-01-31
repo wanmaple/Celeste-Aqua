@@ -14,6 +14,9 @@ ChangeGameplayModeTrigger.fieldInformation = {
     begin_counter = {
         fieldType = "integer",
     },
+    max_counter = {
+        fieldType = "integer",
+    },
 }
 ChangeGameplayModeTrigger.placements = {
     name = "Change Gameplay Mode Trigger",
@@ -22,6 +25,8 @@ ChangeGameplayModeTrigger.placements = {
         height = 8,
         mode = "ShootCounter",
         begin_counter = 1,
+        max_counter = -1,
+        reset_count_in_transition = true,
     },
 }
 

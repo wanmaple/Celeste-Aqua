@@ -14,6 +14,12 @@ entities.Aqua/Aqua Bird.attributes.description.onlyOnce=Whether the tutorial onl
 entities.Aqua/Aqua Refill.attributes.description.twoDash=Whether the refill should give two dashes.
 entities.Aqua/Aqua Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
 entities.Aqua/Aqua Refill.attributes.description.hookable=Whether the refill is interactable with the grappling hook.
+entities.Aqua/Aqua Refill.attributes.description.respawn_time=Respawn time when obtains.
+entities.Aqua/Aqua Refill.attributes.description.refill_sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Aqua Refill.attributes.description.outline_texture=Your custom outline texture.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Aqua Refill.attributes.description.particle_color1=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Aqua Refill.attributes.description.particle_color2=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Aqua Refill.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
 
 # Puzzle Light
 entities.Aqua/Puzzle Light.attributes.description.puzzleId=Puzzle Identifier that indicates which puzzle it belongs to.
@@ -112,6 +118,14 @@ entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether th
 entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether the spinner attaches to entities or blocks, and can be moved by them.
 entities.Aqua/Unhookable Crystal.attributes.description.color=Main color of the spinner or connector.
 
+# Grapple Filter
+entities.Aqua/Grapple Filter.attributes.description.color=Area main color.
+entities.Aqua/Grapple Filter.attributes.description.opacity=Area main opacity.
+entities.Aqua/Grapple Filter.attributes.description.particle_color=Area particle color.
+entities.Aqua/Grapple Filter.attributes.description.particle_opacity=Area particle opacity.
+entities.Aqua/Grapple Filter.attributes.description.collide_solids=Whether the filter will collide solids.
+entities.Aqua/Grapple Filter.attributes.description.land_sound_index=Land sound index.
+
 # Booster Filter
 entities.Aqua/Booster Filter.attributes.description.color=Area main color.
 entities.Aqua/Booster Filter.attributes.description.opacity=Area main opacity.
@@ -119,10 +133,35 @@ entities.Aqua/Booster Filter.attributes.description.particle_color=Area particle
 entities.Aqua/Booster Filter.attributes.description.particle_opacity=Area particle opacity.
 entities.Aqua/Booster Filter.attributes.description.can_pass=What kind of booster can pass through.
 entities.Aqua/Booster Filter.attributes.description.collide_solids=Whether the filter will collide solids.
+entities.Aqua/Booster Filter.attributes.description.land_sound_index=Land sound index.
 
-# Hook Refill
-entities.Aqua/Hook Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
-entities.Aqua/Hook Refill.attributes.description.chargeTwo=Whether the refill will charge two countings.
+# Grappling Refill
+entities.Aqua/Grappling Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
+entities.Aqua/Grappling Refill.attributes.description.chargeTwo=Whether the refill will charge two shots.
+entities.Aqua/Grappling Refill.attributes.description.hookable=Whether the refill is interactable with the grappling hook.
+entities.Aqua/Grappling Refill.attributes.description.respawn_time=Respawn time when obtains.
+entities.Aqua/Grappling Refill.attributes.description.refill_sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Grappling Refill.attributes.description.outline_texture=Your custom outline texture.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Grappling Refill.attributes.description.particle_color1=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Grappling Refill.attributes.description.particle_color2=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Grappling Refill.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+entities.Aqua/Grappling Refill.attributes.description.cap=The maximum grapple shots the player can get. Leave -1 to use the num set by 'ChangeGameplayModeTrigger'.
+entities.Aqua/Grappling Refill.attributes.description.capped=If checked, the grapple count will never exceed the defined maximum shots (Cap or Trigger).
+entities.Aqua/Grappling Refill.attributes.description.always_refill=If checked, the refill will break even if the player already has the maximum amount of grapple shots they can get.
+
+# Custom Grappling Refill
+entities.Aqua/Custom Grappling Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
+entities.Aqua/Custom Grappling Refill.attributes.description.refill_count=The amount of grapple shots to refill.
+entities.Aqua/Custom Grappling Refill.attributes.description.hookable=Whether the refill is interactable with the grappling hook.
+entities.Aqua/Custom Grappling Refill.attributes.description.respawn_time=Respawn time when obtains.
+entities.Aqua/Custom Grappling Refill.attributes.description.refill_sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Custom Grappling Refill.attributes.description.outline_texture=Your custom outline texture.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Custom Grappling Refill.attributes.description.particle_color1=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Custom Grappling Refill.attributes.description.particle_color2=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Custom Grappling Refill.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+entities.Aqua/Custom Grappling Refill.attributes.description.cap=The maximum grapple shots the player can get. Leave -1 to use the num set by 'ChangeGameplayModeTrigger'.
+entities.Aqua/Custom Grappling Refill.attributes.description.capped=If checked, the grapple count will never exceed the defined maximum shots (Cap or Trigger).
+entities.Aqua/Custom Grappling Refill.attributes.description.always_refill=If checked, the refill will break even if the player already has the maximum amount of grapple shots they can get.
 
 # Grapple Interaction Assigner
 entities.Aqua/Grapple Interaction Assigner.attributes.description.interaction_type=What kind of interaction to be assigned.\nGrabToPlayer: make the entity be able to hooked to player.
@@ -147,6 +186,7 @@ entities.Aqua/Gravity Filter.attributes.description.particle_color=Area particle
 entities.Aqua/Gravity Filter.attributes.description.particle_opacity=Area particle opacity.
 entities.Aqua/Gravity Filter.attributes.description.gravity=Which kind of gravity circumstance can't be passed through.
 entities.Aqua/Gravity Filter.attributes.description.collide_solids=Whether the filter will collide solids.
+entities.Aqua/Gravity Filter.attributes.description.land_sound_index=Land sound index.
 
 # Gravity Spikes Up
 entities.Aqua/Gravity Spike Up.placements.name.up_default=Gravity Spikes (Up, Default)
@@ -201,7 +241,9 @@ triggers.Aqua/Change Hook Parameter Trigger.attributes.description.value=Paramet
 
 # Change Gameplay Mode Trigger
 triggers.Aqua/Change Gameplay Mode Trigger.attributes.description.mode=Gameplay mode.
-triggers.Aqua/Change Gameplay Mode Trigger.attributes.description.begin_counter=Only take effect when mode is ShootCounter. The initial counter of grappling hook.
+triggers.Aqua/Change Gameplay Mode Trigger.attributes.description.begin_counter=Only take effect when mode is ShootCounter. The initial grapple shots.
+triggers.Aqua/Change Gameplay Mode Trigger.attributes.description.max_counter=Only take effect when mode is ShootCounter. The maximum grapple shots.
+triggers.Aqua/Change Gameplay Mode Trigger.attributes.description.reset_count_in_transition=Only take effect when mode is ShootCounter. Whether to reset shots to initial amount during room transition.
 
 # Dream Toggle Trigger
 triggers.Aqua/Dream Toggle Trigger.attributes.description.fullRoutine=Whether the Dream Block should play the whole animation, rather than just instantly looking ready.

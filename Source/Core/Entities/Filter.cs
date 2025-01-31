@@ -66,7 +66,7 @@ namespace Celeste.Mod.Aqua.Core
             int i = 0;
             for (int count = _particlePositions.Count; i < count; i++)
             {
-                Vector2 value = _particlePositions[i] + Vector2.UnitY * SPEEDS[i % num] * Engine.DeltaTime;
+                Vector2 value = _particlePositions[i] + Vector2.UnitY * SPEEDS[i % num] * Engine.DeltaTime * (1.0f - Solidify);
                 value.Y %= height - 1f;
                 _particlePositions[i] = value;
             }
