@@ -47,12 +47,12 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void Booster_AppearParticles(On.Celeste.Booster.orig_AppearParticles orig, Booster self)
         {
-            if (self is AquaBooster booster && booster.Hookable)
+            if (self is AquaBooster booster)
             {
                 ParticleSystem particlesBG = self.SceneAs<Level>().ParticlesBG;
                 for (int i = 0; i < 360; i += 30)
                 {
-                    particlesBG.Emit(self.red ? AquaBooster.P_AppearPurple : AquaBooster.P_AppearOrange, 1, self.Center, Vector2.One * 2f, (float)i * (MathF.PI / 180f));
+                    particlesBG.Emit(booster.AppearParticle, 1, self.Center, Vector2.One * 2f, i * (MathF.PI / 180f));
                 }
             }
             else

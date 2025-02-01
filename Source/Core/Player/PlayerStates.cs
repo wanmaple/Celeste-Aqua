@@ -69,9 +69,11 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.LaunchUpdate += Player_LaunchUpdate;
             On.Celeste.Player.BoostUpdate += Player_BoostUpdate;
             On.Celeste.Player.RedDashBegin += Player_RedDashBegin;
+            On.Celeste.Player.RedDashEnd += Player_RedDashEnd;
             On.Celeste.Player.RedDashUpdate += Player_RedDashUpdate;
             On.Celeste.Player.RedDashCoroutine += Player_RedDashCoroutine;
             On.Celeste.Player.DreamDashBegin += Player_DreamDashBegin;
+            On.Celeste.Player.DreamDashEnd += Player_DreamDashEnd;
             On.Celeste.Player.DreamDashUpdate += Player_DreamDashUpdate;
             On.Celeste.Player.SummitLaunchBegin += Player_SummitLaunchBegin;
             On.Celeste.Player.StarFlyBegin += Player_StarFlyBegin;
@@ -102,9 +104,11 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.LaunchUpdate -= Player_LaunchUpdate;
             On.Celeste.Player.BoostUpdate -= Player_BoostUpdate;
             On.Celeste.Player.RedDashBegin -= Player_RedDashBegin;
+            On.Celeste.Player.RedDashEnd -= Player_RedDashEnd;
             On.Celeste.Player.RedDashUpdate -= Player_RedDashUpdate;
             On.Celeste.Player.RedDashCoroutine -= Player_RedDashCoroutine;
             On.Celeste.Player.DreamDashBegin -= Player_DreamDashBegin;
+            On.Celeste.Player.DreamDashEnd -= Player_DreamDashEnd;
             On.Celeste.Player.DreamDashUpdate -= Player_DreamDashUpdate;
             On.Celeste.Player.SummitLaunchBegin -= Player_SummitLaunchBegin;
             On.Celeste.Player.StarFlyBegin -= Player_StarFlyBegin;
@@ -256,6 +260,28 @@ namespace Celeste.Mod.Aqua.Core
                 speed = (int)self.Facing * Player.DashSpeed * Vector2.UnitX;
             }
             SetupSpecialSwingArguments(self, speed);
+            var hook = self.GetGrappleHook();
+            if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
+            {
+                if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
+                {
+                    if (self.GetSpecialSwingDirection() != 0.0f)
+                        hook.SetRopeLengthLocked(true, self.ExactCenter());
+                }
+            }
+        }
+
+        private static void Player_RedDashEnd(On.Celeste.Player.orig_RedDashEnd orig, Player self)
+        {
+            orig(self);
+            var hook = self.GetGrappleHook();
+            if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
+            {
+                if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
+                {
+                    hook.SetRopeLengthLocked(false, self.ExactCenter());
+                }
+            }
         }
 
         private static int Player_RedDashUpdate(On.Celeste.Player.orig_RedDashUpdate orig, Player self)
@@ -290,6 +316,28 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self);
             SetupSpecialSwingArguments(self, self.Speed);
+            var hook = self.GetGrappleHook();
+            if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
+            {
+                if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
+                {
+                    if (self.GetSpecialSwingDirection() != 0.0f)
+                        hook.SetRopeLengthLocked(true, self.ExactCenter());
+                }
+            }
+        }
+
+        private static void Player_DreamDashEnd(On.Celeste.Player.orig_DreamDashEnd orig, Player self)
+        {
+            orig(self);
+            var hook = self.GetGrappleHook();
+            if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
+            {
+                if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
+                {
+                    hook.SetRopeLengthLocked(false, self.ExactCenter());
+                }
+            }
         }
 
         private static int Player_DreamDashUpdate(On.Celeste.Player.orig_DreamDashUpdate orig, Player self)
@@ -298,10 +346,6 @@ namespace Celeste.Mod.Aqua.Core
             if (nextState == (int)AquaStates.StDreamDash)
             {
                 self.UpdateSpecialSwing();
-            }
-            else
-            {
-                // Goto normal state.
             }
             return nextState;
         }
@@ -665,7 +709,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 else if (hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
                 {
-                    if (hook.EnforcePlayer(self, new Segment(hook.PlayerPreviousPosition, self.Center), Engine.DeltaTime))
+                    if (hook.EnforcePlayer(self, new Segment(hook.PlayerPreviousPosition, self.ExactCenter()), Engine.DeltaTime))
                     {
                         hook.Revoke();
                         if (self.StateMachine.State == (int)AquaStates.StHanging)
@@ -1216,6 +1260,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (AquaModule.Settings.ThrowHook.Pressed)
                 {
+                    hook.SetRopeLengthLocked(false, self.ExactCenter());
                     hook.Revoke();
                     self.Speed = TurnToMoreAccurateSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
                     self.SetSpecialSwingDirection(0.0f);
@@ -1237,6 +1282,7 @@ namespace Celeste.Mod.Aqua.Core
                     }
                     else
                     {
+                        hook.SetRopeLengthLocked(false, self.ExactCenter());
                         self.Speed = TurnToMoreAccurateSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
                         self.SetSpecialSwingDirection(0.0f);
                     }

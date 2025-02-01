@@ -8,38 +8,47 @@ namespace Celeste.Mod.Aqua.Core
     [Tracked(false)]
     public class AquaBooster : Booster
     {
-        public static ParticleType P_BurstOrange;
-        public static ParticleType P_BurstPurple;
-        public static ParticleType P_AppearOrange;
-        public static ParticleType P_AppearPurple;
-
-        public bool Hookable { get; private set; }
+        public bool Hookable { get; protected set; }
+        public Color ParticleColor { get; protected set; }
+        public ParticleType AppearParticle { get; protected set; }
+        public bool UseDefaultSprite { get; protected set; }
 
         public AquaBooster(Vector2 position, bool red, bool hookable, string skin)
             : base(position, red)
         {
-            Hookable = hookable;
-            if (Hookable)
+        }
+
+        public AquaBooster(EntityData data, Vector2 offset)
+            : base(data.Position + offset, data.Bool("red"))
+        {
+            Hookable = data.Bool("hookable");
+            string skin = data.Attr("sprite");
+            ParticleColor = data.HexColor("particle_color");
+            UseDefaultSprite = data.Bool("use_default_sprite", true);
+            string spriteName = skin;
+            if (UseDefaultSprite || !GFX.SpriteBank.Has(skin))
             {
-                string spriteName = skin;
-                if (red)
+                if (Hookable)
                 {
-                    if (!GFX.SpriteBank.Has(skin))
-                    {
-                        spriteName = "Aqua_BoosterPurple";
-                    }
+                    spriteName = red ? "Aqua_BoosterPurple" : "Aqua_BoosterOrange";
                     GFX.SpriteBank.CreateOn(sprite, spriteName);
-                    particleType = P_BurstPurple;
+                    Color color = red ? Calc.HexToColor("760ebc") : Calc.HexToColor("bc630e");
+                    particleType = !red ? new ParticleType(P_Burst) { Color = color, } : new ParticleType(P_BurstRed) { Color = color, };
+                    AppearParticle = !red ? new ParticleType(P_Appear) { Color = color, } : new ParticleType(P_RedAppear) { Color = color, };
                 }
                 else
                 {
-                    if (!GFX.SpriteBank.Has(skin))
-                    {
-                        spriteName = "Aqua_BoosterOrange";
-                    }
-                    GFX.SpriteBank.CreateOn(sprite, spriteName);
-                    particleType = P_BurstOrange;
+                    AppearParticle = !red ? P_Appear : P_RedAppear;
                 }
+            }
+            else
+            {
+                GFX.SpriteBank.CreateOn(sprite, skin);
+                particleType = !red ? new ParticleType(P_Burst) { Color = ParticleColor, } : new ParticleType(P_BurstRed) { Color = ParticleColor, };
+                AppearParticle = !red ? new ParticleType(P_Appear) { Color = ParticleColor, } : new ParticleType(P_RedAppear) { Color = ParticleColor, };
+            }
+            if (Hookable)
+            {
                 HookInteractable com = Get<HookInteractable>();
                 com.Interaction = OnHookGrab;
                 PlayerCollider com2 = Get<PlayerCollider>();
@@ -47,15 +56,6 @@ namespace Celeste.Mod.Aqua.Core
                 Add(_moveToward = new MoveToward(null, true));
                 _moveToward.Active = false;
             }
-            else if (GFX.SpriteBank.Has(skin))
-            {
-                GFX.SpriteBank.CreateOn(sprite, skin);
-            }
-        }
-
-        public AquaBooster(EntityData data, Vector2 offset)
-            : this(data.Position + offset, data.Bool("red"), data.Bool("hookable"), data.Attr("sprite", string.Empty))
-        {
         }
 
         public override void Update()

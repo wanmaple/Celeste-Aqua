@@ -22,6 +22,10 @@ GravityBooster.fieldInformation = {
         options = INTERNAL_SKINS,
         editable = true,
     },
+    particle_color = {
+        fieldType = "color",
+        useAlpha = false,
+    },
     gravity_type = {
         options = GRAVITY_TYPES,
         editable = false,
@@ -35,6 +39,8 @@ for _, gravityType in ipairs(GRAVITY_TYPES) do
             red = false,
             hookable = true,
             sprite = "Aqua_BoosterOrange",
+            particle_color = "bc630e",
+            use_default_sprite = true,
             gravity_type = gravityType,
         },
     })
@@ -44,6 +50,8 @@ for _, gravityType in ipairs(GRAVITY_TYPES) do
             red = true,
             hookable = true,
             sprite = "Aqua_BoosterPurple",
+            particle_color = "760ebc",
+            use_default_sprite = true,
             gravity_type = gravityType,
         },
     })

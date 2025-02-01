@@ -118,6 +118,13 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        static HookRope()
+        {
+            _methodPlayerNotCollideDreamBlock = typeof(HookRope).GetMethod("CanPlayerCollideDreamBlock", BindingFlags.Static | BindingFlags.NonPublic);
+        }
+
+        private static MethodInfo _methodPlayerNotCollideDreamBlock;
+
         public HookRope(float maxLength, RopeMaterial material)
             : base(true, true)
         {
@@ -298,6 +305,7 @@ namespace Celeste.Mod.Aqua.Core
                         return true;
                     }
                 }
+                float tolerance = 1.5f;
                 float lengthDiff = length - _lockLength;
                 Vector2 ropeDirection = Calc.SafeNormalize(BottomPivot.point - playerSeg.Point2);
                 Vector2 movement = ropeDirection * MathF.Ceiling(lengthDiff);
@@ -308,7 +316,11 @@ namespace Celeste.Mod.Aqua.Core
                     movement = preferPosition - playerSeg.Point2;
                 }
                 movement.Y *= (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f);
-                player.movementCounter = Vector2.Zero;
+                // When the player is dream dashing in the DreamBlock, the Move method will always collide the dreamblock which make the movementCounter becoming zero.
+                if (player.StateMachine.State == (int)AquaStates.StDreamDash)
+                {
+                    player.MakeExtraCollideCondition(_methodPlayerNotCollideDreamBlock);
+                }
                 if (!AquaMaths.IsApproximateZero(movement.X))
                 {
                     player.MoveH(movement.X);
@@ -317,8 +329,12 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     player.MoveV(movement.Y);
                 }
+                if (player.StateMachine.State == (int)AquaStates.StDreamDash)
+                {
+                    player.MakeExtraCollideCondition(null);
+                }
                 float afterLength = CalculateRopeLength(player.ExactCenter());
-                if (afterLength - _lockLength <= 1.5f)  // Make sure it's greater than 1.414
+                if (afterLength - _lockLength <= tolerance)  // Make sure it's greater than 1.414
                 {
                     return false;
                 }
@@ -326,6 +342,13 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             return false;
+        }
+
+        private static bool CanPlayerCollideDreamBlock(Entity other)
+        {
+            if (other is DreamBlock)
+                return false;
+            return true;
         }
 
         public void HookAttachEntity(Entity entity)

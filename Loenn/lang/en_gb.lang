@@ -43,7 +43,9 @@ entities.Aqua/Freeze Listener.attributes.description.inputs=The inputs to listen
 # Aqua Booster
 entities.Aqua/Aqua Booster.attributes.description.red=Whether the booster is short distance or infinite distance.
 entities.Aqua/Aqua Booster.attributes.description.hookable=Whether the booster is interactable with the grappling hook.
-entities.Aqua/Aqua Booster.attributes.description.sprite=Custom sprite name, leave empty leads to default sprite.
+entities.Aqua/Aqua Booster.attributes.description.sprite=Custom sprite name, leave empty leads to default sprite.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Aqua Booster.attributes.description.particle_color=Custom burst/appear particle color.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Aqua Booster.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
 
 # Aqua NPC
 entities.Aqua/Custom NPC.attributes.description.indicatorOffsetX=Offset for the chat icon on the X axis.
@@ -176,7 +178,10 @@ entities.Aqua/Decal Assigner.attributes.description.command=Which ability to ass
 # Gravity Booster
 entities.Aqua/Gravity Booster.attributes.description.red=Whether the booster is short distance or infinite distance.
 entities.Aqua/Gravity Booster.attributes.description.hookable=Whether the booster is interactable with the grappling hook.
-entities.Aqua/Gravity Booster.attributes.description.sprite=Custom sprite name, leave empty leads to default sprite.
+entities.Aqua/Gravity Booster.attributes.description.sprite=Custom sprite name, leave empty leads to default sprite.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Gravity Booster.attributes.description.particle_color=Custom burst/appear particle color.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Gravity Booster.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+entities.Aqua/Gravity Booster.attributes.description.gravity_type=The gravity type to change.
 
 # Gravity Filter
 entities.Aqua/Gravity Filter.attributes.description.color=Area main color.

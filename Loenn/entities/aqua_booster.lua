@@ -12,6 +12,10 @@ AquaBooster.fieldInformation = {
         options = INTERNAL_SKINS,
         editable = true,
     },
+    particle_color = {
+        fieldType = "color",
+        useAlpha = false,
+    },
 }
 AquaBooster.placements = {
     {
@@ -20,6 +24,8 @@ AquaBooster.placements = {
             red = false,
             hookable = true,
             sprite = "Aqua_BoosterOrange",
+            particle_color = "bc630e",
+            use_default_sprite = true,
         },
     },
     {
@@ -28,6 +34,8 @@ AquaBooster.placements = {
             red = true,
             hookable = true,
             sprite = "Aqua_BoosterPurple",
+            particle_color = "760ebc",
+            use_default_sprite = true,
         },
     },
 }

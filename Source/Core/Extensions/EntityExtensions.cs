@@ -248,6 +248,11 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("can_collide_method", method);
         }
 
+        public static void MakeExtraCollideCondition(this Entity self, MethodInfo method)
+        {
+            DynamicData.For(self).Set("can_collide_method", method);
+        }
+
         private static ulong AUTO_ID = 0u;
     }
 }
