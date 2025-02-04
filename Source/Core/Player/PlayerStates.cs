@@ -202,8 +202,6 @@ namespace Celeste.Mod.Aqua.Core
             self.StateMachine.SetStateName((int)AquaStates.StHanging, "Hanging");
             self.StateMachine.SetCallbacks((int)AquaStates.StElectricShocking, self.Player_ElectricShockingUpdate, null, self.Player_ElectricShockingBegin);
             self.StateMachine.SetStateName((int)AquaStates.StElectricShocking, "ElectricShocking");
-            //DynamicData.For(self).Set("start_emitting", false);
-            //self.SetTimeTicker("emit_ticker", 0.05f);
             self.SetTimeTicker("dash_hanging_ticker", 0.05f);
             self.SetTimeTicker("boost_speed_save_ticker", 0.5f);
             self.SetTimeTicker("swing_jump_keeping_ticker", 0.1f);
@@ -215,6 +213,7 @@ namespace Celeste.Mod.Aqua.Core
             self.SetSavedSwingSpeed(Vector2.Zero);
             self.SetSpecialSwingDirection(0.0f);
             self.SetSpecialSwingSpeed(Player.DashSpeed);
+            self.Add(new GrappleRelatedFields());
         }
 
         private static void Player_Added(On.Celeste.Player.orig_Added orig, Player self, Scene scene)
@@ -545,7 +544,7 @@ namespace Celeste.Mod.Aqua.Core
                 hook.Revoke();
                 return (int)AquaStates.StNormal;
             }
-            else if (shotCheck.CanFlyTowards && hook.CanFlyToward())
+            else if (!self.level.GetState().DisableGrappleBoost && shotCheck.CanFlyTowards && hook.CanFlyToward())
             {
                 self.FlyTowardHook();
             }
@@ -938,6 +937,7 @@ namespace Celeste.Mod.Aqua.Core
             self.Speed = -ropeDirection * MathF.Min(self.SceneAs<Level>().GetState().HookSettings.FlyTowardSpeed + origAlongSpeed, levelState.HookSettings.MaxLineSpeed);
             if (ModInterop.GravityHelper.IsPlayerGravityInverted())
                 self.Speed.Y = -self.Speed.Y;
+            Audio.Play("event:/char/madeline/jump_superslide", self.Center);
             Input.Rumble(RumbleStrength.Light, RumbleLength.Short);
         }
 
@@ -1067,7 +1067,7 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     hook.Revoke();
                 }
-                else if (hook.JustFixed && (hook.CanFlyToward() || shotCheck.CanFlyTowards))
+                else if (!self.level.GetState().DisableGrappleBoost && hook.JustFixed && (hook.CanFlyToward() || shotCheck.CanFlyTowards))
                 {
                     self.FlyTowardHook();
                 }
@@ -1079,7 +1079,7 @@ namespace Celeste.Mod.Aqua.Core
                     }
                     else if (hook.State == GrapplingHook.HookStates.Fixed)
                     {
-                        if (shotCheck.CanFlyTowards && hook.CanFlyToward())
+                        if (!self.level.GetState().DisableGrappleBoost && shotCheck.CanFlyTowards && hook.CanFlyToward())
                         {
                             self.FlyTowardHook();
                         }
@@ -1118,7 +1118,9 @@ namespace Celeste.Mod.Aqua.Core
                     }
                     if (ModInterop.GravityHelper.IsPlayerGravityInverted())
                         self.Speed.Y = -self.Speed.Y;
-                    DynamicData.For(self).Set("fixing_speed", self.Speed);
+                    GrappleRelatedFields com = self.Get<GrappleRelatedFields>();
+                    com.HasFixingSpeed = true;
+                    com.FixingSpeed = self.Speed;
                 }
             }
             return -1;
@@ -1173,13 +1175,14 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 if (!self.onGround)
                 {
-                    // NormalUpdate限制太多，这种情况下强制改为之前计算的速度
-                    if (hook.ReachLockedLength(self.Center))
+                    GrappleRelatedFields com = self.Get<GrappleRelatedFields>();
+                    if (hook.ReachLockedLength(self.Center) && com.HasFixingSpeed)
                     {
-                        self.Speed = DynamicData.For(self).Get<Vector2>("fixing_speed");
+                        self.Speed = com.FixingSpeed;
                     }
                 }
             }
+            self.Get<GrappleRelatedFields>().HasFixingSpeed = false;
             return -1;
         }
 

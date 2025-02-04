@@ -20,6 +20,7 @@ namespace Celeste.Mod.Aqua.Core
             public int RestShootCount { get; set; }
             public int MaxShootCount { get; set; }
             public bool ResetCountInTransition { get; set; }
+            public bool DisableGrappleBoost { get; set; }
             public HookSettings HookSettings { get; set; }
             public List<BackgroundData> Backgrounds { get; private set; }
 
@@ -34,14 +35,16 @@ namespace Celeste.Mod.Aqua.Core
 
             public void Reset(AreaData areaData)
             {
-                FeatureEnabled = areaData.GetExtraMeta().FeatureEnabled || AquaModule.Settings.FeatureEnabled;
-                RopeMaterial = (GrapplingHook.RopeMaterial)areaData.GetExtraMeta().HookMaterial;
-                GameplayMode = (GrapplingHook.GameplayMode)areaData.GetExtraMeta().GameplayMode;
-                InitialShootCount = RestShootCount = areaData.GetExtraMeta().InitialShootCount;
-                MaxShootCount = areaData.GetExtraMeta().MaxShootCount;
-                ResetCountInTransition = areaData.GetExtraMeta().ResetCountInTransition;
-                HookSettings = areaData.GetExtraMeta().HookSettings.Clone();
-                Backgrounds = new List<BackgroundData>(areaData.GetExtraMeta().Backgrounds);
+                var extraMeta = areaData.GetExtraMeta();
+                FeatureEnabled = extraMeta.FeatureEnabled || AquaModule.Settings.FeatureEnabled;
+                RopeMaterial = (GrapplingHook.RopeMaterial)extraMeta.HookMaterial;
+                GameplayMode = (GrapplingHook.GameplayMode)extraMeta.GameplayMode;
+                InitialShootCount = RestShootCount = extraMeta.InitialShootCount;
+                MaxShootCount = extraMeta.MaxShootCount;
+                ResetCountInTransition = extraMeta.ResetCountInTransition;
+                DisableGrappleBoost = extraMeta.DisableGrappleBoost;
+                HookSettings = extraMeta.HookSettings.Clone();
+                Backgrounds = new List<BackgroundData>(extraMeta.Backgrounds);
             }
         }
 

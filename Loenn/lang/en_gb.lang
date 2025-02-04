@@ -241,7 +241,7 @@ triggers.Aqua/Custom Cutscene Trigger.attributes.description.fadeInOnSkip=Whethe
 triggers.Aqua/Custom Cutscene Trigger.attributes.description.endingChapter=Whether the chapter will end after this cutscene.
 
 # Change Hook Parameter Trigger
-triggers.Aqua/Change Hook Parameter Trigger.attributes.description.parameter=Parameter name.\nFeatureEnabled: 1 to enable and 0 to disable.\nRopeMaterial: 0 to default and 1 to metal.\nRopeLength: should be between 80-200.\nEmitSpeed: should be between 600-1200.\nMaxLineSpeed: should be between 400-2000.\nFlyTowardSpeed: should be between 300-500.
+triggers.Aqua/Change Hook Parameter Trigger.attributes.description.parameter=Parameter name.\nFeatureEnabled: 1 to enable and 0 to disable.\nRopeMaterial: 0 to default and 1 to metal.\nRopeLength: should be between 80-200.\nEmitSpeed: should be between 600-1200.\nMaxLineSpeed: should be between 400-2000.\nFlyTowardSpeed: should be between 300-500.\nDisableGrappleBoost: 1 to disable and 0 to enable.
 triggers.Aqua/Change Hook Parameter Trigger.attributes.description.value=Parameter value, you could check details in the description of parameter.
 
 # Change Gameplay Mode Trigger

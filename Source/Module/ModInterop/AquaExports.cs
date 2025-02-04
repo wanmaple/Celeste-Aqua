@@ -43,7 +43,7 @@ namespace Celeste.Mod.Aqua.Module
 
         public static void RevokeGrapplingHook(Entity hook)
         {
-            if (hook is GrapplingHook e)
+            if (hook is GrapplingHook e && e.Active && e.State != GrapplingHook.HookStates.Revoking)
                 e.Revoke();
         }
 

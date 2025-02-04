@@ -71,6 +71,20 @@ namespace Celeste.Mod.Aqua.Core
                         state.HookSettings.FlyTowardSpeed = Calc.Clamp(flySpeed, 300, 500);
                     }
                     break;
+                case "DisableGrappleBoost":
+                    if (int.TryParse(Value, out int num2) && num2 > 0)
+                    {
+                        state.DisableGrappleBoost = true;
+                    }
+                    else if (bool.TryParse(Value, out bool bl) && bl)
+                    {
+                        state.DisableGrappleBoost = true;
+                    }
+                    else
+                    {
+                        state.DisableGrappleBoost = false;
+                    }
+                    break;
                 default:
                     break;
             }
