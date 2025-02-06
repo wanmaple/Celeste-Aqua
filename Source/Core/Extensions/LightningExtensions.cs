@@ -29,7 +29,7 @@ namespace Celeste.Mod.Aqua.Core
             if (hook.Material == GrapplingHook.RopeMaterial.Metal)
             {
                 Player player = self.Scene.Tracker.GetEntity<Player>();
-                player.StateMachine.ForceState((int)AquaStates.StElectricShocking);
+                player.StateMachine.ForceState((int)AquaStates.StElectricShock);
             }
         }
 
@@ -50,9 +50,9 @@ namespace Celeste.Mod.Aqua.Core
                 if (hook.Material == GrapplingHook.RopeMaterial.Metal)
                 {
                     Player player = self.Scene.Tracker.GetEntity<Player>();
-                    if (player.StateMachine.State != (int)AquaStates.StElectricShocking)
+                    if (player.StateMachine.State != (int)AquaStates.StElectricShock)
                     {
-                        player.StateMachine.ForceState((int)AquaStates.StElectricShocking);
+                        player.StateMachine.ForceState((int)AquaStates.StElectricShock);
                     }
                 }
             }

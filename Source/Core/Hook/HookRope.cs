@@ -472,10 +472,9 @@ namespace Celeste.Mod.Aqua.Core
             for (int i = 0; i < _pivots.Count;)
             {
                 RopePivot pivot = _pivots[i];
-                Platform solid = pivot.entity as Platform;
-                if (solid != null)
+                if (pivot.entity is Platform || pivot.entity is Actor)
                 {
-                    if (i != 0 && (solid.Collider == null || !solid.Collidable))
+                    if (i != 0 && (pivot.entity.Collider == null || !pivot.entity.Collidable))
                     {
                         _pivots.RemoveAt(i);
                         _lastPivots.Decrease(i - 1);
@@ -504,18 +503,18 @@ namespace Celeste.Mod.Aqua.Core
                     else
                     {
                         // FloatySpaceBlock has some special logic.
-                        Vector2 curPos = solid.Position;
-                        Vector2 prevPos = solid.GetPreviousPosition();
-                        if (solid is FloatySpaceBlock floaty && floaty.master != null)
+                        Vector2 curPos = pivot.entity.Position;
+                        Vector2 prevPos = pivot.entity.GetPreviousPosition();
+                        if (pivot.entity is FloatySpaceBlock floaty && floaty.master != null)
                         {
                             curPos = floaty.master.Position;
                             prevPos = floaty.master.GetPreviousPosition();
                         }
-                        if (ModPatches.ConnectionEntityPatches.Contains(solid.GetType().FullName))
+                        if (ModPatches.ConnectionEntityPatches.Contains(pivot.entity.GetType().FullName))
                         {
                             // Connection entity compatibility.
-                            var fieldMaster = solid.GetType().BaseType.GetField("master", BindingFlags.Instance | BindingFlags.NonPublic);
-                            object master = fieldMaster.GetValue(solid);
+                            var fieldMaster = pivot.entity.GetType().BaseType.GetField("master", BindingFlags.Instance | BindingFlags.NonPublic);
+                            object master = fieldMaster.GetValue(pivot.entity);
                             if (master != null)
                             {
                                 curPos = (master as Entity).Position;

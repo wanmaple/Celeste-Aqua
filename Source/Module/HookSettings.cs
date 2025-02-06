@@ -33,7 +33,7 @@ namespace Celeste.Mod.Aqua.Module
 
         [SettingName("SETTINGS_EMIT_SPEED")]
         [SettingRange(600, 2000, true)]
-        [DefaultValue(600)]
+        [DefaultValue(900)]
         public int EmitSpeed
         {
             get => _emitSpeed;
@@ -100,6 +100,24 @@ namespace Celeste.Mod.Aqua.Module
         }
 
         private int _flyTowardSpeed = 325;
+
+        [SettingName("SETTINGS_ACTOR_PULL_FORCE")]
+        [SettingRange(300, 1000, true)]
+        [DefaultValue(400)]
+        public int ActorPullForce
+        {
+            get => _actorPullForce;
+            set
+            {
+                if (_actorPullForce != value)
+                {
+                    _actorPullForce = value;
+                    ParameterChanged?.Invoke("ActorPullForce", _actorPullForce);
+                }
+            }
+        }
+
+        private int _actorPullForce;
 
         [SettingIgnore]
         [DefaultValue(2)]

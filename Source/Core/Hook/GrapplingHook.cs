@@ -377,7 +377,7 @@ namespace Celeste.Mod.Aqua.Core
             _elapsed += dt;
             JustFixed = false;
             _elecShockSprite.Visible = ElectricShocking;
-            if (player.StateMachine.State == (int)AquaStates.StElectricShocking)
+            if (player.StateMachine.State == (int)AquaStates.StElectricShock)
             {
                 _elecShockSprite.Visible = true;
                 rope.ElectricShocking = true;
@@ -816,14 +816,12 @@ namespace Celeste.Mod.Aqua.Core
         private bool CheckInteractables(Vector2 at)
         {
             _hitInteractable = false;
-            Vector2 position = Position;
-            Position = at;
             List<Component> interactables = Scene.Tracker.GetComponents<HookInteractable>();
             for (int i = 0; i < interactables.Count; i++)
             {
                 HookInteractable interactable = interactables[i] as HookInteractable;
                 Entity entity = interactable.Entity;
-                if (entity != null && entity.Collidable && entity.Collider != null && Collide.Check(this, entity))
+                if (entity != null && interactable.CollideEntity(this, at))
                 {
                     if (interactable.OnInteract(this, at))
                     {
@@ -832,7 +830,6 @@ namespace Celeste.Mod.Aqua.Core
                     }
                 }
             }
-            Position = position;
             return _hitInteractable;
         }
 

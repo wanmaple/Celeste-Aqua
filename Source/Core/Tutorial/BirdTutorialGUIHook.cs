@@ -1,6 +1,4 @@
-﻿using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using System.Reflection;
+﻿using MonoMod.Cil;
 
 namespace Celeste.Mod.Aqua.Core
 {

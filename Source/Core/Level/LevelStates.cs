@@ -180,6 +180,9 @@ namespace Celeste.Mod.Aqua.Core
                         case "FlyTowardSpeed":
                             state.HookSettings.FlyTowardSpeed = value;
                             break;
+                        case "ActorPullForce":
+                            state.HookSettings.ActorPullForce = value;
+                            break;
                     }
                 }
             }

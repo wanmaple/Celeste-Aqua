@@ -14,6 +14,7 @@ namespace Celeste.Mod.Aqua.Core
 {
     public partial class PlayerStates
     {
+        public const float MADELINE_MASS = 1.0f;
         public const float SLIDE_JUMP_THRESHOLD = 200.0f;
 
         public enum SlideStates

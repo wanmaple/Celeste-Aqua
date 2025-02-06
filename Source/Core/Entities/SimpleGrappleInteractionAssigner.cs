@@ -9,7 +9,7 @@ using System.Linq;
 namespace Celeste.Mod.Aqua.Core
 {
     [CustomEntity("Aqua/Grapple Interaction Assigner")]
-    public class GrappleInteractionAssigner : Entity
+    public class SimpleGrappleInteractionAssigner : Entity
     {
         public enum GrappleInteractions
         {
@@ -21,7 +21,7 @@ namespace Celeste.Mod.Aqua.Core
         public GrappleInteractions InteractionType { get; private set; }
         public IReadOnlyList<string> Blacklist { get; private set; }
 
-        public GrappleInteractionAssigner(EntityData data, Vector2 offset)
+        public SimpleGrappleInteractionAssigner(EntityData data, Vector2 offset)
             : base(data.Position + offset)
         {
             Collider = new Hitbox(data.Width, data.Height);
@@ -109,7 +109,7 @@ namespace Celeste.Mod.Aqua.Core
                 return false;
             if (other is UnhookableArea || other is UnhookableCrystalSpinner)
                 return false;
-            if (other is GrappleInteractionAssigner || other is DecalAssigner)
+            if (other is SimpleGrappleInteractionAssigner || other is DecalAssigner)
                 return false;
             var sidewaysJumpthruTypes = ModInterop.SidewaysJumpthruTypes;
             foreach (Type type in sidewaysJumpthruTypes)

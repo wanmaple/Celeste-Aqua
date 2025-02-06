@@ -40,8 +40,8 @@ namespace Celeste.Mod.Aqua.Core
         StIntroThinkForABit = 25,
 
         // Extended States
-        StHanging = 26,
-        StElectricShocking,
+        StSwing = 26,
+        StElectricShock,
 
         MaxStates,
     }
@@ -128,7 +128,7 @@ namespace Celeste.Mod.Aqua.Core
             if (cursor.TryGotoNext(ins => ins.MatchLdcI4(26)))
             {
                 cursor.Index++;
-                cursor.EmitLdcI4((int)AquaStates.MaxStates - (int)AquaStates.StHanging);
+                cursor.EmitLdcI4((int)AquaStates.MaxStates - (int)AquaStates.StSwing);
                 cursor.EmitAdd();
             }
         }
@@ -188,7 +188,7 @@ namespace Celeste.Mod.Aqua.Core
                 cursor.EmitLdarg0();
                 cursor.EmitLdfld(field);
                 cursor.EmitCallvirt(method);
-                cursor.EmitLdcI4((int)AquaStates.StHanging);
+                cursor.EmitLdcI4((int)AquaStates.StSwing);
                 cursor.EmitBeq(label);
             }
         }
@@ -198,10 +198,10 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, position, spriteMode);
 
             self.StateMachine.SetCallbacks((int)AquaStates.StLaunch, self.LaunchUpdate, null, self.LaunchBegin, self.Player_LaunchEnd);
-            self.StateMachine.SetCallbacks((int)AquaStates.StHanging, self.Player_HangingUpdate, null, self.Player_HangingBegin, self.Player_HangingEnd);
-            self.StateMachine.SetStateName((int)AquaStates.StHanging, "Hanging");
-            self.StateMachine.SetCallbacks((int)AquaStates.StElectricShocking, self.Player_ElectricShockingUpdate, null, self.Player_ElectricShockingBegin);
-            self.StateMachine.SetStateName((int)AquaStates.StElectricShocking, "ElectricShocking");
+            self.StateMachine.SetCallbacks((int)AquaStates.StSwing, self.Player_SwingUpdate, null, self.Player_SwingBegin, self.Player_SwingEnd);
+            self.StateMachine.SetStateName((int)AquaStates.StSwing, "Swing");
+            self.StateMachine.SetCallbacks((int)AquaStates.StElectricShock, self.Player_ElectricShockingUpdate, null, self.Player_ElectricShockingBegin);
+            self.StateMachine.SetStateName((int)AquaStates.StElectricShock, "ElectricShocking");
             self.SetTimeTicker("dash_hanging_ticker", 0.05f);
             self.SetTimeTicker("boost_speed_save_ticker", 0.5f);
             self.SetTimeTicker("swing_jump_keeping_ticker", 0.1f);
@@ -213,6 +213,7 @@ namespace Celeste.Mod.Aqua.Core
             self.SetSavedSwingSpeed(Vector2.Zero);
             self.SetSpecialSwingDirection(0.0f);
             self.SetSpecialSwingSpeed(Player.DashSpeed);
+            self.SetHookable(false);
             self.Add(new GrappleRelatedFields());
         }
 
@@ -480,7 +481,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void Player_LaunchEnd(this Player self)
         {
-            if (self.StateMachine.State == (int)AquaStates.StHanging)
+            if (self.StateMachine.State == (int)AquaStates.StSwing)
             {
                 TimeTicker keepTicker = self.GetTimeTicker("swing_jump_keeping_ticker");
                 keepTicker.Reset();
@@ -488,7 +489,7 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private static void Player_HangingBegin(this Player self)
+        private static void Player_SwingBegin(this Player self)
         {
             var hook = self.GetGrappleHook();
             if (hook.UserLockedLength > 0.0f)
@@ -503,7 +504,7 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("climb_rope_direction", 0);
         }
 
-        private static void Player_HangingEnd(this Player self)
+        private static void Player_SwingEnd(this Player self)
         {
             var hook = self.GetGrappleHook();
             hook.SetRopeLengthLocked(false, self.Center);
@@ -517,7 +518,7 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private static int Player_HangingUpdate(this Player self)
+        private static int Player_SwingUpdate(this Player self)
         {
             float dt = Engine.DeltaTime;
             var hook = self.GetGrappleHook();
@@ -652,7 +653,7 @@ namespace Celeste.Mod.Aqua.Core
             if (ModInterop.GravityHelper.IsPlayerGravityInverted())
                 self.Speed.Y = -self.Speed.Y;
 
-            return (int)AquaStates.StHanging;
+            return (int)AquaStates.StSwing;
         }
 
         private static void Player_ElectricShockingBegin(this Player self)
@@ -673,12 +674,12 @@ namespace Celeste.Mod.Aqua.Core
                 self.Die(Vector2.Zero);
                 return (int)AquaStates.StNormal;
             }
-            return (int)AquaStates.StElectricShocking;
+            return (int)AquaStates.StElectricShock;
         }
 
         private static void Player_Update(On.Celeste.Player.orig_Update orig, Player self)
         {
-            if (self.StateMachine.State == (int)AquaStates.StElectricShocking)
+            if (self.StateMachine.State == (int)AquaStates.StElectricShock)
             {
                 foreach (var com in self.Components)
                 {
@@ -711,12 +712,12 @@ namespace Celeste.Mod.Aqua.Core
                     if (hook.EnforcePlayer(self, new Segment(hook.PlayerPreviousPosition, self.ExactCenter()), Engine.DeltaTime))
                     {
                         hook.Revoke();
-                        if (self.StateMachine.State == (int)AquaStates.StHanging)
+                        if (self.StateMachine.State == (int)AquaStates.StSwing)
                         {
                             self.StateMachine.ForceState((int)AquaStates.StNormal);
                         }
                     }
-                    if (self.StateMachine.State == (int)AquaStates.StHanging)
+                    if (self.StateMachine.State == (int)AquaStates.StSwing)
                     {
                         int climbRopeDirection = DynamicData.For(self).Get<int>("climb_rope_direction");
                         float staminaCost = 0.0f;
@@ -737,7 +738,7 @@ namespace Celeste.Mod.Aqua.Core
                 GrapplingHook hook = self.GetGrappleHook();
                 if (hook != null)
                 {
-                    if ((!Input.GrabCheck && !AquaModule.Settings.AutoGrabRopeIfPossible) || self.onGround || !hook.Active || hook.State != GrapplingHook.HookStates.Fixed || (self.StateMachine.State != (int)AquaStates.StNormal && self.StateMachine.State != (int)AquaStates.StHanging))
+                    if ((!Input.GrabCheck && !AquaModule.Settings.AutoGrabRopeIfPossible) || self.onGround || !hook.Active || hook.State != GrapplingHook.HookStates.Fixed || (self.StateMachine.State != (int)AquaStates.StNormal && self.StateMachine.State != (int)AquaStates.StSwing))
                     {
                         hook.UserLockedLength = 0.0f;
                     }
@@ -794,7 +795,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void Player_UpdateSprite(On.Celeste.Player.orig_UpdateSprite orig, Player self)
         {
-            if (self.StateMachine.State != (int)AquaStates.StHanging)
+            if (self.StateMachine.State != (int)AquaStates.StSwing)
             {
                 if (self.GetSlideState() != SlideStates.None)
                 {
@@ -1158,7 +1159,7 @@ namespace Celeste.Mod.Aqua.Core
                         bool swingUp = IsRopeSwingingUp(ropeDirection);
                         if (swingUp)
                         {
-                            return (int)AquaStates.StHanging;
+                            return (int)AquaStates.StSwing;
                         }
                         Vector2 swingDirection = hook.SwingDirection;
                         if (ModInterop.GravityHelper.IsPlayerGravityInverted())
@@ -1169,7 +1170,7 @@ namespace Celeste.Mod.Aqua.Core
                         float threshold = SPEED_CHECK_GRAPPLING_SWING_DOWN;
                         if (speedTangent >= threshold)
                         {
-                            return (int)AquaStates.StHanging;
+                            return (int)AquaStates.StSwing;
                         }
                     }
                 }
@@ -1189,7 +1190,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void HandleHangingSpeed(this Player self, float dt)
         {
             GrapplingHook hook = self.GetGrappleHook();
-            float gravity = Player.Gravity * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f);
+            float gravity = Player.Gravity * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f) * ModInterop.ExtendedVariants.GetCurrentGravityMultiplier();
             self.Speed.Y += gravity * dt;
             self.Speed -= hook.Acceleration * dt * 0.8f;
             self.Speed += self.GetWindSpeed() * dt * self.SceneAs<Level>().GetState().HookSettings.WindCoefficient;
