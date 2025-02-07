@@ -10,6 +10,7 @@ namespace Celeste.Mod.Aqua.Module
         public static MaxHelpingHandInterop MaxHelpingHand => _interopMaxHelpingHand;
         public static FactoryHelperInterop FactoryHelper => _interopFactoryHelper;
         public static ExtendedVariantModeInterop ExtendedVariants => _interopExtendedVariants;
+        public static EeveeHelperInterop EeveeHelper => _interopEeveeHelper;
         public static IReadOnlyList<Type> SidewaysJumpthruTypes
         {
             get
@@ -35,6 +36,16 @@ namespace Celeste.Mod.Aqua.Module
                 if (_conveyorType == null)
                     CacheModTypes();
                 return _conveyorType;
+            }
+        }
+
+        public static Type HoldableType
+        {
+            get
+            {
+                if (_holdableContainerType == null)
+                    CacheModTypes();
+                return _holdableContainerType;
             }
         }
 
@@ -65,14 +76,17 @@ namespace Celeste.Mod.Aqua.Module
                 sidewaysJumpthruTypes.Add(sidewayJumpthru1);
             _sidewaysJumpthruTypes = sidewaysJumpthruTypes.ToArray();
             _conveyorType = FactoryHelper.GetType("FactoryHelper.Entities.Conveyor");
+            _holdableContainerType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Entities.HoldableContainer");
         }
 
         private static GravityHelperInterop _interopGravityHelper = new GravityHelperInterop();
         private static MaxHelpingHandInterop _interopMaxHelpingHand = new MaxHelpingHandInterop();
         private static FactoryHelperInterop _interopFactoryHelper = new FactoryHelperInterop();
         private static ExtendedVariantModeInterop _interopExtendedVariants = new ExtendedVariantModeInterop();
+        private static EeveeHelperInterop _interopEeveeHelper = new EeveeHelperInterop();
         private static Type[] _downsideJumpthruTypes;
         private static Type[] _sidewaysJumpthruTypes;
         private static Type _conveyorType;
+        private static Type _holdableContainerType;
     }
 }

@@ -103,7 +103,7 @@ namespace Celeste.Mod.Aqua.Module
 
         [SettingName("SETTINGS_ACTOR_PULL_FORCE")]
         [SettingRange(300, 1000, true)]
-        [DefaultValue(400)]
+        [DefaultValue(360)]
         public int ActorPullForce
         {
             get => _actorPullForce;

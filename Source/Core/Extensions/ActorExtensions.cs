@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Aqua.Miscellaneous;
+using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
 using System;
@@ -102,10 +103,11 @@ namespace Celeste.Mod.Aqua.Core
                 myRatio = otherMass / (myMass + otherMass);
                 otherRatio = myMass / (myMass + otherMass);
             }
+            var state = self.SceneAs<Level>().GetState();
             return new MomentumResults
             {
-                OwnerSpeed = (myRatio * totalSpeed + mySaveSpeed) * -toActor,
-                OtherSpeed = (otherRatio * totalSpeed + otherSaveSpeed) * toActor,
+                OwnerSpeed = myRatio * MathF.Min(totalSpeed + mySaveSpeed, state.HookSettings.MaxLineSpeed) * -toActor,
+                OtherSpeed = otherRatio * MathF.Min(totalSpeed + otherSaveSpeed, state.HookSettings.MaxLineSpeed) * toActor,
             };
         }
 
@@ -114,12 +116,8 @@ namespace Celeste.Mod.Aqua.Core
             Player player = self.Scene.Tracker.GetEntity<Player>();
             if (player != null)
             {
-                FieldInfo fieldNoGravityTimer = self.GetType().GetField("noGravityTimer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-                if (fieldNoGravityTimer == null)
-                {
-                    fieldNoGravityTimer = self.GetType().GetField("_noGravityTimer", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-                }
-                FieldInfo fieldSpeed = self.GetType().GetField("Speed", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                FieldInfo fieldNoGravityTimer = self.GetType().FindField(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, "noGravityTimer", "_noGravityTimer");
+                FieldInfo fieldSpeed = self.GetType().FindField(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, "Speed");
                 if (fieldNoGravityTimer != null && fieldSpeed != null && fieldSpeed.FieldType == typeof(Vector2))
                 {
                     hook.Revoke();

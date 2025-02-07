@@ -37,5 +37,17 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
             return null;
         }
+
+        public static FieldInfo FindField(this Type type, BindingFlags flags, params string[] possibleNames)
+        {
+            FieldInfo field = null;
+            foreach (string name in possibleNames)
+            {
+                field = type.GetField(name, flags);
+                if (field != null)
+                    break;
+            }
+            return field;
+        }
     }
 }

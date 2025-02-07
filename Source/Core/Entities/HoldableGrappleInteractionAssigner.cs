@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System;
 using Celeste.Mod.Entities;
+using Celeste.Mod.Aqua.Module;
 
 namespace Celeste.Mod.Aqua.Core.Entities
 {
@@ -41,13 +42,24 @@ namespace Celeste.Mod.Aqua.Core.Entities
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            foreach (Entity entity in Scene.Entities)
+            var actors = scene.Tracker.GetEntities<Actor>();
+            foreach (Actor actor in actors)
             {
-                if (CollideCheck(entity) && !IsInBlacklist(entity))
+                if (CheckCollision(actor) && !IsInBlacklist(actor))
                 {
-                    AssignInteractionToEntity(entity);
+                    AssignInteractionToEntity(actor);
                 }
             }
+        }
+
+        private bool CheckCollision(Actor actor)
+        {
+            if (ModInterop.HoldableType != null && actor.GetType() ==  ModInterop.HoldableType)
+            {
+                Hitbox collider = actor.Collider as Hitbox;
+                return Collide.CheckRect(this, new Rectangle((int)collider.AbsoluteLeft, (int)collider.AbsoluteTop, (int)collider.Width, (int)collider.Height));
+            }
+            return CollideCheck(actor);
         }
 
         private bool IsInBlacklist(Entity entity)
@@ -63,38 +75,24 @@ namespace Celeste.Mod.Aqua.Core.Entities
             return false;
         }
 
-        private void AssignInteractionToEntity(Entity entity)
+        private void AssignInteractionToEntity(Actor actor)
         {
-            entity.SetHookable(true);
-            if (entity is Actor actor)
+            actor.SetHookable(true);
+            actor.SetMass(Mass);
+            actor.SetStaminaCost(StaminaCost);
+            if (actor is not TheoCrystal && actor is not Glider)
             {
-                actor.SetMass(Mass);
-                actor.SetStaminaCost(StaminaCost);
-            }
-            else
-            {
-                ActorExtraFields extras = new ActorExtraFields();
-                extras.Mass = Mass;
-                extras.StaminaCost = StaminaCost;
-                entity.Add(extras);
-            }
-            if (entity is not TheoCrystal && entity is not Glider && entity is Actor actor2)
-            {
-                Holdable holdable = entity.Get<Holdable>();
-                HookInteractable interactable = new HookInteractable(actor2.GeneralHoldableInteraction);
+                Holdable holdable = actor.Get<Holdable>();
+                HookInteractable interactable = new HookInteractable(actor.GeneralHoldableInteraction);
                 interactable.Collider = holdable.PickupCollider;
                 interactable.CollideOutside = true;
-                entity.Add(interactable);
-            }
-            else if (entity is not Actor)
-            {
-                // might be eevee helper case.
+                actor.Add(interactable);
             }
         }
 
         private bool CanCollide(Entity other)
         {
-            if (other is Platform)
+            if (other is Platform || other is Player)
                 return false;
             Holdable holdable = other.Get<Holdable>();
             return holdable != null;
