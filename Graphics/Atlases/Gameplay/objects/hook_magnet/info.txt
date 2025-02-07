@@ -1,0 +1,12 @@
+idle=idle00-07
+close=close00-06        >goto idle_close
+idle_close=close06
+open=open00-06         >goto idle
+
+flash delay0.1
+
+
+    <Loop id="idle" path="idle" delay="0.1" />
+    <Anim id="close" path="close" delay="0.1" frames="0-6" goto="idle_close" />
+    <Loop id="idle_close" path="close" delay="0.1" frames="6" />
+    <Anim id="open" path="open" delay="0.1" frames="0-6" goto="idle" />
