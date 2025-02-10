@@ -22,6 +22,7 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, position);
             self.SetMass(PlayerStates.MADELINE_MASS * 2.0f);
             self.SetStaminaCost(20.0f);
+            self.SetAgainstBoostCoefficient(0.9f);
             HookInteractable interactable = new HookInteractable(self.OnInteractGrapple);
             interactable.Collider = self.Get<Holdable>().PickupCollider;
             interactable.CollideOutside = true;

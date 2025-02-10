@@ -13,6 +13,7 @@ namespace Celeste.Mod.Aqua.Core
             : base(data.Position + offset, data.Width, data.Height, true)
         {
             HookSmoothCoefficient = data.Float("hook_smooth", 2.5f);
+            Add(new ClimbBlocker(false));
         }
 
         public override void Update()

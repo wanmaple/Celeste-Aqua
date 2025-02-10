@@ -1,7 +1,5 @@
 ﻿using Monocle;
-using System.Linq;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using System;
 using Celeste.Mod.Entities;
 using Celeste.Mod.Aqua.Module;
@@ -9,33 +7,22 @@ using Celeste.Mod.Aqua.Module;
 namespace Celeste.Mod.Aqua.Core.Entities
 {
     [CustomEntity("Aqua/Holdable Grapple Interaction Assigner")]
-    public class HoldableGrappleInteractionAssigner : Entity
+    public class HoldableGrappleInteractionAssigner : GrappleInteractionAssigner
     {
         public float Mass { get; private set; }
         public float StaminaCost { get; private set; }
-        public IReadOnlyList<string> Blacklist { get; private set; }
+        public float AgainstBoostCoefficient { get; private set; }
 
         public HoldableGrappleInteractionAssigner(EntityData data, Vector2 offset)
-            : base(data.Position + offset)
+            : base(data, offset)
         {
-            Collider = new Hitbox(data.Width, data.Height);
             Mass = data.Float("mass", PlayerStates.MADELINE_MASS);
             if (Mass < 0.0f)
                 Mass = 0.0f;
-            else if (Mass > 10.0f)
+            else if (Mass >= PlayerStates.MAX_INFINITE_MASS)
                 Mass = float.PositiveInfinity;
             StaminaCost = MathF.Max(data.Float("stamina_cost", 20.0f), 0.0f);
-            string blacklist = data.Attr("blacklist");
-            if (!string.IsNullOrWhiteSpace(blacklist))
-            {
-                string[] array = blacklist.Split(',').Select(str => str.Trim()).Where(str => !string.IsNullOrEmpty(str)).ToArray();
-                Blacklist = array;
-            }
-            else
-            {
-                Blacklist = Array.Empty<string>();
-            }
-
+            AgainstBoostCoefficient = MathHelper.Clamp(data.Float("against_boost_coefficient", 1.0f), 0.0f, 1.0f);
             this.MakeExtraCollideCondition();
         }
 
@@ -62,31 +49,24 @@ namespace Celeste.Mod.Aqua.Core.Entities
             return CollideCheck(actor);
         }
 
-        private bool IsInBlacklist(Entity entity)
-        {
-            string fullname = entity.GetType().FullName;
-            foreach (string black in Blacklist)
-            {
-                if (fullname.Contains(black, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         private void AssignInteractionToEntity(Actor actor)
         {
             actor.SetHookable(true);
             actor.SetMass(Mass);
             actor.SetStaminaCost(StaminaCost);
+            actor.SetAgainstBoostCoefficient(AgainstBoostCoefficient);
             if (actor is not TheoCrystal && actor is not Glider)
             {
                 Holdable holdable = actor.Get<Holdable>();
-                HookInteractable interactable = new HookInteractable(actor.GeneralHoldableInteraction);
+                HookInteractable interactable = actor.Get<HookInteractable>();
+                if (interactable == null)
+                {
+                    interactable = new HookInteractable(null);
+                    actor.Add(interactable);
+                }
+                interactable.Interaction = actor.GeneralHoldableInteraction;
                 interactable.Collider = holdable.PickupCollider;
                 interactable.CollideOutside = true;
-                actor.Add(interactable);
             }
         }
 

@@ -34,6 +34,7 @@ namespace Celeste.Mod.Aqua.Module
             DreamBlockExtensions.Initialize();
             TheoCrystalExtensions.Initialize();
             GliderExtensions.Initialize();
+            SeekerExtensions.Initialize();
             LightningExtensions.Initialize();
             WaterExtensions.Initialize();
             HeartGemExtensions.Initialize();
@@ -78,6 +79,7 @@ namespace Celeste.Mod.Aqua.Module
             DreamBlockExtensions.Uninitialize();
             TheoCrystalExtensions.Uninitialize();
             GliderExtensions.Uninitialize();
+            SeekerExtensions.Uninitialize();
             LightningExtensions.Uninitialize();
             WaterExtensions.Uninitialize();
             HeartGemExtensions.Uninitialize();

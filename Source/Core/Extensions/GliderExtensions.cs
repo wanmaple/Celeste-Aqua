@@ -19,6 +19,7 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, position, bubble, tutorial);
             self.SetMass(PlayerStates.MADELINE_MASS * 0.5f);
             self.SetStaminaCost(10.0f);
+            self.SetAgainstBoostCoefficient(0.6f);
             HookInteractable interactable = new HookInteractable(self.OnInteractGrapple);
             interactable.Collider = self.Get<Holdable>().PickupCollider;
             interactable.CollideOutside = true;
@@ -30,6 +31,10 @@ namespace Celeste.Mod.Aqua.Core
             Player player = self.Scene.Tracker.GetEntity<Player>();
             if (player != null)
             {
+                if (self.bubble)
+                {
+                    self.OnPickup();
+                }
                 hook.Revoke();
                 self.noGravityTimer = 0.15f;
                 var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed);

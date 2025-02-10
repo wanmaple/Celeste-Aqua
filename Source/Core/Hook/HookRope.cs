@@ -472,7 +472,7 @@ namespace Celeste.Mod.Aqua.Core
             for (int i = 0; i < _pivots.Count;)
             {
                 RopePivot pivot = _pivots[i];
-                if (pivot.entity is Platform || pivot.entity is Actor)
+                if (pivot.entity != null)
                 {
                     if (i != 0 && (pivot.entity.Collider == null || !pivot.entity.Collidable))
                     {

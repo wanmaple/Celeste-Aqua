@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Monocle;
 using System;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Miscellaneous
 {
@@ -39,6 +41,11 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return IsApproximateZero(vec.X) && IsApproximateZero(vec.Y);
         }
 
+        public static int Clamp(int value, int min, int max)
+        {
+            return int.Max(min, int.Min(max, value));
+        }
+
         public static Vector2 Abs(Vector2 vec)
         {
             return new Vector2(MathF.Abs(vec.X), MathF.Abs(vec.Y));
@@ -59,39 +66,40 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return new Vector2(MathF.Round(vec.X), MathF.Round(vec.Y));
         }
 
+        public static Vector2 TurnToSpecificSpeed(Vector2 speed, KeyValuePair<float, Vector2>[] accuracyConfig)
+        {
+            if (IsApproximateZero(speed))
+                return Vector2.Zero;
+            float xSign = MathF.Sign(speed.X);
+            float ySign = MathF.Sign(speed.Y);
+            speed = Abs(speed);
+            float len = speed.Length();
+            float start = 0.0f;
+            for (int i = 0; i < accuracyConfig.Length; i++)
+            {
+                var pair = accuracyConfig[i];
+                float end = pair.Key;
+                Vector2 vStart = Calc.AngleToVector(start, 1.0f);
+                Vector2 vEnd = Calc.AngleToVector(end, 1.0f);
+                if (IsVectorInsideTwoVectors(speed, vStart, vEnd))
+                {
+                    speed = pair.Value * len;
+                    break;
+                }
+                start = end;
+            }
+            speed *= new Vector2(xSign, ySign);
+            return speed;
+        }
+
         public static Vector2 TurnToDirection8(Vector2 direction)
         {
-            float half45 = MathF.PI / 8.0f;
-            float cosHalf45 = MathF.Cos(half45);
-            float dotX = Vector2.Dot(direction, Vector2.UnitX);
-            if (MathF.Abs(dotX) >= cosHalf45)
-            {
-                return dotX > 0.0f ? Vector2.UnitX : -Vector2.UnitX;
-            }
-            float dotY = Vector2.Dot(direction, Vector2.UnitY);
-            if (MathF.Abs(dotY) >= cosHalf45)
-            {
-                return dotY > 0.0f ? Vector2.UnitY : -Vector2.UnitY;
-            }
-            Vector2 ret;
-            if (direction.X > 0.0f && direction.Y > 0.0f)
-            {
-                ret = new Vector2(1.0f, 1.0f);
-            }
-            else if (direction.X > 0.0f && direction.Y < 0.0f)
-            {
-                ret = new Vector2(1.0f, -1.0f);
-            }
-            else if (direction.X < 0.0f && direction.Y > 0.0f)
-            {
-                ret = new Vector2(-1.0f, 1.0f);
-            }
-            else
-            {
-                ret = new Vector2(-1.0f, -1.0f);
-            }
-            ret.Normalize();
-            return ret;
+            return TurnToSpecificSpeed(direction, UNIFORM_DIRECTION8_RANGE_LIST);
+        }
+
+        public static Vector2 TurnToDirection4(Vector2 direction)
+        {
+            return TurnToSpecificSpeed(direction, UNIFORM_DIRECTION4_RANGE_LIST);
         }
 
         public static float TriangleArea(Vector2 pt1, Vector2 pt2, Vector2 pt3)
@@ -230,5 +238,17 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         {
             return (c.Y - a.Y) * (b.X - a.X) > (b.Y - a.Y) * (c.X - a.X);
         }
+
+        private static KeyValuePair<float, Vector2>[] UNIFORM_DIRECTION8_RANGE_LIST =
+        {
+            new KeyValuePair<float, Vector2>(22.5f * Calc.DegToRad, Vector2.UnitX),
+            new KeyValuePair<float, Vector2>(67.5f * Calc.DegToRad, new Vector2(MathF.Cos(45.0f * Calc.DegToRad), MathF.Sin(45.0f * Calc.DegToRad))),
+            new KeyValuePair<float, Vector2>(90.0f * Calc.DegToRad, Vector2.UnitY),
+        };
+        private static KeyValuePair<float, Vector2>[] UNIFORM_DIRECTION4_RANGE_LIST =
+        {
+            new KeyValuePair<float, Vector2>(45.0f * Calc.DegToRad, Vector2.UnitX),
+            new KeyValuePair<float, Vector2>(90.0f * Calc.DegToRad, Vector2.UnitY),
+        };
     }
 }

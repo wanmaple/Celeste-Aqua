@@ -1,4 +1,5 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
+using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -31,7 +32,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, position);
             self.Add(new ActorExtraFields());
-            self.SetMass(1.0f);
+            self.SetMass(PlayerStates.MADELINE_MASS);
             self.SetHookable(true);
         }
 
@@ -59,6 +60,16 @@ namespace Celeste.Mod.Aqua.Core
         public static void SetStaminaCost(this Actor self, float cost)
         {
             self.Get<ActorExtraFields>().StaminaCost = cost;
+        }
+
+        public static float GetAgainstBoostCoefficient(this Actor self)
+        {
+            return self.Get<ActorExtraFields>().AgainstBoostCoefficient;
+        }
+
+        public static void SetAgainstBoostCoefficient(this Actor self, float coeff)
+        {
+            self.Get<ActorExtraFields>().AgainstBoostCoefficient = coeff;
         }
 
         public static MomentumResults HandleMomentumOfActor(this Actor self, Actor other, Vector2 mySpeed, Vector2 otherSpeed)
@@ -100,8 +111,42 @@ namespace Celeste.Mod.Aqua.Core
             }
             else
             {
-                myRatio = otherMass / (myMass + otherMass);
-                otherRatio = myMass / (myMass + otherMass);
+                // if the actor will be blocked by the platform, then Madeline will gain a defined 'against boost'.
+                Vector2 dir8 = AquaMaths.TurnToDirection8(-toActor);
+                int signX = MathF.Sign(dir8.X);
+                int signY = MathF.Sign(dir8.Y);
+                bool blocked = false;
+                for (int i = 1; i <= 4; ++i)
+                {
+                    if (signX != 0)
+                    {
+                        Entity collideEntity = null;
+                        if (self.CheckCollidePlatformsAtXDirection(signX * i, out collideEntity))
+                        {
+                            blocked = true;
+                            break;
+                        }
+                    }
+                    if (signY != 0)
+                    {
+                        Entity collideEntity = null;
+                        if (self.CheckCollidePlatformsAtYDirection(signY * i, out collideEntity))
+                        {
+                            blocked = true;
+                            break;
+                        }
+                    }
+                }
+                if (blocked)
+                {
+                    myRatio = otherMass / (myMass + otherMass);
+                    otherRatio = self.GetAgainstBoostCoefficient();
+                }
+                else
+                {
+                    myRatio = otherMass / (myMass + otherMass);
+                    otherRatio = myMass / (myMass + otherMass);
+                }
             }
             var state = self.SceneAs<Level>().GetState();
             return new MomentumResults

@@ -11,6 +11,7 @@ namespace Celeste.Mod.Aqua.Module
         public static FactoryHelperInterop FactoryHelper => _interopFactoryHelper;
         public static ExtendedVariantModeInterop ExtendedVariants => _interopExtendedVariants;
         public static EeveeHelperInterop EeveeHelper => _interopEeveeHelper;
+        public static JackalHelperInterop JackalHelper => _interopJackalHelper;
         public static IReadOnlyList<Type> SidewaysJumpthruTypes
         {
             get
@@ -49,6 +50,16 @@ namespace Celeste.Mod.Aqua.Module
             }
         }
 
+        public static Type CardinalBumperType
+        {
+            get
+            {
+                if (_cardinalBumperType == null)
+                    CacheModTypes();
+                return _cardinalBumperType;
+            }
+        }
+
         public static void Initialize()
         {
             typeof(AquaExports).ModInterop();
@@ -77,6 +88,7 @@ namespace Celeste.Mod.Aqua.Module
             _sidewaysJumpthruTypes = sidewaysJumpthruTypes.ToArray();
             _conveyorType = FactoryHelper.GetType("FactoryHelper.Entities.Conveyor");
             _holdableContainerType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Entities.HoldableContainer");
+            _cardinalBumperType = JackalHelper.GetType("Celeste.Mod.JackalHelper.Entities.CardinalBumper");
         }
 
         private static GravityHelperInterop _interopGravityHelper = new GravityHelperInterop();
@@ -84,9 +96,11 @@ namespace Celeste.Mod.Aqua.Module
         private static FactoryHelperInterop _interopFactoryHelper = new FactoryHelperInterop();
         private static ExtendedVariantModeInterop _interopExtendedVariants = new ExtendedVariantModeInterop();
         private static EeveeHelperInterop _interopEeveeHelper = new EeveeHelperInterop();
+        private static JackalHelperInterop _interopJackalHelper = new JackalHelperInterop();
         private static Type[] _downsideJumpthruTypes;
         private static Type[] _sidewaysJumpthruTypes;
         private static Type _conveyorType;
         private static Type _holdableContainerType;
+        private static Type _cardinalBumperType;
     }
 }

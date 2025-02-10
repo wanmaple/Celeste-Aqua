@@ -1,20 +1,18 @@
 ﻿using Celeste.Mod.Aqua.Debug;
 using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
 using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
 {
     public partial class PlayerStates
     {
         public const float MADELINE_MASS = 1.0f;
+        public const float MAX_INFINITE_MASS = 5.0f;
         public const float SLIDE_JUMP_THRESHOLD = 200.0f;
 
         public enum SlideStates
@@ -23,21 +21,6 @@ namespace Celeste.Mod.Aqua.Core
             LowSpeed,
             HighSpeed,
             Turning,
-        }
-
-        private static void Player_ILClimbCheck(ILContext il)
-        {
-            ILCursor cursor = new ILCursor(il);
-            ILLabel jumpLabel = null;
-            if (cursor.TryGotoNext(ins => ins.MatchBrtrue(out jumpLabel)))
-            {
-                cursor.Index++;
-                cursor.EmitLdarg0();
-                cursor.EmitLdarg1();
-                cursor.EmitLdarg2();
-                cursor.EmitDelegate<Func<Player, int, int, bool>>(CheckClimbSlidable);
-                cursor.EmitBrtrue(jumpLabel);
-            }
         }
 
         private static void Player_ILClimbUpdate(ILContext il)
