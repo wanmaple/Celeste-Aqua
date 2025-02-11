@@ -309,13 +309,13 @@ namespace Celeste.Mod.Aqua.Core
                 float lengthDiff = length - _lockLength;
                 Vector2 ropeDirection = Calc.SafeNormalize(BottomPivot.point - playerSeg.Point2);
                 Vector2 movement = ropeDirection * MathF.Ceiling(lengthDiff);
+                movement.Y *= (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f);
                 if (player.StateMachine.State == (int)AquaStates.StRedDash || player.StateMachine.State == (int)AquaStates.StDreamDash)
                 {
                     float connectedLen = CalculateLengthConnectedPivots();
                     Vector2 preferPosition = BottomPivot.point - ropeDirection * (_lockLength - connectedLen);
                     movement = preferPosition - playerSeg.Point2;
                 }
-                movement.Y *= (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f);
                 // When the player is dream dashing in the DreamBlock, the Move method will always collide the dreamblock which make the movementCounter becoming zero.
                 if (player.StateMachine.State == (int)AquaStates.StDreamDash)
                 {

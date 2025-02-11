@@ -192,11 +192,14 @@ namespace Celeste.Mod.Aqua.Core
             if (isAttached != attached)
             {
                 DynamicData.For(self).Set("hook_attached", attached);
-                GrapplingHook grapple = self.Scene.Tracker.GetEntity<GrapplingHook>();
-                if (attached)
-                    self.AttachCallback(grapple);
-                else
-                    self.DetachCallback(grapple);
+                if (self.Scene != null)
+                {
+                    GrapplingHook grapple = self.Scene.Tracker.GetEntity<GrapplingHook>();
+                    if (attached)
+                        self.AttachCallback(grapple);
+                    else
+                        self.DetachCallback(grapple);
+                }
             }
         }
 

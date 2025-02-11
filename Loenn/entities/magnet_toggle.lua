@@ -5,7 +5,7 @@ MagnetToggle.depth = 2000
 MagnetToggle.placements = {
     name = "Magnet Toggle",
     data = {
-        flag = "",
+        flag = "Magnet1",
         one_use = false,
     }
 }

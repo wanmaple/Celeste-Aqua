@@ -17,6 +17,9 @@ AQUA will also add compatibilities to some popular MODs, but it’s such a heavy
 Current supported third-party MODs:
 - Gravity Helper: Works well in the inversed gravity circumstance.
 - Maddie's Helping Hand: Different sides of jump throughs.
+- Factory Helper: Conveyor support.
+- Extended Varaints: Gravity modifier will affect the grapple movements.
+- Jackal Helper: Cardinal Bumper support.
 
 ## Mapping
 
@@ -24,6 +27,5 @@ Mapping stuffs with AQUA could be found [here](https://github.com/wanmaple/Celes
 
 ## TODOs
 
-- Interaction with holdables.
 - Other entities interactable with grappling hook.
 - Lots of compatibilities for other MODs.

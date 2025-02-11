@@ -12,6 +12,7 @@ namespace Celeste.Mod.Aqua.Module
         public static ExtendedVariantModeInterop ExtendedVariants => _interopExtendedVariants;
         public static EeveeHelperInterop EeveeHelper => _interopEeveeHelper;
         public static JackalHelperInterop JackalHelper => _interopJackalHelper;
+        public static CommunalHelperInterop CommunalHelper => _interopCommunalHelper;
         public static IReadOnlyList<Type> SidewaysJumpthruTypes
         {
             get
@@ -28,6 +29,15 @@ namespace Celeste.Mod.Aqua.Module
                 if (_downsideJumpthruTypes == null)
                     CacheModTypes();
                 return _downsideJumpthruTypes;
+            }
+        }
+        public static IReadOnlyList<Type> CurvedBoosterTypes
+        {
+            get
+            {
+                if (_curvedBoosterTypes == null)
+                    CacheModTypes();
+                return _curvedBoosterTypes;
             }
         }
         public static Type ConveyorType
@@ -86,6 +96,17 @@ namespace Celeste.Mod.Aqua.Module
             if (sidewayJumpthru1 != null)
                 sidewaysJumpthruTypes.Add(sidewayJumpthru1);
             _sidewaysJumpthruTypes = sidewaysJumpthruTypes.ToArray();
+            var curvedBoosterTypes = new List<Type>(3);
+            Type curvedBooster = CommunalHelper.GetType("Celeste.Mod.CommunalHelper.Entities.CurvedBooster");
+            Type spiralBooster = CommunalHelper.GetType("Celeste.Mod.CommunalHelper.Entities.Boosters.SpiralBooster");
+            Type dreamBooster = CommunalHelper.GetType("Celeste.Mod.CommunalHelper.Entities.DreamBooster");
+            if (curvedBooster != null)
+                curvedBoosterTypes.Add(curvedBooster);
+            if (spiralBooster != null)
+                curvedBoosterTypes.Add(spiralBooster);
+            if (dreamBooster != null)
+                curvedBoosterTypes.Add(dreamBooster);
+            _curvedBoosterTypes = curvedBoosterTypes.ToArray();
             _conveyorType = FactoryHelper.GetType("FactoryHelper.Entities.Conveyor");
             _holdableContainerType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Entities.HoldableContainer");
             _cardinalBumperType = JackalHelper.GetType("Celeste.Mod.JackalHelper.Entities.CardinalBumper");
@@ -97,8 +118,10 @@ namespace Celeste.Mod.Aqua.Module
         private static ExtendedVariantModeInterop _interopExtendedVariants = new ExtendedVariantModeInterop();
         private static EeveeHelperInterop _interopEeveeHelper = new EeveeHelperInterop();
         private static JackalHelperInterop _interopJackalHelper = new JackalHelperInterop();
+        private static CommunalHelperInterop _interopCommunalHelper = new CommunalHelperInterop();
         private static Type[] _downsideJumpthruTypes;
         private static Type[] _sidewaysJumpthruTypes;
+        private static Type[] _curvedBoosterTypes;
         private static Type _conveyorType;
         private static Type _holdableContainerType;
         private static Type _cardinalBumperType;
