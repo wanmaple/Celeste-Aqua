@@ -20,7 +20,7 @@ Current supported third-party MODs:
 
 ## Mapping
 
-Mapping stuffs with AQUA could be found [here](https://github.com/wanmaple/Celeste-Aqua/wiki/Mapping-with-Aqua).
+Mapping stuffs with AQUA could be found [here](https://github.com/wanmaple/Celeste-Aqua/wiki/Map-with-Aqua).
 
 ## TODOs
 
