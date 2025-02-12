@@ -72,7 +72,7 @@ namespace Celeste.Mod.Aqua.Core
                 return false;
             grapple.Revoke();
             self.State.ForceState(Seeker.StStunned);
-            var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed);
+            var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed, grapple.ShootDirection);
             self.Speed = result.OwnerSpeed;
             player.Speed = result.OtherSpeed;
             Celeste.Freeze(0.05f);

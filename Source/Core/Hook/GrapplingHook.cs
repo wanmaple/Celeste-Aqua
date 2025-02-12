@@ -87,6 +87,7 @@ namespace Celeste.Mod.Aqua.Core
         public Vector2 RopeDirection => Get<HookRope>().RopeDirection;
         public Vector2 SwingDirection => Get<HookRope>().SwingDirection;
         public Vector2 PlayerPreviousPosition => _playerPrevPosition;
+        public Vector2 ShootDirection => Get<HookRope>().CurrentDirection;
 
         // Misc stuffs
         public float UserLockedLength { get; set; }

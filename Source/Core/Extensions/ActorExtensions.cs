@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Aqua.Miscellaneous;
+﻿using Celeste.Mod.Aqua.Debug;
+using Celeste.Mod.Aqua.Miscellaneous;
 using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -72,9 +73,10 @@ namespace Celeste.Mod.Aqua.Core
             self.Get<ActorExtraFields>().AgainstBoostCoefficient = coeff;
         }
 
-        public static MomentumResults HandleMomentumOfActor(this Actor self, Actor other, Vector2 mySpeed, Vector2 otherSpeed)
+        public static MomentumResults HandleMomentumOfActor(this Actor self, Actor other, Vector2 mySpeed, Vector2 otherSpeed, Vector2 direction)
         {
-            Vector2 toActor = Calc.SafeNormalize(self.Center - other.Center, Vector2.UnitX, 1.0f);
+            //Vector2 toActor = Calc.SafeNormalize(self.Center - other.Center, Vector2.UnitX, 1.0f);
+            Vector2 toActor = direction;
             float mySaveSpeed = MathF.Max(Vector2.Dot(mySpeed, -toActor), 0.0f);
             float otherSaveSpeed = MathF.Max(Vector2.Dot(otherSpeed, toActor), 0.0f);
             float myMass = self.GetMass();
@@ -151,8 +153,8 @@ namespace Celeste.Mod.Aqua.Core
             var state = self.SceneAs<Level>().GetState();
             return new MomentumResults
             {
-                OwnerSpeed = myRatio * MathF.Min(totalSpeed + mySaveSpeed, state.HookSettings.MaxLineSpeed) * -toActor,
-                OtherSpeed = otherRatio * MathF.Min(totalSpeed + otherSaveSpeed, state.HookSettings.MaxLineSpeed) * toActor,
+                OwnerSpeed = (myRatio * totalSpeed + mySaveSpeed) * -toActor,
+                OtherSpeed = (otherRatio * totalSpeed + otherSaveSpeed) * toActor,
             };
         }
 
@@ -167,11 +169,12 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     hook.Revoke();
                     fieldNoGravityTimer.SetValue(self, 0.15f);
-                    Vector2 entitySpeed = Vector2.Zero;
-                    entitySpeed = (Vector2)fieldSpeed.GetValue(self);
-                    var result = self.HandleMomentumOfActor(player, entitySpeed, player.Speed);
+                    Vector2 entitySpeed = (Vector2)fieldSpeed.GetValue(self);
+                    var result = self.HandleMomentumOfActor(player, entitySpeed, player.Speed, hook.ShootDirection);
                     fieldSpeed.SetValue(self, result.OwnerSpeed);
+                    Vector2 oldSpeed = player.Speed;
                     player.Speed = result.OtherSpeed;
+                    player.Stamina = MathF.Max(player.Stamina - self.GetStaminaCost(), 0.0f);
                     Celeste.Freeze(0.05f);
                     Audio.Play("event:/char/madeline/jump_superslide", player.Center);
                     return true;

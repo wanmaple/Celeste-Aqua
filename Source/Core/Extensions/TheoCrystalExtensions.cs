@@ -1,6 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Monocle;
-using MonoMod.Utils;
 using System;
 
 namespace Celeste.Mod.Aqua.Core
@@ -21,7 +19,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, position);
             self.SetMass(PlayerStates.MADELINE_MASS * 2.0f);
-            self.SetStaminaCost(20.0f);
+            self.SetStaminaCost(30.0f);
             self.SetAgainstBoostCoefficient(0.9f);
             HookInteractable interactable = new HookInteractable(self.OnInteractGrapple);
             interactable.Collider = self.Get<Holdable>().PickupCollider;
@@ -36,7 +34,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 hook.Revoke();
                 self.noGravityTimer = 0.15f;
-                var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed);
+                var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed, hook.ShootDirection);
                 self.Speed = result.OwnerSpeed;
                 player.Speed = result.OtherSpeed;
                 player.Stamina = MathF.Max(player.Stamina - self.GetStaminaCost(), 0.0f);

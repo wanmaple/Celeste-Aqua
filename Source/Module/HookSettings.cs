@@ -15,7 +15,7 @@ namespace Celeste.Mod.Aqua.Module
 
         [SettingName("SETTINGS_ROPE_LENGTH")]
         [SettingRange(50, 200)]
-        [DefaultValue(80)]
+        [DefaultValue(90)]
         public int RopeLength
         {
             get => _ropeLength;
@@ -117,7 +117,7 @@ namespace Celeste.Mod.Aqua.Module
             }
         }
 
-        private int _actorPullForce;
+        private int _actorPullForce = 360;
 
         public HookSettings()
         {

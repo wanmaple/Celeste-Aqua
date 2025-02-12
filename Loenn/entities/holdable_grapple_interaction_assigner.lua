@@ -10,7 +10,7 @@ HoldableGrappleInteractionAssigner.placements = {}
 
 local TEXTS = { "Theo Like", "Jelly Like", }
 local MASS_LIST = { 2.0, 0.5, }
-local STAMINA_COST_LIST = { 20.0, 10.0, }
+local STAMINA_COST_LIST = { 30.0, 20.0, }
 local AGAINST_COEFF_LIST = { 0.9, 0.6, }
 for i, text in ipairs(TEXTS) do
     table.insert(HoldableGrappleInteractionAssigner.placements, {
