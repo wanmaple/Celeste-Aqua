@@ -201,4 +201,20 @@
       <Anim id="trail" path="tail" delay="0.05" />
     </Aqua_SolidRectTrail>
 
+    <Aqua_GrappleMagnet path="objects/hook_magnet/" start="idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="idle" path="idle" delay="0.1" />
+      <Anim id="close" path="close" delay="0.06" frames="0-6" goto="idle_close" />
+      <Loop id="idle_close" path="close" delay="0.06" frames="6-7" />
+      <Anim id="open" path="open" delay="0.06" frames="0-6" goto="idle" />
+      <Anim id="deactive" path="close" delay="0.06" frames="0-6,8" goto="idle_deactive" />
+      <Loop id="idle_deactive" path="close" delay="0.1" frames="8" />
+      <Anim id="flash" path="flash" delay="0.1" />
+    </Aqua_GrappleMagnet>
+
+    <Aqua_GrappleMagnetParticle path="particles/" start="idle">
+      <Justify x="1.0" y="0.5" />
+      <Anim id="idle" path="elec_particle" delay="0.1" />
+    </Aqua_GrappleMagnetParticle>
+
 </Sprites>

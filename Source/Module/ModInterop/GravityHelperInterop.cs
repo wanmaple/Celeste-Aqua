@@ -18,6 +18,7 @@ namespace Celeste.Mod.Aqua.Module
             public static Func<bool> IsPlayerInverted;
             public static Func<string, int> GravityTypeToInt;
             public static Action<int, float> SetPlayerGravity;
+            public static Func<Action<Player, int, float>, Component> CreatePlayerGravityListener;
         }
 
         public GravityHelperInterop()
@@ -55,6 +56,13 @@ namespace Celeste.Mod.Aqua.Module
         {
             if (IsLoaded && GravityHelperImports.SetPlayerGravity != null)
                 GravityHelperImports.SetPlayerGravity.Invoke(gravityType, momentumMultiplier);
+        }
+
+        public Component CreatePlayerGravityListener(Action<Player, int, float> callback)
+        {
+            if (IsLoaded && GravityHelperImports.CreatePlayerGravityListener != null)
+                return GravityHelperImports.CreatePlayerGravityListener.Invoke(callback);
+            return null;
         }
 
         public Color HighlightColor(int gravityType)

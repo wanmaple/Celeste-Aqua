@@ -6,6 +6,7 @@ namespace Celeste.Mod.Aqua.Core
     {
         public float Mass { get; set; }
         public float StaminaCost { get; set; }
+        public float AgainstBoostCoefficient { get; set; }
 
         public ActorExtraFields()
             : base(false, false)

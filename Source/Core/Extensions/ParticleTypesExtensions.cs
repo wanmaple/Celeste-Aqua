@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Monocle;
-using System;
+﻿using Monocle;
 
 namespace Celeste.Mod.Aqua.Core
 {

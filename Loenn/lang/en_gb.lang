@@ -165,14 +165,26 @@ entities.Aqua/Custom Grappling Refill.attributes.description.cap=The maximum gra
 entities.Aqua/Custom Grappling Refill.attributes.description.capped=If checked, the grapple count will never exceed the defined maximum shots (Cap or Trigger).
 entities.Aqua/Custom Grappling Refill.attributes.description.always_refill=If checked, the refill will break even if the player already has the maximum amount of grapple shots they can get.
 
+# Grapple Magnet
+entities.Aqua/Grapple Magnet.attributes.description.radius_in_tiles=The attraction range, limited in [2, 8], 1 tiled radius indicates 8 px.
+entities.Aqua/Grapple Magnet.attributes.description.flag=Once the same flag set, the magnet will be toggled.
+entities.Aqua/Grapple Magnet.attributes.description.on=Whether the magnet should be switched on by default.
+entities.Aqua/Grapple Magnet.attributes.description.sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Grapple Magnet.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+
+# Magnet Toggle
+entities.Aqua/Magnet Toggle.attributes.description.flag=Make it the same with that of magnets you would like to control.
+entities.Aqua/Magnet Toggle.attributes.description.one_use=Whether to break the toggle once used.
+
 # Simple Grapple Interaction Assigner
 entities.Aqua/Grapple Interaction Assigner.attributes.description.interaction_type=What kind of interaction to be assigned.\nGrabToPlayer: make the entity be able to hooked to player.
 entities.Aqua/Grapple Interaction Assigner.attributes.description.blacklist=The blacklist entities or mods simply used word containing check, using comma to separate, case insensitive.\ne.g. 'FactoryHelper' will ignore all entities in FactoryHelper, 'Booster' will ignore all entities with booster in the name.\nNot sure the name in leonn always satisfies, you can ask the mod author for its class name if not worked.
 
 # Holdable Grapple Interaction Assigner
-entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.mass=The mass affects both holdable and Madline's momentum when being grappled(Madeline's mass is 1.0). If set to zero, then madeline won't get any momentum, if set to greater than 10, then holdable won't get any momentum.
+entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.mass=The mass affects both holdable and Madline's momentum when being grappled(Madeline's mass is 1.0). If set to zero, then madeline won't get any momentum, if set to greater than or equal to 5, then holdable won't get any momentum.
 entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.stamina_cost=How much stamina costs when being grappled.
 entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.blacklist=The blacklist entities or mods simply used word containing check, using comma to separate, case insensitive.\ne.g. 'FactoryHelper' will ignore all entities in FactoryHelper, 'Booster' will ignore all entities with booster in the name.\nNot sure the name in leonn always satisfies, you can ask the mod author for its class name if not worked.
+entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.against_boost_coefficient=The 'against boost' coefficient, should be between [0.0, 1.0].
 
 # Acceleration Ability Assigner
 entities.Aqua/Acceleration Ability Assigner.attributes.description.acceleration=The acceleration value to be assigned.
@@ -246,7 +258,7 @@ triggers.Aqua/Custom Cutscene Trigger.attributes.description.fadeInOnSkip=Whethe
 triggers.Aqua/Custom Cutscene Trigger.attributes.description.endingChapter=Whether the chapter will end after this cutscene.
 
 # Change Hook Parameter Trigger
-triggers.Aqua/Change Hook Parameter Trigger.attributes.description.parameter=Parameter name.\nFeatureEnabled: 1 to enable and 0 to disable.\nRopeMaterial: 0 to default and 1 to metal.\nRopeLength: should be between 80-200.\nEmitSpeed: should be between 600-2000.\nMaxLineSpeed: should be between 400-2000.\nFlyTowardSpeed: should be between 300-500.\nActorPullForce: should be between 300-1000.\nDisableGrappleBoost: 1 to disable and 0 to enable.
+triggers.Aqua/Change Hook Parameter Trigger.attributes.description.parameter=Parameter name.\nFeatureEnabled: 1 to enable and 0 to disable.\nRopeMaterial: 0 to default and 1 to metal.\nRopeLength: should be between 80-200.\nEmitSpeed: should be between 600-2000.\nMaxLineSpeed: should be between 400-2000.\nFlyTowardSpeed: should be between 300-600.\nActorPullForce: should be between 300-600.\nDisableGrappleBoost: 1 to disable and 0 to enable.
 triggers.Aqua/Change Hook Parameter Trigger.attributes.description.value=Parameter value, you could check details in the description of parameter.
 
 # Change Gameplay Mode Trigger

@@ -8,9 +8,13 @@
             set => _time = value;
         }
 
-        public TimeTicker(float time)
+        public TimeTicker(float time, bool startZero = false)
         {
-            _time = _ticker = time;
+            _time = time;
+            if (startZero)
+                _ticker = 0.0f;
+            else
+                _ticker = time;
         }
 
         public bool Check()

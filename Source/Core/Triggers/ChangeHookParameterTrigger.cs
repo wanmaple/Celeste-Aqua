@@ -68,13 +68,13 @@ namespace Celeste.Mod.Aqua.Core
                 case "FlyTowardSpeed":
                     if (int.TryParse(Value, out int flySpeed))
                     {
-                        state.HookSettings.FlyTowardSpeed = Calc.Clamp(flySpeed, 300, 500);
+                        state.HookSettings.FlyTowardSpeed = Calc.Clamp(flySpeed, 300, 600);
                     }
                     break;
                 case "ActorPullForce":
                     if (int.TryParse(Value, out int pullForce))
                     {
-                        state.HookSettings.ActorPullForce = Calc.Clamp(pullForce, 300, 1000);
+                        state.HookSettings.ActorPullForce = Calc.Clamp(pullForce, 300, 600);
                     }
                     break;
                 case "DisableGrappleBoost":

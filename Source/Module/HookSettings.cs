@@ -15,7 +15,7 @@ namespace Celeste.Mod.Aqua.Module
 
         [SettingName("SETTINGS_ROPE_LENGTH")]
         [SettingRange(50, 200)]
-        [DefaultValue(80)]
+        [DefaultValue(90)]
         public int RopeLength
         {
             get => _ropeLength;
@@ -84,7 +84,7 @@ namespace Celeste.Mod.Aqua.Module
         public int SwingJumpStaminaCost { get; set; }
 
         [SettingName("SETTINGS_FLY_TOWARD_SPEED")]
-        [SettingRange(300, 500, true)]
+        [SettingRange(300, 600, true)]
         [DefaultValue(325)]
         public int FlyTowardSpeed
         {
@@ -102,7 +102,7 @@ namespace Celeste.Mod.Aqua.Module
         private int _flyTowardSpeed = 325;
 
         [SettingName("SETTINGS_ACTOR_PULL_FORCE")]
-        [SettingRange(300, 1000, true)]
+        [SettingRange(300, 600, true)]
         [DefaultValue(360)]
         public int ActorPullForce
         {
@@ -117,11 +117,7 @@ namespace Celeste.Mod.Aqua.Module
             }
         }
 
-        private int _actorPullForce;
-
-        [SettingIgnore]
-        [DefaultValue(2)]
-        public int WindCoefficient { get; set; }
+        private int _actorPullForce = 360;
 
         public HookSettings()
         {
