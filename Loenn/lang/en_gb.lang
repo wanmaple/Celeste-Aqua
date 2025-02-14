@@ -184,7 +184,7 @@ entities.Aqua/Grapple Interaction Assigner.attributes.description.blacklist=The 
 entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.mass=The mass affects both holdable and Madline's momentum when being grappled(Madeline's mass is 1.0). If set to zero, then madeline won't get any momentum, if set to greater than or equal to 5, then holdable won't get any momentum.
 entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.stamina_cost=How much stamina costs when being grappled.
 entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.blacklist=The blacklist entities or mods simply used word containing check, using comma to separate, case insensitive.\ne.g. 'FactoryHelper' will ignore all entities in FactoryHelper, 'Booster' will ignore all entities with booster in the name.\nNot sure the name in leonn always satisfies, you can ask the mod author for its class name if not worked.
-entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.against_boost_coefficient=The 'against boost' coefficient, should be between [0.0, 1.0].
+entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.against_boost_coefficient=The 'against-wall boost' coefficient, should be between [0.0, 1.0].
 
 # Acceleration Ability Assigner
 entities.Aqua/Acceleration Ability Assigner.attributes.description.acceleration=The acceleration value to be assigned.

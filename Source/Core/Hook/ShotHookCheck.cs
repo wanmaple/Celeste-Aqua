@@ -25,7 +25,7 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public bool CanFlyTowards
+        public bool CanGrappleBoost
         {
             get
             {

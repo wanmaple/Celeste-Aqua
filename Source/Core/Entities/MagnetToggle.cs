@@ -14,17 +14,17 @@ namespace Celeste.Mod.Aqua.Core
         public MagnetToggle(EntityData data, Vector2 offset)
             : base(data.Position + offset)
         {
-            Collider = new Hitbox(data.Width, data.Height);
+            Collider = new Hitbox(16f, 24f, -8f, -8f);
             Flag = data.Attr("flag");
             OneUse = data.Bool("one_use", false);
             Add(new PlayerCollider(OnPlayer));
             Add(_sprite = new Sprite());
+            GFX.SpriteBank.CreateOn(_sprite, "Aqua_MagnetToggle");
+            _sprite.Play("idle");
             _tickerCoolDown = new TimeTicker(COOL_DOWN, true);
             _useable = true;
+            Add(_sound = new SoundSource());
             Depth = 2000;
-            _shatter = new ParticleType(Refill.P_Shatter)
-            {
-            };
         }
 
         public override void Update()
@@ -39,14 +39,16 @@ namespace Celeste.Mod.Aqua.Core
             {
                 SceneAs<Level>().Session.SetFlag(Flag, true);
                 _tickerCoolDown.Reset();
+                _sound.Play("event:/game/general/tie_rod");
                 if (OneUse)
                 {
                     Audio.Play("event:/game/09_core/switch_dies", Center);
+                    _sprite.Play("corrupt");
                     _useable = false;
                 }
                 else
                 {
-                    Audio.Play("event:/game/09_core/switch_to_cold", Center);
+                    _sprite.Play("toggle");
                 }
             }
         }
@@ -54,7 +56,7 @@ namespace Celeste.Mod.Aqua.Core
         private TimeTicker _tickerCoolDown;
         private Sprite _sprite;
         private bool _useable;
-        private ParticleType _shatter;
+        private SoundSource _sound;
 
         private const float COOL_DOWN = 1.0f;
     }

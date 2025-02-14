@@ -217,4 +217,12 @@
       <Anim id="idle" path="elec_particle" delay="0.1" />
     </Aqua_GrappleMagnetParticle>
 
+    <Aqua_MagnetToggle path="objects/hook_magnet/" start="idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="idle" path="troggle" delay="0.08" frames="0-1" />
+      <Loop id="idle_corrupt" path="troggle" delay="0.08" frames="13" />
+      <Anim id="toggle" path="troggle" delay="0.08" frames="2-10" goto="idle" />
+      <Anim id="corrupt" path="troggle" delay="0.08" frames="2-13" goto="idle_corrupt" />
+    </Aqua_MagnetToggle>
+
 </Sprites>

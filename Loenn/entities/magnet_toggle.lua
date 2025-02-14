@@ -2,6 +2,7 @@ local MagnetToggle = {}
 
 MagnetToggle.name = "Aqua/Magnet Toggle"
 MagnetToggle.depth = 2000
+MagnetToggle.justification = { 0.5, 0.5, }
 MagnetToggle.placements = {
     name = "Magnet Toggle",
     data = {
@@ -10,6 +11,6 @@ MagnetToggle.placements = {
     }
 }
 
-MagnetToggle.texture = ""
+MagnetToggle.texture = "objects/hook_magnet/troggle00"
 
 return MagnetToggle

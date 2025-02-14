@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Mono.Cecil;
 using Monocle;
+using MonoMod.Cil;
 using System;
 using System.Reflection;
 using static Celeste.BounceBlock;
@@ -23,49 +25,53 @@ namespace Celeste.Mod.Aqua.Core
 
         public static void Initialize()
         {
-            //IL.Celeste.BounceBlock.Update += BounceBlock_ILUpdate;
-            On.Celeste.BounceBlock.Update += BounceBlock_Update;
+            IL.Celeste.BounceBlock.Update += BounceBlock_ILUpdate;
+            On.Celeste.BounceBlock.WindUpPlayerCheck += BounceBlock_WindUpPlayerCheck;
+            //On.Celeste.BounceBlock.Update += BounceBlock_Update;
         }
 
         public static void Uninitialize()
         {
-            //IL.Celeste.BounceBlock.Update -= BounceBlock_ILUpdate;
-            On.Celeste.BounceBlock.Update -= BounceBlock_Update;
+            IL.Celeste.BounceBlock.Update -= BounceBlock_ILUpdate;
+            On.Celeste.BounceBlock.WindUpPlayerCheck -= BounceBlock_WindUpPlayerCheck;
+            //On.Celeste.BounceBlock.Update -= BounceBlock_Update;
         }
 
-        //private static void BounceBlock_ILUpdate(MonoMod.Cil.ILContext il)
-        //{
-        //    AquaDebugger.LogInfo("{0} {1} {2} {3}", _matchMethod, _checkHookMethod, _checkRopeMethod, _bounceDirField);
-        //    ILCursor cursor = new ILCursor(il);
-        //    ILLabel label = null;
+        private static void BounceBlock_ILUpdate(ILContext il)
+        {
+            ILCursor cursor = new ILCursor(il);
+            ILLabel label = null;
+            // Twice.
+            for (int i = 0; i < 2; ++i)
+            {
+                cursor.TryGotoNext(MoveType.After, ins => ins.MatchLdarg0(), ins => ins.MatchCall(out MethodReference nouse), ins => ins.MatchBrtrue(out label));
+            }
+            cursor.EmitLdarg0();
+            cursor.EmitDelegate(WillRespawn);
+            cursor.EmitBrtrue(label);
+        }
 
-        //    if (cursor.TryGotoNext(ins => ins.MatchLdloc2(), ins => ins.MatchBrfalse(out label)))
-        //    {
-        //        cursor.Index++;
-        //        cursor.EmitLdarg0();
-        //        cursor.EmitCall(_hookAttachedMethod);
-        //        cursor.EmitOr();
-        //    }
+        private static Player BounceBlock_WindUpPlayerCheck(On.Celeste.BounceBlock.orig_WindUpPlayerCheck orig, BounceBlock self)
+        {
+            Player player = orig(self);
+            if (player == null)
+            {
+                if (self.IsHookAttached())
+                {
+                    GrapplingHook grapple = self.Scene.Tracker.GetEntity<GrapplingHook>();
+                    if (grapple != null)
+                    {
+                        return new Player(grapple.Position, PlayerSpriteMode.Madeline); // Just a temp player with a position which I need to use after.
+                    }
+                }
+            }
+            return player;
+        }
 
-        //    if (cursor.TryGotoNext(ins => ins.MatchBr(out label)))
-        //    {
-        //        AquaDebugger.LogInfo("ILHook Success {0}", label.Target);
-        //        cursor.Index++;
-        //        cursor.EmitDelegate(CalculateBounceDirection);
-        //        cursor.EmitBr(label);
-        //    }
-
-        //    if (cursor.TryGotoNext(ins => ins.MatchLdarg0(), ins => ins.MatchCall(_matchMethod), ins => ins.MatchBrtrue(out label)))
-        //    {
-        //        cursor.EmitLdarg0();
-        //        cursor.EmitCall(_checkHookMethod);
-        //        cursor.EmitBrtrue(label);
-
-        //        cursor.EmitLdarg0();
-        //        cursor.EmitCall(_checkRopeMethod);
-        //        cursor.EmitBrtrue(label);
-        //    }
-        //}
+        private static bool WillRespawn(BounceBlock self)
+        {
+            return self.CollideCheck<GrapplingHook>() || self.IntersectsWithRope();
+        }
 
         private static void BounceBlock_Update(On.Celeste.BounceBlock.orig_Update orig, BounceBlock self)
         {

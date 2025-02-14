@@ -176,14 +176,17 @@ namespace Celeste.Mod.Aqua.Core
         private void OnGrappleAttached(GrapplingHook grapple)
         {
             grapple.SetHookVisible(false);
-            _spriteMagnet.Play("close", false);
+            _spriteMagnet.Play("close");
             _sound.Play("event:/game/09_core/switch_to_hot");
         }
 
         private void OnGrappleDetached(GrapplingHook grapple)
         {
             grapple.SetHookVisible(true);
-            _spriteMagnet.Play("open", false);
+            if (_activated)
+            {
+                _spriteMagnet.Play("open");
+            }
             _sound.Play("event:/game/09_core/switch_to_cold");
         }
 

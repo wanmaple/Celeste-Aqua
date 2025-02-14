@@ -252,6 +252,10 @@ namespace Celeste.Mod.Aqua.Core
         private static void Player_RedDashBegin(On.Celeste.Player.orig_RedDashBegin orig, Player self)
         {
             orig(self);
+            if (self.level.GetState() == null)
+                return;
+            if (!self.level.GetState().FeatureEnabled)
+                return;
             bool isSpecialBooster = false;
             if (self.CurrentBooster != null && ModInterop.CurvedBoosterTypes != null)
             {
@@ -313,6 +317,10 @@ namespace Celeste.Mod.Aqua.Core
         private static int Player_RedDashUpdate(On.Celeste.Player.orig_RedDashUpdate orig, Player self)
         {
             int nextState = orig(self);
+            if (self.level.GetState() == null)
+                return nextState;
+            if (!self.level.GetState().FeatureEnabled)
+                return nextState;
             if (nextState == (int)AquaStates.StRedDash && !AquaMaths.IsApproximateZero(self.Speed) && self.GetSpecialSwingDirection() != 0.0f)
             {
                 self.UpdateSpecialSwing();
@@ -341,6 +349,10 @@ namespace Celeste.Mod.Aqua.Core
         private static void Player_DreamDashBegin(On.Celeste.Player.orig_DreamDashBegin orig, Player self)
         {
             orig(self);
+            if (self.level.GetState() == null)
+                return;
+            if (!self.level.GetState().FeatureEnabled)
+                return;
             SetupSpecialSwingArguments(self, self.Speed);
             var hook = self.GetGrappleHook();
             if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
@@ -369,6 +381,10 @@ namespace Celeste.Mod.Aqua.Core
         private static int Player_DreamDashUpdate(On.Celeste.Player.orig_DreamDashUpdate orig, Player self)
         {
             int nextState = orig(self);
+            if (self.level.GetState() == null)
+                return nextState;
+            if (!self.level.GetState().FeatureEnabled)
+                return nextState;
             if (nextState == (int)AquaStates.StDreamDash && self.GetSpecialSwingDirection() != 0.0f)
             {
                 self.UpdateSpecialSwing();
@@ -571,9 +587,9 @@ namespace Celeste.Mod.Aqua.Core
                 hook.Revoke();
                 return (int)AquaStates.StNormal;
             }
-            else if (!self.level.GetState().DisableGrappleBoost && shotCheck.CanFlyTowards && hook.CanFlyToward())
+            else if (!self.level.GetState().DisableGrappleBoost && shotCheck.CanGrappleBoost && hook.CanGrappleBoost())
             {
-                self.FlyTowardHook();
+                self.GrappleBoost();
             }
             else if (shotCheck.CanRevoke)
             {
@@ -958,7 +974,7 @@ namespace Celeste.Mod.Aqua.Core
             return lineSpeed * swingDirection;
         }
 
-        private static void FlyTowardHook(this Player self)
+        private static void GrappleBoost(this Player self)
         {
             Celeste.Freeze(0.05f);
             if (ModInterop.GravityHelper.IsPlayerGravityInverted())
@@ -1107,11 +1123,11 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     self.SwingJump(dt);
                 }
-                else if (!self.level.GetState().DisableGrappleBoost && hook.JustFixed && (hook.CanFlyToward() || shotCheck.CanFlyTowards))
+                else if (!self.level.GetState().DisableGrappleBoost && hook.JustFixed && (hook.CanGrappleBoost() || shotCheck.CanGrappleBoost))
                 {
-                    self.FlyTowardHook();
+                    self.GrappleBoost();
                 }
-                else if (shotCheck.CanRevoke || shotCheck.CanFlyTowards)
+                else if (shotCheck.CanRevoke || shotCheck.CanGrappleBoost)
                 {
                     if (hook.State == GrapplingHook.HookStates.Emitting)
                     {
@@ -1119,9 +1135,9 @@ namespace Celeste.Mod.Aqua.Core
                     }
                     else if (hook.State == GrapplingHook.HookStates.Fixed)
                     {
-                        if (!self.level.GetState().DisableGrappleBoost && shotCheck.CanFlyTowards && hook.CanFlyToward())
+                        if (!self.level.GetState().DisableGrappleBoost && shotCheck.CanGrappleBoost && hook.CanGrappleBoost())
                         {
-                            self.FlyTowardHook();
+                            self.GrappleBoost();
                         }
                         else if (shotCheck.CanRevoke)
                         {

@@ -1,6 +1,4 @@
-﻿using Celeste.Mod.Aqua.Debug;
-using Celeste.Mod.Aqua.Miscellaneous;
-using Celeste.Mod.Aqua.Module;
+﻿using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
@@ -113,7 +111,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             else
             {
-                // if the actor will be blocked by the platform, then Madeline will gain a defined 'against boost'.
+                // if the actor will be blocked by the platform, then Madeline will gain a defined 'against-wall boost'.
                 Vector2 dir8 = AquaMaths.TurnToDirection8(-toActor);
                 int signX = MathF.Sign(dir8.X);
                 int signY = MathF.Sign(dir8.Y);
@@ -153,8 +151,8 @@ namespace Celeste.Mod.Aqua.Core
             var state = self.SceneAs<Level>().GetState();
             return new MomentumResults
             {
-                OwnerSpeed = (myRatio * totalSpeed + mySaveSpeed) * -toActor,
-                OtherSpeed = (otherRatio * totalSpeed + otherSaveSpeed) * toActor,
+                OwnerSpeed = MathF.Min(myRatio * totalSpeed + mySaveSpeed, state.HookSettings.MaxLineSpeed) * -toActor,
+                OtherSpeed = MathF.Min(otherRatio * totalSpeed + otherSaveSpeed, state.HookSettings.MaxLineSpeed) * toActor,
             };
         }
 

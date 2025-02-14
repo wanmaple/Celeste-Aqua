@@ -292,7 +292,7 @@ namespace Celeste.Mod.Aqua.Core
             _lastEmitElapsed = _elapsed;
         }
 
-        public bool CanFlyToward()
+        public bool CanGrappleBoost()
         {
             if (JustFixed)
             {
