@@ -1,6 +1,6 @@
 - DLL: bin/Aqua.dll
   Name: Aqua
-  Version: 1.1.0
+  Version: 1.1.1
   Dependencies:
     - Name: Everest
     - Name: EverestCore
