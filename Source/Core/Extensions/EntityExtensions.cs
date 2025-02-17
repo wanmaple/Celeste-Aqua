@@ -7,7 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using static MonoMod.InlineRT.MonoModRule;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -17,14 +16,12 @@ namespace Celeste.Mod.Aqua.Core
         {
             On.Monocle.Entity.ctor_Vector2 += Entity_Construct;
             On.Monocle.Entity.Awake += Entity_Awake;
-            On.Monocle.Entity.Update += Entity_Update;
         }
 
         public static void Uninitialize()
         {
             On.Monocle.Entity.ctor_Vector2 -= Entity_Construct;
             On.Monocle.Entity.Awake -= Entity_Awake;
-            On.Monocle.Entity.Update -= Entity_Update;
         }
 
         private static void Entity_Construct(On.Monocle.Entity.orig_ctor_Vector2 orig, Entity self, Vector2 position)
@@ -42,12 +39,6 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, scene);
             DynamicData.For(self).Set("prev_position", self.Position);
-        }
-
-        private static void Entity_Update(On.Monocle.Entity.orig_Update orig, Entity self)
-        {
-            DynamicData.For(self).Set("prev_position", self.Position);
-            orig(self);
         }
 
         public static Entity CollideFirst(this Entity self, Type type, IReadOnlyList<Type> excludeTypes)

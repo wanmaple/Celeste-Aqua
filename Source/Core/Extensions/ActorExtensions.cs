@@ -18,13 +18,11 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             On.Celeste.Actor.ctor += Actor_Construct;
-            On.Celeste.Actor.Update += Actor_Update;
         }
 
         public static void Uninitialize()
         {
             On.Celeste.Actor.ctor -= Actor_Construct;
-            On.Celeste.Actor.Update -= Actor_Update;
         }
 
         private static void Actor_Construct(On.Celeste.Actor.orig_ctor orig, Actor self, Vector2 position)
@@ -33,12 +31,6 @@ namespace Celeste.Mod.Aqua.Core
             self.Add(new ActorExtraFields());
             self.SetMass(PlayerStates.MADELINE_MASS);
             self.SetHookable(true);
-        }
-
-        private static void Actor_Update(On.Celeste.Actor.orig_Update orig, Actor self)
-        {
-            DynamicData.For(self).Set("prev_position", self.Position);
-            orig(self);
         }
 
         public static float GetMass(this Actor self)

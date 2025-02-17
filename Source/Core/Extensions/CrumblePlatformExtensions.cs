@@ -28,7 +28,7 @@ namespace Celeste.Mod.Aqua.Core
                 if (cursor.TryGotoNext(MoveType.After, ins => ins.MatchLdloc1(), ins => ins.MatchCallvirt(methodPlayerClimbing)))
                 {
                     cursor.EmitLdloc1();
-                    cursor.EmitDelegate(WillCrumble);
+                    cursor.EmitDelegate(WillCrumble); 
 
                     ILLabel label = null;
                     while (cursor.TryGotoNext(MoveType.After, ins => ins.MatchLdloc1(), ins => ins.MatchCallvirt(out MethodReference nouse), ins => ins.MatchBrtrue(out label))) ;
@@ -41,7 +41,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static bool WillCrumble(Player player, CrumblePlatform self)
         {
-            return player == null && self.IsHookAttached();
+            return player != null || self.IsHookAttached();
         }
 
         private static bool WillRespawn(CrumblePlatform self)
