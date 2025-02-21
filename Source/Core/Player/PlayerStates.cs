@@ -16,6 +16,7 @@ namespace Celeste.Mod.Aqua.Core
         StNormal = 0, // Normal
         StClimb = 1, // Climbing
         StDash = 2, // Dashing
+        StSwim = 3, // Swimming
         StBoost = 4, // In the green booster
         StRedDash = 5, // In the red booster
         StHitSquash = 6, // While red booster hits wall or something.
@@ -65,6 +66,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.DashBegin += Player_DashBegin;
             On.Celeste.Player.DashEnd += Player_DashEnd;
             On.Celeste.Player.DashUpdate += Player_DashUpdate;
+            On.Celeste.Player.SwimUpdate += Player_SwimUpdate;
             On.Celeste.Player.LaunchUpdate += Player_LaunchUpdate;
             On.Celeste.Player.BoostUpdate += Player_BoostUpdate;
             On.Celeste.Player.RedDashBegin += Player_RedDashBegin;
@@ -99,6 +101,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.DashBegin -= Player_DashBegin;
             On.Celeste.Player.DashEnd -= Player_DashEnd;
             On.Celeste.Player.DashUpdate -= Player_DashUpdate;
+            On.Celeste.Player.SwimUpdate -= Player_SwimUpdate;
             On.Celeste.Player.LaunchUpdate -= Player_LaunchUpdate;
             On.Celeste.Player.BoostUpdate -= Player_BoostUpdate;
             On.Celeste.Player.RedDashBegin -= Player_RedDashBegin;
@@ -503,6 +506,24 @@ namespace Celeste.Mod.Aqua.Core
             return nextState;
         }
 
+        private static int Player_SwimUpdate(On.Celeste.Player.orig_SwimUpdate orig, Player self)
+        {
+            int nextState = PreHookUpdate(self);
+            if (nextState < 0)
+            {
+                nextState = orig(self);
+            }
+            if (nextState == (int)AquaStates.StSwim)
+            {
+                int postState = PostHookUpdate(self);
+                if (postState >= 0)
+                {
+                    nextState = postState;
+                }
+            }
+            return nextState;
+        }
+
         private static int Player_LaunchUpdate(On.Celeste.Player.orig_LaunchUpdate orig, Player self)
         {
             int nextState = PreHookUpdate(self);
@@ -581,6 +602,10 @@ namespace Celeste.Mod.Aqua.Core
             else if (self.CanDash)
             {
                 return self.StartDash();
+            }
+            else if (self.SwimCheck())
+            {
+                return (int)AquaStates.StSwim;
             }
             else if (self.IsExhausted())
             {
@@ -1208,7 +1233,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                 {
-                    if ((!self.onGround || Input.MoveY.Value < 0) && self.Holding == null && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()))
+                    if ((!self.onGround || Input.MoveY.Value < 0) && self.Holding == null && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()) && !self.SwimCheck())
                     {
                         Vector2 ropeDirection = hook.RopeDirection;
                         bool swingUp = IsRopeSwingingUp(ropeDirection);

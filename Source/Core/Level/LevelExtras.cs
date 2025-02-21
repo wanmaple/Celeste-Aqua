@@ -7,6 +7,7 @@ namespace Celeste.Mod.Aqua.Core
     public struct LevelExtras
     {
         public int HookMaterial;
+        public int HookStyle;
         public bool FeatureEnabled;
         public bool DisableUserCustomParameters;
         public bool DisableGrappleBoost;
@@ -20,6 +21,7 @@ namespace Celeste.Mod.Aqua.Core
         public LevelExtras()
         {
             HookMaterial = 0;
+            HookStyle = 0;
             FeatureEnabled = false;
             DisableUserCustomParameters = false;
             DisableGrappleBoost = false;

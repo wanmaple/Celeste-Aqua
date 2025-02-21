@@ -130,6 +130,19 @@ namespace Celeste.Mod.Aqua.Core
             rope.ChangeLength(length);
         }
 
+        public void SetStyle(int style)
+        {
+            if (style >= 1 && style <= 4)
+            {
+                string sprite = "Aqua_HookStyle" + style.ToString();
+                _sprite.ChangeStyle(sprite);
+            }
+            else
+            {
+                _sprite.ChangeStyle("Aqua_Hook");
+            }
+        }
+
         public bool CanCollide(Entity other)
         {
             return other.IsHookable();
@@ -783,8 +796,9 @@ namespace Celeste.Mod.Aqua.Core
         private MoveResult DoCollideOrNot(Entity entity, Vector2 direction, Action<CustomCollisionData> onCollide, out CustomCollisionData data)
         {
             data = new CustomCollisionData();
+            AquaDebugger.LogInfo("ROT: {0}", _sprite.Rotation);
             Vector2 hookDir = Calc.AngleToVector(_sprite.Rotation, 1.0f);
-            if (Vector2.Dot(hookDir, direction) > 0.0f)
+            if (Vector2.Dot(hookDir, direction) > MathF.Cos(Calc.DegToRad * 89.9f))
             {
                 if (onCollide != null)
                 {

@@ -15,6 +15,34 @@
       <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
     </Aqua_HookPlayback>
 
+    <Aqua_HookStyle1 path="objects/hook/" start="emit">
+      <Justify x="0.5" y="0.5" />
+      <Anim id="emit" path="hook" frames="0" />
+      <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
+      <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
+    </Aqua_HookStyle1>
+
+    <Aqua_HookStyle2 path="objects/hook/" start="emit">
+      <Justify x="0.5" y="0.5" />
+      <Anim id="emit" path="hook" frames="0" />
+      <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
+      <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
+    </Aqua_HookStyle2>
+
+    <Aqua_HookStyle3 path="objects/hook/" start="emit">
+      <Justify x="0.5" y="0.5" />
+      <Anim id="emit" path="hook" frames="0" />
+      <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
+      <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
+    </Aqua_HookStyle3>
+
+    <Aqua_HookStyle4 path="objects/hook/" start="emit">
+      <Justify x="0.5" y="0.5" />
+      <Anim id="emit" path="hook" frames="0" />
+      <Anim id="hit" path="hook" frames="1-2" delay="0.08" />
+      <Anim id="revoke" path="hook" frames="1,0" delay="0.08" />
+    </Aqua_HookStyle4>
+
     <Aqua_Rope path="objects/hook/" start="idle">
       <Justify x="0.0" y="0.5" />
       <Anim id="idle" path="rope" frames="0" />

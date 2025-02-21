@@ -91,6 +91,16 @@ namespace Celeste.Mod.Aqua.Core
                         state.DisableGrappleBoost = false;
                     }
                     break;
+                case "HookStyle":
+                    if (int.TryParse(Value, out int style))
+                    {
+                        if (style < 1 || style > 4)
+                            style = 0;
+                        state.HookStyle = style;
+                        var hook = player.GetGrappleHook();
+                        hook.SetStyle(style);
+                    }
+                    break;
                 default:
                     break;
             }

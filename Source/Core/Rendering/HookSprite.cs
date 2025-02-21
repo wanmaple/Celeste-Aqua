@@ -27,5 +27,13 @@ namespace Celeste.Mod.Aqua.Core
             }
             GFX.SpriteBank.CreateOn(this, spriteName);
         }
+
+        public void ChangeStyle(string spriteName)
+        {
+            if (GFX.SpriteBank.Has(spriteName))
+            {
+                GFX.SpriteBank.CreateOn(this, spriteName);
+            }
+        }
     }
 }

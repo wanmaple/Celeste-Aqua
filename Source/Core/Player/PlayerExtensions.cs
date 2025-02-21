@@ -7,13 +7,14 @@ namespace Celeste.Mod.Aqua.Core
 {
     public static class PlayerExtensions
     {
-        public static void InitializeGrapplingHook(this Player self, float size, float length, GrapplingHook.RopeMaterial material, GrapplingHook.GameplayMode mode, int initialCounter)
+        public static void InitializeGrapplingHook(this Player self, float size, float length, GrapplingHook.RopeMaterial material, GrapplingHook.GameplayMode mode, int initialCounter, int style = 0)
         {
             GrapplingHook hook = DynamicData.For(self).Get<GrapplingHook>("grapple_hook");
             if (hook == null)
             {
                 hook = new GrapplingHook(size, length, material);
                 hook.ChangeGameplayMode(mode, self.level, initialCounter);
+                hook.SetStyle(style);
                 DynamicData.For(self).Set("grapple_hook", hook);
                 var shootCheck = new ShotHookCheck(AquaModule.Settings.ThrowHook, AquaModule.Settings.ThrowHookMode);
                 DynamicData.For(self).Set("shoot_check", shootCheck);

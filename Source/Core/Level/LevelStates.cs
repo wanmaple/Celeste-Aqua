@@ -15,6 +15,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             public bool FeatureEnabled { get; set; }
             public GrapplingHook.RopeMaterial RopeMaterial { get; set; }
+            public int HookStyle { get; set; }
             public GrapplingHook.GameplayMode GameplayMode { get; set; }
             public int InitialShootCount { get; set; }
             public int RestShootCount { get; set; }
@@ -38,6 +39,7 @@ namespace Celeste.Mod.Aqua.Core
                 var extraMeta = areaData.GetExtraMeta();
                 FeatureEnabled = extraMeta.FeatureEnabled || AquaModule.Settings.FeatureEnabled;
                 RopeMaterial = (GrapplingHook.RopeMaterial)extraMeta.HookMaterial;
+                HookStyle = extraMeta.HookStyle;
                 GameplayMode = (GrapplingHook.GameplayMode)extraMeta.GameplayMode;
                 InitialShootCount = RestShootCount = extraMeta.InitialShootCount;
                 MaxShootCount = extraMeta.MaxShootCount;
@@ -98,7 +100,7 @@ namespace Celeste.Mod.Aqua.Core
             Player player = self.Tracker.GetEntity<Player>();
             if (player != null)
             {
-                player.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.InitialShootCount);
+                player.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.InitialShootCount, state.HookStyle);
             }
             if (state.ResetCountInTransition)
             {

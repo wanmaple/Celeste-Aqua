@@ -9,6 +9,7 @@ local PARAMETER_OPTIONS = {
     "FlyTowardSpeed",
     "ActorPullForce",
     "DisableGrappleBoost",
+    "HookStyle",
 }
 
 ChangeHookParameterTrigger.name = "Aqua/Change Hook Parameter Trigger"
