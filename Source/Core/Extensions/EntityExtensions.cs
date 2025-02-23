@@ -32,6 +32,7 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("hook_attached", false);
             DynamicData.For(self).Set("can_collide_method", null);
             DynamicData.For(self).Set("unique_id", AUTO_ID++);
+            DynamicData.For(self).Set("prev_position", self.Position);
             self.WorkWithCardinalBumper();
         }
 
@@ -157,9 +158,37 @@ namespace Celeste.Mod.Aqua.Core
             return DynamicData.For(self).Get<ulong>("unique_id");
         }
 
+        public static Entity GetHoldableContainer(this Entity self)
+        {
+            Component containerRef = null;
+            if (ModInterop.ContainerRefType != null && (containerRef = self.GetComponent(ModInterop.ContainerRefType)) != null)
+            {
+                FieldInfo fieldContainers = ModInterop.ContainerRefType.FindField(BindingFlags.Public | BindingFlags.Instance, "containers");
+                if (fieldContainers != null)
+                {
+                    IEnumerable containers = fieldContainers.GetValue(containerRef) as IEnumerable;
+                    if (containers != null)
+                    {
+                        object container = null;
+                        foreach (object c in containers)
+                        {
+                            container = c;
+                            break;
+                        }
+                        if (container != null && ModInterop.HoldableType != null && container.GetType().IsAssignableTo(ModInterop.HoldableType))
+                        {
+                            return container as Entity;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public static Vector2 GetPreviousPosition(this Entity self)
         {
-            return DynamicData.For(self).Get<Vector2>("prev_position");
+            Vector2 prevPos = DynamicData.For(self).Get<Vector2>("prev_position");
+            return prevPos;
         }
 
         public static bool IsHookable(this Entity self)
@@ -212,6 +241,16 @@ namespace Celeste.Mod.Aqua.Core
         public static void SetTimeTicker(this Entity self, string name, float duration)
         {
             DynamicData.For(self).Set(name, new TimeTicker(duration));
+        }
+
+        public static Component GetComponent(this Entity self, Type comType)
+        {
+            foreach (Component com in self.Components)
+            {
+                if (com.GetType().IsAssignableTo(comType))
+                    return com;
+            }
+            return null;
         }
 
         public static IEnumerator UndraggableRoutine(this Entity self, Sprite sprite, Vector2 direction, float duration, float distance)

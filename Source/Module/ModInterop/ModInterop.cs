@@ -60,6 +60,16 @@ namespace Celeste.Mod.Aqua.Module
             }
         }
 
+        public static Type ContainerRefType
+        {
+            get
+            {
+                if (_containerRefType == null)
+                    CacheModTypes();
+                return _containerRefType;
+            }
+        }
+
         public static Type CardinalBumperType
         {
             get
@@ -109,6 +119,7 @@ namespace Celeste.Mod.Aqua.Module
             _curvedBoosterTypes = curvedBoosterTypes.ToArray();
             _conveyorType = FactoryHelper.GetType("FactoryHelper.Entities.Conveyor");
             _holdableContainerType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Entities.HoldableContainer");
+            _containerRefType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Components.ContainerRefComponent");
             _cardinalBumperType = JackalHelper.GetType("Celeste.Mod.JackalHelper.Entities.CardinalBumper");
         }
 
@@ -124,6 +135,7 @@ namespace Celeste.Mod.Aqua.Module
         private static Type[] _curvedBoosterTypes;
         private static Type _conveyorType;
         private static Type _holdableContainerType;
+        private static Type _containerRefType;
         private static Type _cardinalBumperType;
     }
 }

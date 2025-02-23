@@ -502,15 +502,21 @@ namespace Celeste.Mod.Aqua.Core
                     //}
                     else
                     {
-                        // FloatySpaceBlock has some special logic.
                         Vector2 curPos = pivot.entity.Position;
                         Vector2 prevPos = pivot.entity.GetPreviousPosition();
-                        if (pivot.entity is FloatySpaceBlock floaty && floaty.master != null)
+                        Entity holdableContainer = pivot.entity.GetHoldableContainer();
+                        if (holdableContainer != null)
+                        {
+                            curPos = holdableContainer.Position;
+                            prevPos = holdableContainer.GetPreviousPosition();
+                        }
+                        // FloatySpaceBlock has some special logic.
+                        else if (pivot.entity is FloatySpaceBlock floaty && floaty.master != null)
                         {
                             curPos = floaty.master.Position;
                             prevPos = floaty.master.GetPreviousPosition();
                         }
-                        if (ModPatches.ConnectionEntityPatches.Contains(pivot.entity.GetType().FullName))
+                        else if (ModPatches.ConnectionEntityPatches.Contains(pivot.entity.GetType().FullName))
                         {
                             // Connection entity compatibility.
                             var fieldMaster = pivot.entity.GetType().BaseType.GetField("master", BindingFlags.Instance | BindingFlags.NonPublic);
