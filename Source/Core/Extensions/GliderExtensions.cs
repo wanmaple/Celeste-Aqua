@@ -28,7 +28,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool OnInteractGrapple(this Glider self, GrapplingHook hook, Vector2 at)
         {
-            Player player = self.Scene.Tracker.GetEntity<Player>();
+            Player player = hook.Owner;
             if (player != null)
             {
                 if (self.bubble)

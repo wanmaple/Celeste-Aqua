@@ -21,25 +21,28 @@ namespace Celeste.Mod.Aqua.Core
             base.Update();
             if (this.IsHookAttached())
             {
-                GrapplingHook hook = Scene.Tracker.GetEntity<GrapplingHook>();
-                if (hook != null && hook.AlongRopeSpeed > 0.0f)
+                var grapples = Scene.Tracker.GetEntities<GrapplingHook>();
+                foreach (GrapplingHook grapple in grapples)
                 {
-                    if (hook.Bottom == Top || hook.Top == Bottom)
+                    if (grapple.AlongRopeSpeed > 0.0f)
                     {
-                        Vector2 movement = Vector2.Dot(hook.AlongRopeSpeed * hook.HookDirection, Vector2.UnitX) * Vector2.UnitX * Engine.DeltaTime * HookSmoothCoefficient;
-                        hook.SetPositionRounded(hook.Position + movement);
-                        if (hook.Right <= Left || hook.Left >= Right)
+                        if (grapple.Bottom == Top || grapple.Top == Bottom)
                         {
-                            hook.Revoke();
+                            Vector2 movement = Vector2.Dot(grapple.AlongRopeSpeed * grapple.HookDirection, Vector2.UnitX) * Vector2.UnitX * Engine.DeltaTime * HookSmoothCoefficient;
+                            grapple.SetPositionRounded(grapple.Position + movement);
+                            if (grapple.Right <= Left || grapple.Left >= Right)
+                            {
+                                grapple.Revoke();
+                            }
                         }
-                    }
-                    else if (hook.Left == Right || hook.Right == Left)
-                    {
-                        Vector2 movement = Vector2.Dot(hook.AlongRopeSpeed * hook.HookDirection, Vector2.UnitY) * Vector2.UnitY * Engine.DeltaTime * HookSmoothCoefficient;
-                        hook.SetPositionRounded(hook.Position + movement);
-                        if (hook.Top >= Bottom || hook.Bottom <= Top)
+                        else if (grapple.Left == Right || grapple.Right == Left)
                         {
-                            hook.Revoke();
+                            Vector2 movement = Vector2.Dot(grapple.AlongRopeSpeed * grapple.HookDirection, Vector2.UnitY) * Vector2.UnitY * Engine.DeltaTime * HookSmoothCoefficient;
+                            grapple.SetPositionRounded(grapple.Position + movement);
+                            if (grapple.Top >= Bottom || grapple.Bottom <= Top)
+                            {
+                                grapple.Revoke();
+                            }
                         }
                     }
                 }

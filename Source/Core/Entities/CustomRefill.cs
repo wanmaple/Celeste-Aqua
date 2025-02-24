@@ -81,7 +81,7 @@ namespace Celeste.Mod.Aqua.Core
             if (!Hookable)
                 return false;
 
-            Player player = Scene.Tracker.GetEntity<Player>();
+            Player player = hook.Owner;
             if (player != null && RefillCondition(player))
             {
                 hook.Revoke();

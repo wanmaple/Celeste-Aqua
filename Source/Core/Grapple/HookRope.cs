@@ -65,7 +65,7 @@ namespace Celeste.Mod.Aqua.Core
                     throw new AquaException("Invalid call timing.", "HookRope.SwingRadius");
                 }
 
-                Player player = Scene.Tracker.GetEntity<Player>();
+                Player player = (Entity as GrapplingHook).Owner;
                 if (player == null) return 0.0f;
                 return (BottomPivot.point - player.Center).Length();
             }
@@ -79,7 +79,7 @@ namespace Celeste.Mod.Aqua.Core
                     throw new AquaException("Invalid call timing.", "HookRope.HookDirection");
                 }
 
-                Player player = Scene.Tracker.GetEntity<Player>();
+                Player player = (Entity as GrapplingHook).Owner;
                 if (_pivots.Count == 1)
                 {
                     Vector2 direction = player.Center - TopPivot.point;
@@ -99,7 +99,7 @@ namespace Celeste.Mod.Aqua.Core
                     throw new AquaException("Invalid call timing.", "HookRope.SwingDirection");
                 }
 
-                Player player = Scene.Tracker.GetEntity<Player>();
+                Player player = (Entity as GrapplingHook).Owner;
                 if (player == null) return Vector2.UnitX;
                 return Calc.SafeNormalize(player.Center - BottomPivot.point);
             }
@@ -163,7 +163,7 @@ namespace Celeste.Mod.Aqua.Core
             changeState = false;
             float hookMovement = EmitSpeed * speedCoeff * dt;
             GrapplingHook hook = Entity as GrapplingHook;
-            Player player = Scene.Tracker.GetEntity<Player>();
+            Player player = (Entity as GrapplingHook).Owner;
             if (player == null)
                 return hook.Position;
             float currentLength = _prevLength;
@@ -231,7 +231,7 @@ namespace Celeste.Mod.Aqua.Core
 
             if (_pivots.Count <= 1)
             {
-                Player player = Scene.Tracker.GetEntity<Player>();
+                Player player = (Entity as GrapplingHook).Owner;
                 if (player == null) return;
                 CurrentDirection = Calc.SafeNormalize(TopPivot.point - player.ExactCenter());
             }
@@ -421,7 +421,7 @@ namespace Celeste.Mod.Aqua.Core
         public override void Update()
         {
             GrapplingHook hook = Entity as GrapplingHook;
-            Player player = Scene.Tracker.GetEntity<Player>();
+            Player player = (Entity as GrapplingHook).Owner;
             RopePivot pivot = _pivots[0];
             _prevRopePivot = pivot;
             pivot.point = hook.Position;
@@ -432,7 +432,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Render()
         {
-            Player player = Scene.Tracker.GetEntity<Player>();
+            Player player = (Entity as GrapplingHook).Owner;
             _segments.Clear();
             for (int i = 0; i < _pivots.Count; ++i)
             {
@@ -441,20 +441,6 @@ namespace Celeste.Mod.Aqua.Core
                 _segments.Add(new Segment(pt1, pt2));
             }
             _renderer.Render(_segments);
-            //Color lineColor = Color.White;
-            //for (int i = 0; i < _pivots.Count; i++)
-            //{
-            //    if (i == _pivots.Count - 1)
-            //    {
-            //        Player player = Scene.Tracker.GetEntity<Player>();
-            //        if (player == null) return;
-            //        Draw.Line(_pivots[i].point, player.Center, lineColor);
-            //    }
-            //    else
-            //    {
-            //        Draw.Line(_pivots[i].point, _pivots[i + 1].point, lineColor);
-            //    }
-            //}
         }
 
         public override void DebugRender(Camera camera)

@@ -97,10 +97,13 @@ namespace Celeste.Mod.Aqua.Core
                 state = new LevelState(areaData);
                 AquaModule.Session.levelState = state;
             }
-            Player player = self.Tracker.GetEntity<Player>();
-            if (player != null)
+            var players = self.Tracker.GetEntities<Player>();
+            if (players != null)
             {
-                player.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.InitialShootCount, state.HookStyle);
+                foreach (Player player in players)
+                {
+                    player.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.InitialShootCount, state.HookStyle);
+                }
             }
             if (state.ResetCountInTransition)
             {
@@ -163,13 +166,16 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         case "RopeLength":
                             state.HookSettings.RopeLength = value;
-                            Player player = self.Tracker.GetEntity<Player>();
-                            if (player != null)
+                            var players = self.Tracker.GetEntities<Player>();
+                            if (players != null)
                             {
-                                GrapplingHook hook = player.GetGrappleHook();
-                                if (hook != null)
+                                foreach (Player player in players)
                                 {
-                                    hook.SetRopeLength(value);
+                                    GrapplingHook hook = player.GetGrappleHook();
+                                    if (hook != null)
+                                    {
+                                        hook.SetRopeLength(value);
+                                    }
                                 }
                             }
                             break;

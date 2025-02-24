@@ -206,7 +206,7 @@ namespace Celeste.Mod.Aqua.Core
             return DynamicData.For(self).Get<bool>("hook_attached");
         }
 
-        public static void SetHookAttached(this Entity self, bool attached)
+        public static void SetHookAttached(this Entity self, bool attached, GrapplingHook grapple)
         {
             bool isAttached = self.IsHookAttached();
             if (isAttached != attached)
@@ -214,7 +214,6 @@ namespace Celeste.Mod.Aqua.Core
                 DynamicData.For(self).Set("hook_attached", attached);
                 if (self.Scene != null)
                 {
-                    GrapplingHook grapple = self.Scene.Tracker.GetEntity<GrapplingHook>();
                     if (attached)
                         self.AttachCallback(grapple);
                     else
@@ -225,12 +224,20 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool IntersectsWithRope(this Entity self)
         {
-            GrapplingHook hook = self.Scene.Tracker.GetEntity<GrapplingHook>();
-            if (hook != null)
+            return self.IntersectsWithRopeAndReturnGrapple() != null;
+        }
+
+        public static GrapplingHook IntersectsWithRopeAndReturnGrapple(this Entity self)
+        {
+            var grapples = self.Scene.Tracker.GetEntities<GrapplingHook>();
+            foreach (GrapplingHook grapple in grapples)
             {
-                return hook.IsRopeIntersectsWith(self);
+                if (grapple.IsRopeIntersectsWith(self))
+                {
+                    return grapple;
+                }
             }
-            return false;
+            return null;
         }
 
         public static TimeTicker GetTimeTicker(this Entity self, string name)

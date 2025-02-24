@@ -67,7 +67,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (self.State.State == Seeker.StRegenerate)
                 return false;
-            Player player = self.Scene.Tracker.GetEntity<Player>();
+            Player player = grapple.Owner;
             if (player == null)
                 return false;
             grapple.Revoke();

@@ -15,9 +15,8 @@ namespace Celeste.Mod.Aqua.Core
                 hook = new GrapplingHook(size, length, material);
                 hook.ChangeGameplayMode(mode, self.level, initialCounter);
                 hook.SetStyle(style);
+                hook.Owner = self;
                 DynamicData.For(self).Set("grapple_hook", hook);
-                var shootCheck = new ShotHookCheck(AquaModule.Settings.ThrowHook, AquaModule.Settings.ThrowHookMode);
-                DynamicData.For(self).Set("shoot_check", shootCheck);
             }
         }
 

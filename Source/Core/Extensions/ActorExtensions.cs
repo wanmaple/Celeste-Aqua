@@ -158,7 +158,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool GeneralHoldableInteraction(this Actor self, GrapplingHook hook, Vector2 at)
         {
-            Player player = self.Scene.Tracker.GetEntity<Player>();
+            Player player = hook.Owner;
             if (player != null)
             {
                 FieldInfo fieldNoGravityTimer = self.GetType().FindField(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, "noGravityTimer", "_noGravityTimer");

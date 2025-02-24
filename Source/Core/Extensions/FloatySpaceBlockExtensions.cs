@@ -1,8 +1,6 @@
-﻿using Celeste.Mod.Aqua.Debug;
-using Celeste.Mod.Aqua.Miscellaneous;
+﻿using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
 using MonoMod.Cil;
-using System.IO.Pipes;
 using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
@@ -40,15 +38,19 @@ namespace Celeste.Mod.Aqua.Core
             {
                 return true;
             }
-            Player player = self.Scene.Tracker.GetEntity<Player>();
-            if (player != null)
+            var players = self.Scene.Tracker.GetEntities<Player>();
+            if (players != null)
             {
-                GrapplingHook hook = player.GetGrappleHook();
-                if (!player.onGround && hook.State == GrapplingHook.HookStates.Fixed && self.IsHookAttached())
+                foreach (Player player in players)
                 {
-                    Vector2 ropeDirection = hook.RopeDirection;
-                    bool swingUp = AquaMaths.Cross(Vector2.UnitX, ropeDirection) >= 0.0f;
-                    return swingUp && hook.AlongRopeSpeed > 0.0f;
+                    GrapplingHook hook = player.GetGrappleHook();
+                    if (!player.onGround && hook.State == GrapplingHook.HookStates.Fixed && self.IsHookAttached())
+                    {
+                        Vector2 ropeDirection = hook.RopeDirection;
+                        bool swingUp = AquaMaths.Cross(Vector2.UnitX, ropeDirection) >= 0.0f;
+                        if (swingUp && hook.AlongRopeSpeed > 0.0f)
+                            return true;
+                    }
                 }
             }
             return false;

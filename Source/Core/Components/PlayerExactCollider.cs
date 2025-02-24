@@ -3,6 +3,7 @@ using System;
 
 namespace Celeste.Mod.Aqua.Core
 {
+    [Tracked(false)]
     public class PlayerExactCollider : Component
     {
         public Action<Player> OnCollide;
@@ -15,10 +16,14 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
-            Player player = Scene.Tracker.GetEntity<Player>();
-            if (player != null && player.CollideCheck(Entity))
+            var players = Scene.Tracker.GetEntities<Player>();
+            if (players != null)
             {
-                OnCollide?.Invoke(player);
+                foreach (Player player in players)
+                {
+                    if (player.CollideCheck(Entity))
+                        OnCollide?.Invoke(player);
+                }
             }
         }
     }

@@ -49,6 +49,7 @@ namespace Celeste.Mod.Aqua.Core
         public const float HOOK_SIZE = 8.0f;
         public const float BOUNCE_SPEED_ADDITION = 300.0f;
 
+        public Player Owner { get; set; }
         public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
         public HookSprite Sprite => _sprite;
         public bool ElectricShocking { get; set; } = false;
@@ -78,6 +79,7 @@ namespace Celeste.Mod.Aqua.Core
         public Vector2 BouncingVelocity { get; set; }
         public float EmitSpeedCoefficient { get; private set; }
         public float EmitSpeedMultiplier { get; set; } = 1.0f;
+        public Entity AttachedEntity => Get<HookRope>().TopPivot.entity;
         public GrappleAttractor CurrentAttractor { get; set; }
 
         public float MaxLength => Get<HookRope>().MaxLength;
@@ -195,7 +197,7 @@ namespace Celeste.Mod.Aqua.Core
             Entity attachedEntity = rope.TopPivot.entity;
             if (attachedEntity != null)
             {
-                attachedEntity.SetHookAttached(false);
+                attachedEntity.SetHookAttached(false, this);
             }
             rope.HookAttachEntity(null);
 
@@ -348,7 +350,7 @@ namespace Celeste.Mod.Aqua.Core
                     return true;
                 }
             }
-            Player player = Scene.Tracker.GetEntity<Player>();
+            Player player = Owner;
             if (entity.Collider.Collide(pivots[pivots.Count - 1].point, player.ExactCenter()))
             {
                 return true;
@@ -358,7 +360,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Added(Scene scene)
         {
-            Player madeline = scene.Tracker.GetEntity<Player>();
+            Player madeline = Owner;
             Position = _prevPosition = AquaMaths.Round(madeline.ExactCenter());
             State = HookStates.Emitting;
             Active = true;
@@ -395,7 +397,7 @@ namespace Celeste.Mod.Aqua.Core
             base.Awake(scene);
             Velocity = Vector2.Zero;
             Acceleration = Vector2.Zero;
-            Player player = Scene.Tracker.GetEntity<Player>();
+            Player player = Owner;
             _playerPrevPosition = player.ExactCenter();
             _elapsed = 0.0f;
             _lastEmitElapsed = float.MinValue;
@@ -405,7 +407,7 @@ namespace Celeste.Mod.Aqua.Core
         public override void Update()
         {
             HookRope rope = Get<HookRope>();
-            Player player = Scene.Tracker.GetEntity<Player>();
+            Player player = Owner;
             float dt = Engine.DeltaTime;
             _elapsed += dt;
             JustFixed = false;
@@ -525,7 +527,7 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             SetPositionRounded(CurrentAttractor.AttractionTarget);
                             rope.HookAttachEntity(CurrentAttractor);
-                            CurrentAttractor.SetHookAttached(true);
+                            CurrentAttractor.SetHookAttached(true, this);
                             Fix();
                         }
                         break;
@@ -606,7 +608,7 @@ namespace Celeste.Mod.Aqua.Core
             if (hitEntity.IsHookable())
             {
                 rope.HookAttachEntity(hitEntity);
-                hitEntity.SetHookAttached(true);
+                hitEntity.SetHookAttached(true, this);
                 PlayHitSound(hitEntity);
                 _hitUnhookable = false;
             }

@@ -15,14 +15,15 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
-            Player player = Scene.Tracker.GetEntity<Player>();
-            if (player == null)
+            var players = Scene.Tracker.GetEntities<Player>();
+            if (players == null)
                 return;
-            GrapplingHook hook = player.GetGrappleHook();
-            if (hook == null)
-                return;
-
-            UpdateAction?.Invoke(Entity, hook);
+            foreach (Player player in players)
+            {
+                GrapplingHook hook = player.GetGrappleHook();
+                if (hook == null) continue;
+                UpdateAction?.Invoke(Entity, hook);
+            }
         }
     }
 }

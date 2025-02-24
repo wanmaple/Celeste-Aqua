@@ -28,7 +28,7 @@ namespace Celeste.Mod.Aqua.Core
             hook.ElectricShocking = true;
             if (hook.Material == GrapplingHook.RopeMaterial.Metal)
             {
-                Player player = self.Scene.Tracker.GetEntity<Player>();
+                Player player = hook.Owner;
                 player.StateMachine.ForceState((int)AquaStates.StElectricShock);
             }
         }
@@ -44,12 +44,12 @@ namespace Celeste.Mod.Aqua.Core
         private static void Lightning_Update(On.Celeste.Lightning.orig_Update orig, Lightning self)
         {
             orig(self);
-            if (self.IntersectsWithRope())
+            GrapplingHook grapple = null;
+            if ((grapple = self.IntersectsWithRopeAndReturnGrapple()) != null)
             {
-                GrapplingHook hook = self.Scene.Tracker.GetEntity<GrapplingHook>();
-                if (hook.Material == GrapplingHook.RopeMaterial.Metal)
+                if (grapple.Material == GrapplingHook.RopeMaterial.Metal)
                 {
-                    Player player = self.Scene.Tracker.GetEntity<Player>();
+                    Player player = grapple.Owner;
                     if (player.StateMachine.State != (int)AquaStates.StElectricShock)
                     {
                         player.StateMachine.ForceState((int)AquaStates.StElectricShock);

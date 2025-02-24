@@ -27,14 +27,14 @@ namespace Celeste.Mod.Aqua.Core
             self.Add(interactable);
         }
 
-        public static bool OnInteractGrapple(this TheoCrystal self, GrapplingHook hook, Vector2 at)
+        public static bool OnInteractGrapple(this TheoCrystal self, GrapplingHook grapple, Vector2 at)
         {
-            Player player = self.Scene.Tracker.GetEntity<Player>();
+            Player player = grapple.Owner;
             if (player != null)
             {
-                hook.Revoke();
+                grapple.Revoke();
                 self.noGravityTimer = 0.15f;
-                var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed, hook.ShootDirection);
+                var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed, grapple.ShootDirection);
                 self.Speed = result.OwnerSpeed;
                 player.Speed = result.OtherSpeed;
                 player.Stamina = MathF.Max(player.Stamina - self.GetStaminaCost(), 0.0f);

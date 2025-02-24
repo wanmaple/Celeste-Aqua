@@ -37,10 +37,13 @@ namespace Celeste.Mod.Aqua.Core
                 this.SetHookable(activated);
                 if (!activated)
                 {
-                    GrapplingHook grapple = Scene.Tracker.GetEntity<GrapplingHook>();
-                    if (grapple != null && grapple.State == GrapplingHook.HookStates.Attracted && grapple.CurrentAttractor == this)
+                    var grapples = Scene.Tracker.GetEntities<GrapplingHook>();
+                    foreach (GrapplingHook grapple in grapples)
                     {
-                        grapple.CancelAttraction();
+                        if (grapple.State == GrapplingHook.HookStates.Attracted && grapple.CurrentAttractor == this)
+                        {
+                            grapple.CancelAttraction();
+                        }
                     }
                     OnDeactivated();
                 }

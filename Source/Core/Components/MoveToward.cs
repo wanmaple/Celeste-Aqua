@@ -1,6 +1,4 @@
-﻿using Celeste.Mod.Aqua.Miscellaneous;
-using Microsoft.Xna.Framework;
-using Monocle;
+﻿using Monocle;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -19,7 +17,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
-            if (Target == null)
+            if (Target == null || Target is not GrapplingHook)
                 return;
             if (!Entity.Collidable || !Entity.IsHookable())
                 return;
@@ -27,7 +25,8 @@ namespace Celeste.Mod.Aqua.Core
             Entity.Position = Target.Center;
             if (DeactiveOnCollidePlayer)
             {
-                Player player = Entity.Scene.Tracker.GetEntity<Player>();
+                GrapplingHook grapple = Target as GrapplingHook;
+                Player player = grapple.Owner;
                 if (player != null && player.CollideCheck(Entity))
                 {
                     Entity.Position = player.Center;
