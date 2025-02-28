@@ -50,7 +50,7 @@ namespace Celeste.Mod.Aqua.Core
         public const float BOUNCE_SPEED_ADDITION = 300.0f;
 
         public Player Owner { get; set; }
-        public float HookSize { get; private set; }   // 爪子的边长，碰撞箱是正方形
+        public float HookSize { get; private set; }
         public HookSprite Sprite => _sprite;
         public bool ElectricShocking { get; set; } = false;
         public RopeMaterial Material
@@ -389,7 +389,6 @@ namespace Celeste.Mod.Aqua.Core
             Velocity = Acceleration = Vector2.Zero;
             Active = false;
             JustFixed = false;
-            AquaDebugger.LogInfo("REVOKE");
         }
 
         public override void Awake(Scene scene)
@@ -798,7 +797,6 @@ namespace Celeste.Mod.Aqua.Core
         private MoveResult DoCollideOrNot(Entity entity, Vector2 direction, Action<CustomCollisionData> onCollide, out CustomCollisionData data)
         {
             data = new CustomCollisionData();
-            AquaDebugger.LogInfo("ROT: {0}", _sprite.Rotation);
             Vector2 hookDir = Calc.AngleToVector(_sprite.Rotation, 1.0f);
             if (Vector2.Dot(hookDir, direction) > MathF.Cos(Calc.DegToRad * 89.9f))
             {
@@ -891,14 +889,14 @@ namespace Celeste.Mod.Aqua.Core
         private void CheckCollisionWhileShooting(Vector2 rounded)
         {
             // Use some tricks here (Only y coordinate could cause issue while shoot at crouching state)
-            bool collided = CollideFirst<Solid>() != null || (rounded.Y > 0 && CollideFirst<JumpThru>() != null);
+            bool collided = CollideFirst<Solid>() != null;
             const int OFFSET = 2;
-            if (rounded.Y != 0)
+            if (collided && rounded.Y != 0)
             {
                 for (int i = 0; i < HookSize / 2 - 3 + OFFSET; i++)
                 {
                     Position -= Vector2.UnitY * rounded.Y;
-                    if (CollideFirst<Solid>() == null && (rounded.Y < 0 || CollideFirst<JumpThru>() == null))
+                    if (CollideFirst<Solid>() == null)
                     {
                         collided = false;
                         break;

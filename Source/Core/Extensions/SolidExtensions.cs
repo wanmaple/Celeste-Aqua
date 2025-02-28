@@ -11,14 +11,20 @@ namespace Celeste.Mod.Aqua.Core
     {
         public static void Initialize()
         {
-            On.Celeste.Solid.HasPlayerRider += Solid_HasPlayerRider;
             On.Celeste.Solid.Awake += Solid_Awake;
+            On.Celeste.Solid.HasPlayerRider += Solid_HasPlayerRider;
         }
 
         public static void Uninitialize()
         {
-            On.Celeste.Solid.HasPlayerRider -= Solid_HasPlayerRider;
             On.Celeste.Solid.Awake -= Solid_Awake;
+            On.Celeste.Solid.HasPlayerRider -= Solid_HasPlayerRider;
+        }
+
+        private static void Solid_Awake(On.Celeste.Solid.orig_Awake orig, Solid self, Monocle.Scene scene)
+        {
+            orig(self, scene);
+            self.WorkWithConveyor();
         }
 
         private static bool Solid_HasPlayerRider(On.Celeste.Solid.orig_HasPlayerRider orig, Solid self)
@@ -29,12 +35,6 @@ namespace Celeste.Mod.Aqua.Core
                     return false;
             }
             return true;
-        }
-
-        private static void Solid_Awake(On.Celeste.Solid.orig_Awake orig, Solid self, Monocle.Scene scene)
-        {
-            orig(self, scene);
-            self.WorkWithConveyor();
         }
 
         private static void WorkWithConveyor(this Solid self)

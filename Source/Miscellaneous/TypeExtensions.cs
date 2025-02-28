@@ -49,5 +49,44 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             }
             return field;
         }
+
+        public static PropertyInfo FindProperty(this Type type, BindingFlags flags, params string[] possibleNames)
+        {
+            PropertyInfo prop = null;
+            foreach (string name in possibleNames)
+            {
+                prop = type.GetProperty(name, flags);
+                if (prop != null && prop.CanRead)
+                    break;
+            }
+            return prop;
+        }
+
+        public static object GetFieldOrPropertyValue(this Type type, object instance, BindingFlags flags, string name)
+        {
+            PropertyInfo property = type.FindProperty(flags, name);
+            if (property != null)
+            {
+                return property.GetValue(instance);
+            }
+            FieldInfo field = type.FindField(flags, name);
+            if (field != null)
+            {
+                return field.GetValue(instance);
+            }
+            return null;
+        }
+
+        public static bool CallMethodIfExist(this Type type, object instance, BindingFlags flags, string name, out object ret, params object[] args)
+        {
+            ret = null;
+            MethodInfo method = type.GetMethod(name, flags);
+            if (method != null)
+            {
+                ret = method.Invoke(instance, args);
+                return true;
+            }
+            return false;
+        }
     }
 }

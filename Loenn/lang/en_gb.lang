@@ -21,6 +21,17 @@ entities.Aqua/Aqua Refill.attributes.description.particle_color1=Shatter/Glow/Re
 entities.Aqua/Aqua Refill.attributes.description.particle_color2=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Aqua Refill.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
 
+# Aqua Crumble Platform
+entities.Aqua/Aqua Crumble Platform.attributes.description.platform_texture=What texture to use for the crumble block.
+entities.Aqua/Aqua Crumble Platform.attributes.description.outline_texture=The path to the outline texture.
+entities.Aqua/Aqua Crumble Platform.attributes.description.one_use=If checked, the platform will not respawn once it crumbled.
+entities.Aqua/Aqua Crumble Platform.attributes.description.respawn_duration=The duration in seconds before the platform respawns after crumbled.
+entities.Aqua/Aqua Crumble Platform.attributes.description.min_crumble_duration_on_top=The time the platform will take to disappear when the player stands on it, but immediately jumps off it.
+entities.Aqua/Aqua Crumble Platform.attributes.description.max_crumble_duration_on_top=The time the platform will take to disappear when the player stands on it and doesn't jump off. Should be equal to or higher than "Min Crumble Duration On Top".
+entities.Aqua/Aqua Crumble Platform.attributes.description.crumble_duration_on_side=The time the platform will take to disappear when the player grabs a side of it. Should be equal to or higher than "Max Crumble Duration On Top".
+entities.Aqua/Aqua Crumble Platform.attributes.description.crumble_duration_attached=The time the platform will take to disappear when the player grapple it.
+entities.Aqua/Aqua Crumble Platform.attributes.description.crumble_particle_color=The particle color while crumbling.
+
 # Puzzle Light
 entities.Aqua/Puzzle Light.attributes.description.puzzleId=Puzzle Identifier that indicates which puzzle it belongs to.
 entities.Aqua/Puzzle Light.attributes.description.sequence=The puzzle light will be ordered with this attribute, used to handle logic.

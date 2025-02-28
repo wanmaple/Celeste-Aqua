@@ -13,6 +13,7 @@ namespace Celeste.Mod.Aqua.Module
         public static EeveeHelperInterop EeveeHelper => _interopEeveeHelper;
         public static JackalHelperInterop JackalHelper => _interopJackalHelper;
         public static CommunalHelperInterop CommunalHelper => _interopCommunalHelper;
+        public static FrostHelperInterop FrostHelper => _interopFrostHelper;
         public static IReadOnlyList<Type> SidewaysJumpthruTypes
         {
             get
@@ -38,6 +39,15 @@ namespace Celeste.Mod.Aqua.Module
                 if (_curvedBoosterTypes == null)
                     CacheModTypes();
                 return _curvedBoosterTypes;
+            }
+        }
+        public static IReadOnlyList<Type> SpringTypes
+        {
+            get
+            {
+                if (_springTypes == null)
+                    CacheModTypes();
+                return _springTypes;
             }
         }
         public static Type ConveyorType
@@ -117,6 +127,17 @@ namespace Celeste.Mod.Aqua.Module
             if (dreamBooster != null)
                 curvedBoosterTypes.Add(dreamBooster);
             _curvedBoosterTypes = curvedBoosterTypes.ToArray();
+            var springTypes = new List<Type>(3);
+            Type customSpring = FrostHelper.GetType("FrostHelper.CustomSpring");
+            Type momentumSpring = GravityHelper.GetType("Celeste.Mod.GravityHelper.Entities.GravitySpring");
+            Type noDashSpring = MaxHelpingHand.GetType("Celeste.Mod.MaxHelpingHand.Entities.NoDashRefillSpring");
+            if (customSpring != null)
+                springTypes.Add(customSpring);
+            if (momentumSpring != null)
+                springTypes.Add(momentumSpring);
+            if (noDashSpring != null)
+                springTypes.Add(noDashSpring);
+            _springTypes = springTypes.ToArray();
             _conveyorType = FactoryHelper.GetType("FactoryHelper.Entities.Conveyor");
             _holdableContainerType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Entities.HoldableContainer");
             _containerRefType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Components.ContainerRefComponent");
@@ -130,9 +151,11 @@ namespace Celeste.Mod.Aqua.Module
         private static EeveeHelperInterop _interopEeveeHelper = new EeveeHelperInterop();
         private static JackalHelperInterop _interopJackalHelper = new JackalHelperInterop();
         private static CommunalHelperInterop _interopCommunalHelper = new CommunalHelperInterop();
+        private static FrostHelperInterop _interopFrostHelper = new FrostHelperInterop();
         private static Type[] _downsideJumpthruTypes;
         private static Type[] _sidewaysJumpthruTypes;
         private static Type[] _curvedBoosterTypes;
+        private static Type[] _springTypes;
         private static Type _conveyorType;
         private static Type _holdableContainerType;
         private static Type _containerRefType;
