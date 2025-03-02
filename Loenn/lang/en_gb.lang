@@ -185,7 +185,7 @@ entities.Aqua/Grapple Magnet.attributes.description.use_default_sprite=If checke
 
 # Invisible Grapple Attractor
 entities.Aqua/Invisible Grapple Attractor.attributes.description.shape=The shape of the attractor.
-entities.Aqua/Invisible Grapple Attractor.attributes.description.radius_in_tiles=The attraction range, only takes effect with a circle shape.
+entities.Aqua/Invisible Grapple Attractor.attributes.description.radius_in_tiles=The attraction range, only takes effect with a circle shape, 1 tiled radius indicates 8 px.
 entities.Aqua/Invisible Grapple Attractor.attributes.description.attach_to_solid=Whether the attractor attaches to blocks.
 
 # Magnet Toggle
