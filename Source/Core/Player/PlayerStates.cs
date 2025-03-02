@@ -877,7 +877,25 @@ namespace Celeste.Mod.Aqua.Core
             var hook = self.GetGrappleHook();
             if (hook != null && hook.Active && hook.State != GrapplingHook.HookStates.Revoking)
             {
-                hook.Revoke();
+                Vector2 ropeDirection = hook.RopeDirection;
+                bool swingUp = IsRopeSwingingUp(ropeDirection);
+                if (swingUp)
+                {
+                    hook.Revoke();
+                }
+                else
+                {
+                    Vector2 swingDirection = hook.SwingDirection;
+                    if (ModInterop.GravityHelper.IsPlayerGravityInverted())
+                        self.Speed.Y = -self.Speed.Y;
+                    float speedTangent = MathF.Abs(Vector2.Dot(self.Speed, swingDirection));
+                    if (ModInterop.GravityHelper.IsPlayerGravityInverted())
+                        self.Speed.Y = -self.Speed.Y;
+                    if (speedTangent >= SPEED_CHECK_GRAPPLING_SWING_DOWN * self.CalculateDownGrapplingThresholdCoefficient())
+                    {
+                        hook.Revoke();
+                    }
+                }
             }
 
             orig(self);
@@ -1105,8 +1123,7 @@ namespace Celeste.Mod.Aqua.Core
             //    return -1;
             //} 
             bool downGrapplePressed = AquaModule.Settings.DownShoot.Pressed;
-            bool backwardDownGrapplePressed = AquaModule.Settings.BackwardDownShoot.Pressed;
-            if (!grapple.Active && (shotCheck.CanThrow || downGrapplePressed || backwardDownGrapplePressed) && !self.IsExhausted() && self.Holding == null && grapple.CanEmit(self.level))
+            if (!grapple.Active && (shotCheck.CanThrow || downGrapplePressed) && !self.IsExhausted() && self.Holding == null && grapple.CanEmit(self.level))
             {
                 Vector2 direction;
                 switch (AquaModule.Settings.DefaultShotDirection)
@@ -1123,12 +1140,7 @@ namespace Celeste.Mod.Aqua.Core
                         direction = -Vector2.UnitY;
                         break;
                 }
-                if (backwardDownGrapplePressed)
-                {
-                    direction = new Vector2(-(int)self.Facing, 1.0f);
-                    direction.Normalize();
-                }
-                else if (downGrapplePressed)
+                if (downGrapplePressed)
                 {
                     direction = Vector2.UnitY;
                 }

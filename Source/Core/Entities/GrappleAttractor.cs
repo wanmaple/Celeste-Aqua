@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
 {
+    [Tracked(true)]
     public abstract class GrappleAttractor : Entity
     {
         public abstract Vector2 AttractionTarget { get; }
@@ -22,7 +24,7 @@ namespace Celeste.Mod.Aqua.Core
         public override void Update()
         {
             base.Update();
-            if (SceneAs<Level>().Session.GetFlag(Flag))
+            if (!string.IsNullOrEmpty(Flag) && SceneAs<Level>().Session.GetFlag(Flag))
             {
                 SetActivated(!_activated);
                 SceneAs<Level>().Session.SetFlag(Flag, false);
@@ -66,7 +68,19 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (grapple.State == GrapplingHook.HookStates.Emitting || grapple.State == GrapplingHook.HookStates.Bouncing)
             {
-                grapple.AttractTo(this);
+                List<Entity> attractors = Scene.Tracker.GetEntities<GrappleAttractor>();
+                float minDistance = float.MaxValue;
+                GrappleAttractor preferAttractor = this;
+                foreach (GrappleAttractor attractor in attractors)
+                {
+                    float disSq = (attractor.AttractionTarget - grapple.Position).LengthSquared();
+                    if (disSq < minDistance)
+                    {
+                        minDistance = disSq;
+                        preferAttractor = attractor;
+                    }
+                }
+                grapple.AttractTo(preferAttractor);
                 return true;
             }
             return false;

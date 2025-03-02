@@ -129,10 +129,7 @@ namespace Celeste.Mod.Aqua.Rendering
         {
             if (_cache.TryGetValue(id, out RenderInfo info))
             {
-                if (info.Effect != null)
-                    info.Effect.Dispose();
-                if (info.RenderTarget != null)
-                    info.RenderTarget.Dispose();
+                info.Dispose();
                 _cache.Remove(id);
             }
         }

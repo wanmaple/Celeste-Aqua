@@ -79,7 +79,6 @@ namespace Celeste.Mod.Aqua.Core
             GFX.SpriteBank.CreateOn(_spriteFlash, spriteName);
             this.SetAttachCallbacks(OnGrappleAttached, OnGrappleDetached);
             _sound.Position = AttractionTarget;
-            _atlasParticles = GFX.Game.GetAtlasSubtextures("particles/magnetic_particle");
         }
 
         public override void Awake(Scene scene)
@@ -121,7 +120,6 @@ namespace Celeste.Mod.Aqua.Core
                 mover.fadeOutTime = lifetime * 0.6f;
                 mover.endPosition = angleVec * 8.0f;
                 mover.moveDirection = -angleVec;
-                int index = Calc.Random.Next(0, _atlasParticles.Count);
                 Color color = Color.White;
                 float rd = Calc.Random.NextFloat(1.0f);
                 if (rd < 0.5f)
@@ -193,7 +191,6 @@ namespace Celeste.Mod.Aqua.Core
         private Sprite _spriteMagnet;
         private Sprite _spriteFlash;
         private SoundSource _sound = new SoundSource();
-        private List<MTexture> _atlasParticles;
         private List<SpriteMover> _particleMovers = new List<SpriteMover>(128);
         private Stack<SpriteMover> _cycledMovers = new Stack<SpriteMover>();
     }

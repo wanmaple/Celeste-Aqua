@@ -183,6 +183,11 @@ entities.Aqua/Grapple Magnet.attributes.description.on=Whether the magnet should
 entities.Aqua/Grapple Magnet.attributes.description.sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Grapple Magnet.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
 
+# Invisible Grapple Attractor
+entities.Aqua/Invisible Grapple Attractor.attributes.description.shape=The shape of the attractor.
+entities.Aqua/Invisible Grapple Attractor.attributes.description.radius_in_tiles=The attraction range, only takes effect with a circle shape.
+entities.Aqua/Invisible Grapple Attractor.attributes.description.attach_to_solid=Whether the attractor attaches to blocks.
+
 # Magnet Toggle
 entities.Aqua/Magnet Toggle.attributes.description.flag=Make it the same with that of magnets you would like to control.
 entities.Aqua/Magnet Toggle.attributes.description.one_use=Whether to break the toggle once used.

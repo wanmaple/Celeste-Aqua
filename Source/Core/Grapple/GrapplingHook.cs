@@ -30,8 +30,8 @@ namespace Celeste.Mod.Aqua.Core
             Emitting,
             Revoking,
             Bouncing,
-            Attracted,
             Fixed,
+            Attracted,
         }
 
         public enum RopeMaterial
@@ -798,7 +798,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             data = new CustomCollisionData();
             Vector2 hookDir = Calc.AngleToVector(_sprite.Rotation, 1.0f);
-            if (Vector2.Dot(hookDir, direction) > MathF.Cos(Calc.DegToRad * 89.9f))
+            if (State == HookStates.Attracted || Vector2.Dot(hookDir, direction) > MathF.Cos(Calc.DegToRad * 89.9f))
             {
                 if (onCollide != null)
                 {
