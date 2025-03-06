@@ -54,7 +54,9 @@ namespace Celeste.Mod.Aqua.Core
         public float AttractRadius { get; private set; }
         public bool DefaultOn { get; private set; }
         public bool UseDefaultSprite { get; private set; }
+        public string Skin { get; private set; }
 
+        public Vector2 ExactPosition => Position + _movementCounter;
         public override Vector2 AttractionTarget => Center;
         public override float MinRange => 0.25f * AttractRadius;
         public override float MaxRange => AttractRadius;
@@ -65,12 +67,18 @@ namespace Celeste.Mod.Aqua.Core
             RadiusInTiles = AquaMaths.Clamp(data.Int("radius_in_tiles", 4), 2, 8);
             AttractRadius = RadiusInTiles * 8.0f;
             DefaultOn = data.Bool("on", true);
-            string skin = data.Attr("sprite", "Aqua_GrappleMagnet");
+            Skin = data.Attr("sprite", "Aqua_GrappleMagnet");
             UseDefaultSprite = data.Bool("use_default_sprite", true);
             Collider = new Circle(AttractRadius);
+            _sound.Position = AttractionTarget;
+        }
+
+        public override void Added(Scene scene)
+        {
+            base.Added(scene);
             Add(_spriteMagnet = new Sprite());
             Add(_spriteFlash = new Sprite());
-            string spriteName = skin;
+            string spriteName = Skin;
             if (UseDefaultSprite || !GFX.SpriteBank.Has(spriteName))
             {
                 spriteName = "Aqua_GrappleMagnet";
@@ -78,7 +86,6 @@ namespace Celeste.Mod.Aqua.Core
             GFX.SpriteBank.CreateOn(_spriteMagnet, spriteName);
             GFX.SpriteBank.CreateOn(_spriteFlash, spriteName);
             this.SetAttachCallbacks(OnGrappleAttached, OnGrappleDetached);
-            _sound.Position = AttractionTarget;
         }
 
         public override void Awake(Scene scene)
@@ -188,10 +195,46 @@ namespace Celeste.Mod.Aqua.Core
             _sound.Play("event:/game/09_core/switch_to_cold");
         }
 
-        private Sprite _spriteMagnet;
-        private Sprite _spriteFlash;
-        private SoundSource _sound = new SoundSource();
-        private List<SpriteMover> _particleMovers = new List<SpriteMover>(128);
+        public void Move(Vector2 movement)
+        {
+            Vector2 oldPos = Position;
+            MoveH(movement.X);
+            MoveV(movement.Y);
+            _spriteMagnet.RenderPosition = _spriteFlash.RenderPosition = Position;
+            Vector2 exactMovement = Position - oldPos;
+            foreach (var mover in _particleMovers)
+            {
+                mover.sprite.RenderPosition += exactMovement;
+            }
+        }
+
+        private void MoveH(float moveH)
+        {
+            _movementCounter.X += moveH;
+            int num = (int)MathF.Round(_movementCounter.X);
+            if (num != 0)
+            {
+                _movementCounter.X -= num;
+                Position.X += num;
+            }
+        }
+
+        private void MoveV(float moveV)
+        {
+            _movementCounter.Y += moveV;
+            int num = (int)Math.Round(_movementCounter.Y);
+            if (num != 0)
+            {
+                _movementCounter.Y -= num;
+                Position.Y += num;
+            }
+        }
+
+        protected Sprite _spriteMagnet;
+        protected Sprite _spriteFlash;
+        protected SoundSource _sound = new SoundSource();
+        protected Vector2 _movementCounter = Vector2.Zero;
+        protected List<SpriteMover> _particleMovers = new List<SpriteMover>(128);
         private Stack<SpriteMover> _cycledMovers = new Stack<SpriteMover>();
     }
 }

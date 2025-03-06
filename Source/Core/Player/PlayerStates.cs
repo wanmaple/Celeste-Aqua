@@ -52,6 +52,7 @@ namespace Celeste.Mod.Aqua.Core
         public const float SPEED_CHECK_GRAPPLING_SWING_DOWN = 250.0f;
         public const float SPEED_CHECK_2_GRAPPLING_SWING_DOWN = 160.0f;
         public const float SPEED_CHECK_GRAPPLING_SWING_UP = 90.0f;
+        public const float SAVED_SWING_SPEED = 330.0f;
 
         public static void Initialize()
         {
@@ -267,6 +268,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void Player_RedDashBegin(On.Celeste.Player.orig_RedDashBegin orig, Player self)
         {
+            Vector2 enterSpeed = self.Speed;
             orig(self);
             if (self.level.GetState() == null)
                 return;
@@ -295,7 +297,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             else
             {
-                Vector2 speed = self.GetSavedSwingSpeed();
+                Vector2 speed = enterSpeed;
                 if (AquaMaths.IsApproximateZero(speed))
                 {
                     speed = self.Speed;
@@ -326,6 +328,7 @@ namespace Celeste.Mod.Aqua.Core
                 if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                 {
                     hook.SetRopeLengthLocked(false, self.ExactCenter());
+                    self.TrySaveSwingSpeed();
                 }
             }
         }
@@ -588,9 +591,7 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("lift_speed_y", 0.0f);
             if (self.StateMachine.State == (int)AquaStates.StBoost || self.StateMachine.State == (int)AquaStates.StRedDash)
             {
-                self.SetSavedSwingSpeed(self.Speed);
-                TimeTicker saveTicker = self.GetTimeTicker("boost_speed_save_ticker");
-                saveTicker.Reset();
+                self.TrySaveSwingSpeed();
             }
         }
 
@@ -671,7 +672,7 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("climb_rope_direction", 0);
             if (ModInterop.GravityHelper.IsPlayerGravityInverted())
                 self.Speed.Y = -self.Speed.Y;
-            self.HandleHangingSpeed(dt);
+            self.HandleSwingSpeed(dt);
             float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
             hook.AlongRopeSpeed = speedAlongRope;
             bool ableToClimbUpDown = false;
@@ -1203,7 +1204,7 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         Vector2 ropeDirection = grapple.RopeDirection;
                         Vector2 swingDirection = grapple.SwingDirection;
-                        self.HandleHangingSpeed(dt);
+                        self.HandleSwingSpeed(dt);
                         float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
                         grapple.AlongRopeSpeed = speedAlongRope;
                         if (speedAlongRope >= 0.0f)
@@ -1292,13 +1293,33 @@ namespace Celeste.Mod.Aqua.Core
             return -1;
         }
 
-        private static void HandleHangingSpeed(this Player self, float dt)
+        private static void HandleSwingSpeed(this Player self, float dt)
         {
             GrapplingHook hook = self.GetGrappleHook();
             float gravity = Player.Gravity * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f) * ModInterop.ExtendedVariants.GetCurrentGravityMultiplier();
             self.Speed.Y += gravity * dt;
             self.Speed -= hook.Acceleration * dt * 0.8f;
             self.Speed += self.GetWindSpeed() * dt;
+        }
+
+        private static void TrySaveSwingSpeed(this Player self)
+        {
+            GrapplingHook grapple = self.GetGrappleHook();
+            if (grapple != null)
+            {
+                Vector2 swingDirection = grapple.SwingDirection;
+                Vector2 tangentSpd = self.TurnToTangentSpeed(self.Speed, swingDirection);
+                if (tangentSpd.LengthSquared() > SPEED_CHECK_GRAPPLING_SWING_DOWN * SPEED_CHECK_GRAPPLING_SWING_DOWN)
+                {
+                    self.SetSavedSwingSpeed(TurnToConsistentSpeed(Vector2.Normalize(self.Speed) * SAVED_SWING_SPEED, UNIFORM_ACCURACY_RANGE_LIST));
+                }
+                else
+                {
+                    self.SetSavedSwingSpeed(Vector2.Zero);
+                }
+                TimeTicker saveTicker = self.GetTimeTicker("boost_speed_save_ticker");
+                saveTicker.Reset();
+            }
         }
 
         private static Vector2 GetWindSpeed(this Player self)
@@ -1386,6 +1407,14 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                     {
+                        // Make player follow the attached entity.
+                        Entity attached = hook.AttachedEntity;
+                        Vector2 movement = attached.Position - attached.GetPreviousPosition();
+                        if (!AquaMaths.IsApproximateZero(movement))
+                        {
+                            self.MoveH(movement.X);
+                            self.MoveV(movement.Y);
+                        }
                         if (self.GetSpecialSwingDirection() != 0.0f)
                         {
                             Vector2 swingDir = hook.SwingDirection;
@@ -1427,11 +1456,11 @@ namespace Celeste.Mod.Aqua.Core
         {
             TimeTicker saveTicker = self.GetTimeTicker("boost_speed_save_ticker");
             GrapplingHook hook = self.GetGrappleHook();
-            if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
+            if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed && !AquaMaths.IsApproximateZero(self.GetSavedSwingSpeed()))
             {
                 if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                 {
-                    if (nextState == (int)AquaStates.StDash && !saveTicker.Check())
+                    if ((nextState == (int)AquaStates.StDash || nextState == (int)AquaStates.StRedDash) && !saveTicker.Check())
                     {
                         self.Speed = self.GetSavedSwingSpeed();
                         self.SetSavedSwingSpeed(Vector2.Zero);

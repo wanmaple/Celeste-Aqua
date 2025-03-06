@@ -188,6 +188,23 @@ entities.Aqua/Invisible Grapple Attractor.attributes.description.shape=The shape
 entities.Aqua/Invisible Grapple Attractor.attributes.description.radius_in_tiles=The attraction range, only takes effect with a circle shape, 1 tiled radius indicates 8 px.
 entities.Aqua/Invisible Grapple Attractor.attributes.description.attach_to_solid=Whether the attractor attaches to blocks.
 
+# Grapple Magnet Zipper
+entities.Aqua/Grapple Magnet Zipper.attributes.description.radius_in_tiles=The attraction range, limited in [2, 8], 1 tiled radius indicates 8 px.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.flag=Once the same flag set, the magnet will be toggled.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.on=Whether the magnet should be switched on by default.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.speed_multipliers=Speed multiplier for each section.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.delays=Delay time for each section.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.move_flags=Flag condition for each section, only takes effect if 'Use Flag to Trig' is checked.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.return_speed_multiplier=The returning speed multiplier.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.delay_before_return=The delay time before returning.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.use_flag_to_trig=If checked, the zipper will trigger the movement using flag check instead of delay time.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.one_use=If checked, the zipper will be deactivated at the ending point and won't return.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.cog_texture=The texture path of the cog.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.chain_color=Path chain color.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.chain_light_color=Path chain light color.
+
 # Magnet Toggle
 entities.Aqua/Magnet Toggle.attributes.description.flag=Make it the same with that of magnets you would like to control.
 entities.Aqua/Magnet Toggle.attributes.description.one_use=Whether to break the toggle once used.

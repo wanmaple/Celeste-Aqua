@@ -229,6 +229,10 @@
 {8d6d24fe-c860-4328-9650-c29b39ba87a2} event:/game/01_forsaken_city/fallblock_ice_shake
 {c7f359ea-785f-4328-8135-4000ec1486bc} event:/game/01_forsaken_city/zip_mover
 {ffa4f9ce-b607-4e4d-ac65-c3368ac1bd14} event:/game/01_forsaken_city/zip_mover_no_return
+{6aa32425-63f6-4392-be57-a65850930cea} event:/game/01_forsaken_city/zip_mover_return
+{34f18684-af3b-41c0-b976-fa90a4a5df6f} event:/game/01_forsaken_city/zip_mover_reset
+{cd0a8c8c-53fc-451d-a9d8-430b7a645e7e} event:/game/01_forsaken_city/zip_mover_touch
+{76e70f10-32c3-40e2-984b-c35c9e8796b9} event:/game/01_forsaken_city/zip_mover_impact
 {f4f839d0-f7cc-402a-9767-ad79d20ae5d6} event:/game/02_old_site/lantern_hit
 {44ed360f-e714-4a3a-99e8-3aed8ecf22cb} event:/game/02_old_site/sequence_badeline_intro
 {77800c0d-5128-44d0-8bb1-67174af44406} event:/game/02_old_site/sequence_mirror
@@ -477,6 +481,7 @@
 {1a7858a9-96f8-426a-a06f-0c2750e43f85} event:/game/general/spotlight_intro
 {b38c0f26-cef2-487f-b99c-295757ccd5a9} event:/game/general/spotlight_outro
 {a4c52eee-f6a0-4ebe-976f-fab38d4cfa7a} event:/game/general/spring
+{6b53b3e5-bb3d-450c-90c6-f2929d587dc6} event:/game/general/stopwatch
 {2452bb12-5d79-4849-b62b-17cc06744679} event:/game/general/strawberry_blue_pulse
 {5c271b0b-eba2-400b-8011-e1d673324674} event:/game/general/strawberry_blue_touch
 {3b9e48f1-e72d-46a6-909b-4ce5044c4253} event:/game/general/strawberry_flyaway
@@ -498,7 +503,6 @@
 {7c01de41-a31a-43c3-9c0f-9ae85ad94c68} event:/game/general/wall_break_ice
 {92f75010-4e90-428e-834c-1315ddbd9460} event:/game/general/wall_break_stone
 {634bdd66-3f53-4679-8ced-fadfc60d412f} event:/game/general/wall_break_wood
-{6b53b3e5-bb3d-450c-90c6-f2929d587dc6} event:/game/general/stopwatch
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort
@@ -1002,6 +1006,8 @@
 {365efe2d-29e7-4d45-988e-451406863f9a} snapshot:/berry_cooperation/4000s_down
 {1aa61ee8-68fc-4c62-9a54-35743044bafe} snapshot:/berry_cooperation/5000s_down
 {a2a1b010-531b-4f2c-b4bc-1804ef1359a9} bank:/aqua
+{f11a279c-2e3d-494f-b053-279934f258c0} bank:/aqua_collection
+{23d0905e-2d9f-468c-a63c-a68d659fc30b} bank:/aqualias
 {a327f717-e8b5-4fb0-b4dd-84bd8a585fe0} bank:/dlc_music
 {e85b3c9e-428d-41b7-82c0-37814f3cbf15} bank:/dlc_sfx
 {7916fdbf-1253-451d-a369-6dfd34341e4e} bank:/music

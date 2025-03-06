@@ -3,8 +3,6 @@ using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -79,11 +77,11 @@ namespace Celeste.Mod.Aqua.Core
 
         private bool CanCollide(Entity other)
         {
-            if (other is Decal || other is Platform || other is Actor)
+            if (other is Decal || other is Platform || other is Actor || other is Trigger)
                 return false;
             if (other is UnhookableArea || other is UnhookableCrystalSpinner)
                 return false;
-            if (other is SimpleGrappleInteractionAssigner || other is DecalAssigner)
+            if (other is GrappleInteractionAssigner || other is DecalAssigner)
                 return false;
             var sidewaysJumpthruTypes = ModInterop.SidewaysJumpthruTypes;
             foreach (Type type in sidewaysJumpthruTypes)

@@ -18,7 +18,7 @@ namespace Celeste.Mod.Aqua.Core
             this.SetHookable(true);
             Add(new HookInteractable(OnGrappleInteract));
             Flag = data.Attr("flag");
-            Depth = Depths.SolidsBelow;
+            Depth = Depths.Solids - 100;
         }
 
         public override void Update()
