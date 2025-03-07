@@ -1412,8 +1412,8 @@ namespace Celeste.Mod.Aqua.Core
                         Vector2 movement = attached.Position - attached.GetPreviousPosition();
                         if (!AquaMaths.IsApproximateZero(movement))
                         {
-                            self.MoveH(movement.X);
-                            self.MoveV(movement.Y);
+                            self.MoveH(movement.X, self.OnCollideH);
+                            self.MoveV(movement.Y, self.OnCollideV);
                         }
                         if (self.GetSpecialSwingDirection() != 0.0f)
                         {

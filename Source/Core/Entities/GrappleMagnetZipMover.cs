@@ -83,7 +83,6 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
-            DynamicData.For(this).Set("prev_position", Position);
             base.Update();
             _sfx.Position = Position;
             _sound.Position = Position;

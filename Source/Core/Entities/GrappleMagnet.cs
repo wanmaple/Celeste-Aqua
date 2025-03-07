@@ -2,6 +2,7 @@
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
 
@@ -98,6 +99,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
+            DynamicData.For(this).Set("prev_position", Position);
             base.Update();
             if (_activated)
                 UpdateImageMovers();

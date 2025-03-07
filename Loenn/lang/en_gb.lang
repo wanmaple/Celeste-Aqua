@@ -196,7 +196,7 @@ entities.Aqua/Grapple Magnet Zipper.attributes.description.sprite=Your custom sp
 entities.Aqua/Grapple Magnet Zipper.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.speed_multipliers=Speed multiplier for each section.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.delays=Delay time for each section.
-entities.Aqua/Grapple Magnet Zipper.attributes.description.move_flags=Flag condition for each section, only takes effect if 'Use Flag to Trig' is checked.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.move_flags=Flag condition for each section, you must have 'Use Flag to Trig' checked.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.return_speed_multiplier=The returning speed multiplier.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.delay_before_return=The delay time before returning.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.use_flag_to_trig=If checked, the zipper will trigger the movement using flag check instead of delay time.
@@ -204,6 +204,16 @@ entities.Aqua/Grapple Magnet Zipper.attributes.description.one_use=If checked, t
 entities.Aqua/Grapple Magnet Zipper.attributes.description.cog_texture=The texture path of the cog.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.chain_color=Path chain color.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.chain_light_color=Path chain light color.
+
+# Swap Grapple Magnet
+entities.Aqua/Swap Grapple Magnet.attributes.description.radius_in_tiles=The attraction range, limited in [2, 8], 1 tiled radius indicates 8 px.
+entities.Aqua/Swap Grapple Magnet.attributes.description.flag=Once the same flag set, the magnet will be toggled.
+entities.Aqua/Swap Grapple Magnet.attributes.description.on=Whether the magnet should be switched on by default.
+entities.Aqua/Swap Grapple Magnet.attributes.description.sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Swap Grapple Magnet.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+entities.Aqua/Swap Grapple Magnet.attributes.description.swap_flag=The flag to trigger the swap, you must have 'Use Flag to Trig' checked.
+entities.Aqua/Swap Grapple Magnet.attributes.description.use_flag_to_trig=If checked, the magnet will trigger the movement using flag check instead of dashing.
+entities.Aqua/Swap Grapple Magnet.attributes.description.frame_texture=Texture path of the back frame.
 
 # Magnet Toggle
 entities.Aqua/Magnet Toggle.attributes.description.flag=Make it the same with that of magnets you would like to control.

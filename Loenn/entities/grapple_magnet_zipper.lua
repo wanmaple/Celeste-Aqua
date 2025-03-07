@@ -27,6 +27,10 @@ GrappleMagnetZipper.fieldInformation = {
     move_flags = {
         fieldType = "list",
     },
+    cog_texture = {
+        options = COG_TEXTURES,
+        editable = true,
+    },
     chain_color = {
         fieldType = "color",
         useAlpha = false,
