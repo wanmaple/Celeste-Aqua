@@ -148,7 +148,11 @@ namespace Celeste.Mod.Aqua.Core
                         t = Calc.Approach(t, 1.0f, 2.0f * Engine.DeltaTime * speedMultiplier);
                         _cogPercent = Ease.SineIn(t);
                         Vector2 nextPos = Vector2.Lerp(Nodes[currentIndex], Nodes[nextIndex], _cogPercent);
-                        Move(nextPos - Position);
+                        NaiveMove(nextPos - Position);
+                        if (Scene.OnInterval(0.02f))
+                        {
+                            EmitParticles(moveDir);
+                        }
                     }
                     _sfx.Play("event:/game/01_forsaken_city/zip_mover_impact");
                     currentIndex++;
@@ -176,7 +180,7 @@ namespace Celeste.Mod.Aqua.Core
                             t = Calc.Approach(t, 1.0f, 0.5f * Engine.DeltaTime * ReturnSpeedMultiplier);
                             _cogPercent = 1.0f - Ease.SineIn(t);
                             Vector2 nextPos = Vector2.Lerp(Nodes[nextIndex], Nodes[currentIndex], _cogPercent);
-                            Move(nextPos - Position);
+                            NaiveMove(nextPos - Position);
                         }
                         currentIndex--;
                     }

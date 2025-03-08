@@ -39,20 +39,10 @@ namespace Celeste.Mod.Aqua.Core
             _returnTicker.Expire();
             Add(new DashListener(OnDash));
             Add(new Coroutine(Blink()));
-            int width = (int)MathF.Ceiling(MathF.Abs(_to.X - _from.X) / 8.0f) * 8;
-            int height = (int)MathF.Ceiling(MathF.Abs(_to.Y - _from.Y) / 8.0f) * 8;
+            int width = (int)MathF.Ceiling(MathF.Abs(_to.X - _from.X) / 8.0f) * 8 + 16;
+            int height = (int)MathF.Ceiling(MathF.Abs(_to.Y - _from.Y) / 8.0f) * 8 + 16;
             _backgroundRect = new Image9Slice(GFX.Game[FrameTexture], width, height, Image9Slice.RenderMode.Border);
-            _backgroundRect.RenderPosition = new Vector2(MathF.Min(_from.X, _to.X), MathF.Min(_from.Y, _to.Y));
-            _particle1 = new ParticleType(SwapBlock.P_Move)
-            {
-                Color = Calc.HexToColor("2959dd"),
-                Color2 = Calc.HexToColor("517fff"),
-            };
-            _particle2 = new ParticleType(SwapBlock.P_Move)
-            {
-                Color = Calc.HexToColor("ff3b3b"),
-                Color2 = Calc.HexToColor("dd1e1e"),
-            };
+            _backgroundRect.RenderPosition = new Vector2(MathF.Min(_from.X, _to.X) - 8.0f, MathF.Min(_from.Y, _to.Y) - 8.0f);
         }
 
         public override void Removed(Scene scene)
@@ -101,10 +91,10 @@ namespace Celeste.Mod.Aqua.Core
                 Vector2 position = Position;
                 if (_state == SwapStates.Forwarding && Scene.OnInterval(0.02f))
                 {
-                    MoveParticles(_to - _from);
+                    EmitParticles(_to - _from);
                 }
                 Vector2 targetPos = Vector2.Lerp(_from, _to, _lerp);
-                Move(targetPos - position);
+                NaiveMove(targetPos - position);
                 if (position != Position)
                 {
                     Audio.Position(_moveSfx, Center);
@@ -136,53 +126,6 @@ namespace Celeste.Mod.Aqua.Core
         {
             _backgroundRect.Render();
             base.Render();
-        }
-
-        private void MoveParticles(Vector2 normal)
-        {
-            Vector2 position;
-            Vector2 positionRange;
-            float direction;
-            float num;
-            float rangeOffset = 6.0f;
-            float density = 14.0f;
-            float width = 24.0f;
-            float height = 24.0f;
-            if (normal.X > 0f)
-            {
-                position = Center;
-                positionRange = Vector2.UnitY * (height - rangeOffset);
-                direction = MathF.PI;
-                num = Math.Max(2.0f, height / density);
-            }
-            else if (normal.X < 0f)
-            {
-                position = Center;
-                positionRange = Vector2.UnitY * (height - rangeOffset);
-                direction = 0.0f;
-                num = Math.Max(2.0f, height / density);
-            }
-            else if (normal.Y > 0f)
-            {
-                position = Center;
-                positionRange = Vector2.UnitX * (width - rangeOffset);
-                direction = -MathF.PI * 0.5f;
-                num = Math.Max(2.0f, width / density);
-            }
-            else
-            {
-                position = Center;
-                positionRange = Vector2.UnitX * (width - rangeOffset);
-                direction = MathF.PI * 0.5f;
-                num = Math.Max(2.0f, width / density);
-            }
-
-            _particlesRemainder += num;
-            int num2 = (int)_particlesRemainder;
-            _particlesRemainder -= num2;
-            positionRange *= 0.5f;
-            SceneAs<Level>().Particles.Emit(_particle1, num2 / 2, position, positionRange, direction);
-            SceneAs<Level>().Particles.Emit(_particle2, num2 / 2, position, positionRange, direction);
         }
 
         private void OnDash(Vector2 direction)
@@ -249,8 +192,5 @@ namespace Celeste.Mod.Aqua.Core
         private EventInstance _moveSfx;
         private Image9Slice _backgroundRect;
         private DisplacementRenderer.Burst _burst;
-        private ParticleType _particle1;
-        private ParticleType _particle2;
-        private float _particlesRemainder;
     }
 }

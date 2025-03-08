@@ -72,6 +72,16 @@ namespace Celeste.Mod.Aqua.Core
             UseDefaultSprite = data.Bool("use_default_sprite", true);
             Collider = new Circle(AttractRadius);
             _sound.Position = AttractionTarget;
+            _particle1 = new ParticleType(SwapBlock.P_Move)
+            {
+                Color = Calc.HexToColor("2959dd"),
+                Color2 = Calc.HexToColor("517fff"),
+            };
+            _particle2 = new ParticleType(SwapBlock.P_Move)
+            {
+                Color = Calc.HexToColor("ff3b3b"),
+                Color2 = Calc.HexToColor("dd1e1e"),
+            };
         }
 
         public override void Added(Scene scene)
@@ -197,11 +207,11 @@ namespace Celeste.Mod.Aqua.Core
             _sound.Play("event:/game/09_core/switch_to_cold");
         }
 
-        public void Move(Vector2 movement)
+        public void NaiveMove(Vector2 movement)
         {
             Vector2 oldPos = Position;
-            MoveH(movement.X);
-            MoveV(movement.Y);
+            NaiveMoveH(movement.X);
+            NaiveMoveV(movement.Y);
             _spriteMagnet.RenderPosition = _spriteFlash.RenderPosition = Position;
             Vector2 exactMovement = Position - oldPos;
             foreach (var mover in _particleMovers)
@@ -210,7 +220,7 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private void MoveH(float moveH)
+        private void NaiveMoveH(float moveH)
         {
             _movementCounter.X += moveH;
             int num = (int)MathF.Round(_movementCounter.X);
@@ -221,7 +231,7 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private void MoveV(float moveV)
+        private void NaiveMoveV(float moveV)
         {
             _movementCounter.Y += moveV;
             int num = (int)Math.Round(_movementCounter.Y);
@@ -232,11 +242,95 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        public void MoveH(float moveH, Func<Vector2, bool> collisionCheck)
+        {
+            _movementCounter.X += moveH;
+            int num = (int)MathF.Round(_movementCounter.X);
+            if (num != 0)
+            {
+                int step = MathF.Sign(num);
+                for (int i = 0; i < Math.Abs(num); i++)
+                {
+                    if (collisionCheck.Invoke(Vector2.UnitX * step))
+                        break;
+                    _movementCounter.X -= step;
+                    Position.X += step;
+                }
+            }
+        }
+
+        public void MoveV(float moveV, Func<Vector2, bool> collisionCheck)
+        {
+            _movementCounter.Y += moveV;
+            int num = (int)MathF.Round(_movementCounter.Y);
+            if (num != 0)
+            {
+                int step = MathF.Sign(num);
+                for (int i = 0; i < Math.Abs(num); i++)
+                {
+                    if (collisionCheck.Invoke(Vector2.UnitY * step))
+                        break;
+                    _movementCounter.Y -= step;
+                    Position.Y += step;
+                }
+            }
+        }
+
+        protected void EmitParticles(Vector2 normal)
+        {
+            Vector2 position;
+            Vector2 positionRange;
+            float direction;
+            float num;
+            float rangeOffset = 6.0f;
+            float density = 14.0f;
+            float width = 24.0f;
+            float height = 24.0f;
+            if (normal.X > 0f)
+            {
+                position = Center;
+                positionRange = Vector2.UnitY * (height - rangeOffset);
+                direction = MathF.PI;
+                num = Math.Max(2.0f, height / density);
+            }
+            else if (normal.X < 0f)
+            {
+                position = Center;
+                positionRange = Vector2.UnitY * (height - rangeOffset);
+                direction = 0.0f;
+                num = Math.Max(2.0f, height / density);
+            }
+            else if (normal.Y > 0f)
+            {
+                position = Center;
+                positionRange = Vector2.UnitX * (width - rangeOffset);
+                direction = -MathF.PI * 0.5f;
+                num = Math.Max(2.0f, width / density);
+            }
+            else
+            {
+                position = Center;
+                positionRange = Vector2.UnitX * (width - rangeOffset);
+                direction = MathF.PI * 0.5f;
+                num = Math.Max(2.0f, width / density);
+            }
+
+            _particlesRemainder += num;
+            int num2 = (int)_particlesRemainder;
+            _particlesRemainder -= num2;
+            positionRange *= 0.5f;
+            SceneAs<Level>().Particles.Emit(_particle1, num2 / 2, position, positionRange, direction);
+            SceneAs<Level>().Particles.Emit(_particle2, num2 / 2, position, positionRange, direction);
+        }
+
         protected Sprite _spriteMagnet;
         protected Sprite _spriteFlash;
         protected SoundSource _sound = new SoundSource();
         protected Vector2 _movementCounter = Vector2.Zero;
         protected List<SpriteMover> _particleMovers = new List<SpriteMover>(128);
         private Stack<SpriteMover> _cycledMovers = new Stack<SpriteMover>();
+        private ParticleType _particle1;
+        private ParticleType _particle2;
+        private float _particlesRemainder;
     }
 }

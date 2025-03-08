@@ -597,6 +597,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static int Player_SwingUpdate(this Player self)
         {
+            var state = self.level.GetState();
             float dt = Engine.DeltaTime;
             var hook = self.GetGrappleHook();
             var shotCheck = self.GetShootHookCheck();
@@ -626,7 +627,7 @@ namespace Celeste.Mod.Aqua.Core
                 hook.Revoke();
                 return (int)AquaStates.StNormal;
             }
-            else if (!self.level.GetState().DisableGrappleBoost && shotCheck.CanGrappleBoost && hook.CanGrappleBoost())
+            else if (state != null && !state.DisableGrappleBoost && shotCheck.CanGrappleBoost && hook.CanGrappleBoost())
             {
                 self.GrappleBoost();
             }
@@ -699,7 +700,6 @@ namespace Celeste.Mod.Aqua.Core
             {
                 DynamicData.For(self).Set("climb_rope_direction", MathF.Sign(inputY));
             }
-            var levelState = (self.Scene as Level).GetState();
             if (inputY != 0 && swingUp && ableToClimbUpDown)
             {
                 float rollingSpeed = inputY > 0 ? 80.0f : -45.0f;
@@ -727,7 +727,7 @@ namespace Celeste.Mod.Aqua.Core
             if (Input.MoveX.Value != 0)
             {
                 float sign = swingUp ? 1.0f : -1.0f;
-                Vector2 strengthSpeed = levelState.HookSettings.SwingStrength * swingDirection * Input.MoveX.Value * dt * sign;
+                Vector2 strengthSpeed = (state == null ? AquaModule.Settings.HookSettings.SwingStrength : state.HookSettings.SwingStrength) * swingDirection * Input.MoveX.Value * dt * sign;
                 strengthSpeed *= Calc.Clamp(hook.SwingRadius / hook.MaxLength, 0.1f, 1.0f);
                 self.Speed += strengthSpeed;
             }

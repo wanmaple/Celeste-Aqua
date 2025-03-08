@@ -46,7 +46,7 @@ function SwapGrappleMagnet.sprite(room, entity)
     local sprites = {}
     local fromX, fromY = entity.x or 0, entity.y or 0
     local toX, toY = entity.nodes[1].x, entity.nodes[1].y
-    local borderSprite = DrawableNinePatch.fromTexture(entity.frame_texture, ninePatchOptions, math.min(fromX, toX), math.min(fromY, toY), math.abs(toX - fromX), math.abs(toY - fromY))
+    local borderSprite = DrawableNinePatch.fromTexture(entity.frame_texture, ninePatchOptions, math.min(fromX, toX) - 8.0, math.min(fromY, toY) - 8.0, math.abs(toX - fromX) + 16.0, math.abs(toY - fromY) + 16.0)
     for _, sprite in ipairs(borderSprite:getDrawableSprite()) do
         table.insert(sprites, sprite)
     end
