@@ -31,9 +31,10 @@ SwapGrappleMagnet.placements = {
         on = true,
         sprite = "Aqua_SwapGrappleMagnet",
         use_default_sprite = true,
-        swap_flag = "",
-        use_flag_to_trig = false,
         frame_texture = "objects/frames/frame1",
+        swap_flag = "",
+        dash_trigger = true,
+        flag_trigger = false,
     },
 }
 

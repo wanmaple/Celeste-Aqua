@@ -229,21 +229,95 @@
       <Anim id="trail" path="tail" delay="0.05" />
     </Aqua_SolidRectTrail>
 
-    <Aqua_GrappleMagnet path="objects/hook_magnet/" start="idle">
+    <Aqua_GrappleMagnet path="objects/hook_magnet/" start="base_idle">
       <Justify x="0.5" y="0.5" />
-      <Loop id="idle" path="idle" delay="0.1" />
-      <Anim id="close" path="close" delay="0.06" frames="0-6" goto="idle_close" />
-      <Loop id="idle_close" path="close" delay="0.06" frames="6-7" />
-      <Anim id="open" path="open" delay="0.06" frames="0-6" goto="idle" />
-      <Anim id="deactive" path="close" delay="0.06" frames="0-6,8" goto="idle_deactive" />
-      <Loop id="idle_deactive" path="close" delay="0.1" frames="8" />
-      <Anim id="flash" path="flash" delay="0.1" />
+      <Loop id="base_idle" path="base/idle" delay="0.1" />
+      <Anim id="base_close" path="base/close" delay="0.06" frames="0-6" goto="base_idle_close" />
+      <Loop id="base_idle_close" path="base/close" delay="0.06" frames="6-7" />
+      <Anim id="base_open" path="base/open" delay="0.06" frames="0-6" goto="base_idle" />
+      <Anim id="base_deactive" path="base/close" delay="0.06" frames="0-6,8" goto="base_idle_deactive" />
+      <Loop id="base_idle_deactive" path="base/close" delay="0.1" frames="8" />
+      <Loop id="indicator_idle" path="normal/idle" delay="0.1" />
+      <Anim id="indicator_close" path="normal/close" delay="0.06" frames="0-6" goto="indicator_idle_close" />
+      <Loop id="indicator_idle_close" path="normal/close" delay="0.06" frames="6-7" />
+      <Anim id="indicator_open" path="normal/open" delay="0.06" frames="0-6" goto="indicator_idle" />
+      <Anim id="indicator_deactive" path="normal/close" delay="0.06" frames="0-6,8" goto="indicator_idle_deactive" />
+      <Loop id="indicator_idle_deactive" path="normal/close" delay="0.1" frames="8" />
+      <Anim id="flash" path="normal/flash" delay="0.1" />
     </Aqua_GrappleMagnet>
 
     <Aqua_GrappleMagnetParticle path="particles/" start="idle">
       <Justify x="1.0" y="0.5" />
       <Anim id="idle" path="elec_particle" delay="0.1" />
     </Aqua_GrappleMagnetParticle>
+
+    <Aqua_MoveGrappleMagnetLeft path="objects/hook_magnet/" start="base_idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="base_idle" path="base/idle" delay="0.1" />
+      <Anim id="base_close" path="base/close" delay="0.06" frames="0-6" goto="base_idle_close" />
+      <Loop id="base_idle_close" path="base/close" delay="0.06" frames="6-7" />
+      <Anim id="base_open" path="base/open" delay="0.06" frames="0-6" goto="base_idle" />
+      <Anim id="base_deactive" path="base/close" delay="0.06" frames="0-6,8" goto="base_idle_deactive" />
+      <Loop id="base_idle_deactive" path="base/close" delay="0.1" frames="8" />
+      <Loop id="indicator_idle" path="move/left/idle" delay="0.1" />
+      <Anim id="indicator_close" path="move/left/close" delay="0.06" frames="0-6" goto="indicator_idle_close" />
+      <Loop id="indicator_idle_close" path="move/left/close" delay="0.06" frames="6-7" />
+      <Anim id="indicator_open" path="move/left/open" delay="0.06" frames="0-6" goto="indicator_idle" />
+      <Anim id="indicator_deactive" path="move/left/close" delay="0.06" frames="0-6,8" goto="indicator_idle_deactive" />
+      <Loop id="indicator_idle_deactive" path="move/left/close" delay="0.1" frames="8" />
+      <Anim id="flash" path="move/left/flash" delay="0.1" />
+    </Aqua_MoveGrappleMagnetLeft>
+
+    <Aqua_MoveGrappleMagnetRight path="objects/hook_magnet/" start="base_idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="base_idle" path="base/idle" delay="0.1" />
+      <Anim id="base_close" path="base/close" delay="0.06" frames="0-6" goto="base_idle_close" />
+      <Loop id="base_idle_close" path="base/close" delay="0.06" frames="6-7" />
+      <Anim id="base_open" path="base/open" delay="0.06" frames="0-6" goto="base_idle" />
+      <Anim id="base_deactive" path="base/close" delay="0.06" frames="0-6,8" goto="base_idle_deactive" />
+      <Loop id="base_idle_deactive" path="base/close" delay="0.1" frames="8" />
+      <Loop id="indicator_idle" path="move/right/idle" delay="0.1" />
+      <Anim id="indicator_close" path="move/right/close" delay="0.06" frames="0-6" goto="indicator_idle_close" />
+      <Loop id="indicator_idle_close" path="move/right/close" delay="0.06" frames="6-7" />
+      <Anim id="indicator_open" path="move/right/open" delay="0.06" frames="0-6" goto="indicator_idle" />
+      <Anim id="indicator_deactive" path="move/right/close" delay="0.06" frames="0-6,8" goto="indicator_idle_deactive" />
+      <Loop id="indicator_idle_deactive" path="move/right/close" delay="0.1" frames="8" />
+      <Anim id="flash" path="move/right/flash" delay="0.1" />
+    </Aqua_MoveGrappleMagnetRight>
+
+    <Aqua_MoveGrappleMagnetUp path="objects/hook_magnet/" start="base_idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="base_idle" path="base/idle" delay="0.1" />
+      <Anim id="base_close" path="base/close" delay="0.06" frames="0-6" goto="base_idle_close" />
+      <Loop id="base_idle_close" path="base/close" delay="0.06" frames="6-7" />
+      <Anim id="base_open" path="base/open" delay="0.06" frames="0-6" goto="base_idle" />
+      <Anim id="base_deactive" path="base/close" delay="0.06" frames="0-6,8" goto="base_idle_deactive" />
+      <Loop id="base_idle_deactive" path="base/close" delay="0.1" frames="8" />
+      <Loop id="indicator_idle" path="move/up/idle" delay="0.1" />
+      <Anim id="indicator_close" path="move/up/close" delay="0.06" frames="0-6" goto="indicator_idle_close" />
+      <Loop id="indicator_idle_close" path="move/up/close" delay="0.06" frames="6-7" />
+      <Anim id="indicator_open" path="move/up/open" delay="0.06" frames="0-6" goto="indicator_idle" />
+      <Anim id="indicator_deactive" path="move/up/close" delay="0.06" frames="0-6,8" goto="indicator_idle_deactive" />
+      <Loop id="indicator_idle_deactive" path="move/up/close" delay="0.1" frames="8" />
+      <Anim id="flash" path="move/up/flash" delay="0.1" />
+    </Aqua_MoveGrappleMagnetUp>
+
+    <Aqua_MoveGrappleMagnetDown path="objects/hook_magnet/" start="base_idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="base_idle" path="base/idle" delay="0.1" />
+      <Anim id="base_close" path="base/close" delay="0.06" frames="0-6" goto="base_idle_close" />
+      <Loop id="base_idle_close" path="base/close" delay="0.06" frames="6-7" />
+      <Anim id="base_open" path="base/open" delay="0.06" frames="0-6" goto="base_idle" />
+      <Anim id="base_deactive" path="base/close" delay="0.06" frames="0-6,8" goto="base_idle_deactive" />
+      <Loop id="base_idle_deactive" path="base/close" delay="0.1" frames="8" />
+      <Loop id="indicator_idle" path="move/down/idle" delay="0.1" />
+      <Anim id="indicator_close" path="move/down/close" delay="0.06" frames="0-6" goto="indicator_idle_close" />
+      <Loop id="indicator_idle_close" path="move/down/close" delay="0.06" frames="6-7" />
+      <Anim id="indicator_open" path="move/down/open" delay="0.06" frames="0-6" goto="indicator_idle" />
+      <Anim id="indicator_deactive" path="move/down/close" delay="0.06" frames="0-6,8" goto="indicator_idle_deactive" />
+      <Loop id="indicator_idle_deactive" path="move/down/close" delay="0.1" frames="8" />
+      <Anim id="flash" path="move/down/flash" delay="0.1" />
+    </Aqua_MoveGrappleMagnetDown>
 
     <Aqua_MagnetToggle path="objects/hook_magnet/" start="idle">
       <Justify x="0.5" y="0.5" />

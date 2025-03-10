@@ -55,8 +55,6 @@ for i, theme in ipairs(themes) do
             flag = "Rod1",
             duration = 0.5,
             theme = theme,
-            hue_offset = 0.0,
-            saturation_offset = 0.0,
         },
     }
 end

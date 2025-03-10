@@ -33,6 +33,8 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("can_collide_method", null);
             DynamicData.For(self).Set("unique_id", AUTO_ID++);
             DynamicData.For(self).Set("prev_position", self.Position);
+            DynamicData.For(self).Set("accelerate_state", AccelerationArea.AccelerateState.None);
+            DynamicData.For(self).Set("reversed", false);
             self.WorkWithCardinalBumper();
         }
 
@@ -222,6 +224,26 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        public static AccelerationArea.AccelerateState GetAccelerateState(this Entity self)
+        {
+            return DynamicData.For(self).Get<AccelerationArea.AccelerateState>("accelerate_state");
+        }
+
+        public static void SetAccelerateState(this Entity self, AccelerationArea.AccelerateState state)
+        {
+            DynamicData.For(self).Set("accelerate_state", state);
+        }
+
+        public static bool IsReversed(this Entity self)
+        {
+            return DynamicData.For(self).Get<bool>("reversed");
+        }
+
+        public static void SetReversed(this Entity self, bool reversed)
+        {
+            DynamicData.For(self).Set("reversed", reversed);
+        }
+
         public static bool IntersectsWithRope(this Entity self)
         {
             return self.IntersectsWithRopeAndReturnGrapple() != null;
@@ -264,6 +286,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             float elapsed = 0.0f;
             Vector2 movement = direction * distance;
+            Vector2 origin = self.Position;
             Vector2 oldRenderPos = sprite.RenderPosition;
             while (elapsed < duration)
             {
@@ -272,17 +295,23 @@ namespace Celeste.Mod.Aqua.Core
                 t = MathF.Sqrt(t);
                 Vector2 offset = AquaMaths.Lerp(Vector2.Zero, movement, t);
                 sprite.RenderPosition = oldRenderPos + offset;
+                float currentDistance = Vector2.Distance(sprite.RenderPosition, origin);
+                if (currentDistance > distance)
+                {
+                    sprite.RenderPosition = origin + Calc.SafeNormalize(sprite.RenderPosition - origin) * distance;
+                    break;
+                }
                 yield return null;
             }
 
             duration = 0.2f;
             elapsed = 0.0f;
+            Vector2 begin = sprite.RenderPosition;
             while (elapsed < duration)
             {
                 elapsed += Engine.DeltaTime;
                 float t = elapsed / duration;
-                Vector2 offset = AquaMaths.Lerp(movement, Vector2.Zero, t);
-                sprite.RenderPosition = oldRenderPos + offset;
+                sprite.RenderPosition = AquaMaths.Lerp(begin, origin, t);
                 yield return null;
             }
         }

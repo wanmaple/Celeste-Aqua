@@ -20,14 +20,16 @@ namespace Celeste.Mod.Aqua.Core
         public const float BLINK_DURATION = 1.6f;
 
         public string SwapFlag { get; private set; }
-        public bool UseFlagToSwap { get; private set; }
+        public bool DashTrigger { get; private set; }
+        public bool FlagTrigger { get; private set; }
         public string FrameTexture { get; private set; }
 
         public SwapGrappleMagnet(EntityData data, Vector2 offset)
              : base(data, offset)
         {
             SwapFlag = data.Attr("swap_flag");
-            UseFlagToSwap = data.Bool("use_flag_to_trig", false);
+            DashTrigger = data.Bool("dash_trigger", true);
+            FlagTrigger = data.Bool("flag_trigger", false);
             FrameTexture = data.Attr("frame_texture", "objects/frames/frame1");
             if (!GFX.Game.Has(FrameTexture))
                 FrameTexture = "objects/frames/frame1";
@@ -115,10 +117,10 @@ namespace Celeste.Mod.Aqua.Core
                 _swapping = false;
             }
 
-            if (UseFlagToSwap && SceneAs<Level>().Session.GetFlag(SwapFlag))
+            if (FlagTrigger && SceneAs<Level>().Session.GetFlag(SwapFlag))
             {
                 TrigSwap();
-                SceneAs<Level>().Session.SetFlag(SwapFlag, false);
+                Add(Alarm.Create(Alarm.AlarmMode.Oneshot, () => SceneAs<Level>().Session.SetFlag(SwapFlag, false), 0.0f, true));
             }
         }
 
@@ -130,7 +132,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private void OnDash(Vector2 direction)
         {
-            if (UseFlagToSwap)
+            if (!DashTrigger)
                 return;
             TrigSwap();
         }

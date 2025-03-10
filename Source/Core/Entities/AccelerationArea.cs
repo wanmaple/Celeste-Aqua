@@ -104,6 +104,36 @@ namespace Celeste.Mod.Aqua.Core
             return AccelerateState.None;
         }
 
+        public AccelerateState TryAccelerate(MoveGrappleMagnet magnet)
+        {
+            float acc = magnet.Acceleration;
+            if (IsIdenticalDirection(magnet.Direction))
+            {
+                int oldSign = MathF.Sign(magnet.TargetSpeed);
+                float oldSpeedAbs = MathF.Abs(magnet.TargetSpeed);
+                magnet.TargetSpeed += acc * Engine.DeltaTime;
+                int newSign = MathF.Sign(magnet.TargetSpeed);
+                float newSpeedAbs = MathF.Abs(magnet.TargetSpeed);
+                if (oldSign == newSign && newSpeedAbs > oldSpeedAbs)
+                    return AccelerateState.Accelerate;
+                else
+                    return AccelerateState.Deaccelerate;
+            }
+            else if (IsOppositeDirection(magnet.Direction))
+            {
+                int oldSign = MathF.Sign(magnet.TargetSpeed);
+                float oldSpeedAbs = MathF.Abs(magnet.TargetSpeed);
+                magnet.TargetSpeed -= acc * Engine.DeltaTime;
+                int newSign = MathF.Sign(magnet.TargetSpeed);
+                float newSpeedAbs = MathF.Abs(magnet.TargetSpeed);
+                if (oldSign == newSign && newSpeedAbs > oldSpeedAbs)
+                    return AccelerateState.Accelerate;
+                else
+                    return AccelerateState.Deaccelerate;
+            }
+            return AccelerateState.None;
+        }
+
         public AccelerateState TryAccelerate(CrushBlock block)
         {
             float acc = CrushBlock.CrushAccel;

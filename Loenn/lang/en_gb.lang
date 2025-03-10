@@ -196,11 +196,12 @@ entities.Aqua/Grapple Magnet Zipper.attributes.description.sprite=Your custom sp
 entities.Aqua/Grapple Magnet Zipper.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.speed_multipliers=Speed multiplier for each section.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.delays=Delay time for each section.
-entities.Aqua/Grapple Magnet Zipper.attributes.description.move_flags=Flag condition for each section, you must have 'Use Flag to Trig' checked.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.move_flags=Flag condition for each section, you must have 'Flag Trigger' checked.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.return_speed_multiplier=The returning speed multiplier.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.delay_before_return=The delay time before returning.
-entities.Aqua/Grapple Magnet Zipper.attributes.description.use_flag_to_trig=If checked, the zipper will trigger the movement using flag check instead of delay time.
-entities.Aqua/Grapple Magnet Zipper.attributes.description.one_use=If checked, the zipper will be deactivated at the ending point and won't return.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.grapple_trigger=If checked, the magnet will trigger the movement when get attached by grapple.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.flag_trigger=If checked, the magnet will trigger the movement through 'Move Flags'.
+entities.Aqua/Grapple Magnet Zipper.attributes.description.one_use=If checked, the magnet will be deactivated at the ending point and won't return.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.cog_texture=The texture path of the cog.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.chain_color=Path chain color.
 entities.Aqua/Grapple Magnet Zipper.attributes.description.chain_light_color=Path chain light color.
@@ -211,9 +212,35 @@ entities.Aqua/Swap Grapple Magnet.attributes.description.flag=Once the same flag
 entities.Aqua/Swap Grapple Magnet.attributes.description.on=Whether the magnet should be switched on by default.
 entities.Aqua/Swap Grapple Magnet.attributes.description.sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Swap Grapple Magnet.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
-entities.Aqua/Swap Grapple Magnet.attributes.description.swap_flag=The flag to trigger the swap, you must have 'Use Flag to Trig' checked.
-entities.Aqua/Swap Grapple Magnet.attributes.description.use_flag_to_trig=If checked, the magnet will trigger the movement using flag check instead of dashing.
+entities.Aqua/Swap Grapple Magnet.attributes.description.swap_flag=The flag to trigger the swap, you must have 'Flag Trigger' checked.
+entities.Aqua/Swap Grapple Magnet.attributes.description.dash_trigger=If checked, the magnet will trigger the movement through dashing.
+entities.Aqua/Swap Grapple Magnet.attributes.description.flag_trigger=If checked, the magnet will trigger the movement through 'Swap Flag'.
 entities.Aqua/Swap Grapple Magnet.attributes.description.frame_texture=Texture path of the back frame.
+
+# Falling Grapple Magnet
+entities.Aqua/Falling Grapple Magnet.attributes.description.radius_in_tiles=The attraction range, limited in [2, 8], 1 tiled radius indicates 8 px.
+entities.Aqua/Falling Grapple Magnet.attributes.description.flag=Once the same flag set, the magnet will be toggled.
+entities.Aqua/Falling Grapple Magnet.attributes.description.on=Whether the magnet should be switched on by default.
+entities.Aqua/Falling Grapple Magnet.attributes.description.sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Falling Grapple Magnet.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+entities.Aqua/Falling Grapple Magnet.attributes.description.fall_delay=How much time it costs when get attached by grapple and prepares to fall down.
+entities.Aqua/Falling Grapple Magnet.attributes.description.fall_flag=The flag to trigger the fall, you must have 'Flag Trigger' checked.
+entities.Aqua/Falling Grapple Magnet.attributes.description.grapple_trigger=If checked, the magnet will trigger the fall when get attached by grapple.
+entities.Aqua/Falling Grapple Magnet.attributes.description.flag_trigger=If checked, the magnet will trigger the fall through 'Fall Flag'.
+
+# Move Grapple Magnet
+entities.Aqua/Move Grapple Magnet.attributes.description.radius_in_tiles=The attraction range, limited in [2, 8], 1 tiled radius indicates 8 px.
+entities.Aqua/Move Grapple Magnet.attributes.description.flag=Once the same flag set, the magnet will be toggled.
+entities.Aqua/Move Grapple Magnet.attributes.description.on=Whether the magnet should be switched on by default.
+entities.Aqua/Move Grapple Magnet.attributes.description.sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
+entities.Aqua/Move Grapple Magnet.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+entities.Aqua/Move Grapple Magnet.attributes.description.direction=Move direction when triggered.
+entities.Aqua/Move Grapple Magnet.attributes.description.acceleration=The acceleration of the movement.
+entities.Aqua/Move Grapple Magnet.attributes.description.move_speed=The move speed of the magnet when triggered.
+entities.Aqua/Move Grapple Magnet.attributes.description.move_flag=The flag to trigger the movement, you must have 'Flag Trigger' checked.
+entities.Aqua/Move Grapple Magnet.attributes.description.grapple_trigger=If checked, the magnet will trigger the movement when get attached by grapple.
+entities.Aqua/Move Grapple Magnet.attributes.description.flag_trigger=If checked, the magnet will trigger the movement through 'Move Flag'.
+entities.Aqua/Move Grapple Magnet.attributes.description.one_use=If checked, the magnet won't respawn after broken.
 
 # Magnet Toggle
 entities.Aqua/Magnet Toggle.attributes.description.flag=Make it the same with that of magnets you would like to control.
@@ -293,7 +320,7 @@ entities.Aqua/Outline Display.placements.name.color=Outline color.
 # Aqua Bird Trigger
 triggers.Aqua/Aqua Bird Trigger.attributes.description.birdId=Identifier of the bird.
 triggers.Aqua/Aqua Bird Trigger.attributes.description.tutorialIndex=The tutorial index related to the Aqua Bird.
-triggers.Aqua/Aqua Bird Trigger.attributes.description.conditionFunction=The condition function checked in runtime code, make sure the format is 'mod:ModName/ClassName/FunctionName' and the function must be static, boolean return and accept a Level type parameter.
+triggers.Aqua/Aqua Bird Trigger.attributes.description.conditionFunction=The condition function checked in runtime code, make sure the format is 'mod:ModName.ClassName.FunctionName' and the function must be static, boolean return and accept a Level type parameter.
 
 # Custom Cutscene Trigger
 triggers.Aqua/Custom Cutscene Trigger.attributes.description.cutsceneId=Identifier of the cutscene, be aware that your dialog id should be 'AquaCutscene_{Your ID}'.

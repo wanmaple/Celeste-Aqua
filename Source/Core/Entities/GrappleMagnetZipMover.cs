@@ -1,8 +1,6 @@
-﻿using Celeste.Mod.Aqua.Debug;
-using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,7 +17,8 @@ namespace Celeste.Mod.Aqua.Core
         public IReadOnlyList<string> MoveFlags { get; private set; }
         public float ReturnSpeedMultiplier { get; private set; }
         public float DelayBeforeReturn { get; private set; }
-        public bool UseFlagToStart { get; private set; }
+        public bool GrappleTrigger { get; private set; }
+        public bool FlagTrigger { get; private set; }
         public bool OneUse { get; private set; }
         public string CogTexture { get; private set; }
         public Color ChainColor { get; private set; }
@@ -34,7 +33,8 @@ namespace Celeste.Mod.Aqua.Core
             string flagAttr = data.Attr("move_flags", string.Empty);
             ReturnSpeedMultiplier = data.Float("return_speed_multiplier", 1.0f);
             DelayBeforeReturn = data.Float("delay_before_return", 0.5f);
-            UseFlagToStart = data.Bool("use_flag_to_trig", false);
+            GrappleTrigger = data.Bool("grapple_trigger", true);
+            FlagTrigger = data.Bool("flag_trigger", false);
             OneUse = data.Bool("one_use", false);
             CogTexture = data.Attr("cog_texture", "objects/zipmover/cog");
             ChainColor = data.HexColor("chain_color", Calc.HexToColor("663931"));
@@ -128,12 +128,16 @@ namespace Celeste.Mod.Aqua.Core
                 int currentIndex = 0;
                 while (currentIndex < Nodes.Count - 1)
                 {
-                    while ((!UseFlagToStart && !this.IsHookAttached()) || (UseFlagToStart && !SceneAs<Level>().Session.GetFlag(MoveFlags[currentIndex])))
+                    while (!(GrappleTrigger && this.IsHookAttached()) && !(FlagTrigger && SceneAs<Level>().Session.GetFlag(MoveFlags[currentIndex])))
                     {
                         yield return null;
                     }
-                    if (UseFlagToStart)
-                        SceneAs<Level>().Session.SetFlag(MoveFlags[currentIndex], false);
+                    if (FlagTrigger)
+                    {
+                        Add(Alarm.Create(Alarm.AlarmMode.Oneshot, () => SceneAs<Level>().Session.SetFlag(MoveFlags[currentIndex], false), 0.0f, true));
+                    }
+
+                    StartShaking(Delays[currentIndex]);
                     yield return Delays[currentIndex];
                     // Move to the next node
                     _sfx.Play("event:/game/01_forsaken_city/zip_mover_touch");

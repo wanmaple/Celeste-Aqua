@@ -5,6 +5,7 @@ using Monocle;
 using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -88,13 +89,15 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Added(scene);
             Add(_spriteMagnet = new Sprite());
+            Add(_spriteIndicator = new Sprite());
             Add(_spriteFlash = new Sprite());
             string spriteName = Skin;
             if (UseDefaultSprite || !GFX.SpriteBank.Has(spriteName))
             {
-                spriteName = "Aqua_GrappleMagnet";
+                spriteName = GetDefaultSpriteName();
             }
             GFX.SpriteBank.CreateOn(_spriteMagnet, spriteName);
+            GFX.SpriteBank.CreateOn(_spriteIndicator, spriteName);
             GFX.SpriteBank.CreateOn(_spriteFlash, spriteName);
             this.SetAttachCallbacks(OnGrappleAttached, OnGrappleDetached);
         }
@@ -102,7 +105,8 @@ namespace Celeste.Mod.Aqua.Core
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            _spriteMagnet.Play("idle");
+            _spriteMagnet.Play("base_idle");
+            _spriteIndicator.Play("indicator_idle");
             _spriteFlash.Play("flash");
             SetActivated(DefaultOn);
         }
@@ -113,11 +117,57 @@ namespace Celeste.Mod.Aqua.Core
             base.Update();
             if (_activated)
                 UpdateImageMovers();
-            _spriteFlash.Visible = _spriteMagnet.CurrentAnimationID == "idle";
+            _spriteFlash.Visible = _spriteMagnet.CurrentAnimationID == "base_idle";
             if (Scene.OnInterval(2.0f) && _spriteFlash.Visible)
             {
                 _spriteFlash.Play("flash");
             }
+            if (_shaking)
+            {
+                if (Scene.OnInterval(0.04f))
+                {
+                    _shakeAmount = Calc.Random.ShakeVector();
+                }
+                if (_shakeTimer > 0f)
+                {
+                    _shakeTimer -= Engine.DeltaTime;
+                    if (_shakeTimer <= 0f)
+                    {
+                        _shaking = false;
+                        StopShaking();
+                    }
+                }
+            }
+        }
+
+        public override void Render()
+        {
+            Vector2 exactPos = Position;
+            Position += _shakeAmount;
+            base.Render();
+            Position = exactPos;
+        }
+
+        public void StartShaking(float time)
+        {
+            _shaking = true;
+            _shakeTimer = time;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public void StopShaking()
+        {
+            _shaking = false;
+            _shakeAmount = Vector2.Zero;
+        }
+
+        protected virtual string GetDefaultSpriteName()
+        {
+            return "Aqua_GrappleMagnet";
+        }
+
+        protected virtual void PostRender()
+        {
         }
 
         private void RandomGenerateMovers(int radiusInTiles)
@@ -178,7 +228,8 @@ namespace Celeste.Mod.Aqua.Core
             {
                 mover.sprite.Visible = true;
             }
-            _spriteMagnet.Play("open");
+            _spriteMagnet.Play("base_open");
+            _spriteIndicator.Play("indicator_open");
         }
 
         protected override void OnDeactivated()
@@ -187,13 +238,15 @@ namespace Celeste.Mod.Aqua.Core
             {
                 mover.sprite.Visible = false;
             }
-            _spriteMagnet.Play("deactive");
+            _spriteMagnet.Play("base_deactive");
+            _spriteIndicator.Play("indicator_deactive");
         }
 
         private void OnGrappleAttached(GrapplingHook grapple)
         {
             grapple.SetHookVisible(false);
-            _spriteMagnet.Play("close");
+            _spriteMagnet.Play("base_close");
+            _spriteIndicator.Play("indicator_close");
             _sound.Play("event:/game/09_core/switch_to_hot");
         }
 
@@ -202,7 +255,8 @@ namespace Celeste.Mod.Aqua.Core
             grapple.SetHookVisible(true);
             if (_activated)
             {
-                _spriteMagnet.Play("open");
+                _spriteMagnet.Play("base_open");
+                _spriteIndicator.Play("indicator_open");
             }
             _sound.Play("event:/game/09_core/switch_to_cold");
         }
@@ -252,7 +306,10 @@ namespace Celeste.Mod.Aqua.Core
                 for (int i = 0; i < Math.Abs(num); i++)
                 {
                     if (collisionCheck.Invoke(Vector2.UnitX * step))
+                    {
+                        _movementCounter.X = 0.0f;
                         break;
+                    }
                     _movementCounter.X -= step;
                     Position.X += step;
                 }
@@ -269,7 +326,10 @@ namespace Celeste.Mod.Aqua.Core
                 for (int i = 0; i < Math.Abs(num); i++)
                 {
                     if (collisionCheck.Invoke(Vector2.UnitY * step))
+                    {
+                        _movementCounter.Y = 0.0f;
                         break;
+                    }
                     _movementCounter.Y -= step;
                     Position.Y += step;
                 }
@@ -324,6 +384,7 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         protected Sprite _spriteMagnet;
+        protected Sprite _spriteIndicator;
         protected Sprite _spriteFlash;
         protected SoundSource _sound = new SoundSource();
         protected Vector2 _movementCounter = Vector2.Zero;
@@ -332,5 +393,8 @@ namespace Celeste.Mod.Aqua.Core
         private ParticleType _particle1;
         private ParticleType _particle2;
         private float _particlesRemainder;
+        private bool _shaking;
+        private float _shakeTimer;
+        private Vector2 _shakeAmount;
     }
 }

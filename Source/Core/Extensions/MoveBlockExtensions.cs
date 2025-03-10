@@ -3,6 +3,9 @@ using Monocle;
 using Microsoft.Xna.Framework;
 using MonoMod.Utils;
 using static Celeste.MoveBlock;
+using MonoMod.RuntimeDetour;
+using System.Reflection;
+using MonoMod.Cil;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -10,6 +13,7 @@ namespace Celeste.Mod.Aqua.Core
     {
         public static void Initialize()
         {
+            _ilEmptyController = new ILHook(_methodController, MoveBlock_ILController);
             On.Celeste.MoveBlock.ctor_Vector2_int_int_Directions_bool_bool += MoveBlock_Construct;
             On.Celeste.MoveBlock.UpdateColors += MoveBlock_UpdateColors;
             On.Celeste.MoveBlock.Update += MoveBlock_Update;
@@ -18,16 +22,22 @@ namespace Celeste.Mod.Aqua.Core
 
         public static void Uninitialize()
         {
+            _ilEmptyController?.Dispose();
+            _ilEmptyController = null;
             On.Celeste.MoveBlock.ctor_Vector2_int_int_Directions_bool_bool -= MoveBlock_Construct;
             On.Celeste.MoveBlock.UpdateColors -= MoveBlock_UpdateColors;
             On.Celeste.MoveBlock.Update -= MoveBlock_Update;
             On.Celeste.MoveBlock.Render -= MoveBlock_Render;
         }
 
+        private static void MoveBlock_ILController(ILContext il)
+        {
+            // add an empty il hook to recompile it for fixing the issue.
+            // https://github.com/CommunalHelper/CommunalHelper/issues/228
+        }
+
         private static void MoveBlock_Construct(On.Celeste.MoveBlock.orig_ctor_Vector2_int_int_Directions_bool_bool orig, MoveBlock self, Vector2 position, int width, int height, Directions direction, bool canSteer, bool fast)
         {
-            self.SetReversed(false);
-            self.SetAccelerateState(AccelerationArea.AccelerateState.None);
             orig(self, position, width, height, direction, canSteer, fast);
             self.Add(new AccelerationAreaInOut(self.OnKeepInAccelerationArea, null, self.OnExitAccelerationArea));
             self.Add(new PureColorTrails(e => (e as MoveBlock).GetAccelerateState() == AccelerationArea.AccelerateState.Accelerate && self.Scene.OnInterval(0.05f), e => AccelerationColor, Vector2.Zero));
@@ -114,15 +124,8 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public static bool IsReversed(this MoveBlock self)
-        {
-            return DynamicData.For(self).Get<bool>("reversed");
-        }
-
-        public static void SetReversed(this MoveBlock self, bool reversed)
-        {
-            DynamicData.For(self).Set("reversed", reversed);
-        }
+        private static ILHook _ilEmptyController;
+        private static MethodInfo _methodController = typeof(MoveBlock).GetMethod("Controller", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetStateMachineTarget();
 
         private static Color AccelerationColor = Calc.HexToColor("fbff00");
         private static Color DeaccelerationColor = Calc.HexToColor("5298e6");

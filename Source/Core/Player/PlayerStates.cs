@@ -52,7 +52,7 @@ namespace Celeste.Mod.Aqua.Core
         public const float SPEED_CHECK_GRAPPLING_SWING_DOWN = 250.0f;
         public const float SPEED_CHECK_2_GRAPPLING_SWING_DOWN = 160.0f;
         public const float SPEED_CHECK_GRAPPLING_SWING_UP = 90.0f;
-        public const float SAVED_SWING_SPEED = 330.0f;
+        public const float SAVED_SWING_SPEED = 325.0f;
 
         public static void Initialize()
         {

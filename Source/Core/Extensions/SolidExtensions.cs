@@ -142,16 +142,6 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("just_attached", value);
         }
 
-        public static AccelerationArea.AccelerateState GetAccelerateState(this Solid self)
-        {
-            return DynamicData.For(self).Get<AccelerationArea.AccelerateState>("accelerate_state");
-        }
-
-        public static void SetAccelerateState(this Solid self, AccelerationArea.AccelerateState state)
-        {
-            DynamicData.For(self).Set("accelerate_state", state);
-        }
-
         private static PropertyInfo _propConveyorMovingLeft;
         private static FieldInfo _fieldConveyorSpeed;
     }

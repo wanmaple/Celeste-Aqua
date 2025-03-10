@@ -1,4 +1,6 @@
-﻿using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Aqua.Miscellaneous;
+using Celeste.Mod.Entities;
+using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
@@ -15,8 +17,8 @@ namespace Celeste.Mod.Aqua.Core
         public float MoveSpeed { get; private set; }
         public bool OneUse { get; private set; }
         public string MoveFlag { get; private set; }
-        public bool UseFlagToMove { get; private set; }
-        public string ArrowTexture { get; private set; }
+        public bool GrappleTrigger { get; private set; }
+        public bool FlagTrigger { get; private set; }
 
         public float TargetSpeed { get; set; }
 
@@ -40,10 +42,44 @@ namespace Celeste.Mod.Aqua.Core
                     break;
             }
             Acceleration = data.Float("acceleration", 300.0f);
-            MoveSpeed = data.Float("speed", 60.0f);
+            MoveSpeed = data.Float("move_speed", 60.0f);
+            OneUse = data.Bool("one_use", false);
             MoveFlag = data.Attr("move_flag", string.Empty);
-            UseFlagToMove = data.Bool("use_flag_to_move", false);
+            GrappleTrigger = data.Bool("grapple_trigger", true);
+            FlagTrigger = data.Bool("flag_trigger", false);
+            _startPosition = Position;
+            _hitCollider = new Hitbox(16.0f, 16.0f, -8.0f, -8.0f);
             Add(new Coroutine(Sequence()));
+            Add(new AccelerationAreaInOut(OnKeepInAccelerationArea, null, OnExitAccelerationArea));
+        }
+
+        public override void Added(Scene scene)
+        {
+            base.Added(scene);
+            Add(_imgFlash = new Image(GFX.Game["objects/hook_magnet/recover_flash"]));
+            _imgFlash.JustifyOrigin(0.5f, 0.5f);
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            _flash = Calc.Approach(_flash, 0.0f, Engine.DeltaTime * 5.0f);
+            _imgFlash.SetColor(Color.White * _flash);
+        }
+
+        protected override string GetDefaultSpriteName()
+        {
+            switch (Direction)
+            {
+                case MoveBlock.Directions.Up:
+                    return "Aqua_MoveGrappleMagnetUp";
+                case MoveBlock.Directions.Down:
+                    return "Aqua_MoveGrappleMagnetDown";
+                case MoveBlock.Directions.Left:
+                    return "Aqua_MoveGrappleMagnetLeft";
+                default:
+                    return "Aqua_MoveGrappleMagnetRight";
+            }
         }
 
         private Vector2 GetMoveDirection()
@@ -61,32 +97,73 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        private void OnExitAccelerationArea(AccelerationArea area)
+        {
+            this.SetAccelerateState(AccelerationArea.AccelerateState.None);
+        }
+
+        private void OnKeepInAccelerationArea(AccelerationArea area)
+        {
+            int oldSign = MathF.Sign(TargetSpeed);
+            this.SetAccelerateState(area.TryAccelerate(this));
+            int newSign = MathF.Sign(TargetSpeed);
+            if (oldSign != newSign)
+            {
+                this.SetReversed(!this.IsReversed());
+            }
+        }
+
         private IEnumerator Sequence()
         {
             while (true)
             {
-                while ((!UseFlagToMove && !this.IsHookAttached()) || (UseFlagToMove && !SceneAs<Level>().Session.GetFlag(MoveFlag)))
+                while (!(GrappleTrigger && this.IsHookAttached()) && !(FlagTrigger && SceneAs<Level>().Session.GetFlag(MoveFlag)))
                 {
                     yield return null;
                 }
+                if (FlagTrigger)
+                {
+                    Add(Alarm.Create(Alarm.AlarmMode.Oneshot, () => SceneAs<Level>().Session.SetFlag(MoveFlag, false), 0.0f, true));
+                }
 
+                StartShaking(0.2f);
                 Audio.Play("event:/game/04_cliffside/arrowblock_activate", Position);
                 yield return 0.2f;
                 TargetSpeed = MoveSpeed;
                 _moveSfx.Play("event:/game/04_cliffside/arrowblock_move");
+                _moveSfx.Param("arrow_stop", 0.0f);
                 float speed = 0.0f;
+                TimeTicker crashTicker = new TimeTicker(0.15f);
+                float dt = Engine.DeltaTime;
                 while (true)
                 {
                     if (Scene.OnInterval(0.02f))
                     {
-                        EmitParticles(GetMoveDirection());
+                        EmitParticles(GetMoveDirection() * (this.IsReversed() ? -1.0f : 1.0f));
                     }
-                    speed = Calc.Approach(speed, TargetSpeed, Acceleration * Engine.DeltaTime);
-                    Vector2 movement = GetMoveDirection() * speed * Engine.DeltaTime;
+                    _moveSfx.Position = Position;
+                    speed = Calc.Approach(speed, TargetSpeed, Acceleration * dt);
+                    Vector2 movement = GetMoveDirection() * speed * dt;
+                    _collideSolid = false;
                     MoveH(movement.X, SolidsCollideCheck);
                     MoveV(movement.Y, SolidsCollideCheck);
+                    if (_collideSolid)
+                    {
+                        _moveSfx.Param("arrow_stop", 1.0f);
+                        crashTicker.Tick(dt);
+                        if (crashTicker.Check())
+                            break;
+                    }
+                    else
+                    {
+                        _moveSfx.Param("arrow_stop", 0.0f);
+                        crashTicker.Reset();
+                    }
                     Level level = Scene as Level;
-                    if (Left < level.Bounds.Left || Top < level.Bounds.Top || Right > level.Bounds.Right)
+                    float left = Position.X - 8.0f;
+                    float right = Position.X + 8.0f;
+                    float top = Position.Y - 8.0f;
+                    if (left < level.Bounds.Left || top < level.Bounds.Top || right > level.Bounds.Right)
                     {
                         break;
                     }
@@ -95,91 +172,105 @@ namespace Celeste.Mod.Aqua.Core
 
                 Audio.Play("event:/game/04_cliffside/arrowblock_break", Position);
                 _moveSfx.Stop();
-                //state = MovementState.Breaking;
-                //speed = (targetSpeed = 0f);
-                //angle = (targetAngle = homeAngle);
-                //StartShaking(0.2f);
-                //StopPlayerRunIntoAnimation = true;
-                //yield return 0.2f;
-                //BreakParticles();
-                //List<Debris> debris = new List<Debris>();
-                //for (int i = 0; (float)i < Width; i += 8)
-                //{
-                //    for (int j = 0; (float)j < Height; j += 8)
-                //    {
-                //        Vector2 vector2 = new Vector2((float)i + 4f, (float)j + 4f);
-                //        Debris debris2 = Engine.Pooler.Create<Debris>().Init(Position + vector2, Center, startPosition + vector2);
-                //        debris.Add(debris2);
-                //        Scene.Add(debris2);
-                //    }
-                //}
+                StartShaking(0.2f);
+                yield return 0.2f;
+                Vector2 offset = new Vector2(-8.0f, -8.0f);
+                List<CustomDebris> debrisList = new List<CustomDebris>();
+                int index = 0;
+                int randomSeq = Calc.Random.Next(0, 4);
+                for (int i = 0; i < 16.0f; i += 8)
+                {
+                    for (int j = 0; j < 16.0f; j += 8)
+                    {
+                        Vector2 vec = new Vector2((float)i + 4.0f, (float)j + 4.0f);
+                        CustomDebris debris = Engine.Pooler.Create<CustomDebris>().Init("debris/magnet_debris", Position + offset + vec, Center, _startPosition + offset + vec, index + randomSeq);
+                        debrisList.Add(debris);
+                        Scene.Add(debris);
+                        ++index;
+                    }
+                }
+                Position = _startPosition;
+                Visible = false;
+                this.SetHookable(false);
+                yield return 2.2f;
+                foreach (CustomDebris deb in debrisList)
+                {
+                    deb.StopMoving();
+                }
+                Collider old = Collider;
+                Collider = _hitCollider;
+                while (CollideCheck<Solid>())
+                {
+                    yield return null;
+                }
+                Collider = old;
+                EventInstance instance = Audio.Play("event:/game/04_cliffside/arrowblock_reform_begin", debrisList[0].Position);
+                Coroutine routine = new Coroutine(SoundFollowsDebrisCenter(instance, debrisList));
+                Add(routine);
+                foreach (CustomDebris deb in debrisList)
+                {
+                    deb.StartShaking();
+                }
+                yield return 0.2f;
+                if (!OneUse)
+                {
+                    foreach (CustomDebris deb in debrisList)
+                    {
+                        deb.ReturnHome(0.65f);
+                    }
+                    yield return 0.6f;
+                }
+                routine.RemoveSelf();
+                foreach (CustomDebris deb in debrisList)
+                {
+                    deb.RemoveSelf();
+                }
+                if (OneUse)
+                {
+                    RemoveSelf();
+                    yield break;
+                }
+                Audio.Play("event:/game/04_cliffside/arrowblock_reappear", Position);
+                this.SetHookable(true);
+                Visible = true;
+                _flash = 1.0f;
+            }
+        }
 
-                //MoveBlock moveBlock = this;
-                //Vector2 amount = startPosition - Position;
-                //DisableStaticMovers();
-                //moveBlock.MoveStaticMovers(amount);
-                //Position = startPosition;
-                //MoveBlock moveBlock2 = this;
-                //MoveBlock moveBlock3 = this;
-                //bool visible = false;
-                //moveBlock3.Collidable = false;
-                //moveBlock2.Visible = visible;
-                //yield return 2.2f;
-                //foreach (Debris item in debris)
-                //{
-                //    item.StopMoving();
-                //}
+        private IEnumerator SoundFollowsDebrisCenter(EventInstance instance, List<CustomDebris> debrisList)
+        {
+            while (true)
+            {
+                instance.getPlaybackState(out var playbackState);
+                if (playbackState == PLAYBACK_STATE.STOPPED)
+                {
+                    break;
+                }
 
-                //while (CollideCheck<Actor>() || CollideCheck<Solid>())
-                //{
-                //    yield return null;
-                //}
+                Vector2 zero = Vector2.Zero;
+                foreach (CustomDebris debri in debrisList)
+                {
+                    zero += debri.Position;
+                }
 
-                //Collidable = true;
-                //EventInstance instance = Audio.Play("event:/game/04_cliffside/arrowblock_reform_begin", debris[0].Position);
-                //MoveBlock moveBlock4 = this;
-                //Coroutine component;
-                //Coroutine routine = (component = new Coroutine(SoundFollowsDebrisCenter(instance, debris)));
-                //moveBlock4.Add(component);
-                //foreach (Debris item2 in debris)
-                //{
-                //    item2.StartShaking();
-                //}
-
-                //yield return 0.2f;
-                //foreach (Debris item3 in debris)
-                //{
-                //    item3.ReturnHome(0.65f);
-                //}
-
-                //yield return 0.6f;
-                //routine.RemoveSelf();
-                //foreach (Debris item4 in debris)
-                //{
-                //    item4.RemoveSelf();
-                //}
-
-                //Audio.Play("event:/game/04_cliffside/arrowblock_reappear", Position);
-                //Visible = true;
-                //EnableStaticMovers();
-                //speed = (targetSpeed = 0f);
-                //angle = (targetAngle = homeAngle);
-                //noSquish = null;
-                //fillColor = idleBgFill;
-                //UpdateColors();
-                //flash = 1f;
+                zero /= (float)debrisList.Count;
+                Audio.Position(instance, zero);
+                yield return null;
             }
         }
 
         private bool SolidsCollideCheck(Vector2 movement)
         {
             Entity collided = null;
-            float extrusionError = 2.0f;
-            float left = Center.X - 8.0f;
-            float right = Center.X + 8.0f;
-            float top = Center.Y - 8.0f;
-            float bottom = Center.Y + 8.0f;
-            if (this.CheckCollidePlatformsAtXDirection(movement.X, out collided))
+            Collider old = Collider;
+            Collider = _hitCollider;
+            float extrusionError = 3.0f;
+            float left = Collider.AbsoluteLeft;
+            float right = Collider.AbsoluteRight;
+            float top = Collider.AbsoluteTop;
+            float bottom = Collider.AbsoluteBottom;
+            bool ret = false;
+            if ((Direction == MoveBlock.Directions.Left || Direction == MoveBlock.Directions.Right) && this.CheckCollidePlatformsAtXDirection(movement.X, out collided))
             {
                 float error = 0.0f;
                 if ((error = collided.Bottom - top) <= extrusionError || (error = collided.Top - bottom) >= -extrusionError)
@@ -188,10 +279,11 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 else
                 {
-                    return true;
+                    _collideSolid = true;
+                    ret = true;
                 }
             }
-            if (this.CheckCollidePlatformsAtYDirection(movement.Y, out collided))
+            if ((Direction == MoveBlock.Directions.Up || Direction == MoveBlock.Directions.Down) && this.CheckCollidePlatformsAtYDirection(movement.Y, out collided))
             {
                 float error = 0.0f;
                 if ((error = collided.Right - left) <= extrusionError || (error = collided.Left - right) >= -extrusionError)
@@ -200,12 +292,19 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 else
                 {
-                    return true;
+                    _collideSolid = true;
+                    ret = true;
                 }
             }
-            return false;
+            Collider = old;
+            return ret;
         }
 
-        private SoundSource _moveSfx;
+        private Vector2 _startPosition;
+        private Collider _hitCollider;
+        private bool _collideSolid;
+        private float _flash;
+        private Image _imgFlash;
+        private SoundSource _moveSfx = new SoundSource();
     }
 }

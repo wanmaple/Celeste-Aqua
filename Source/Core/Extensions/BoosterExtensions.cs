@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Cil;
+using MonoMod.Utils;
 using System;
 using System.Reflection;
 
@@ -28,8 +29,9 @@ namespace Celeste.Mod.Aqua.Core
         private static void Booster_Construct(On.Celeste.Booster.orig_ctor_Vector2_bool orig, Booster self, Vector2 position, bool red)
         {
             orig(self, position, red);
-            self.Add(new HookInteractable(self.OnHookCollide));
+            self.Add(new HookInteractable(self.OnGrappleInteract));
             self.SetHookable(true);
+            DynamicData.For(self).Set("undraggable_routine", null);
         }
 
         private static void Booster_PlayerReleased(On.Celeste.Booster.orig_PlayerReleased orig, Booster self)
@@ -66,11 +68,19 @@ namespace Celeste.Mod.Aqua.Core
             self.Position = self.outline.Position;
         }
 
-        private static bool OnHookCollide(this Booster self, GrapplingHook hook, Vector2 at)
+        private static bool OnGrappleInteract(this Booster self, GrapplingHook hook, Vector2 at)
         {
             hook.Revoke();
             Audio.Play(self.red ? "event:/game/05_mirror_temple/redbooster_reappear" : "event:/game/04_cliffside/greenbooster_reappear", self.Position);
-            self.Add(new Coroutine(self.UndraggableRoutine(self.sprite, Calc.SafeNormalize(at - self.Center), 0.4f, 8.0f)));
+            Coroutine routine = DynamicData.For(self).Get<Coroutine>("undraggable_routine");
+            if (routine == null)
+            {
+                self.Add(routine = new Coroutine(self.UndraggableRoutine(self.sprite, Calc.SafeNormalize(at - self.Center), 0.4f, 8.0f)));
+            }
+            else
+            {
+                routine.Replace(self.UndraggableRoutine(self.sprite, Calc.SafeNormalize(at - self.Center), 0.4f, 8.0f));
+            }
             return true;
         }
     }
