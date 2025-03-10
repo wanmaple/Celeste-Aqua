@@ -51,15 +51,18 @@ function SwapGrappleMagnet.sprite(room, entity)
     for _, sprite in ipairs(borderSprite:getDrawableSprite()) do
         table.insert(sprites, sprite)
     end
-    local magnetTexture = "objects/hook_magnet/idle00"
+    local magnetTexture = "objects/hook_magnet/base/idle00"
+    local indicatorTexture = "objects/hook_magnet/normal/idle00"
     local rangeTexture = "objects/hook_magnet/circle_in_leonn"
     local magnet = DrawableSprite.fromTexture(magnetTexture, entity)
+    local indicator = DrawableSprite.fromTexture(indicatorTexture, entity)
     local range = DrawableSprite.fromTexture(rangeTexture, entity)
     local radiusInTiles = math.max(math.min(entity.radius_in_tiles, 8), 2)
     range:setScale(radiusInTiles * 2, radiusInTiles * 2)
     range:setColor("007bfe7b")
     table.insert(sprites, range)
     table.insert(sprites, magnet)
+    table.insert(sprites, indicator)
     return sprites
 end
 

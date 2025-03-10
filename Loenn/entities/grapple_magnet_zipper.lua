@@ -91,29 +91,35 @@ local function addNodeSprites(sprites, entity)
     end
 end
 
-local MAGNET_TEXTURE = "objects/hook_magnet/idle00"
-local RANGE_TEXTURE = "objects/hook_magnet/circle_in_leonn"
-
 function GrappleMagnetZipper.sprite(room, entity)
     local sprites = {}
     addNodeSprites(sprites, entity)
-    local magnet = DrawableSprite.fromTexture(MAGNET_TEXTURE, entity)
-    local range = DrawableSprite.fromTexture(RANGE_TEXTURE, entity)
+    local magnetTexture = "objects/hook_magnet/base/idle00"
+    local indicatorTexture = "objects/hook_magnet/normal/idle00"
+    local rangeTexture = "objects/hook_magnet/circle_in_leonn"
+    local magnet = DrawableSprite.fromTexture(magnetTexture, entity)
+    local indicator = DrawableSprite.fromTexture(indicatorTexture, entity)
+    local range = DrawableSprite.fromTexture(rangeTexture, entity)
     local radiusInTiles = math.max(math.min(entity.radius_in_tiles, 8), 2)
     range:setScale(radiusInTiles * 2, radiusInTiles * 2)
     range:setColor("007bfe7b")
     table.insert(sprites, range)
     table.insert(sprites, magnet)
+    table.insert(sprites, indicator)
     return sprites
 end
 
 function GrappleMagnetZipper.nodeSprite(room, entity, node, nodeIndex)
-    local magnet = DrawableSprite.fromTexture(MAGNET_TEXTURE, node)
-    local range = DrawableSprite.fromTexture(RANGE_TEXTURE, node)
+    local magnetTexture = "objects/hook_magnet/base/idle00"
+    local indicatorTexture = "objects/hook_magnet/normal/idle00"
+    local rangeTexture = "objects/hook_magnet/circle_in_leonn"
+    local magnet = DrawableSprite.fromTexture(magnetTexture, node)
+    local indicator = DrawableSprite.fromTexture(indicatorTexture, node)
+    local range = DrawableSprite.fromTexture(rangeTexture, node)
     local radiusInTiles = math.max(math.min(entity.radius_in_tiles, 8), 2)
     range:setScale(radiusInTiles * 2, radiusInTiles * 2)
     range:setColor("007bfe7b")
-    return { range, magnet, }
+    return { range, magnet, indicator, }
 end
 
 function GrappleMagnetZipper.selection(room, entity)

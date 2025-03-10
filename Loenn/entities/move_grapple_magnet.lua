@@ -44,14 +44,17 @@ for _, dir in ipairs(MOVE_DIRECTIONS) do
 end
 
 function MoveGrappleMagnet.sprite(room, entity)
-    local magnetTexture = "objects/hook_magnet/idle00"
+    local magnetTexture = "objects/hook_magnet/base/idle00"
+    local dirStr = string.lower(entity.direction)
+    local indicatorTexture = string.format("objects/hook_magnet/move/%s/idle00", dirStr)
     local rangeTexture = "objects/hook_magnet/circle_in_leonn"
     local magnet = DrawableSprite.fromTexture(magnetTexture, entity)
+    local indicator = DrawableSprite.fromTexture(indicatorTexture, entity)
     local range = DrawableSprite.fromTexture(rangeTexture, entity)
     local radiusInTiles = math.max(math.min(entity.radius_in_tiles, 8), 2)
     range:setScale(radiusInTiles * 2, radiusInTiles * 2)
     range:setColor("007bfe7b")
-    local sprites = { range, magnet, }
+    local sprites = { range, magnet, indicator, }
     return sprites
 end
 
