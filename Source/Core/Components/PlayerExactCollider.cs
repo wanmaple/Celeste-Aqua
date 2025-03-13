@@ -21,8 +21,14 @@ namespace Celeste.Mod.Aqua.Core
             {
                 foreach (Player player in players)
                 {
+                    if (player.StateMachine.State == (int)AquaStates.StCassetteFly)
+                        continue;
                     if (player.CollideCheck(Entity))
-                        OnCollide?.Invoke(player);
+                    {
+                        player.MoveV(-1.0f);
+                        if (player.CollideCheck(Entity))
+                            OnCollide?.Invoke(player);
+                    }
                 }
             }
         }

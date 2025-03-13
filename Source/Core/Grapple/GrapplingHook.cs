@@ -72,6 +72,7 @@ namespace Celeste.Mod.Aqua.Core
         }
         public HookStates State { get; private set; } = HookStates.None;
         public Vector2 Velocity { get; private set; }
+        public Vector2 AttachedVelocity { get; private set; }
         public Vector2 Acceleration { get; private set; }
         public bool Revoked { get; private set; } = false;
         public bool JustFixed { get; private set; } = false;
@@ -376,7 +377,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Removed(scene);
             State = HookStates.None;
-            Velocity = Acceleration = Vector2.Zero;
+            Velocity = AttachedVelocity = Acceleration = Vector2.Zero;
             Active = false;
             JustFixed = false;
             UserLockedLength = 0.0f;
@@ -386,7 +387,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.SceneEnd(scene);
             State = HookStates.None;
-            Velocity = Acceleration = Vector2.Zero;
+            Velocity = AttachedVelocity = Acceleration = Vector2.Zero;
             Active = false;
             JustFixed = false;
         }
@@ -394,7 +395,7 @@ namespace Celeste.Mod.Aqua.Core
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            Velocity = Vector2.Zero;
+            Velocity = AttachedVelocity = Vector2.Zero;
             Acceleration = Vector2.Zero;
             Player player = Owner;
             _playerPrevPosition = player.ExactCenter();
@@ -423,7 +424,7 @@ namespace Celeste.Mod.Aqua.Core
             Segment playerSeg = new Segment(_playerPrevPosition, player.ExactCenter());
             Vector2 prevPosition = _prevPosition;
             Vector2 nextPosition = Position;
-            Vector2 lastVelocity = Velocity;
+            Vector2 lastVelocity = AttachedVelocity;
             HookStates lastState = State;
             Entity attachEntity = rope.TopPivot.entity;
             if (attachEntity != null && (!attachEntity.Collidable || attachEntity.Collider == null || !attachEntity.IsHookable() || attachEntity.Scene == null))
@@ -542,7 +543,7 @@ namespace Celeste.Mod.Aqua.Core
                             BresenhamMove(movement);
                         }
                         rope.CheckCollision(playerSeg);
-                        Velocity = Position - prevPosition;
+                        AttachedVelocity = Position - prevPosition;
                         rope.UpdateCurrentDirection();
                         break;
                     default:
@@ -550,16 +551,17 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
 
+            Velocity = (Position - _prevPosition) / dt;
             _prevPosition = Position;
             _playerPrevPosition = player.ExactCenter();
             if (AquaMaths.IsApproximateZero(dt))
             {
-                Velocity = Acceleration = Vector2.Zero;
+                Velocity = AttachedVelocity = Acceleration = Vector2.Zero;
             }
             else
             {
-                Velocity /= dt;
-                Acceleration = (Velocity - lastVelocity) / dt;
+                AttachedVelocity /= dt;
+                Acceleration = (AttachedVelocity - lastVelocity) / dt;
             }
             CheckHookColliders();
             base.Update();

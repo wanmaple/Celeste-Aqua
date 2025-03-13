@@ -50,7 +50,7 @@ namespace Celeste.Mod.Aqua.Core
             _startPosition = Position;
             _hitCollider = new Hitbox(16.0f, 16.0f, -8.0f, -8.0f);
             Add(new Coroutine(Sequence()));
-            Add(new AccelerationAreaInOut(OnKeepInAccelerationArea, null, OnExitAccelerationArea));
+            Add(new AccelerationAreaInOut(OnKeepInAccelerationArea, null, OnExitAccelerationArea, _hitCollider));
         }
 
         public override void Added(Scene scene)

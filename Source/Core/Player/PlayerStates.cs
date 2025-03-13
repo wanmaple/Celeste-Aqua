@@ -262,6 +262,12 @@ namespace Celeste.Mod.Aqua.Core
         private static int Player_BoostUpdate(On.Celeste.Player.orig_BoostUpdate orig, Player self)
         {
             int nextState = orig(self);
+            GrapplingHook grapple = self.GetGrappleHook();
+            ShotHookCheck shotCheck = self.GetShootHookCheck();
+            if (shotCheck != null && shotCheck.CanRevoke && grapple != null && grapple.Active && grapple.State == GrapplingHook.HookStates.Fixed)
+            {
+                grapple.Revoke();
+            }
             self.RestoreSavedSwingSpeedIfPossible(nextState);
             return nextState;
         }

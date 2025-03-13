@@ -16,12 +16,14 @@ namespace Celeste.Mod.Aqua.Core
         {
             On.Monocle.Entity.ctor_Vector2 += Entity_Construct;
             On.Monocle.Entity.Awake += Entity_Awake;
+            On.Monocle.Entity.Update += Entity_Update;
         }
 
         public static void Uninitialize()
         {
             On.Monocle.Entity.ctor_Vector2 -= Entity_Construct;
             On.Monocle.Entity.Awake -= Entity_Awake;
+            On.Monocle.Entity.Update -= Entity_Update;
         }
 
         private static void Entity_Construct(On.Monocle.Entity.orig_ctor_Vector2 orig, Entity self, Vector2 position)
@@ -32,16 +34,27 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("hook_attached", false);
             DynamicData.For(self).Set("can_collide_method", null);
             DynamicData.For(self).Set("unique_id", AUTO_ID++);
+            DynamicData.For(self).Set("update_prev_position_flag", false);
             DynamicData.For(self).Set("prev_position", self.Position);
             DynamicData.For(self).Set("accelerate_state", AccelerationArea.AccelerateState.None);
             DynamicData.For(self).Set("reversed", false);
             self.WorkWithCardinalBumper();
+            self.WorkWithSidewaysJumpThrough();
         }
 
         private static void Entity_Awake(On.Monocle.Entity.orig_Awake orig, Entity self, Scene scene)
         {
             orig(self, scene);
             DynamicData.For(self).Set("prev_position", self.Position);
+        }
+
+        private static void Entity_Update(On.Monocle.Entity.orig_Update orig, Entity self)
+        {
+            if (DynamicData.For(self).Get<bool>("update_prev_position_flag"))
+            {
+                DynamicData.For(self).Set("prev_position", self.Position);
+            }
+            orig(self);
         }
 
         public static Entity CollideFirst(this Entity self, Type type, IReadOnlyList<Type> excludeTypes)
@@ -420,6 +433,21 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
             return false;
+        }
+
+        private static void WorkWithSidewaysJumpThrough(this Entity self)
+        {
+            // sideways jump throughs might be attached to solids which might do movement, so we have to update its previous position.
+            if (ModInterop.SidewaysJumpthruTypes == null)
+                return;
+            foreach (Type sidewaysType in ModInterop.SidewaysJumpthruTypes)
+            {
+                if (self.GetType().IsAssignableTo(sidewaysType))
+                {
+                    DynamicData.For(self).Set("update_prev_position_flag", true);
+                    break;
+                }
+            }
         }
 
         private static void WorkWithCardinalBumper(this Entity self)

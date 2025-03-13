@@ -18,6 +18,17 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, position, topSurface, bottomSurface, width, height);
             self.SetHookable(true);
+            self.Add(new HookInOut(self.OnGrappleIn, self.OnGrappleOut));
+        }
+
+        private static void OnGrappleIn(this Water self, GrapplingHook grapple)
+        {
+            Audio.Play("event:/char/madeline/water_in", grapple.Center);
+        }
+
+        private static void OnGrappleOut(this Water self, GrapplingHook grapple)
+        {
+            Audio.Play("event:/char/madeline/water_out", grapple.Center);
         }
     }
 }

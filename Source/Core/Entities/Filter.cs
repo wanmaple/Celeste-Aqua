@@ -17,7 +17,7 @@ namespace Celeste.Mod.Aqua.Core
         public int LandSoundIndex { get; protected set; }
 
         protected Filter(EntityData data, Vector2 offset)
-            : base(data.Position + offset, data.Width, data.Height, true)
+            : base(data.Position + offset, data.Width, data.Height, false)
         {
             Color mainColor = data.HexColor("color", new Color(0.15f, 0.15f, 0.15f));
             float opacity = data.Float("opacity", 0.15f);

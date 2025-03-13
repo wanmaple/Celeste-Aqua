@@ -1,5 +1,6 @@
 ﻿using Monocle;
 using System;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -15,30 +16,35 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
-            GrapplingHook hook = Scene.Tracker.GetEntity<GrapplingHook>();
-            bool hookable = Entity.IsHookable();
-            Entity.SetHookable(true);
-            bool currentIn = hook != null && Entity.CollideCheck(hook);
-            Entity.SetHookable(hookable);
-            if (_lastIn != currentIn)
+            var grapples = Scene.Tracker.GetEntities<GrapplingHook>();
+            foreach (GrapplingHook grapple in grapples)
             {
+                bool hookable = Entity.IsHookable();
+                Entity.SetHookable(true);
+                bool currentIn = Entity.CollideCheck(grapple);
+                Entity.SetHookable(hookable);
+                bool lastIn = _inGrapples.Contains(grapple);
+                if (lastIn != currentIn)
+                {
+                    if (currentIn)
+                    {
+                        _inGrapples.Add(grapple);
+                        _hookIn?.Invoke(grapple);
+                    }
+                    else
+                    {
+                        _inGrapples.Remove(grapple);
+                        _hookOut?.Invoke(grapple);
+                    }
+                }
                 if (currentIn)
                 {
-                    _hookIn?.Invoke(hook);
-                }
-                else
-                {
-                    _hookOut?.Invoke(hook);
+                    _keepIn?.Invoke(grapple);
                 }
             }
-            if (currentIn)
-            {
-                _keepIn?.Invoke(hook);
-            }
-            _lastIn = currentIn;
         }
 
-        private bool _lastIn = false;
+        private HashSet<GrapplingHook> _inGrapples = new HashSet<GrapplingHook>(4);
         private Action<GrapplingHook> _hookIn;
         private Action<GrapplingHook> _hookOut;
         private Action<GrapplingHook> _keepIn;

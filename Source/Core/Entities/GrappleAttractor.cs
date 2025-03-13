@@ -27,7 +27,7 @@ namespace Celeste.Mod.Aqua.Core
             if (!string.IsNullOrEmpty(Flag) && SceneAs<Level>().Session.GetFlag(Flag))
             {
                 SetActivated(!_activated);
-                SceneAs<Level>().Session.SetFlag(Flag, false);
+                Add(Alarm.Create(Alarm.AlarmMode.Oneshot, () => SceneAs<Level>().Session.SetFlag(Flag, false), 0.0f, true));
             }
         }
 
