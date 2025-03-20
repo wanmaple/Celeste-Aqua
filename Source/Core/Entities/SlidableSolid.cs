@@ -29,7 +29,7 @@ namespace Celeste.Mod.Aqua.Core
                         if (grapple.Bottom == Top || grapple.Top == Bottom)
                         {
                             Vector2 movement = Vector2.Dot(grapple.AlongRopeSpeed * grapple.HookDirection, Vector2.UnitX) * Vector2.UnitX * Engine.DeltaTime * HookSmoothCoefficient;
-                            grapple.SetPositionRounded(grapple.Position + movement);
+                            grapple.AddMovement(movement);
                             if (grapple.Right <= Left || grapple.Left >= Right)
                             {
                                 grapple.Revoke();
@@ -38,7 +38,7 @@ namespace Celeste.Mod.Aqua.Core
                         else if (grapple.Left == Right || grapple.Right == Left)
                         {
                             Vector2 movement = Vector2.Dot(grapple.AlongRopeSpeed * grapple.HookDirection, Vector2.UnitY) * Vector2.UnitY * Engine.DeltaTime * HookSmoothCoefficient;
-                            grapple.SetPositionRounded(grapple.Position + movement);
+                            grapple.AddMovement(movement);
                             if (grapple.Top >= Bottom || grapple.Bottom <= Top)
                             {
                                 grapple.Revoke();

@@ -16,14 +16,14 @@ namespace Celeste.Mod.Aqua.Core
         {
             On.Monocle.Entity.ctor_Vector2 += Entity_Construct;
             On.Monocle.Entity.Awake += Entity_Awake;
-            On.Monocle.Entity.Update += Entity_Update;
+            On.Monocle.Entity.Added += Entity_Added;
         }
 
         public static void Uninitialize()
         {
             On.Monocle.Entity.ctor_Vector2 -= Entity_Construct;
             On.Monocle.Entity.Awake -= Entity_Awake;
-            On.Monocle.Entity.Update -= Entity_Update;
+            On.Monocle.Entity.Added -= Entity_Added;
         }
 
         private static void Entity_Construct(On.Monocle.Entity.orig_ctor_Vector2 orig, Entity self, Vector2 position)
@@ -34,10 +34,15 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("hook_attached", false);
             DynamicData.For(self).Set("can_collide_method", null);
             DynamicData.For(self).Set("unique_id", AUTO_ID++);
-            DynamicData.For(self).Set("update_prev_position_flag", false);
             DynamicData.For(self).Set("prev_position", self.Position);
             DynamicData.For(self).Set("accelerate_state", AccelerationArea.AccelerateState.None);
             DynamicData.For(self).Set("reversed", false);
+        }
+
+        private static void Entity_Added(On.Monocle.Entity.orig_Added orig, Entity self, Scene scene)
+        {
+            orig(self, scene);
+            DynamicData.For(self).Set("prev_position", self.Position);
             self.WorkWithCardinalBumper();
             self.WorkWithSidewaysJumpThrough();
         }
@@ -48,21 +53,14 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("prev_position", self.Position);
         }
 
-        private static void Entity_Update(On.Monocle.Entity.orig_Update orig, Entity self)
-        {
-            if (DynamicData.For(self).Get<bool>("update_prev_position_flag"))
-            {
-                DynamicData.For(self).Set("prev_position", self.Position);
-            }
-            orig(self);
-        }
-
-        public static Entity CollideFirst(this Entity self, Type type, IReadOnlyList<Type> excludeTypes)
+        public static Entity CollideFirst(this Entity self, Type type, IReadOnlyList<Type> excludeTypes, params Entity[] ignoreList)
         {
             if (self.Scene.Tracker.Entities.TryGetValue(type, out var entities))
             {
                 foreach (Entity entity in entities)
                 {
+                    if (Array.IndexOf(ignoreList, entity) >= 0)
+                        continue;
                     bool excluded = false;
                     foreach (Type excludeType in excludeTypes)
                     {
@@ -82,12 +80,14 @@ namespace Celeste.Mod.Aqua.Core
             return null;
         }
 
-        public static Entity CollideFirst(this Entity self, Type type)
+        public static Entity CollideFirst(this Entity self, Type type, params Entity[] ignoreList)
         {
             if (self.Scene.Tracker.Entities.TryGetValue(type, out var entities))
             {
                 foreach (Entity entity in entities)
                 {
+                    if (Array.IndexOf(ignoreList, entity) >= 0)
+                        continue;
                     if (Collide.Check(self, entity))
                     {
                         return entity;
@@ -97,12 +97,35 @@ namespace Celeste.Mod.Aqua.Core
             return null;
         }
 
-        public static Entity CollideFirstOutside(this Entity self, Type type, Vector2 at, IReadOnlyList<Type> excludeTypes)
+        public static Entity CollideFirstWithout<T>(this Entity self, Vector2 at, params Entity[] ignoreList) where T : Entity
+        {
+            Entity ret = null;
+            var entities = self.Scene.Tracker.GetEntities<T>();
+            foreach (Entity entity in entities)
+            {
+                if (Array.IndexOf(ignoreList, entity) >= 0)
+                    continue;
+                Vector2 position = self.Position;
+                self.Position = at;
+                if (Collide.Check(self, entity))
+                {
+                    ret = entity;
+                }
+                self.Position = position;
+                if (ret != null)
+                    break;
+            }
+            return ret;
+        }
+
+        public static Entity CollideFirstOutside(this Entity self, Type type, Vector2 at, IReadOnlyList<Type> excludeTypes, params Entity[] ignoreList)
         {
             if (self.Scene.Tracker.Entities.TryGetValue(type, out var entities))
             {
                 foreach (Entity entity in entities)
                 {
+                    if (Array.IndexOf(ignoreList, entity) >= 0)
+                        continue;
                     bool excluded = false;
                     foreach (Type excludeType in excludeTypes)
                     {
@@ -122,16 +145,33 @@ namespace Celeste.Mod.Aqua.Core
             return null;
         }
 
-        public static Entity CollideFirstOutside(this Entity self, Type type, Vector2 at)
+        public static Entity CollideFirstOutside(this Entity self, Type type, Vector2 at, params Entity[] ignoreList)
         {
             if (self.Scene.Tracker.Entities.TryGetValue(type, out var entities))
             {
                 foreach (Entity entity in entities)
                 {
+                    if (Array.IndexOf(ignoreList, entity) >= 0)
+                        continue;
                     if (!Collide.Check(self, entity) && Collide.Check(self, entity, at))
                     {
                         return entity;
                     }
+                }
+            }
+            return null;
+        }
+
+        public static Entity CollideFirstOutsideWithout<T>(this Entity self, Vector2 at, params Entity[] ignoreList) where T : Entity
+        {
+            var entities = self.Scene.Tracker.GetEntities<T>();
+            foreach (Entity entity in entities)
+            {
+                if (Array.IndexOf(ignoreList, entity) >= 0)
+                    continue;
+                if (!Collide.Check(self, entity) && Collide.Check(self, entity, at))
+                {
+                    return entity;
                 }
             }
             return null;
@@ -355,6 +395,17 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("on_detach_callback", onDetach);
         }
 
+        public static void MakeGrappleFollowMe(this Entity self, Vector2 movement)
+        {
+            if (movement == Vector2.Zero)
+                return;
+            var grapples = self.Scene.Tracker.GetEntities<GrapplingHook>();
+            foreach (GrapplingHook grapple in grapples)
+            {
+                grapple.PivotsFollowAttachment(self, movement);
+            }
+        }
+
         public static void MakeExtraCollideCondition(this Entity self)
         {
             MethodInfo method = self.GetType().GetMethod("CanCollide", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -366,13 +417,13 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("can_collide_method", method);
         }
 
-        public static bool CheckCollidePlatformsAtXDirection(this Entity self, float movement, out Entity collideEntity)
+        public static bool CheckCollidePlatformsAtXDirection(this Entity self, float movement, out Entity collideEntity, params Entity[] ignoreList)
         {
             collideEntity = null;
             int sign = MathF.Sign(movement);
             if (sign == 0)
                 return false;
-            if ((collideEntity = self.CollideFirst<Solid>(self.Position + Vector2.UnitX * movement)) != null)
+            if ((collideEntity = self.CollideFirstWithout<Solid>(self.Position + Vector2.UnitX * movement, ignoreList)) != null)
                 return true;
             var sidewaysTypes = ModInterop.SidewaysJumpthruTypes;
             for (int j = 0; j < sidewaysTypes.Count; j++)
@@ -386,6 +437,8 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         foreach (Entity jumpthru in sideJumpthrus)
                         {
+                            if (Array.IndexOf(ignoreList, jumpthru) >= 0)
+                                continue;
                             bool left2right = (bool)fieldLeft2Right.GetValue(jumpthru);
                             if ((!left2right && sign > 0) || (left2right && sign < 0))
                             {
@@ -403,17 +456,17 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
-        public static bool CheckCollidePlatformsAtYDirection(this Entity self, float movement, out Entity collideEntity)
+        public static bool CheckCollidePlatformsAtYDirection(this Entity self, float movement, out Entity collideEntity, params Entity[] ignoreList)
         {
             collideEntity = null;
             int sign = MathF.Sign(movement);
             if (sign == 0)
                 return false;
-            if ((collideEntity = self.CollideFirst<Solid>(self.Position + Vector2.UnitY * movement)) != null)
+            if ((collideEntity = self.CollideFirstWithout<Solid>(self.Position + Vector2.UnitY * movement, ignoreList)) != null)
                 return true;
             if (sign > 0)
             {
-                collideEntity = self.CollideFirstOutside(typeof(JumpThru), self.Position + Vector2.UnitY * movement, ModInterop.DownsideJumpthruTypes) as Platform;
+                collideEntity = self.CollideFirstOutside(typeof(JumpThru), self.Position + Vector2.UnitY * movement, ModInterop.DownsideJumpthruTypes, ignoreList) as Platform;
                 if (collideEntity != null)
                 {
                     return true;
@@ -425,7 +478,7 @@ namespace Celeste.Mod.Aqua.Core
                 for (int i = 0; i < downsideTypes.Count; i++)
                 {
                     Type downsideType = downsideTypes[i];
-                    collideEntity = self.CollideFirstOutside(downsideType, self.Position + Vector2.UnitY * movement) as Platform;
+                    collideEntity = self.CollideFirstOutside(downsideType, self.Position + Vector2.UnitY * movement, ignoreList) as Platform;
                     if (collideEntity != null)
                     {
                         return true;
@@ -437,14 +490,29 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void WorkWithSidewaysJumpThrough(this Entity self)
         {
-            // sideways jump throughs might be attached to solids which might do movement, so we have to update its previous position.
+            // sideways jump throughs might be attached to solids which might do movement, we have to add its movement to grapples.
             if (ModInterop.SidewaysJumpthruTypes == null)
                 return;
             foreach (Type sidewaysType in ModInterop.SidewaysJumpthruTypes)
             {
                 if (self.GetType().IsAssignableTo(sidewaysType))
                 {
-                    DynamicData.For(self).Set("update_prev_position_flag", true);
+                    foreach (Component com in self.Components)
+                    {
+                        if (com is StaticMover mover)
+                        {
+                            Action<Vector2> onMove = mover.OnMove;
+                            mover.OnMove = move =>
+                            {
+                                Vector2 oldPosition = self.Position;
+                                onMove?.Invoke(move);
+                                Vector2 newPosition = self.Position;
+                                Vector2 movement = newPosition - oldPosition;
+                                self.MakeGrappleFollowMe(movement);
+                            };
+                            break;
+                        }
+                    }
                     break;
                 }
             }

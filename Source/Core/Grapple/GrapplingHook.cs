@@ -71,9 +71,10 @@ namespace Celeste.Mod.Aqua.Core
             get => _mode;
         }
         public HookStates State { get; private set; } = HookStates.None;
+        public Vector2 ExactPosition => Position + _movementCounter;
         public Vector2 Velocity { get; private set; }
         public Vector2 AttachedVelocity { get; private set; }
-        public Vector2 Acceleration { get; private set; }
+        public Vector2 Acceleration => _inertia.Inertia;
         public bool Revoked { get; private set; } = false;
         public bool JustFixed { get; private set; } = false;
         public float AlongRopeSpeed { get; set; } = 0.0f;
@@ -151,14 +152,26 @@ namespace Celeste.Mod.Aqua.Core
             return other.IsHookable();
         }
 
-        public void SetPositionRounded(Vector2 position, bool updatePivot = true)
+        public void AddMovement(Vector2 movement)
         {
-            Position = AquaMaths.Round(position);
-            HookRope rope = Get<HookRope>();
-            if (rope != null && updatePivot)
+            _movementCounter += movement;
+        }
+
+        public void PivotsFollowAttachment(Entity entity, Vector2 movement)
+        {
+            if (State != HookStates.Fixed)
+                return;
+            if (AttachedEntity == entity)
             {
-                rope.UpdateTopPivot(Position);
+                AddMovement(movement);
             }
+            HookRope rope = Get<HookRope>();
+            rope.PivotsFollowAttachment(entity, movement);
+        }
+
+        public void SetExactPosition(Vector2 position)
+        {
+            _movementCounter += position - ExactPosition;
         }
 
         public bool CanEmit(Level level)
@@ -201,7 +214,6 @@ namespace Celeste.Mod.Aqua.Core
                 attachedEntity.SetHookAttached(false, this);
             }
             rope.HookAttachEntity(null);
-
             _sprite.Play(HookSprite.Revoke, true);
         }
 
@@ -210,7 +222,6 @@ namespace Celeste.Mod.Aqua.Core
             State = HookStates.Fixed;
             JustFixed = true;
             _fixElapsed = _elapsed;
-
             _sprite.Play(HookSprite.Hit, true);
             Input.Rumble(RumbleStrength.Light, RumbleLength.Short);
         }
@@ -362,7 +373,9 @@ namespace Celeste.Mod.Aqua.Core
         public override void Added(Scene scene)
         {
             Player madeline = Owner;
-            Position = _prevPosition = AquaMaths.Round(madeline.ExactCenter());
+            Position = AquaMaths.Round(madeline.ExactCenter());
+            _prevPosition = madeline.ExactCenter();
+            _movementCounter = madeline.ExactCenter() - Position;
             State = HookStates.Emitting;
             Active = true;
             HookRope rope = Get<HookRope>();
@@ -376,8 +389,10 @@ namespace Celeste.Mod.Aqua.Core
         public override void Removed(Scene scene)
         {
             base.Removed(scene);
+            _movementCounter = Vector2.Zero;
             State = HookStates.None;
-            Velocity = AttachedVelocity = Acceleration = Vector2.Zero;
+            Velocity = AttachedVelocity = Vector2.Zero;
+            _inertia.Clear();
             Active = false;
             JustFixed = false;
             UserLockedLength = 0.0f;
@@ -386,8 +401,10 @@ namespace Celeste.Mod.Aqua.Core
         public override void SceneEnd(Scene scene)
         {
             base.SceneEnd(scene);
+            _movementCounter = Vector2.Zero;
             State = HookStates.None;
-            Velocity = AttachedVelocity = Acceleration = Vector2.Zero;
+            Velocity = AttachedVelocity = Vector2.Zero;
+            _inertia.Clear();
             Active = false;
             JustFixed = false;
         }
@@ -396,7 +413,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Awake(scene);
             Velocity = AttachedVelocity = Vector2.Zero;
-            Acceleration = Vector2.Zero;
+            _inertia.Clear();
             Player player = Owner;
             _playerPrevPosition = player.ExactCenter();
             _elapsed = 0.0f;
@@ -405,6 +422,11 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         public override void Update()
+        {
+            // Leave it empty is to make sure it update last through the hook of EntityList.
+        }
+
+        public void UpdateLast()
         {
             HookRope rope = Get<HookRope>();
             Player player = Owner;
@@ -423,13 +445,14 @@ namespace Celeste.Mod.Aqua.Core
             UpdateColliderOffset(-rope.CurrentDirection);
             Segment playerSeg = new Segment(_playerPrevPosition, player.ExactCenter());
             Vector2 prevPosition = _prevPosition;
-            Vector2 nextPosition = Position;
+            Vector2 nextPosition = ExactPosition;
             Vector2 lastVelocity = AttachedVelocity;
             HookStates lastState = State;
             Entity attachEntity = rope.TopPivot.entity;
             if (attachEntity != null && (!attachEntity.Collidable || attachEntity.Collider == null || !attachEntity.IsHookable() || attachEntity.Scene == null))
             {
                 Revoke();
+                rope.PrepareCheckCollision(playerSeg);
                 rope.CheckCollision(playerSeg);
                 rope.UpdateCurrentDirection();
             }
@@ -443,8 +466,9 @@ namespace Celeste.Mod.Aqua.Core
                     case HookStates.Emitting:
                         nextPosition = rope.DetectHookNextPosition(dt, false, CalculateSpeedCoefficient(false), out changeState);
                         movement = nextPosition - prevPosition;
-                        collided = BresenhamMove(movement, OnCollideEntity);
-                        rope.UpdateTopPivot(Position);
+                        rope.PrepareCheckCollision(playerSeg);
+                        collided = BresenhamMove(movement, OnCollideEntity).Hit;
+                        rope.UpdateTopPivot(ExactPosition);
                         rope.CheckCollision(playerSeg);
                         if (collided && _hitInteractable)
                         {
@@ -460,11 +484,14 @@ namespace Celeste.Mod.Aqua.Core
                         }
                         break;
                     case HookStates.Revoking:
+                        rope.PrepareCheckCollision(playerSeg);
                         rope.CheckCollision(playerSeg);
                         bool revokeHook;
                         nextPosition = rope.DetectHookNextPosition(dt, true, CalculateSpeedCoefficient(true), out revokeHook);
                         Revoked = revokeHook;
-                        Position = nextPosition;
+                        Position = AquaMaths.Round(nextPosition);
+                        _movementCounter = nextPosition - Position;
+                        rope.UpdateTopPivot(ExactPosition);
                         break;
                     case HookStates.Bouncing:
                         movement = BouncingVelocity * dt;
@@ -474,8 +501,9 @@ namespace Celeste.Mod.Aqua.Core
                             movement = Calc.SafeNormalize(movement) * (movement.Length() - (currentLength - rope.MaxLength));
                             changeState = true;
                         }
-                        collided = BresenhamMove(movement, OnCollideEntity);
-                        rope.UpdateTopPivot(Position);
+                        rope.PrepareCheckCollision(playerSeg);
+                        collided = BresenhamMove(movement, OnCollideEntity).Hit;
+                        rope.UpdateTopPivot(ExactPosition);
                         rope.CheckCollision(playerSeg);
                         if (collided && _hitInteractable)
                         {
@@ -510,10 +538,11 @@ namespace Celeste.Mod.Aqua.Core
                         }
                         float shootSpeed = rope.EmitSpeed * speedCoeff;
                         float t = (CurrentAttractor.AttractionTarget - Position).Length() / (shootSpeed * dt);
-                        nextPosition = Position + Calc.SafeNormalize(CurrentAttractor.AttractionTarget - Position) * MathHelper.Clamp(t, 0.0f, 1.0f) * shootSpeed * dt;
+                        nextPosition = ExactPosition + Calc.SafeNormalize(CurrentAttractor.AttractionTarget - ExactPosition) * MathHelper.Clamp(t, 0.0f, 1.0f) * shootSpeed * dt;
                         movement = nextPosition - prevPosition;
-                        collided = BresenhamMove(movement, OnCollideEntity);
-                        rope.UpdateTopPivot(Position);
+                        rope.PrepareCheckCollision(playerSeg);
+                        collided = BresenhamMove(movement, OnCollideEntity).Hit;
+                        rope.UpdateTopPivot(ExactPosition);
                         rope.CheckCollision(playerSeg);
                         if (collided && _hitInteractable)
                         {
@@ -525,25 +554,25 @@ namespace Celeste.Mod.Aqua.Core
                         }
                         else if (t <= 1.0f)
                         {
-                            SetPositionRounded(CurrentAttractor.AttractionTarget);
+                            Position = AquaMaths.Round(CurrentAttractor.AttractionTarget);
+                            _movementCounter = CurrentAttractor.AttractionTarget - Position;
+                            rope.UpdateTopPivot(ExactPosition);
                             rope.HookAttachEntity(CurrentAttractor);
                             CurrentAttractor.SetHookAttached(true, this);
                             Fix();
                         }
                         break;
                     case HookStates.Fixed:
-                        if (WillHitSolids())
-                        {
+                        //if (WillHitSolids())
+                        //{
+                        //    Revoke();
+                        //}
+                        rope.PrepareCheckCollision(playerSeg);
+                        if (!BresenhamMove(Vector2.Zero, null, AttachedEntity).Moved)
                             Revoke();
-                        }
-                        movement = nextPosition - prevPosition;
-                        if (!AquaMaths.IsApproximateZero(movement))
-                        {
-                            Position = prevPosition;
-                            BresenhamMove(movement);
-                        }
+                        rope.UpdateTopPivot(ExactPosition);
                         rope.CheckCollision(playerSeg);
-                        AttachedVelocity = Position - prevPosition;
+                        AttachedVelocity = ExactPosition - prevPosition;
                         rope.UpdateCurrentDirection();
                         break;
                     default:
@@ -551,17 +580,35 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
 
-            Velocity = (Position - _prevPosition) / dt;
-            _prevPosition = Position;
+            _inertia.Update();
+            Velocity = (ExactPosition - _prevPosition) / dt;
+            _prevPosition = ExactPosition;
             _playerPrevPosition = player.ExactCenter();
             if (AquaMaths.IsApproximateZero(dt))
             {
-                Velocity = AttachedVelocity = Acceleration = Vector2.Zero;
+                Velocity = AttachedVelocity = Vector2.Zero;
+                _inertia.SetX(0.0f);
+                _inertia.SetY(0.0f);
             }
             else
             {
                 AttachedVelocity /= dt;
-                Acceleration = (AttachedVelocity - lastVelocity) / dt;
+                Vector2 acceleration = (AttachedVelocity - lastVelocity) / dt;
+                Vector2 current = _inertia.Inertia;
+                if (acceleration.X != 0.0f)
+                {
+                    if (MathF.Sign(acceleration.X) == MathF.Sign(current.X))
+                        _inertia.SetX(MathF.Sign(acceleration.X) * MathF.Max(MathF.Abs(acceleration.X), MathF.Abs(current.X)));
+                    else
+                        _inertia.SetX(acceleration.X + current.X);
+                }
+                if (acceleration.Y != 0.0f)
+                {
+                    if (MathF.Sign(acceleration.Y) == MathF.Sign(current.Y))
+                        _inertia.SetY(MathF.Sign(acceleration.Y) * MathF.Max(MathF.Abs(acceleration.Y), MathF.Abs(current.Y)));
+                    else
+                        _inertia.SetY(acceleration.Y + current.Y);
+                }
             }
             CheckHookColliders();
             base.Update();
@@ -648,9 +695,10 @@ namespace Celeste.Mod.Aqua.Core
             return coeff;
         }
 
-        private bool BresenhamMove(Vector2 movement, Action<CustomCollisionData> onCollide = null)
+        private MoveResult BresenhamMove(Vector2 movement, Action<CustomCollisionData> onCollide = null, params Entity[] ignoreList)
         {
-            _movementCounter = movement;
+            MoveResult result = new MoveResult { Hit = false, Moved = true, };
+            _movementCounter += movement;
             int dx = (int)MathF.Round(_movementCounter.X, MidpointRounding.ToEven);
             int dy = (int)MathF.Round(_movementCounter.Y, MidpointRounding.ToEven);
             if (dx != 0 || dy != 0)
@@ -660,9 +708,9 @@ namespace Celeste.Mod.Aqua.Core
                     int step = MathF.Sign(dy);
                     while (dy != 0)
                     {
-                        MoveResult result = StepMoveV(step, onCollide);
+                        result = StepMoveV(step, onCollide, ignoreList);
                         if (result.Hit)
-                            return true;
+                            return result;
                         dy -= step;
                         if (result.Moved)
                             Y += step;
@@ -673,9 +721,9 @@ namespace Celeste.Mod.Aqua.Core
                     int step = MathF.Sign(dx);
                     while (dx != 0)
                     {
-                        MoveResult result = StepMoveH(step, onCollide);
+                        result = StepMoveH(step, onCollide, ignoreList);
                         if (result.Hit)
-                            return true;
+                            return result;
                         dx -= step;
                         if (result.Moved)
                             X += step;
@@ -700,17 +748,13 @@ namespace Celeste.Mod.Aqua.Core
                     do
                     {
                         error += 2 * absY;
-                        MoveResult result = new MoveResult();
                         if (error >= 2 * absX)
                         {
                             error -= 2 * absX;
                             if ((!swapped && (result = StepMoveV(stepY, onCollide)).Hit) || (swapped && (result = StepMoveH(stepX, onCollide)).Hit))
                             {
-                                if (swapped)
-                                    _movementCounter.X = 0.0f;
-                                else
-                                    _movementCounter.Y = 0.0f;
-                                return true;
+                                _movementCounter = Vector2.Zero;
+                                return result;
                             }
                             else
                             {
@@ -725,11 +769,8 @@ namespace Celeste.Mod.Aqua.Core
                         }
                         if ((!swapped && (result = StepMoveH(stepX, onCollide)).Hit) || (swapped && (result = StepMoveV(stepY, onCollide)).Hit))
                         {
-                            if (swapped)
-                                _movementCounter.Y = 0.0f;
-                            else
-                                _movementCounter.X = 0.0f;
-                            return true;
+                            _movementCounter = Vector2.Zero;
+                            return result;
                         }
                         else
                         {
@@ -745,10 +786,10 @@ namespace Celeste.Mod.Aqua.Core
                     } while (absX != 0);
                 }
             }
-            return false;
+            return result;
         }
 
-        private MoveResult StepMoveH(int step, Action<CustomCollisionData> onCollide)
+        private MoveResult StepMoveH(int step, Action<CustomCollisionData> onCollide, params Entity[] ignoreList)
         {
             if (CheckInteractables(Position + Vector2.UnitX * step))
             {
@@ -760,7 +801,7 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             Entity collideEntity = null;
-            if (this.CheckCollidePlatformsAtXDirection(step, out collideEntity))
+            if (this.CheckCollidePlatformsAtXDirection(step, out collideEntity, ignoreList))
             {
                 AquaDebugger.Assert(collideEntity != null, "Runtime Error");
                 _movementCounter.X = 0f;
@@ -772,7 +813,7 @@ namespace Celeste.Mod.Aqua.Core
             return new MoveResult { Hit = false, Moved = true, };
         }
 
-        private MoveResult StepMoveV(int step, Action<CustomCollisionData> onCollide)
+        private MoveResult StepMoveV(int step, Action<CustomCollisionData> onCollide, params Entity[] ignoreList)
         {
             if (CheckInteractables(Position + Vector2.UnitY * step))
             {
@@ -784,10 +825,10 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             Entity collideEntity = null;
-            if (this.CheckCollidePlatformsAtYDirection(step, out collideEntity))
+            if (this.CheckCollidePlatformsAtYDirection(step, out collideEntity, ignoreList))
             {
                 AquaDebugger.Assert(collideEntity != null, "Runtime Error");
-                _movementCounter.X = 0f;
+                _movementCounter.Y = 0f;
                 CustomCollisionData data;
                 return DoCollideOrNot(collideEntity, Vector2.UnitY * step, onCollide, out data);
             }
@@ -826,6 +867,8 @@ namespace Celeste.Mod.Aqua.Core
 
         private bool CheckInteractables(Vector2 at)
         {
+            if (State == HookStates.Fixed || State == HookStates.Revoking)
+                return false;
             _hitInteractable = false;
             List<Component> interactables = Scene.Tracker.GetComponents<HookInteractable>();
             for (int i = 0; i < interactables.Count; i++)
@@ -987,6 +1030,7 @@ namespace Celeste.Mod.Aqua.Core
         private float _fixElapsed;
         private bool _hitUnhookable = false;
         private bool _hitInteractable = false;
+        private GrappleInertia _inertia = new GrappleInertia(4);
 
         private HookSprite _sprite;
         private Sprite _elecShockSprite;

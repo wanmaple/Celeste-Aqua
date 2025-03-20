@@ -8,6 +8,7 @@ namespace Celeste.Mod.Aqua.Module
         public void Hook()
         {
             InputExtensions.Initialize();
+            EntityListExtensions.Initialize();
             CollideExtensions.Initialize();
             LevelExtrasLoader.Initialize();
             LevelLoaderExtensions.Initialize();
@@ -54,6 +55,7 @@ namespace Celeste.Mod.Aqua.Module
         public void Unhook()
         {
             InputExtensions.Uninitialize();
+            EntityListExtensions.Uninitialize();
             CollideExtensions.Uninitialize();
             LevelExtrasLoader.Uninitialize();
             LevelLoaderExtensions.Uninitialize();

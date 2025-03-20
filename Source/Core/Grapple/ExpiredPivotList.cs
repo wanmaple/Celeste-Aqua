@@ -8,6 +8,8 @@ namespace Celeste.Mod.Aqua.Core
 {
     public class ExpiredPivotList
     {
+        public IReadOnlyList<RopePivot> Pivots => _pivots;
+
         public void RecordPivots(IEnumerable<RopePivot> pivots, Vector2 playerPrevPos)
         {
             _pivots.Clear();

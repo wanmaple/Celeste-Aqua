@@ -16,6 +16,7 @@ namespace Celeste.Mod.Aqua.Core
     public struct RopePivot : IEquatable<RopePivot>
     {
         public Vector2 point;
+        public Vector2 movement;
         public Cornors direction;
         public Entity entity;
 

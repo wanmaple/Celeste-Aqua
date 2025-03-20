@@ -796,6 +796,14 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 else if (grapple != null && grapple.Active)
                 {
+                    // NerdHelper's NodedFlingBird compatibility.
+                    if (self.StateMachine.State == 30)
+                    {
+                        if (grapple != null && grapple.Active && grapple.State != GrapplingHook.HookStates.Revoking)
+                        {
+                            grapple.Revoke();
+                        }
+                    }
                     if (self.Holding != null && grapple.State != GrapplingHook.HookStates.Revoking)
                     {
                         grapple.Revoke();
@@ -1066,69 +1074,6 @@ namespace Celeste.Mod.Aqua.Core
                 return -1;
             var shotCheck = self.GetShootHookCheck();
             float dt = Engine.DeltaTime;
-            //if (DynamicData.For(self).Get<bool>("start_emitting"))
-            //{
-            //    TimeTicker emittingTicker = self.GetTimeTicker("emit_ticker");
-            //    emittingTicker.Tick(Engine.RawDeltaTime);
-            //    if (emittingTicker.CheckRate(0.5f))
-            //    {
-            //        if (!hook.Active)
-            //        {
-            //            Vector2 direction;
-            //            switch (AquaModule.Settings.DefaultShotDirection)
-            //            {
-            //                case DefaultShotDirections.Forward:
-            //                    direction = Vector2.UnitX * (int)self.Facing;
-            //                    break;
-            //                case DefaultShotDirections.ForwardUp:
-            //                    direction = new Vector2((int)self.Facing, -1.0f);
-            //                    direction.Normalize();
-            //                    break;
-            //                case DefaultShotDirections.Up:
-            //                default:
-            //                    direction = -Vector2.UnitY;
-            //                    break;
-            //            }
-            //            if (DynamicData.For(self).Get<bool>("backward_down_shoot"))
-            //            {
-            //                direction = new Vector2(-(int)self.Facing, 1.0f);
-            //                direction.Normalize();
-            //            }
-            //            else if (DynamicData.For(self).Get<bool>("down_shoot"))
-            //            {
-            //                direction = Vector2.UnitY;
-            //            }
-            //            else if (Input.Aim.Value != Vector2.Zero)
-            //            {
-            //                direction = Input.GetAimVector(self.Facing);
-            //            }
-            //            direction.Y *= ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f;
-            //            float emitSpeed = self.SceneAs<Level>().GetState().HookSettings.EmitSpeed;
-            //            float emitSpeedCoeff = self.CalculateEmitParameters(emitSpeed * direction, ref direction);
-            //            if (self.CanEmitHook(direction) && hook.CanEmit(self.level))
-            //            {
-            //                hook.Emit(self.level, direction, emitSpeed, emitSpeedCoeff - 1.0f);
-            //                self.Scene.Add(hook);
-            //            }
-            //        }
-            //        if (emittingTicker.CheckRate(1.0f))
-            //        {
-            //            DynamicData.For(self).Set("start_emitting", false);
-            //            Engine.TimeRateB = 1.0f;
-            //        }
-            //    }
-            //    return -1;
-            //}
-            //if (!hook.Active && (shotCheck.CanThrow || AquaModule.Settings.DownShoot.Pressed || AquaModule.Settings.BackwardDownShoot.Pressed) && !self.IsExhausted() && self.Holding == null)
-            //{
-            //    Engine.TimeRateB = 0.1f;
-            //    DynamicData.For(self).Set("start_emitting", true);
-            //    DynamicData.For(self).Set("down_shoot", AquaModule.Settings.DownShoot.Pressed);
-            //    DynamicData.For(self).Set("backward_down_shoot", AquaModule.Settings.BackwardDownShoot.Pressed);
-            //    TimeTicker emittingTicker = self.GetTimeTicker("emit_ticker");
-            //    emittingTicker.Reset();
-            //    return -1;
-            //} 
             bool downGrapplePressed = AquaModule.Settings.DownShoot.Pressed;
             if (!grapple.Active && (shotCheck.CanThrow || downGrapplePressed) && !self.IsExhausted() && self.Holding == null && grapple.CanEmit(self.level))
             {
@@ -1304,7 +1249,7 @@ namespace Celeste.Mod.Aqua.Core
             GrapplingHook hook = self.GetGrappleHook();
             float gravity = Player.Gravity * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f) * ModInterop.ExtendedVariants.GetCurrentGravityMultiplier();
             self.Speed.Y += gravity * dt;
-            self.Speed -= hook.Acceleration * dt * 0.8f;
+            self.Speed -= hook.Acceleration * dt * 0.5f;
             self.Speed += self.GetWindSpeed() * dt;
         }
 
@@ -1411,7 +1356,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 else
                 {
-                    if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
+                    if ((Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible) && self.GetSpecialSwingDirection() != 0.0f)
                     {
                         // Make player follow the attached entity.
                         Entity attached = hook.AttachedEntity;
@@ -1421,15 +1366,12 @@ namespace Celeste.Mod.Aqua.Core
                             self.MoveH(movement.X, self.OnCollideH);
                             self.MoveV(movement.Y, self.OnCollideV);
                         }
-                        if (self.GetSpecialSwingDirection() != 0.0f)
+                        Vector2 swingDir = hook.SwingDirection;
+                        self.Speed = swingDir * self.GetSpecialSwingDirection() * self.GetSpecialSwingSpeed();
+                        if (self.StateMachine.State == (int)AquaStates.StRedDash && ModInterop.GravityHelper.IsPlayerGravityInverted())
                         {
-                            Vector2 swingDir = hook.SwingDirection;
-                            self.Speed = swingDir * self.GetSpecialSwingDirection() * self.GetSpecialSwingSpeed();
-                            if (self.StateMachine.State == (int)AquaStates.StRedDash && ModInterop.GravityHelper.IsPlayerGravityInverted())
-                            {
-                                // seems red bubble speed won't be handled in GravityHelper
-                                self.Speed.Y *= -1.0f;
-                            }
+                            // seems red bubble speed won't be handled in GravityHelper
+                            self.Speed.Y *= -1.0f;
                         }
                     }
                     else

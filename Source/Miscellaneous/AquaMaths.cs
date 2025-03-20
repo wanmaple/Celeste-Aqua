@@ -61,6 +61,11 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return new Vector2(Fract(vec.X), Fract(vec.Y));
         }
 
+        public static Vector2 Floor(Vector2 vec)
+        {
+            return new Vector2(MathF.Floor(vec.X), MathF.Floor(vec.Y));
+        }
+
         public static Vector2 Round(Vector2 vec)
         {
             return new Vector2(MathF.Round(vec.X), MathF.Round(vec.Y));

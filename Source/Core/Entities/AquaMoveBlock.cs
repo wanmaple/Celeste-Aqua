@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Aqua.Debug;
+using Celeste.Mod.Entities;
 using FMOD.Studio;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -20,8 +21,8 @@ namespace Celeste.Mod.Aqua.Core
             : base(data, offset)
         {
             RunSpeed = Calc.Max(data.Float("speed"), 1.0f);
-            Acceleration = Calc.Max(data.Float("acceleration"), 60.0f);
-            SteerAcceleration = Calc.DegToRad * Calc.Max(data.Float("steer_acceleration"), 60.0f);
+            Acceleration = Calc.Max(data.Float("acceleration"), 300.0f);
+            SteerAcceleration = Calc.DegToRad * Calc.Max(data.Float("steer_acceleration"), 2880.0f);
             Coroutine coroutine = Get<Coroutine>();
             Remove(coroutine);
             Add(new Coroutine(CustomController()));
