@@ -51,6 +51,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public Player Owner { get; set; }
         public float HookSize { get; private set; }
+        public bool IsShooting => State == HookStates.Emitting || State == HookStates.Bouncing || State == HookStates.Attracted;
         public HookSprite Sprite => _sprite;
         public bool ElectricShocking { get; set; } = false;
         public RopeMaterial Material
@@ -157,16 +158,16 @@ namespace Celeste.Mod.Aqua.Core
             _movementCounter += movement;
         }
 
-        public void PivotsFollowAttachment(Entity entity, Vector2 movement)
+        public void PivotsFollowAttachment(Entity entity, Vector2 exactMovement, Vector2 pixelMovement)
         {
             if (State != HookStates.Fixed)
                 return;
             if (AttachedEntity == entity)
             {
-                AddMovement(movement);
+                AddMovement(exactMovement);
             }
             HookRope rope = Get<HookRope>();
-            rope.PivotsFollowAttachment(entity, movement);
+            rope.PivotsFollowAttachment(entity, pixelMovement);
         }
 
         public void SetExactPosition(Vector2 position)
@@ -321,16 +322,27 @@ namespace Celeste.Mod.Aqua.Core
 
         public bool CanGrappleBoost()
         {
+            // grapple boost is not allowed when owner is inside the hook.
+            var levelState = Owner.level.GetState();
+            if ((levelState == null || !levelState.ShortDistanceGrappleBoost) && Vector2.DistanceSquared(Position, Owner.Center) <= 64.0f)
+            {
+                return false;
+            }
+            var shotCheck = Owner.GetShootHookCheck();
             if (JustFixed)
             {
                 if (_elapsed - _lastEmitElapsed <= 0.2f)
                 {
                     return true;
                 }
+                if (shotCheck != null && shotCheck.CanGrappleBoost)
+                {
+                    return true;
+                }
             }
             else
             {
-                if (_elapsed - _fixElapsed <= 0.15f)
+                if (_elapsed - _fixElapsed <= 0.15f && shotCheck != null && shotCheck.CanGrappleBoost)
                 {
                     return true;
                 }
@@ -363,7 +375,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
             Player player = Owner;
-            if (entity.Collider.Collide(pivots[pivots.Count - 1].point, player.ExactCenter()))
+            if (entity.Collider.Collide(pivots[pivots.Count - 1].point, player.Center))
             {
                 return true;
             }
@@ -415,7 +427,7 @@ namespace Celeste.Mod.Aqua.Core
             Velocity = AttachedVelocity = Vector2.Zero;
             _inertia.Clear();
             Player player = Owner;
-            _playerPrevPosition = player.ExactCenter();
+            _playerPrevPosition = player.Center;
             _elapsed = 0.0f;
             _lastEmitElapsed = float.MinValue;
             _fixElapsed = float.MinValue;
@@ -443,7 +455,7 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             UpdateColliderOffset(-rope.CurrentDirection);
-            Segment playerSeg = new Segment(_playerPrevPosition, player.ExactCenter());
+            Segment playerSeg = new Segment(_playerPrevPosition, player.Center);
             Vector2 prevPosition = _prevPosition;
             Vector2 nextPosition = ExactPosition;
             Vector2 lastVelocity = AttachedVelocity;
@@ -468,7 +480,7 @@ namespace Celeste.Mod.Aqua.Core
                         movement = nextPosition - prevPosition;
                         rope.PrepareCheckCollision(playerSeg);
                         collided = BresenhamMove(movement, OnCollideEntity).Hit;
-                        rope.UpdateTopPivot(ExactPosition);
+                        rope.UpdateTopPivot(Position);
                         rope.CheckCollision(playerSeg);
                         if (collided && _hitInteractable)
                         {
@@ -491,7 +503,7 @@ namespace Celeste.Mod.Aqua.Core
                         Revoked = revokeHook;
                         Position = AquaMaths.Round(nextPosition);
                         _movementCounter = nextPosition - Position;
-                        rope.UpdateTopPivot(ExactPosition);
+                        rope.UpdateTopPivot(Position);
                         break;
                     case HookStates.Bouncing:
                         movement = BouncingVelocity * dt;
@@ -503,7 +515,7 @@ namespace Celeste.Mod.Aqua.Core
                         }
                         rope.PrepareCheckCollision(playerSeg);
                         collided = BresenhamMove(movement, OnCollideEntity).Hit;
-                        rope.UpdateTopPivot(ExactPosition);
+                        rope.UpdateTopPivot(Position);
                         rope.CheckCollision(playerSeg);
                         if (collided && _hitInteractable)
                         {
@@ -542,7 +554,7 @@ namespace Celeste.Mod.Aqua.Core
                         movement = nextPosition - prevPosition;
                         rope.PrepareCheckCollision(playerSeg);
                         collided = BresenhamMove(movement, OnCollideEntity).Hit;
-                        rope.UpdateTopPivot(ExactPosition);
+                        rope.UpdateTopPivot(Position);
                         rope.CheckCollision(playerSeg);
                         if (collided && _hitInteractable)
                         {
@@ -556,7 +568,7 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             Position = AquaMaths.Round(CurrentAttractor.AttractionTarget);
                             _movementCounter = CurrentAttractor.AttractionTarget - Position;
-                            rope.UpdateTopPivot(ExactPosition);
+                            rope.UpdateTopPivot(Position);
                             rope.HookAttachEntity(CurrentAttractor);
                             CurrentAttractor.SetHookAttached(true, this);
                             Fix();
@@ -570,7 +582,7 @@ namespace Celeste.Mod.Aqua.Core
                         rope.PrepareCheckCollision(playerSeg);
                         if (!BresenhamMove(Vector2.Zero, null, AttachedEntity).Moved)
                             Revoke();
-                        rope.UpdateTopPivot(ExactPosition);
+                        rope.UpdateTopPivot(Position);
                         rope.CheckCollision(playerSeg);
                         AttachedVelocity = ExactPosition - prevPosition;
                         rope.UpdateCurrentDirection();
@@ -583,7 +595,7 @@ namespace Celeste.Mod.Aqua.Core
             _inertia.Update();
             Velocity = (ExactPosition - _prevPosition) / dt;
             _prevPosition = ExactPosition;
-            _playerPrevPosition = player.ExactCenter();
+            _playerPrevPosition = player.Center;
             if (AquaMaths.IsApproximateZero(dt))
             {
                 Velocity = AttachedVelocity = Vector2.Zero;
@@ -745,29 +757,10 @@ namespace Celeste.Mod.Aqua.Core
                     int stepX = MathF.Sign(dx);
                     int stepY = MathF.Sign(dy);
                     int error = absX - absY;
+                    int x = absX;
                     do
                     {
-                        error += 2 * absY;
-                        if (error >= 2 * absX)
-                        {
-                            error -= 2 * absX;
-                            if ((!swapped && (result = StepMoveV(stepY, onCollide)).Hit) || (swapped && (result = StepMoveH(stepX, onCollide)).Hit))
-                            {
-                                _movementCounter = Vector2.Zero;
-                                return result;
-                            }
-                            else
-                            {
-                                if (result.Moved)
-                                {
-                                    if (!swapped)
-                                        Y += stepY;
-                                    else
-                                        X += stepX;
-                                }
-                            }
-                        }
-                        if ((!swapped && (result = StepMoveH(stepX, onCollide)).Hit) || (swapped && (result = StepMoveV(stepY, onCollide)).Hit))
+                        if ((!swapped && (result = StepMoveH(stepX, onCollide, ignoreList)).Hit) || (swapped && (result = StepMoveV(stepY, onCollide, ignoreList)).Hit))
                         {
                             _movementCounter = Vector2.Zero;
                             return result;
@@ -782,8 +775,29 @@ namespace Celeste.Mod.Aqua.Core
                                     Y += stepY;
                             }
                         }
-                        absX--;
-                    } while (absX != 0);
+
+                        error -= absY;
+                        if (error < 0)
+                        {
+                            if ((!swapped && (result = StepMoveV(stepY, onCollide, ignoreList)).Hit) || (swapped && (result = StepMoveH(stepX, onCollide, ignoreList)).Hit))
+                            {
+                                _movementCounter = Vector2.Zero;
+                                return result;
+                            }
+                            else
+                            {
+                                if (result.Moved)
+                                {
+                                    if (!swapped)
+                                        Y += stepY;
+                                    else
+                                        X += stepX;
+                                }
+                            }
+                            error += absX;
+                        }
+                        x--;
+                    } while (x != 0);
                 }
             }
             return result;

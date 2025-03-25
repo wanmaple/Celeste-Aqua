@@ -7,6 +7,8 @@ namespace Celeste.Mod.Aqua.Module;
 public class AquaModuleSettings : EverestModuleSettings
 {
     public event Action<bool> FeatureEnableChanged;
+    public event Action<bool> DisableGrappleBoostChanged;
+    public event Action<bool> ShortDistanceGrappleBoostChanged;
 
     [SettingName("SETTINGS_THROW_HOOK")]
     [DefaultButtonBinding(Buttons.LeftShoulder, Keys.V)]
@@ -47,6 +49,37 @@ public class AquaModuleSettings : EverestModuleSettings
 
     [SettingName("SETTINGS_AUTO_GRAB_ON")]
     public bool AutoGrabRopeIfPossible { get; set; }
+
+    [SettingName("SETTINGS_DISABLE_GRAPPLE_BOOST")]
+    public bool DisableGrappleBoost
+    {
+        get => _disableGrappleBoost;
+        set
+        {
+            if (_disableGrappleBoost !=value)
+            {
+                _disableGrappleBoost = value;
+                DisableGrappleBoostChanged?.Invoke(_disableGrappleBoost);
+            }
+        }
+    }
+
+    private bool _disableGrappleBoost=false;
+
+    [SettingName("SETTINGS_SHORT_DISTANCE_GRAPPLE_BOOST")]
+    public bool ShortDistanceGrappleBoost
+    {
+        get => _shortDistanceGrappleBoost;
+        set
+        {
+            if (_shortDistanceGrappleBoost != value)
+            {
+                _shortDistanceGrappleBoost = value;
+                ShortDistanceGrappleBoostChanged?.Invoke(_shortDistanceGrappleBoost);
+            }
+        }
+    }
+    private bool _shortDistanceGrappleBoost = false;
 
     [SettingName("SETTINGS_THROW_HOOK_MODE")]
     public ShotHookModes ThrowHookMode { get; set; }

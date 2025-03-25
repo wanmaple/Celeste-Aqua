@@ -25,6 +25,92 @@ namespace Celeste.Mod.Aqua.Core
         private static readonly Vector2 ANCHOR_BL = Vector2.UnitY;
         private static readonly Vector2 ANCHOR_BR = Vector2.One;
 
+        public static bool CheckLineNotOnEdge(this Grid self, Vector2 from, Vector2 to)
+        {
+            from -= self.AbsolutePosition;
+            to -= self.AbsolutePosition;
+            double x0 = from.X;
+            double y0 = from.Y;
+            double x1 = to.X;
+            double y1 = to.Y;
+            // Convert world coordinates to grid coordinates
+            int gridX0 = (int)Math.Floor(x0 / self.CellWidth);
+            int gridY0 = (int)Math.Floor(y0 / self.CellHeight);
+            int gridX1 = (int)Math.Floor(x1 / self.CellWidth);
+            int gridY1 = (int)Math.Floor(y1 / self.CellHeight);
+
+            // Adjust gridX1 and gridY1 if the point is on the edge
+            if (x1 % self.CellWidth == 0 && x1 > x0) gridX1--;
+            if (y1 % self.CellHeight == 0 && y1 > y0) gridY1--;
+
+            // Handle the case where dx or dy is 0
+            if (gridX0 == gridX1 && gridY0 == gridY1)
+            {
+                if (x0 % self.CellWidth != 0 || y0 % self.CellHeight != 0 || x1 % self.CellWidth != 0 || y1 % self.CellHeight != 0)
+                {
+                    if (self[gridX0, gridY0])
+                        return true;
+                }
+            }
+
+            double dx = x1 - x0;
+            double dy = y1 - y0;
+
+            if (dx == 0 && x0 % self.CellWidth == 0)
+                return false;
+            if (dy == 0 && y0 % self.CellHeight == 0)
+                return false;
+
+            double stepX = dx > 0 ? self.CellWidth : -self.CellWidth;
+            double stepY = dy > 0 ? self.CellHeight : -self.CellHeight;
+
+            double tMaxX = dx == 0 ? double.MaxValue : (stepX > 0 ? (gridX0 + 1) * self.CellWidth - x0 : x0 - gridX0 * self.CellWidth) / Math.Abs(dx);
+            double tMaxY = dy == 0 ? double.MaxValue : (stepY > 0 ? (gridY0 + 1) * self.CellHeight - y0 : y0 - gridY0 * self.CellHeight) / Math.Abs(dy);
+
+            double tDeltaX = dx == 0 ? double.MaxValue : Math.Abs(self.CellWidth / dx);
+            double tDeltaY = dy == 0 ? double.MaxValue : Math.Abs(self.CellHeight / dy);
+
+            int x = gridX0;
+            int y = gridY0;
+            // Skip the initial point if it is on the edge and the line is extending away from the grid
+            if (!((x0 % self.CellWidth == 0 && dx < 0) || (y0 % self.CellHeight == 0 && dy < 0)))
+            {
+                if (self[x, y])
+                    return true;
+            }
+
+            while (x != gridX1 || y != gridY1)
+            {
+                if (tMaxX < tMaxY)
+                {
+                    tMaxX += tDeltaX;
+                    x += (int)Math.Sign(dx);
+                }
+                else if (tMaxX > tMaxY)
+                {
+                    tMaxY += tDeltaY;
+                    y += (int)Math.Sign(dy);
+                }
+                else
+                {
+                    // When tMaxX == tMaxY, increment both x and y
+                    tMaxX += tDeltaX;
+                    tMaxY += tDeltaY;
+                    x += (int)Math.Sign(dx);
+                    y += (int)Math.Sign(dy);
+                }
+
+                // Check if the line segment intersects the grid cell
+                if (self[x, y])
+                    return true;
+            }
+
+            // Add the last grid cell if it's not on the edge
+            if (self[gridX1, gridY1])
+                return true;
+            return false;
+        }
+
         public static IReadOnlyList<RopePivot> ConvexPoints(this Grid self)
         {
             List<RopePivot> pivots = DynamicData.For(self).Get<List<RopePivot>>("convex_points");

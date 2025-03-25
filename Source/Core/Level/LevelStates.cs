@@ -1,5 +1,7 @@
-﻿using Celeste.Mod.Aqua.Module;
+﻿using Celeste.Mod.Aqua.Debug;
+using Celeste.Mod.Aqua.Module;
 using Celeste.Mod.Aqua.Rendering;
+using Microsoft.Xna.Framework.Input;
 using Monocle;
 using System;
 using System.Collections.Generic;
@@ -22,6 +24,7 @@ namespace Celeste.Mod.Aqua.Core
             public int MaxShootCount { get; set; }
             public bool ResetCountInTransition { get; set; }
             public bool DisableGrappleBoost { get; set; }
+            public bool ShortDistanceGrappleBoost { get; set; }
             public HookSettings HookSettings { get; set; }
             public List<BackgroundData> Backgrounds { get; private set; }
 
@@ -36,7 +39,10 @@ namespace Celeste.Mod.Aqua.Core
 
             public void Reset(AreaData areaData)
             {
-                var extraMeta = areaData.GetExtraMeta();
+                var meta = areaData.GetExtraMeta();
+                if (meta == null)
+                    meta = new LevelExtras();
+                var extraMeta = meta.Value;
                 FeatureEnabled = extraMeta.FeatureEnabled || AquaModule.Settings.FeatureEnabled;
                 RopeMaterial = (GrapplingHook.RopeMaterial)extraMeta.HookMaterial;
                 HookStyle = extraMeta.HookStyle;
@@ -45,6 +51,7 @@ namespace Celeste.Mod.Aqua.Core
                 MaxShootCount = extraMeta.MaxShootCount;
                 ResetCountInTransition = extraMeta.ResetCountInTransition;
                 DisableGrappleBoost = extraMeta.DisableGrappleBoost;
+                ShortDistanceGrappleBoost = extraMeta.ShortDistanceGrappleBoost;
                 HookSettings = extraMeta.HookSettings.Clone();
                 Backgrounds = new List<BackgroundData>(extraMeta.Backgrounds);
             }
@@ -77,6 +84,8 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self);
             AquaModule.Settings.FeatureEnableChanged += self.AquaSettings_FeatureEnableChanged;
+            AquaModule.Settings.DisableGrappleBoostChanged += self.AquaSettings_DisableGrappleBoostChanged;
+            AquaModule.Settings.ShortDistanceGrappleBoostChanged += self.AquaSettings_ShortDistanceGrappleBoostChanged;
             AquaModule.Settings.HookSettings.ParameterChanged += self. AquaHookSettings_ParameterChanged;
         }
 
@@ -84,6 +93,8 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self);
             AquaModule.Settings.FeatureEnableChanged -= self.AquaSettings_FeatureEnableChanged;
+            AquaModule.Settings.DisableGrappleBoostChanged -= self.AquaSettings_DisableGrappleBoostChanged;
+            AquaModule.Settings.ShortDistanceGrappleBoostChanged -= self.AquaSettings_ShortDistanceGrappleBoostChanged;
             AquaModule.Settings.HookSettings.ParameterChanged -= self.AquaHookSettings_ParameterChanged;
         }
 
@@ -142,8 +153,8 @@ namespace Celeste.Mod.Aqua.Core
         private static void AquaSettings_FeatureEnableChanged(this Level self, bool enabled)
         {
             AreaData areaData = AreaData.Get(self.Session.Area);
-            LevelExtras extras = areaData.GetExtraMeta();
-            if (!extras.DisableUserCustomParameters)
+            LevelExtras? extras = areaData.GetExtraMeta();
+            if (extras == null || !extras.Value.DisableUserCustomParameters)
             {
                 LevelState state = self.GetState();
                 if (state != null)
@@ -153,11 +164,39 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        private static void AquaSettings_DisableGrappleBoostChanged(this Level self, bool value)
+        {
+            AreaData areaData = AreaData.Get(self.Session.Area);
+            LevelExtras? extras = areaData.GetExtraMeta();
+            if (extras == null || !extras.Value.DisableUserCustomParameters)
+            {
+                LevelState state = self.GetState();
+                if (state != null)
+                {
+                    state.DisableGrappleBoost = value;
+                }
+            }
+        }
+
+        private static void AquaSettings_ShortDistanceGrappleBoostChanged(this Level self, bool value)
+        {
+            AreaData areaData = AreaData.Get(self.Session.Area);
+            LevelExtras? extras = areaData.GetExtraMeta();
+            if (extras == null || !extras.Value.DisableUserCustomParameters)
+            {
+                LevelState state = self.GetState();
+                if (state != null)
+                {
+                    state.ShortDistanceGrappleBoost = value;
+                }
+            }
+        }
+
         private static void AquaHookSettings_ParameterChanged(this Level self, string parameter, int value)
         {
             AreaData areaData = AreaData.Get(self.Session.Area);
-            LevelExtras extras = areaData.GetExtraMeta();
-            if (!extras.DisableUserCustomParameters)
+            LevelExtras? extras = areaData.GetExtraMeta();
+            if (extras == null || !extras.Value.DisableUserCustomParameters)
             {
                 LevelState state = self.GetState();
                 if (state != null)
@@ -203,14 +242,25 @@ namespace Celeste.Mod.Aqua.Core
             {
                 AquaModule.Settings.AutoGrabRopeIfPossible = !AquaModule.Settings.AutoGrabRopeIfPossible;
             }
+#if DEBUG
+            if (MInput.Keyboard.Pressed(Keys.T))
+            {
+                string testYaml = "grapple_test";
+                if (Everest.Content.TryGet(testYaml, out ModAsset asset) && asset.TryDeserialize(out GrappleUnitTest test))
+                {
+                    HookRope rope = new HookRope(90.0f, GrapplingHook.RopeMaterial.Default);
+                    rope.DebugTest(test);
+                }
+            }
+#endif
         }
 
         public static void SyncPropertyIfPossible(this Level self, Action<LevelState> action)
         {
             AreaData areaData = AreaData.Get(self.Session.Area);
-            LevelExtras extras = areaData.GetExtraMeta();
+            LevelExtras? extras = areaData.GetExtraMeta();
             LevelState state = self.GetState();
-            if (!extras.DisableUserCustomParameters && state != null)
+            if ((extras == null || !extras.Value.DisableUserCustomParameters) && state != null)
             {
                 action?.Invoke(state);
             }

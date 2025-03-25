@@ -91,6 +91,20 @@ namespace Celeste.Mod.Aqua.Core
                         state.DisableGrappleBoost = false;
                     }
                     break;
+                case "ShortDistanceGrappleBoost":
+                    if (int.TryParse(Value, out int num3) && num3 > 0)
+                    {
+                        state.ShortDistanceGrappleBoost = true;
+                    }
+                    else if (bool.TryParse(Value, out bool bl) && bl)
+                    {
+                        state.ShortDistanceGrappleBoost = true;
+                    }
+                    else
+                    {
+                        state.ShortDistanceGrappleBoost = false;
+                    }
+                    break;
                 case "HookStyle":
                     if (int.TryParse(Value, out int style))
                     {

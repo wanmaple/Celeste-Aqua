@@ -61,6 +61,11 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return new Vector2(Fract(vec.X), Fract(vec.Y));
         }
 
+        public static int FloorToInt(float num)
+        {
+            return (int)MathF.Floor(num);
+        }
+
         public static Vector2 Floor(Vector2 vec)
         {
             return new Vector2(MathF.Floor(vec.X), MathF.Floor(vec.Y));
@@ -114,10 +119,21 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
         public static bool IsPointOnSegment(Vector2 pt, Vector2 seg1, Vector2 seg2)
         {
-            if (seg1 == seg2) return false;
+            if (seg1 == seg2) return pt == seg1;
             float minX = MathF.Min(seg1.X, seg2.X);
             float maxX = MathF.Max(seg1.X, seg2.X);
-            return Cross(pt - seg1, seg2 - seg1) == 0.0f && pt.X >= minX && pt.X <= maxX;
+            bool inside;
+            if (minX != maxX)
+            {
+                inside = pt.X >= minX && pt.X <= maxX;
+            }
+            else
+            {
+                float minY = MathF.Min(seg1.Y, seg2.Y);
+                float maxY = MathF.Max(seg1.Y, seg2.Y);
+                inside = pt.Y >= minY && pt.Y <= maxY;
+            }
+            return Cross(pt - seg1, seg2 - seg1) == 0.0f && inside;
         }
 
         public static bool IsPointInsideTriangle(Vector2 pt, Vector2 tri1, Vector2 tri2, Vector2 tri3, bool includeEdge = false)

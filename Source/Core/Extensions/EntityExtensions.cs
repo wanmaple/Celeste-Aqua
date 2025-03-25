@@ -197,7 +197,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private static bool OnSimpleHookToPlayer(this Entity self, GrapplingHook hook, Vector2 at)
         {
-            if (hook.State == GrapplingHook.HookStates.Emitting || hook.State == GrapplingHook.HookStates.Bouncing)
+            if (hook.IsShooting)
             {
                 hook.Revoke();
                 MoveToward moveToward = DynamicData.For(self).Get<MoveToward>("move_toward");
@@ -395,14 +395,14 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("on_detach_callback", onDetach);
         }
 
-        public static void MakeGrappleFollowMe(this Entity self, Vector2 movement)
+        public static void MakeGrappleFollowMe(this Entity self, Vector2 exactMovement, Vector2 pixelMovement)
         {
-            if (movement == Vector2.Zero)
+            if (exactMovement == Vector2.Zero)
                 return;
             var grapples = self.Scene.Tracker.GetEntities<GrapplingHook>();
             foreach (GrapplingHook grapple in grapples)
             {
-                grapple.PivotsFollowAttachment(self, movement);
+                grapple.PivotsFollowAttachment(self, exactMovement, pixelMovement);
             }
         }
 
@@ -508,7 +508,7 @@ namespace Celeste.Mod.Aqua.Core
                                 onMove?.Invoke(move);
                                 Vector2 newPosition = self.Position;
                                 Vector2 movement = newPosition - oldPosition;
-                                self.MakeGrappleFollowMe(movement);
+                                self.MakeGrappleFollowMe(movement, movement);
                             };
                             break;
                         }

@@ -276,7 +276,8 @@ namespace Celeste.Mod.Aqua.Core
 
         private void NaiveMoveH(float moveH)
         {
-            Vector2 oldPosition = ExactPosition;
+            Vector2 oldPos = Position;
+            Vector2 oldExactPos = ExactPosition;
             _movementCounter.X += moveH;
             int num = (int)MathF.Round(_movementCounter.X);
             if (num != 0)
@@ -284,14 +285,16 @@ namespace Celeste.Mod.Aqua.Core
                 _movementCounter.X -= num;
                 Position.X += num;
             }
-            Vector2 newPosition = ExactPosition;
-            Vector2 movement = newPosition - oldPosition;
-            this.MakeGrappleFollowMe(movement);
+            Vector2 newExactPos = ExactPosition;
+            Vector2 exactMovement = newExactPos - oldExactPos;
+            Vector2 pixels = Position - oldPos;
+            this.MakeGrappleFollowMe(exactMovement, pixels);
         }
 
         private void NaiveMoveV(float moveV)
         {
-            Vector2 oldPosition = ExactPosition;
+            Vector2 oldPos = Position;
+            Vector2 oldExactPos = ExactPosition;
             _movementCounter.Y += moveV;
             int num = (int)Math.Round(_movementCounter.Y);
             if (num != 0)
@@ -299,14 +302,16 @@ namespace Celeste.Mod.Aqua.Core
                 _movementCounter.Y -= num;
                 Position.Y += num;
             }
-            Vector2 newPosition = ExactPosition;
-            Vector2 movement = newPosition - oldPosition;
-            this.MakeGrappleFollowMe(movement);
+            Vector2 newExactPos = ExactPosition;
+            Vector2 exactMovement = newExactPos - oldExactPos;
+            Vector2 pixels = Position - oldPos;
+            this.MakeGrappleFollowMe(exactMovement, pixels);
         }
 
         public void MoveH(float moveH, Func<Vector2, bool> collisionCheck)
         {
-            Vector2 oldPosition = ExactPosition;
+            Vector2 oldPos = Position;
+            Vector2 oldExactPos = ExactPosition;
             _movementCounter.X += moveH;
             int num = (int)MathF.Round(_movementCounter.X);
             if (num != 0)
@@ -323,14 +328,16 @@ namespace Celeste.Mod.Aqua.Core
                     Position.X += step;
                 }
             }
-            Vector2 newPosition = ExactPosition;
-            Vector2 movement = newPosition - oldPosition;
-            this.MakeGrappleFollowMe(movement);
+            Vector2 newExactPos = ExactPosition;
+            Vector2 exactMovement = newExactPos - oldExactPos;
+            Vector2 pixels = Position - oldPos;
+            this.MakeGrappleFollowMe(exactMovement, pixels);
         }
 
         public void MoveV(float moveV, Func<Vector2, bool> collisionCheck)
         {
-            Vector2 oldPosition = ExactPosition;
+            Vector2 oldPos = Position;
+            Vector2 oldExactPos = ExactPosition;
             _movementCounter.Y += moveV;
             int num = (int)MathF.Round(_movementCounter.Y);
             if (num != 0)
@@ -347,9 +354,10 @@ namespace Celeste.Mod.Aqua.Core
                     Position.Y += step;
                 }
             }
-            Vector2 newPosition = ExactPosition;
-            Vector2 movement = newPosition - oldPosition;
-            this.MakeGrappleFollowMe(movement);
+            Vector2 newExactPos = ExactPosition;
+            Vector2 exactMovement = newExactPos - oldExactPos;
+            Vector2 pixels = Position - oldPos;
+            this.MakeGrappleFollowMe(exactMovement, pixels);
         }
 
         protected void EmitParticles(Vector2 normal)

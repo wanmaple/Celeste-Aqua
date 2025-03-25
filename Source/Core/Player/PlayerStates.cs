@@ -161,7 +161,7 @@ namespace Celeste.Mod.Aqua.Core
         private static bool IsEmittingHook(this Player self)
         {
             GrapplingHook hook = self.GetGrappleHook();
-            if (hook != null && hook.Active && (hook.State == GrapplingHook.HookStates.Emitting || hook.State == GrapplingHook.HookStates.Bouncing))
+            if (hook != null && hook.Active && hook.IsShooting)
             {
                 return true;
             }
@@ -171,7 +171,7 @@ namespace Celeste.Mod.Aqua.Core
         private static float CalculateNormalMoveCoefficient(this Player self)
         {
             var hook = self.GetGrappleHook();
-            if (hook != null && hook.Active && (hook.State == GrapplingHook.HookStates.Emitting || hook.State == GrapplingHook.HookStates.Bouncing))
+            if (hook != null && hook.Active && hook.IsShooting)
             {
                 return 0.5f;
             }
@@ -264,7 +264,7 @@ namespace Celeste.Mod.Aqua.Core
             int nextState = orig(self);
             GrapplingHook grapple = self.GetGrappleHook();
             ShotHookCheck shotCheck = self.GetShootHookCheck();
-            if (shotCheck != null && shotCheck.CanRevoke && grapple != null && grapple.Active && grapple.State == GrapplingHook.HookStates.Fixed)
+            if (shotCheck != null && grapple != null && grapple.Active && grapple.State == GrapplingHook.HookStates.Fixed && shotCheck.CanRevoke)
             {
                 grapple.Revoke();
             }
@@ -633,7 +633,7 @@ namespace Celeste.Mod.Aqua.Core
                 hook.Revoke();
                 return (int)AquaStates.StNormal;
             }
-            else if (state != null && !state.DisableGrappleBoost && shotCheck.CanGrappleBoost && hook.CanGrappleBoost())
+            else if (state != null && !state.DisableGrappleBoost && hook.CanGrappleBoost())
             {
                 self.GrappleBoost();
             }
@@ -766,6 +766,11 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void Player_Update(On.Celeste.Player.orig_Update orig, Player self)
         {
+            if (MInput.Keyboard.Pressed(Microsoft.Xna.Framework.Input.Keys.Space))
+            {
+                Celeste.Freeze(0.1f);
+                return;
+            }
             if (self.StateMachine.State == (int)AquaStates.StElectricShock)
             {
                 foreach (var com in self.Components)
@@ -1041,7 +1046,19 @@ namespace Celeste.Mod.Aqua.Core
         {
             float lineSpeed = Vector2.Dot(speed, swingDirection);
             var levelState = self.SceneAs<Level>().GetState();
-            lineSpeed = Calc.Clamp(lineSpeed, -levelState.HookSettings.MaxLineSpeed, levelState.HookSettings.MaxLineSpeed);
+            int sign = MathF.Sign(lineSpeed);
+            if (MathF.Abs(lineSpeed) > levelState.HookSettings.MaxLineSpeed)
+            {
+                if (sign > 0)
+                {
+                    lineSpeed = MathF.Max(lineSpeed - 120.0f, levelState.HookSettings.MaxLineSpeed);
+                }
+                else
+                {
+                    lineSpeed = MathF.Min(lineSpeed + 120.0f, -levelState.HookSettings.MaxLineSpeed);
+                }
+            }
+            //lineSpeed = Calc.Clamp(lineSpeed, -levelState.HookSettings.MaxLineSpeed, levelState.HookSettings.MaxLineSpeed);
             return lineSpeed * swingDirection;
         }
 
@@ -1125,60 +1142,60 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     self.SwingJump(dt);
                 }
-                else if (!self.level.GetState().DisableGrappleBoost && grapple.JustFixed && (grapple.CanGrappleBoost() || shotCheck.CanGrappleBoost))
+                else if (!self.level.GetState().DisableGrappleBoost && grapple.CanGrappleBoost())
                 {
                     self.GrappleBoost();
                 }
-                else if (shotCheck.CanRevoke || shotCheck.CanGrappleBoost)
+                else if (grapple.IsShooting)
                 {
-                    if (grapple.State == GrapplingHook.HookStates.Emitting)
+                    if (shotCheck.CanGrappleBoost)
                     {
                         grapple.RecordEmitElapsed();
-                    }
-                    else if (grapple.State == GrapplingHook.HookStates.Fixed)
-                    {
-                        if (!self.level.GetState().DisableGrappleBoost && shotCheck.CanGrappleBoost && grapple.CanGrappleBoost())
-                        {
-                            self.GrappleBoost();
-                        }
-                        else if (shotCheck.CanRevoke)
-                        {
-                            grapple.Revoke();
-                        }
                     }
                 }
                 else if (grapple.State == GrapplingHook.HookStates.Fixed)
                 {
-                    if (ModInterop.GravityHelper.IsPlayerGravityInverted())
-                        self.Speed.Y = -self.Speed.Y;
-                    if (!self.onGround && grapple.ReachLockedLength(self.Center))
+                    if (!self.level.GetState().DisableGrappleBoost && grapple.CanGrappleBoost())
                     {
-                        Vector2 ropeDirection = grapple.RopeDirection;
-                        Vector2 swingDirection = grapple.SwingDirection;
-                        self.HandleSwingSpeed(dt);
-                        float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
-                        grapple.AlongRopeSpeed = speedAlongRope;
-                        if (speedAlongRope >= 0.0f)
-                        {
-                            DynamicData.For(self).Set("rope_is_loosen", false);
-                            self.Speed = self.TurnToTangentSpeed(self.Speed, swingDirection);
-                        }
+                        self.GrappleBoost();
                     }
-                    else if (grapple.ReachLockedLength(self.Center))
+                    else if (shotCheck.CanRevoke)
                     {
-                        Vector2 ropeDirection = grapple.RopeDirection;
-                        float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
-                        grapple.AlongRopeSpeed = speedAlongRope;
+                        grapple.Revoke();
                     }
                     else
                     {
-                        grapple.AlongRopeSpeed = 0.0f;
+                        if (ModInterop.GravityHelper.IsPlayerGravityInverted())
+                            self.Speed.Y = -self.Speed.Y;
+                        if (!self.onGround && grapple.ReachLockedLength(self.Center))
+                        {
+                            Vector2 ropeDirection = grapple.RopeDirection;
+                            Vector2 swingDirection = grapple.SwingDirection;
+                            self.HandleSwingSpeed(dt);
+                            float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
+                            grapple.AlongRopeSpeed = speedAlongRope;
+                            if (speedAlongRope >= 0.0f)
+                            {
+                                DynamicData.For(self).Set("rope_is_loosen", false);
+                                self.Speed = self.TurnToTangentSpeed(self.Speed, swingDirection);
+                            }
+                        }
+                        else if (grapple.ReachLockedLength(self.Center))
+                        {
+                            Vector2 ropeDirection = grapple.RopeDirection;
+                            float speedAlongRope = Vector2.Dot(self.Speed, ropeDirection);
+                            grapple.AlongRopeSpeed = speedAlongRope;
+                        }
+                        else
+                        {
+                            grapple.AlongRopeSpeed = 0.0f;
+                        }
+                        if (ModInterop.GravityHelper.IsPlayerGravityInverted())
+                            self.Speed.Y = -self.Speed.Y;
+                        GrappleRelatedFields com = self.Get<GrappleRelatedFields>();
+                        com.HasFixingSpeed = true;
+                        com.FixingSpeed = self.Speed;
                     }
-                    if (ModInterop.GravityHelper.IsPlayerGravityInverted())
-                        self.Speed.Y = -self.Speed.Y;
-                    GrappleRelatedFields com = self.Get<GrappleRelatedFields>();
-                    com.HasFixingSpeed = true;
-                    com.FixingSpeed = self.Speed;
                 }
             }
             return -1;
@@ -1297,12 +1314,6 @@ namespace Celeste.Mod.Aqua.Core
             float speedCoeff = Calc.Clamp(emitSpeed.Length() / oldSpeed, 1.0f - MAX_COEFFICIENT, 1.0f + MAX_COEFFICIENT);
             direction = Calc.SafeNormalize(emitSpeed);
             return speedCoeff;
-            //float maxSpeedUp = 0.25f;
-            //direction.X *= (1.0f + windSpeed.X / 800.0f * maxSpeedUp * MathF.Sign(direction.X));
-            //direction.Y *= (1.0f + windSpeed.Y / 800.0f * maxSpeedUp * MathF.Sign(direction.Y));
-            //float speedCoeff = direction.Length();
-            //direction.Normalize();
-            //return speedCoeff;
         }
 
         private static bool IsRopeSwingingUp(Vector2 direction)

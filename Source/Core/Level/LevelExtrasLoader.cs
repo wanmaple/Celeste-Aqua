@@ -20,7 +20,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void AreaData_Construct(On.Celeste.AreaData.orig_ctor orig, AreaData self)
         {
             orig(self);
-            self.SetExtraMeta(new LevelExtras());
+            self.SetExtraMeta(null);
         }
 
         private static void AreaData_Load(On.Celeste.AreaData.orig_Load orig)
@@ -31,7 +31,6 @@ namespace Celeste.Mod.Aqua.Core
                 string extraMetaPath = "Maps/" + map.Mode[0].Path + ".extras.meta";
                 if (!Everest.Content.TryGet(extraMetaPath, out ModAsset metadata) || !metadata.TryDeserialize(out LevelExtras meta))
                 {
-                    map.SetExtraMeta(new LevelExtras());
                     continue;
                 }
                 AquaDebugger.LogInfo("Extra meta of map {0} is found.", map.Mode[0].Path);
@@ -39,12 +38,12 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        public static LevelExtras GetExtraMeta(this AreaData self)
+        public static LevelExtras? GetExtraMeta(this AreaData self)
         {
-            return DynamicData.For(self).Get<LevelExtras>("extra_meta");
+            return DynamicData.For(self).Get<LevelExtras?>("extra_meta");
         }
 
-        public static void SetExtraMeta(this AreaData self, LevelExtras extras)
+        public static void SetExtraMeta(this AreaData self, LevelExtras? extras)
         {
             DynamicData.For(self).Set("extra_meta", extras);
         }
