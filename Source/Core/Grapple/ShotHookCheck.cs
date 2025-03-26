@@ -1,4 +1,4 @@
-﻿using Celeste.Mod.Aqua.Debug;
+﻿using Celeste.Mod.Aqua.Module;
 using Monocle;
 
 namespace Celeste.Mod.Aqua.Core
@@ -10,8 +10,8 @@ namespace Celeste.Mod.Aqua.Core
             get
             {
                 if (_mode == ShotHookModes.Default)
-                    return _key.Pressed;
-                return (_lastFirstNotPressFrame >= _lastRevokedFrame) && _key.Check;
+                    return AquaModule.Settings.ThrowHook.Pressed;
+                return (_lastFirstNotPressFrame >= _lastRevokedFrame) && AquaModule.Settings.ThrowHook.Check;
             }
         }
 
@@ -20,8 +20,8 @@ namespace Celeste.Mod.Aqua.Core
             get
             {
                 if (_mode == ShotHookModes.Default)
-                    return _key.Pressed;
-                return !_key.Check;
+                    return AquaModule.Settings.ThrowHook.Pressed;
+                return !AquaModule.Settings.ThrowHook.Check;
             }
         }
 
@@ -30,14 +30,13 @@ namespace Celeste.Mod.Aqua.Core
             get
             {
                 if (_mode == ShotHookModes.Default)
-                    return _key.Pressed;
-                return _key.Check && _lastFirstNotPressFrame > _lastFirstPressFrame;
+                    return AquaModule.Settings.ThrowHook.Pressed;
+                return AquaModule.Settings.ThrowHook.Check && _lastFirstNotPressFrame > _lastFirstPressFrame;
             }
         }
 
-        public ShotHookCheck(ButtonBinding key, ShotHookModes mode)
+        public ShotHookCheck(ShotHookModes mode)
         {
-            _key = key;
             _mode = mode;
             Reset();
         }
@@ -45,7 +44,7 @@ namespace Celeste.Mod.Aqua.Core
         public void EndPeriod()
         {
             _lastRevokedFrame = Engine.FrameCounter;
-            if (!_key.Check)
+            if (!AquaModule.Settings.ThrowHook.Check)
                 _lastFirstNotPressFrame = _lastRevokedFrame;
         }
 
@@ -59,18 +58,17 @@ namespace Celeste.Mod.Aqua.Core
 
         public void Update()
         {
-            if (_key.Check && !_lastPressed)
+            if (AquaModule.Settings.ThrowHook.Check && !_lastPressed)
             {
                 _lastFirstPressFrame = Engine.FrameCounter;
             }
-            else if (!_key.Check && _lastPressed)
+            else if (!AquaModule.Settings.ThrowHook.Check && _lastPressed)
             {
                 _lastFirstNotPressFrame = Engine.FrameCounter;
             }
-            _lastPressed = _key.Check;
+            _lastPressed = AquaModule.Settings.ThrowHook.Check;
         }
 
-        private ButtonBinding _key;
         private ShotHookModes _mode;
         private ulong _lastFirstPressFrame;
         private ulong _lastFirstNotPressFrame;

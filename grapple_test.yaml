@@ -1,17 +1,17 @@
 PreviousPivots:
-  - X: 32
-    Y: 352
-  - X: 32
+  - X: 65
+    Y: 334
+  - X: 61
     Y: 394.5
 CurrentPivot1:
-  X: 32
-  Y: 352
+  X: 64
+  Y: 368
 CurrentPivot2:
-  X: 30
+  X: 65
   Y: 394.5
 PreviousPoint:
-  X: 32
-  Y: 360
+  X: 64
+  Y: 352
 CurrentPoint:
-  X: 32
-  Y: 360
+  X: 64
+  Y: 352

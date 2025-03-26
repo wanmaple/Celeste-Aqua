@@ -125,11 +125,72 @@ entities.Aqua/Tie Rod.attributes.description.flag=Which flag of entities to cont
 entities.Aqua/Slidable Ice Block.attributes.description.hook_smooth=Indicates how easy the hook will slide on the surface.
 
 # Unhookable Area
-entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether the area attaches to entities or blocks, and can be moved by them.
+entities.Aqua/Unhookable Area.attributes.description.attachToSolid=Whether the area attaches to entities or blocks, and can be moved by them.
+entities.Aqua/Unhookable Area.attributes.description.block_up=Whether to block grapple from top.
+entities.Aqua/Unhookable Area.attributes.description.block_down=Whether to block grapple from bottom.
+entities.Aqua/Unhookable Area.attributes.description.block_left=Whether to block grapple from left.
+entities.Aqua/Unhookable Area.attributes.description.block_right=Whether to block grapple from right.
 
 # Unhookable Crystal
 entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether the spinner attaches to entities or blocks, and can be moved by them.
 entities.Aqua/Unhookable Crystal.attributes.description.color=Main color of the spinner or connector.
+
+# Unhookable Spikes Up
+entities.Aqua/Unhookable Spike Up.placements.name.up_default=Unhookable Spikes (Up, Default)
+entities.Aqua/Unhookable Spike Up.placements.name.up_outline=Unhookable Spikes (Up, Outline)
+entities.Aqua/Unhookable Spike Up.placements.name.up_cliffside=Unhookable Spikes (Up, Cliffside)
+entities.Aqua/Unhookable Spike Up.placements.name.up_reflection=Unhookable Spikes (Up, Reflection)
+entities.Aqua/Unhookable Spike Up.placements.name.up_tentacles=Unhookable Spikes (Up, Tentacles)
+entities.Aqua/Unhookable Spike Up.attributes.description.type=Determines the visual appearance of the spike.
+entities.Aqua/Unhookable Spike Up.attributes.description.color=Color of the spikes.
+entities.Aqua/Unhookable Spike Up.attributes.description.attach=Whether to attach to solid or jump through.
+entities.Aqua/Unhookable Spike Up.attributes.description.block_up=Whether to block grapple from top.
+entities.Aqua/Unhookable Spike Up.attributes.description.block_down=Whether to block grapple from bottom.
+entities.Aqua/Unhookable Spike Up.attributes.description.block_left=Whether to block grapple from left.
+entities.Aqua/Unhookable Spike Up.attributes.description.block_right=Whether to block grapple from right.
+
+# Unhookable Spikes Right
+entities.Aqua/Unhookable Spike Right.placements.name.right_default=Unhookable Spikes (Right, Default)
+entities.Aqua/Unhookable Spike Right.placements.name.right_outline=Unhookable Spikes (Right, Outline)
+entities.Aqua/Unhookable Spike Right.placements.name.right_cliffside=Unhookable Spikes (Right, Cliffside)
+entities.Aqua/Unhookable Spike Right.placements.name.right_reflection=Unhookable Spikes (Right, Reflection)
+entities.Aqua/Unhookable Spike Right.placements.name.right_tentacles=Unhookable Spikes (Right, Tentacles)
+entities.Aqua/Unhookable Spike Right.attributes.description.type=Determines the visual appearance of the spike.
+entities.Aqua/Unhookable Spike Right.attributes.description.color=Color of the spikes.
+entities.Aqua/Unhookable Spike Right.attributes.description.attach=Whether to attach to solid or jump through.
+entities.Aqua/Unhookable Spike Right.attributes.description.block_up=Whether to block grapple from top.
+entities.Aqua/Unhookable Spike Right.attributes.description.block_down=Whether to block grapple from bottom.
+entities.Aqua/Unhookable Spike Right.attributes.description.block_left=Whether to block grapple from left.
+entities.Aqua/Unhookable Spike Right.attributes.description.block_right=Whether to block grapple from right.
+
+
+# Unhookable Spikes Down
+entities.Aqua/Unhookable Spike Down.placements.name.down_default=Unhookable Spikes (Down, Default)
+entities.Aqua/Unhookable Spike Down.placements.name.down_outline=Unhookable Spikes (Down, Outline)
+entities.Aqua/Unhookable Spike Down.placements.name.down_cliffside=Unhookable Spikes (Down, Cliffside)
+entities.Aqua/Unhookable Spike Down.placements.name.down_reflection=Unhookable Spikes (Down, Reflection)
+entities.Aqua/Unhookable Spike Down.placements.name.down_tentacles=Unhookable Spikes (Down, Tentacles)
+entities.Aqua/Unhookable Spike Down.attributes.description.type=Determines the visual appearance of the spike.
+entities.Aqua/Unhookable Spike Down.attributes.description.color=Color of the spikes.
+entities.Aqua/Unhookable Spike Down.attributes.description.attach=Whether to attach to solid or jump through.
+entities.Aqua/Unhookable Spike Down.attributes.description.block_up=Whether to block grapple from top.
+entities.Aqua/Unhookable Spike Down.attributes.description.block_down=Whether to block grapple from bottom.
+entities.Aqua/Unhookable Spike Down.attributes.description.block_left=Whether to block grapple from left.
+entities.Aqua/Unhookable Spike Down.attributes.description.block_right=Whether to block grapple from right.
+
+# Unhookable Spikes Left
+entities.Aqua/Unhookable Spike Left.placements.name.left_default=Unhookable Spikes (Left, Default)
+entities.Aqua/Unhookable Spike Left.placements.name.left_outline=Unhookable Spikes (Left, Outline)
+entities.Aqua/Unhookable Spike Left.placements.name.left_cliffside=Unhookable Spikes (Left, Cliffside)
+entities.Aqua/Unhookable Spike Left.placements.name.left_reflection=Unhookable Spikes (Left, Reflection)
+entities.Aqua/Unhookable Spike Left.placements.name.left_tentacles=Unhookable Spikes (Left, Tentacles)
+entities.Aqua/Unhookable Spike Left.attributes.description.type=Determines the visual appearance of the spike.
+entities.Aqua/Unhookable Spike Left.attributes.description.color=Color of the spikes.
+entities.Aqua/Unhookable Spike Left.attributes.description.attach=Whether to attach to solid or jump through.
+entities.Aqua/Unhookable Spike Left.attributes.description.block_up=Whether to block grapple from top.
+entities.Aqua/Unhookable Spike Left.attributes.description.block_down=Whether to block grapple from bottom.
+entities.Aqua/Unhookable Spike Left.attributes.description.block_left=Whether to block grapple from left.
+entities.Aqua/Unhookable Spike Left.attributes.description.block_right=Whether to block grapple from right.
 
 # Grapple Filter
 entities.Aqua/Grapple Filter.attributes.description.color=Area main color.
@@ -296,6 +357,7 @@ entities.Aqua/Gravity Spike Right.attributes.description.type=Determines the vis
 entities.Aqua/Gravity Spike Right.attributes.description.color=Color of the spikes.
 entities.Aqua/Gravity Spike Right.attributes.description.gravity=The spikes will be active in specific gravity circumstance.
 entities.Aqua/Gravity Spike Right.attributes.description.disable_type=The disable style of the spikes, same use of type attribute.
+entities.Aqua/Gravity Spike Right.attributes.description.attach=Whether to attach to solid or jump through.
 
 # Gravity Spikes Down
 entities.Aqua/Gravity Spike Down.placements.name.down_default=Gravity Spikes (Down, Default)
@@ -304,6 +366,7 @@ entities.Aqua/Gravity Spike Down.attributes.description.type=Determines the visu
 entities.Aqua/Gravity Spike Down.attributes.description.color=Color of the spikes.
 entities.Aqua/Gravity Spike Down.attributes.description.gravity=The spikes will be active in specific gravity circumstance.
 entities.Aqua/Gravity Spike Down.attributes.description.disable_type=The disable style of the spikes, same use of type attribute.
+entities.Aqua/Gravity Spike Down.attributes.description.attach=Whether to attach to solid or jump through.
 
 # Gravity Spikes Left
 entities.Aqua/Gravity Spike Left.placements.name.left_default=Gravity Spikes (Left, Default)
@@ -312,6 +375,7 @@ entities.Aqua/Gravity Spike Left.attributes.description.type=Determines the visu
 entities.Aqua/Gravity Spike Left.attributes.description.color=Color of the spikes.
 entities.Aqua/Gravity Spike Left.attributes.description.gravity=The spikes will be active in specific gravity circumstance.
 entities.Aqua/Gravity Spike Left.attributes.description.disable_type=The disable style of the spikes, same use of type attribute.
+entities.Aqua/Gravity Spike Left.attributes.description.attach=Whether to attach to solid or jump through.
 
 # Outline Display
 entities.Aqua/Outline Display.placements.name.texture_path=Outline texture.

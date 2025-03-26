@@ -112,6 +112,21 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             return TurnToSpecificSpeed(direction, UNIFORM_DIRECTION4_RANGE_LIST);
         }
 
+        public static bool BlockDirection(Vector2 direction, Entity entity, Entity grapple, bool blockUp, bool blockDown, bool blockLeft, bool blockRight)
+        {
+            if (direction == Vector2.Zero)
+                return false;
+            if (blockUp && grapple.Bottom == entity.Top && Vector2.Dot(Vector2.UnitY, direction) > 0.0f)
+                return true;
+            if (blockDown && grapple.Top == entity.Bottom && Vector2.Dot(-Vector2.UnitY, direction) > 0.0f)
+                return true;
+            if (blockLeft && grapple.Right == entity.Left && Vector2.Dot(Vector2.UnitX, direction) > 0.0f)
+                return true;
+            if (blockRight && grapple.Left == entity.Right && Vector2.Dot(-Vector2.UnitX, direction) > 0.0f)
+                return true;
+            return false;
+        }
+
         public static float TriangleArea(Vector2 pt1, Vector2 pt2, Vector2 pt3)
         {
             return 0.5f * MathF.Abs(pt1.X * (pt2.Y - pt3.Y) + pt2.X * (pt3.Y - pt1.Y) + pt3.X * (pt1.Y - pt2.Y));

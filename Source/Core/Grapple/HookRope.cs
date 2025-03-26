@@ -551,12 +551,21 @@ namespace Celeste.Mod.Aqua.Core
                 if (!solid.Collidable || solid.Collider == null || !solid.IsHookable()) continue;
                 CheckCollisionSolid(ropeSeg, lastSegments, solid, potentials);
             }
-            if (potentials.Count > 0)
+            while (potentials.Count > 0)
             {
+                PivotCandidate min = potentials.Min;
                 RopePivot pivot = potentials.Min.pivot;
-                addedPivots.Add(pivot);
-                ropeSeg.Pivot1 = pivot;
-                CheckCollisionHangables(pivot, currentPivot, lastSegments, addedPivots);
+                if (!addedPivots.Contains(pivot))
+                {
+                    addedPivots.Add(pivot);
+                    ropeSeg.Pivot1 = pivot;
+                    CheckCollisionHangables(pivot, currentPivot, lastSegments, addedPivots);
+                    break;
+                }
+                else
+                {
+                    potentials.Remove(min);
+                }
             }
             return addedPivots.Count > 0;
         }
@@ -725,12 +734,15 @@ namespace Celeste.Mod.Aqua.Core
                         if (sign1 != sign2 && sign1 != 0 && sign2 != 0)
                         {
                             if (AquaMaths.IsSegmentIntersectsSegment(prevPt, currentPt, lastSeg.Pivot1.point, lastSeg.Pivot2.point) || AquaMaths.IsSegmentIntersectsSegment(prevPt, currentPt, ropeSeg.Pivot1.point, ropeSeg.Pivot2.point))
+                            {
+                                AquaDebugger.LogInfo("Potential MOVE1: {0}", pivot);
                                 return true;
+                            }
                             if (lastSeg.Pivot1.point != ropeSeg.Pivot1.point || lastSeg.Pivot2.point != ropeSeg.Pivot2.point)
                             {
                                 if (AquaMaths.IsPointInsidePolygon(currentPt, ptrs, vertNum, false))
                                 {
-                                    AquaDebugger.LogInfo("Potential MOVE", pivot);
+                                    AquaDebugger.LogInfo("Potential MOVE2", pivot);
                                     return true;
                                 }
                             }
@@ -741,9 +753,9 @@ namespace Celeste.Mod.Aqua.Core
                 for (int j = 0; j < lastSegments.Count; j++)
                 {
                     RopeSegment lastSeg = lastSegments[j];
-                    if (prevPt == lastSeg.Pivot1.point && pivot.entity == lastSeg.Pivot1.entity)
+                    if (j == 0 && prevPt == lastSeg.Pivot1.point && pivot.entity == lastSeg.Pivot1.entity)
                         continue;
-                    if (prevPt == lastSeg.Pivot2.point && pivot.entity == lastSeg.Pivot2.entity)
+                    if (j == lastSegments.Count - 1 && prevPt == lastSeg.Pivot2.point && pivot.entity == lastSeg.Pivot2.entity)
                         continue;
                     if (AquaMaths.IsPointOnSegment(prevPt, lastSeg.Pivot1.point, lastSeg.Pivot2.point))
                     {

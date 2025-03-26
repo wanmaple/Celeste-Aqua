@@ -12,6 +12,10 @@ UnhookableArea.placements = {
         width = 8,
         height = 8,
         attachToSolid = false,
+        block_up = true,
+        block_down = true,
+        block_left = true,
+        block_right = true,
     },
 }
 

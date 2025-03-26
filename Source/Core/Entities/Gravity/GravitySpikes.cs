@@ -38,18 +38,15 @@ namespace Celeste.Mod.Aqua.Core
             }
             DisableType = data.Attr("disable_type");
             StaticMover staticMover = Get<StaticMover>();
+            if (staticMover != null)
+            {
+                staticMover.OnEnable = OnEnabled;
+                staticMover.OnDisable = OnDisabled;
+            }
             bool attach = data.Bool("attach");
             if (!attach)
             {
                 Remove(staticMover);
-            }
-            else
-            {
-                if (staticMover != null)
-                {
-                    staticMover.OnEnable = OnEnabled;
-                    staticMover.OnDisable = OnDisabled;
-                }
             }
         }
 

@@ -208,7 +208,7 @@ namespace Celeste.Mod.Aqua.Core
             self.SetTimeTicker("dash_hanging_ticker", 0.05f);
             self.SetTimeTicker("boost_speed_save_ticker", 0.5f);
             self.SetTimeTicker("swing_jump_keeping_ticker", 0.1f);
-            self.SetTimeTicker("elec_shock_ticker", 1.0f);
+            self.SetTimeTicker("elec_shock_ticker", 0.5f);
             DynamicData.For(self).Set("lift_speed_y", 0.0f);
             DynamicData.For(self).Set("rope_is_loosen", true);
             DynamicData.For(self).Set("is_booster_dash", false);
@@ -218,7 +218,7 @@ namespace Celeste.Mod.Aqua.Core
             self.SetSpecialSwingSpeed(Player.DashSpeed);
             self.SetHookable(false);
             self.Add(new GrappleRelatedFields());
-            var shootCheck = new ShotHookCheck(AquaModule.Settings.ThrowHook, AquaModule.Settings.ThrowHookMode);
+            var shootCheck = new ShotHookCheck(AquaModule.Settings.ThrowHookMode);
             DynamicData.For(self).Set("shoot_check", shootCheck);
             Component gravityListener = ModInterop.GravityHelper.CreatePlayerGravityListener(OnGravityChanged);
             if (gravityListener != null)
