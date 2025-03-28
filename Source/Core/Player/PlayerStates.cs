@@ -766,11 +766,6 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void Player_Update(On.Celeste.Player.orig_Update orig, Player self)
         {
-            if (MInput.Keyboard.Pressed(Microsoft.Xna.Framework.Input.Keys.Space))
-            {
-                Celeste.Freeze(0.1f);
-                return;
-            }
             if (self.StateMachine.State == (int)AquaStates.StElectricShock)
             {
                 foreach (var com in self.Components)
