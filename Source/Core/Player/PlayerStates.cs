@@ -1072,7 +1072,15 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 ropeDirection = hook.RopeDirection;
             var levelState = self.level.GetState();
             float origAlongSpeed = MathF.Max(Vector2.Dot(self.Speed, -ropeDirection), 0.0f);
-            self.Speed = -ropeDirection * MathF.Min(self.SceneAs<Level>().GetState().HookSettings.FlyTowardSpeed + origAlongSpeed, levelState.HookSettings.MaxLineSpeed);
+            float coeff = self.SwimCheck() ? 0.75f : 1.0f;
+            if (origAlongSpeed < levelState.HookSettings.MaxLineSpeed * coeff)
+            {
+                self.Speed = -ropeDirection * MathF.Min(self.SceneAs<Level>().GetState().HookSettings.FlyTowardSpeed * coeff + origAlongSpeed, levelState.HookSettings.MaxLineSpeed * coeff);
+            }
+            else
+            {
+                self.Speed = -ropeDirection * origAlongSpeed;
+            }
             if (ModInterop.GravityHelper.IsPlayerGravityInverted())
                 self.Speed.Y = -self.Speed.Y;
             Audio.Play("event:/char/madeline/jump_superslide", self.Center);

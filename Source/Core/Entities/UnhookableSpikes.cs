@@ -49,6 +49,12 @@ namespace Celeste.Mod.Aqua.Core
             Add(new HookInteractable(OnInteractHook));
         }
 
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            SetSpikeColor(SpikeColor);
+        }
+
         private bool OnInteractHook(GrapplingHook grapple, Vector2 at)
         {
             Vector2 hookDir = grapple.ShootDirection;
