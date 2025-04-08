@@ -11,7 +11,7 @@ namespace Celeste.Mod.Aqua.Core
     [CustomEntity("Aqua/Grapple Magnet Zipper")]
     public class GrappleMagnetZipMover : GrappleMagnet
     {
-        public IReadOnlyList<Vector2> Nodes { get; private set; }
+        public IList<Vector2> Nodes { get; private set; }
         public IReadOnlyList<float> SpeedMultipliers { get; private set; }
         public IReadOnlyList<float> Delays { get; private set; }
         public IReadOnlyList<string> MoveFlags { get; private set; }
@@ -192,6 +192,12 @@ namespace Celeste.Mod.Aqua.Core
                     yield return 0.2f;
                 }
             }
+        }
+
+        protected override void DoPostMove(Vector2 movement)
+        {
+            base.DoPostMove(movement);
+            Nodes[0] += movement;
         }
 
         private float _cogPercent;

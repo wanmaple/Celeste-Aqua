@@ -1,5 +1,4 @@
-﻿using Celeste.Mod.Aqua.Module;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
 
@@ -17,17 +16,26 @@ namespace Celeste.Mod.Aqua.Core
                 hook.SetStyle(style);
                 hook.Owner = self;
                 DynamicData.For(self).Set("grapple_hook", hook);
+                GrappleIndicator indicator = new GrappleIndicator(GFX.Game["objects/hook/indicator"], self);
+                self.Scene.Add(indicator);
+                DynamicData.For(self).Set("grapple_indicator", indicator);
             }
         }
 
         public static void UninitializeGrapplingHook(this Player self)
         {
-            DynamicData.For(self).Set("grappling_hook", null);
+            DynamicData.For(self).Set("grapple_hook", null);
+            DynamicData.For(self).Set("grapple_indicator", null);
         }
 
         public static GrapplingHook GetGrappleHook(this Player self)
         {
             return DynamicData.For(self).Get<GrapplingHook>("grapple_hook");
+        }
+
+        public static GrappleIndicator GetGrappleIndicator(this Player self)
+        {
+            return DynamicData.For(self).Get<GrappleIndicator>("grapple_indicator");
         }
 
         public static ShotHookCheck GetShootHookCheck(this Player self)

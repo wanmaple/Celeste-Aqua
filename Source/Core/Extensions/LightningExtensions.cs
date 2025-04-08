@@ -26,7 +26,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void OnHookEnter(this Lightning self, GrapplingHook hook)
         {
             hook.ElectricShocking = true;
-            if (hook.Material == GrapplingHook.RopeMaterial.Metal)
+            if (hook.Material == GrapplingHook.RopeMaterial.Metal && hook.State != GrapplingHook.HookStates.Revoking)
             {
                 Player player = hook.Owner;
                 player.StateMachine.ForceState((int)AquaStates.StElectricShock);
@@ -47,7 +47,7 @@ namespace Celeste.Mod.Aqua.Core
             GrapplingHook grapple = null;
             if ((grapple = self.IntersectsWithRopeAndReturnGrapple()) != null)
             {
-                if (grapple.Material == GrapplingHook.RopeMaterial.Metal)
+                if (grapple.Material == GrapplingHook.RopeMaterial.Metal && grapple.State != GrapplingHook.HookStates.Revoking)
                 {
                     Player player = grapple.Owner;
                     if (player.StateMachine.State != (int)AquaStates.StElectricShock)

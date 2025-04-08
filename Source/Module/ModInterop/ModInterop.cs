@@ -14,6 +14,8 @@ namespace Celeste.Mod.Aqua.Module
         public static JackalHelperInterop JackalHelper => _interopJackalHelper;
         public static CommunalHelperInterop CommunalHelper => _interopCommunalHelper;
         public static FrostHelperInterop FrostHelper => _interopFrostHelper;
+        public static FlaglinesAndSuchInterop FlaglinesAndSuch => _interopFlaglines;
+        public static VivHelperInterop VivHelper => _interopVivHelper;
         public static IReadOnlyList<Type> SidewaysJumpthruTypes
         {
             get
@@ -60,7 +62,7 @@ namespace Celeste.Mod.Aqua.Module
             }
         }
 
-        public static Type HoldableType
+        public static Type HoldableContainerType
         {
             get
             {
@@ -80,6 +82,16 @@ namespace Celeste.Mod.Aqua.Module
             }
         }
 
+        public static Type ContainerMoverType
+        {
+            get
+            {
+                if (_containerMoverType == null)
+                    CacheModTypes();
+                return _containerMoverType;
+            }
+        }
+
         public static Type CardinalBumperType
         {
             get
@@ -87,6 +99,36 @@ namespace Celeste.Mod.Aqua.Module
                 if (_cardinalBumperType == null)
                     CacheModTypes();
                 return _cardinalBumperType;
+            }
+        }
+
+        public static Type PlatformJellyType
+        {
+            get
+            {
+                if (_platformJellyType == null)
+                    CacheModTypes();
+                return _platformJellyType;
+            }
+        }
+
+        public static Type HoldableBarrierType
+        {
+            get
+            {
+                if (_holdableBarrierType == null)
+                    CacheModTypes();
+                return _holdableBarrierType;
+            }
+        }
+
+        public static Type HoldableBarrierJumpThruType
+        {
+            get
+            {
+                if (_holdableBarrierJumpThruType == null)
+                    CacheModTypes();
+                return _holdableBarrierJumpThruType;
             }
         }
 
@@ -127,12 +169,15 @@ namespace Celeste.Mod.Aqua.Module
             if (dreamBooster != null)
                 curvedBoosterTypes.Add(dreamBooster);
             _curvedBoosterTypes = curvedBoosterTypes.ToArray();
-            var springTypes = new List<Type>(3);
+            var springTypes = new List<Type>(4);
             Type customSpring = FrostHelper.GetType("FrostHelper.CustomSpring");
-            Type momentumSpring = GravityHelper.GetType("Celeste.Mod.GravityHelper.Entities.GravitySpring");
+            Type gravitySpring = GravityHelper.GetType("Celeste.Mod.GravityHelper.Entities.GravitySpring");
+            Type momentumSpring = GravityHelper.GetType("Celeste.Mod.GravityHelper.Entities.MomentumSpring");
             Type noDashSpring = MaxHelpingHand.GetType("Celeste.Mod.MaxHelpingHand.Entities.NoDashRefillSpring");
             if (customSpring != null)
                 springTypes.Add(customSpring);
+            if (gravitySpring != null)
+                springTypes.Add(gravitySpring);
             if (momentumSpring != null)
                 springTypes.Add(momentumSpring);
             if (noDashSpring != null)
@@ -141,7 +186,11 @@ namespace Celeste.Mod.Aqua.Module
             _conveyorType = FactoryHelper.GetType("FactoryHelper.Entities.Conveyor");
             _holdableContainerType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Entities.HoldableContainer");
             _containerRefType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Components.ContainerRefComponent");
+            _containerMoverType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Components.EntityContainerMover");
             _cardinalBumperType = JackalHelper.GetType("Celeste.Mod.JackalHelper.Entities.CardinalBumper");
+            _platformJellyType = FlaglinesAndSuch.GetType("FlaglinesAndSuch.PlatformJelly");
+            _holdableBarrierType = VivHelper.GetType("VivHelper.Entities.HoldableBarrier");
+            _holdableBarrierJumpThruType = VivHelper.GetType("VivHelper.Entities.HoldableBarrierJumpThru");
         }
 
         private static GravityHelperInterop _interopGravityHelper = new GravityHelperInterop();
@@ -152,6 +201,8 @@ namespace Celeste.Mod.Aqua.Module
         private static JackalHelperInterop _interopJackalHelper = new JackalHelperInterop();
         private static CommunalHelperInterop _interopCommunalHelper = new CommunalHelperInterop();
         private static FrostHelperInterop _interopFrostHelper = new FrostHelperInterop();
+        private static FlaglinesAndSuchInterop _interopFlaglines = new FlaglinesAndSuchInterop();
+        private static VivHelperInterop _interopVivHelper = new VivHelperInterop();
         private static Type[] _downsideJumpthruTypes;
         private static Type[] _sidewaysJumpthruTypes;
         private static Type[] _curvedBoosterTypes;
@@ -159,6 +210,10 @@ namespace Celeste.Mod.Aqua.Module
         private static Type _conveyorType;
         private static Type _holdableContainerType;
         private static Type _containerRefType;
+        private static Type _containerMoverType;
         private static Type _cardinalBumperType;
+        private static Type _platformJellyType;
+        private static Type _holdableBarrierType;
+        private static Type _holdableBarrierJumpThruType;
     }
 }

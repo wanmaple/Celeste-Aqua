@@ -51,7 +51,16 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 direction = Vector2.Zero;
             if (ModInterop.SpringTypes.Count > 0 && ModInterop.SpringTypes.Any(type => self.GetType().IsAssignableTo(type)))
             {
-                object value = self.GetType().GetFieldOrPropertyValue(self, BindingFlags.Public | BindingFlags.Instance, "Orientation");
+                FieldInfo fieldOrientation = self.GetType().FindField(BindingFlags.Instance | BindingFlags.NonPublic, "_ourOrientation");   // This is Momentum Spring's orientation name.
+                object value = null;
+                if (fieldOrientation != null)
+                {
+                    value = fieldOrientation.GetValue(self);
+                }
+                if (value == null)
+                {
+                    value = self.GetType().GetFieldOrPropertyValue(self, BindingFlags.Public | BindingFlags.Instance, "Orientation");
+                }
                 int orientation = (int)value;
                 switch (orientation)
                 {

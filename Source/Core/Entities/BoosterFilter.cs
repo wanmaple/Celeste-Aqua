@@ -32,9 +32,9 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (other is Player player)
             {
-                if (CanPassGreenBooster && player.IsBoosterDash())
+                if (CanPassGreenBooster && (player.IsBoosterDash() || (player.StateMachine.State == (int)AquaStates.StBoost && player.CurrentBooster != null && !player.CurrentBooster.red)))
                     return false;
-                if (CanPassRedBooster && player.StateMachine.State == (int)AquaStates.StRedDash)
+                if (CanPassRedBooster && (player.StateMachine.State == (int)AquaStates.StRedDash || (player.StateMachine.State == (int)AquaStates.StBoost && player.CurrentBooster != null && player.CurrentBooster.red)))
                     return false;
                 return true;
             }

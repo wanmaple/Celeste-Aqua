@@ -63,6 +63,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.ctor += Player_Construct;
             On.Celeste.Player.Added += Player_Added;
             On.Celeste.Player.Removed += Player_Removed;
+            On.Celeste.Player.SceneEnd += Player_SceneEnd;
             On.Celeste.Player.NormalUpdate += Player_NormalUpdate;
             On.Celeste.Player.DashBegin += Player_DashBegin;
             On.Celeste.Player.DashEnd += Player_DashEnd;
@@ -98,6 +99,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.ctor -= Player_Construct;
             On.Celeste.Player.Added -= Player_Added;
             On.Celeste.Player.Removed -= Player_Removed;
+            On.Celeste.Player.SceneEnd -= Player_SceneEnd;
             On.Celeste.Player.NormalUpdate -= Player_NormalUpdate;
             On.Celeste.Player.DashBegin -= Player_DashBegin;
             On.Celeste.Player.DashEnd -= Player_DashEnd;
@@ -234,8 +236,6 @@ namespace Celeste.Mod.Aqua.Core
                 Player player = scene.Tracker.GetEntity<Player>();
                 if (state != null && player != null && self != player)
                 {
-                    // possibly a cloned player.
-                    AquaDebugger.LogInfo("INIT GRAPPLE CLONED?");
                     self.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.InitialShootCount);
                 }
             }
@@ -249,6 +249,11 @@ namespace Celeste.Mod.Aqua.Core
             {
                 scene.Remove(hook);
             }
+            var indicator = self.GetGrappleIndicator();
+            if (indicator != null)
+            {
+                scene.Remove(indicator);
+            }
             var state = (scene as Level).GetState();
             if (state != null && hook != null)
             {
@@ -257,6 +262,12 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             orig(self, scene);
+        }
+
+        private static void Player_SceneEnd(On.Celeste.Player.orig_SceneEnd orig, Player self, Scene scene)
+        {
+            orig(self, scene);
+            self.UninitializeGrapplingHook();
         }
 
         private static int Player_BoostUpdate(On.Celeste.Player.orig_BoostUpdate orig, Player self)
@@ -410,8 +421,10 @@ namespace Celeste.Mod.Aqua.Core
                 return nextState;
             if (!self.level.GetState().FeatureEnabled)
                 return nextState;
-            if (nextState == (int)AquaStates.StDreamDash && self.GetSpecialSwingDirection() != 0.0f)
+            if (nextState == (int)AquaStates.StDreamDash)
             {
+                self.SetupSpecialSwingArguments(self.Speed);
+                self.SetSpecialSwingSpeed(self.Speed.Length());
                 self.UpdateSpecialSwing();
             }
             return nextState;
@@ -618,6 +631,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             if (hook.State != GrapplingHook.HookStates.Fixed)
             {
+                self.Speed = TurnToConsistentSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
                 return (int)AquaStates.StNormal;
             }
             else if (self.CanDash)
@@ -1499,9 +1513,9 @@ namespace Celeste.Mod.Aqua.Core
         private static KeyValuePair<float, Vector2>[] SWING_JUMP_ACCURACY_RANGE_LIST =
         {
             new KeyValuePair<float, Vector2>(10.0f * Calc.DegToRad, Vector2.UnitX),
-            new KeyValuePair<float, Vector2>(30.0f * Calc.DegToRad, new Vector2(MathF.Cos(22.5f * Calc.DegToRad), MathF.Sin(22.5f * Calc.DegToRad))),
-            new KeyValuePair<float, Vector2>(55.0f * Calc.DegToRad, new Vector2(MathF.Cos(45.0f * Calc.DegToRad), MathF.Sin(45.0f * Calc.DegToRad))),
-            new KeyValuePair<float, Vector2>(75.0f * Calc.DegToRad, new Vector2(MathF.Cos(67.5f * Calc.DegToRad), MathF.Sin(67.5f * Calc.DegToRad))),
+            new KeyValuePair<float, Vector2>(35.0f * Calc.DegToRad, new Vector2(MathF.Cos(22.5f * Calc.DegToRad), MathF.Sin(22.5f * Calc.DegToRad))),
+            new KeyValuePair<float, Vector2>(60.0f * Calc.DegToRad, new Vector2(MathF.Cos(45.0f * Calc.DegToRad), MathF.Sin(45.0f * Calc.DegToRad))),
+            new KeyValuePair<float, Vector2>(80.0f * Calc.DegToRad, new Vector2(MathF.Cos(67.5f * Calc.DegToRad), MathF.Sin(67.5f * Calc.DegToRad))),
             new KeyValuePair<float, Vector2>(90.0f * Calc.DegToRad, Vector2.UnitY),
         };
 

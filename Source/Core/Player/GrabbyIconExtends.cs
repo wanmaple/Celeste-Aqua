@@ -36,7 +36,7 @@ namespace Celeste.Mod.Aqua.Core
             orig(self);
             LevelStates.LevelState state = self.SceneAs<Level>().GetState();
             int num = 0;
-            if (state.FeatureEnabled && AquaModule.Settings.AutoGrabRopeIfPossible)
+            if (state.FeatureEnabled && AquaModule.Settings.AutoGrabRopeIfPossible && AquaModule.Settings.ShowAutoGrabIcon)
             {
                 ++num;
             }

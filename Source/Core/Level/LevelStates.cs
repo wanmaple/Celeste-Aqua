@@ -26,7 +26,6 @@ namespace Celeste.Mod.Aqua.Core
             public bool DisableGrappleBoost { get; set; }
             public bool ShortDistanceGrappleBoost { get; set; }
             public HookSettings HookSettings { get; set; }
-            public List<BackgroundData> Backgrounds { get; private set; }
 
             public LevelState()
             {
@@ -53,7 +52,6 @@ namespace Celeste.Mod.Aqua.Core
                 DisableGrappleBoost = extraMeta.DisableGrappleBoost;
                 ShortDistanceGrappleBoost = extraMeta.ShortDistanceGrappleBoost;
                 HookSettings = extraMeta.HookSettings.Clone();
-                Backgrounds = new List<BackgroundData>(extraMeta.Backgrounds);
             }
         }
 
@@ -119,28 +117,6 @@ namespace Celeste.Mod.Aqua.Core
             if (state.ResetCountInTransition)
             {
                 state.RestShootCount = state.InitialShootCount;
-            }
-            if (state.Backgrounds != null)
-            {
-                foreach (BackgroundData bgData in state.Backgrounds)
-                {
-                    if (BACKGROUND_HINTS.TryGetValue(bgData.EntityName, out var pair))
-                    {
-                        Type bgType = pair.Key;
-                        if (self.Entities.FirstOrDefault(e => e.GetType() == bgType) == null)
-                        {
-                            Type paramType = pair.Value;
-                            object args = Activator.CreateInstance(paramType);
-                            var method = paramType.GetMethod("Parse", BindingFlags.Instance | BindingFlags.Public);
-                            if (method != null)
-                            {
-                                method.Invoke(args, new object[] { bgData.Uniforms, });
-                            }
-                            var entity = Activator.CreateInstance(bgType, new object[] { args, }) as Entity;
-                            self.Add(entity);
-                        }
-                    }
-                }
             }
         }
 
@@ -267,8 +243,6 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         private static readonly Dictionary<string, KeyValuePair<Type, Type>> BACKGROUND_HINTS = new Dictionary<string, KeyValuePair<Type, Type>> {
-            { "AndromedaField", KeyValuePair.Create(typeof(AndromedaField), typeof(AndromedaFieldParameters))},
-            {"SelfCircuit", KeyValuePair.Create(typeof(SelfCircuit), typeof(SelfCircuitParameters))},
             };
     }
 }

@@ -39,7 +39,11 @@ namespace Celeste.Mod.Aqua.Core
             {
                 SceneAs<Level>().Session.SetFlag(Flag, true);
                 _tickerCoolDown.Reset();
-                _sound.Play("event:/game/general/tie_rod");
+                if (!_flag)
+                    _sound.Play("event:/game/09_core/switch_to_hot");
+                else
+                    _sound.Play("event:/game/09_core/switch_to_cold");
+                _flag = !_flag;
                 if (OneUse)
                 {
                     Audio.Play("event:/game/09_core/switch_dies", Center);
@@ -57,6 +61,7 @@ namespace Celeste.Mod.Aqua.Core
         private Sprite _sprite;
         private bool _useable;
         private SoundSource _sound;
+        private bool _flag;
 
         private const float COOL_DOWN = 1.0f;
     }

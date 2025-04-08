@@ -1,16 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Aqua.Rendering;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
 
-namespace Celeste.Mod.Aqua.Rendering
+namespace Celeste.Mod.Aqua.Core
 {
-    [Tracked(true)]
-    public abstract class CustomShaderEntity : Entity, ICustomRenderEntity
+    public abstract class ShaderBackdrop : Backdrop
     {
-        protected CustomShaderEntity()
-            : base(Vector2.Zero)
+        protected ShaderBackdrop()
+            : base()
         {
             _device = Engine.Instance.GraphicsDevice;
+            UseSpritebatch = false;
         }
 
         public virtual void OnReload()
@@ -28,9 +29,17 @@ namespace Celeste.Mod.Aqua.Rendering
         protected abstract VertexPositionColorTexture[] GetVertices();
         public abstract Effect GetEffect();
 
-        public override void Added(Scene scene)
+        public override void Ended(Scene scene)
         {
-            base.Added(scene);
+            if (_vbo != null)
+            {
+                _vbo.Dispose();
+                _vbo = null;
+            }
+        }
+
+        public override void BeforeRender(Scene scene)
+        {
             if (_vbo == null)
             {
                 _vbo = new VertexBuffer(_device, typeof(VertexPositionColorTexture), GetVertices().Length, BufferUsage.None);
@@ -38,21 +47,21 @@ namespace Celeste.Mod.Aqua.Rendering
             }
         }
 
-        public override void Update()
+        public override void Update(Scene scene)
         {
-            Effect fx = GetEffect();
-            if (fx != null)
+            base.Update(scene);
+            Effect eff = GetEffect();
+            if (eff != null)
             {
-                fx.Parameters["Time"].SetValue(Scene.GetTime());
-                Viewport viewport = _device.Viewport;
-                fx.Parameters["Resolution"].SetValue(new Vector2(viewport.Width, viewport.Height));
+                eff.Parameters["Time"].SetValue(scene.GetTime());
+                eff.Parameters["Resolution"].SetValue(new Vector2(320.0f, 180.0f));
             }
         }
 
-        public override void Render()
+        public override void Render(Scene scene)
         {
             Effect fx = GetEffect();
-            if (fx != null)
+            if (fx != null && !fx.IsDisposed)
             {
                 SetupRenderStates(_device);
                 _device.SetVertexBuffer(_vbo);

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Aqua.Miscellaneous;
+using Microsoft.Xna.Framework;
+using MonoMod.RuntimeDetour;
 using System;
 
 namespace Celeste.Mod.Aqua.Core
@@ -32,12 +34,17 @@ namespace Celeste.Mod.Aqua.Core
             Player player = grapple.Owner;
             if (player != null)
             {
-                grapple.Revoke();
                 self.noGravityTimer = 0.15f;
-                var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed, grapple.ShootDirection);
+                Vector2 direction = grapple.ShootDirection;
+                if (grapple.State == GrapplingHook.HookStates.Bouncing && Vector2.DistanceSquared(grapple.Owner.Center, self.Center) > 256.0f)
+                {
+                    direction = AquaMaths.TurnToDirection8(-grapple.HookDirection);
+                }
+                var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed, direction);
                 self.Speed = result.OwnerSpeed;
                 player.Speed = result.OtherSpeed;
                 player.Stamina = MathF.Max(player.Stamina - self.GetStaminaCost(), 0.0f);
+                grapple.Revoke();
                 Celeste.Freeze(0.05f);
                 Audio.Play("event:/char/madeline/jump_superslide", player.Center);
                 return true;

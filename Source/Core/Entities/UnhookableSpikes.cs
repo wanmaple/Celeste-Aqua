@@ -60,7 +60,7 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 hookDir = grapple.ShootDirection;
             if (AquaMaths.BlockDirection(hookDir, this, grapple, BlockUp, BlockDown, BlockLeft, BlockRight))
             {
-                Audio.Play("event:/char/madeline/unhookable", Position);
+                Audio.Play("event:/char/madeline/unhookable", grapple.Position);
                 grapple.Revoke();
                 return true;
             }

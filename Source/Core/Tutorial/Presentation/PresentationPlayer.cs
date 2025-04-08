@@ -92,7 +92,6 @@ namespace Celeste.Mod.Aqua.Core
             _sprite.Scale = frame.Scale;
             _sprite.Scale.X *= frame.Facing;
             _sprite.Scale.Y *= frame.Gravity;
-            AquaDebugger.LogInfo(frame.State.ToString());
             _sprite.RenderPosition = frame.RenderPosition;
             _hair.Facing = (Facings)frame.HairFacing;
             _sprite.Color = _hair.Color = frame.State == (int)AquaStates.StDash ? DashColor : PlayerColor;

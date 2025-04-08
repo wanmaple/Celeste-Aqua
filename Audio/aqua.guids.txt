@@ -228,11 +228,11 @@
 {99c35088-2d5e-4846-b27e-e1adfcd15afa} event:/game/01_forsaken_city/fallblock_ice_impact
 {8d6d24fe-c860-4328-9650-c29b39ba87a2} event:/game/01_forsaken_city/fallblock_ice_shake
 {c7f359ea-785f-4328-8135-4000ec1486bc} event:/game/01_forsaken_city/zip_mover
-{ffa4f9ce-b607-4e4d-ac65-c3368ac1bd14} event:/game/01_forsaken_city/zip_mover_no_return
-{6aa32425-63f6-4392-be57-a65850930cea} event:/game/01_forsaken_city/zip_mover_return
-{34f18684-af3b-41c0-b976-fa90a4a5df6f} event:/game/01_forsaken_city/zip_mover_reset
-{cd0a8c8c-53fc-451d-a9d8-430b7a645e7e} event:/game/01_forsaken_city/zip_mover_touch
 {76e70f10-32c3-40e2-984b-c35c9e8796b9} event:/game/01_forsaken_city/zip_mover_impact
+{ffa4f9ce-b607-4e4d-ac65-c3368ac1bd14} event:/game/01_forsaken_city/zip_mover_no_return
+{34f18684-af3b-41c0-b976-fa90a4a5df6f} event:/game/01_forsaken_city/zip_mover_reset
+{6aa32425-63f6-4392-be57-a65850930cea} event:/game/01_forsaken_city/zip_mover_return
+{cd0a8c8c-53fc-451d-a9d8-430b7a645e7e} event:/game/01_forsaken_city/zip_mover_touch
 {f4f839d0-f7cc-402a-9767-ad79d20ae5d6} event:/game/02_old_site/lantern_hit
 {44ed360f-e714-4a3a-99e8-3aed8ecf22cb} event:/game/02_old_site/sequence_badeline_intro
 {77800c0d-5128-44d0-8bb1-67174af44406} event:/game/02_old_site/sequence_mirror
@@ -503,6 +503,8 @@
 {7c01de41-a31a-43c3-9c0f-9ae85ad94c68} event:/game/general/wall_break_ice
 {92f75010-4e90-428e-834c-1315ddbd9460} event:/game/general/wall_break_stone
 {634bdd66-3f53-4679-8ced-fadfc60d412f} event:/game/general/wall_break_wood
+{8a0afcef-c252-49cd-82b3-f8aead5cf2fe} event:/game/general/magnet_lock
+{4c0ca296-612c-46ba-bd72-b949d1a8061f} event:/game/general/magnet_unlock
 {51873fdd-604e-4810-9db1-8c6e5a6049b5} event:/music/cassette/01_forsaken_city
 {e44a2aa5-f96e-4d75-8018-8bee278017ad} event:/music/cassette/02_old_site
 {bb2ac8fc-6353-4127-bc7b-7439262508da} event:/music/cassette/03_resort

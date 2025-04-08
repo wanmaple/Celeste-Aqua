@@ -41,7 +41,7 @@ namespace Celeste.Mod.Aqua.Core.Entities
 
         private bool CheckCollision(Actor actor)
         {
-            if (ModInterop.HoldableType != null && actor.GetType() ==  ModInterop.HoldableType)
+            if (ModInterop.HoldableContainerType != null && actor.GetType() ==  ModInterop.HoldableContainerType)
             {
                 Hitbox collider = actor.Collider as Hitbox;
                 return Collide.CheckRect(this, new Rectangle((int)collider.AbsoluteLeft, (int)collider.AbsoluteTop, (int)collider.Width, (int)collider.Height));

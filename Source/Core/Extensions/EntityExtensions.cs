@@ -37,6 +37,7 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("prev_position", self.Position);
             DynamicData.For(self).Set("accelerate_state", AccelerationArea.AccelerateState.None);
             DynamicData.For(self).Set("reversed", false);
+            DynamicData.For(self).Set("post_move_patch", null);
         }
 
         private static void Entity_Added(On.Monocle.Entity.orig_Added orig, Entity self, Scene scene)
@@ -230,7 +231,7 @@ namespace Celeste.Mod.Aqua.Core
                             container = c;
                             break;
                         }
-                        if (container != null && ModInterop.HoldableType != null && container.GetType().IsAssignableTo(ModInterop.HoldableType))
+                        if (container != null && ModInterop.HoldableContainerType != null && container.GetType().IsAssignableTo(ModInterop.HoldableContainerType))
                         {
                             return container as Entity;
                         }
@@ -333,6 +334,12 @@ namespace Celeste.Mod.Aqua.Core
                     return com;
             }
             return null;
+        }
+
+        public static void PostMovePatch(this Entity self, Vector2 movement)
+        {
+            Action<Vector2> action = DynamicData.For(self).Get<Action<Vector2>>("post_move_patch");
+            action?.Invoke(movement);
         }
 
         public static IEnumerator UndraggableRoutine(this Entity self, Sprite sprite, Vector2 direction, float duration, float distance)
@@ -453,6 +460,43 @@ namespace Celeste.Mod.Aqua.Core
                     }
                 }
             }
+            var wallBoosters = self.Scene.Tracker.GetEntities<WallBooster>();
+            foreach (WallBooster entity in wallBoosters)
+            {
+                if (Array.IndexOf(ignoreList, entity) >= 0)
+                    continue;
+                // why the facing of wall booster confuses me so much?
+                if ((entity.Facing == Facings.Left && sign < 0)||(entity.Facing == Facings.Right && sign > 0))
+                {
+                    if (Collide.Check(self, entity, self.Position + Vector2.UnitX * movement))
+                    {
+                        collideEntity = entity;
+                        return true;
+                    }
+                }
+            }
+            if (self.Get<Holdable>() != null)
+            {
+                if (ModInterop.HoldableBarrierType != null)
+                {
+                    if (self.Scene.Tracker.Entities.TryGetValue(ModInterop.HoldableBarrierType, out var barriers))
+                    {
+                        foreach (var barrier in barriers)
+                        {
+                            if (Array.IndexOf(ignoreList, barrier) >= 0)
+                                continue;
+                            barrier.Collidable = true;
+                            if (Collide.Check(self, barrier, self.Position + Vector2.UnitX * movement))
+                            {
+                                barrier.Collidable = false;
+                                collideEntity = barrier;
+                                return true;
+                            }
+                            barrier.Collidable = false;
+                        }
+                    }
+                }
+            }
             return false;
         }
 
@@ -482,6 +526,47 @@ namespace Celeste.Mod.Aqua.Core
                     if (collideEntity != null)
                     {
                         return true;
+                    }
+                }
+            }
+            if (self.Get<Holdable>() != null)
+            {
+                if (ModInterop.HoldableBarrierType != null)
+                {
+                    if (self.Scene.Tracker.Entities.TryGetValue(ModInterop.HoldableBarrierType, out var barriers))
+                    {
+                        foreach (var barrier in barriers)
+                        {
+                            if (Array.IndexOf(ignoreList, barrier) >= 0)
+                                continue;
+                            barrier.Collidable = true;
+                            if (Collide.Check(self, barrier, self.Position + Vector2.UnitY * movement))
+                            {
+                                barrier.Collidable = false;
+                                collideEntity = barrier;
+                                return true;
+                            }
+                            barrier.Collidable = false;
+                        }
+                    }
+                }
+                if (movement > 0.0f && ModInterop.HoldableBarrierJumpThruType != null)
+                {
+                    if (self.Scene.Tracker.Entities.TryGetValue(ModInterop.HoldableBarrierJumpThruType, out var barriers))
+                    {
+                        foreach (var barrier in barriers)
+                        {
+                            if (Array.IndexOf(ignoreList, barrier) >= 0)
+                                continue;
+                            barrier.Collidable = true;
+                            if (!Collide.Check(self, barrier) && Collide.Check(self, barrier, self.Position + Vector2.UnitY * movement))
+                            {
+                                barrier.Collidable = false;
+                                collideEntity = barrier;
+                                return true;
+                            }
+                            barrier.Collidable = false;
+                        }
                     }
                 }
             }

@@ -83,6 +83,7 @@ namespace Celeste.Mod.Aqua.Core
                 Color = Calc.HexToColor("ff3b3b"),
                 Color2 = Calc.HexToColor("dd1e1e"),
             };
+            DynamicData.For(this).Set("post_move_patch", (Action<Vector2>)PostMove);
         }
 
         public override void Added(Scene scene)
@@ -247,7 +248,7 @@ namespace Celeste.Mod.Aqua.Core
             grapple.SetHookVisible(false);
             _spriteMagnet.Play("base_close");
             _spriteIndicator.Play("indicator_close");
-            _sound.Play("event:/game/09_core/switch_to_hot");
+            _sound.Play("event:/game/general/magnet_lock");
         }
 
         private void OnGrappleDetached(GrapplingHook grapple)
@@ -258,7 +259,7 @@ namespace Celeste.Mod.Aqua.Core
                 _spriteMagnet.Play("base_open");
                 _spriteIndicator.Play("indicator_open");
             }
-            _sound.Play("event:/game/09_core/switch_to_cold");
+            _sound.Play("event:/game/general/magnet_unlock");
         }
 
         public void NaiveMove(Vector2 movement)
@@ -405,6 +406,17 @@ namespace Celeste.Mod.Aqua.Core
             positionRange *= 0.5f;
             SceneAs<Level>().Particles.Emit(_particle1, num2 / 2, position, positionRange, direction);
             SceneAs<Level>().Particles.Emit(_particle2, num2 / 2, position, positionRange, direction);
+        }
+
+        private void PostMove(Vector2 movement)
+        {
+            DoPostMove(movement);
+        }
+
+        protected virtual void DoPostMove(Vector2 movement)
+        {
+            if (this.IsHookAttached())
+                this.MakeGrappleFollowMe(movement, movement);
         }
 
         protected Sprite _spriteMagnet;

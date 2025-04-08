@@ -38,6 +38,7 @@ namespace Celeste.Mod.Aqua.Module
             SeekerExtensions.Initialize();
             LightningExtensions.Initialize();
             WaterExtensions.Initialize();
+            WallBoosterExtensions.Initialize();
             HeartGemExtensions.Initialize();
             InvisibleBarrierExtensions.Initialize();
             PlayerSpriteExtensions.Initialize();
@@ -85,6 +86,7 @@ namespace Celeste.Mod.Aqua.Module
             SeekerExtensions.Uninitialize();
             LightningExtensions.Uninitialize();
             WaterExtensions.Uninitialize();
+            WallBoosterExtensions.Uninitialize();
             HeartGemExtensions.Uninitialize();
             InvisibleBarrierExtensions.Uninitialize();
             PlayerSpriteExtensions.Uninitialize();

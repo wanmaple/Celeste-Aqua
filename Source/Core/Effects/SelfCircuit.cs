@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using Celeste.Mod.Aqua.Module;
+using Celeste.Mod.Aqua.Rendering;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
-using Celeste.Mod.Aqua.Module;
-using Celeste.Mod.Aqua.Debug;
 
-namespace Celeste.Mod.Aqua.Rendering
+namespace Celeste.Mod.Aqua.Core
 {
     public class SelfCircuitParameters
     {
@@ -34,47 +32,59 @@ namespace Celeste.Mod.Aqua.Rendering
             LineColor2 = Color.Red;
             GravityControl = false;
         }
-
-        public void Parse(IReadOnlyList<UniformData> uniforms)
-        {
-            foreach (UniformData uniform in uniforms)
-            {
-                PropertyInfo prop = GetType().GetProperty(uniform.UniformName);
-                if (prop != null)
-                {
-                    prop.SetValue(this, uniform.Parse());
-                }
-            }
-        }
     }
 
-    public class SelfCircuit : CustomBackground
+    public class SelfCircuit : ShaderBackdrop
     {
         public SelfCircuitParameters Arguments { get; private set; }
 
         public SelfCircuit(SelfCircuitParameters args)
-            : base("self_circuit")
+            : base()
         {
             Arguments = args;
-            UpdateUniforms();
         }
 
-        public override void Update()
+        public override void Ended(Scene scene)
         {
-            base.Update();
-            UpdateLineColors();
+            base.Ended(scene);
+            if (_fx != null)
+            {
+                _fx.Dispose();
+                _fx = null;
+            }
         }
 
-        protected override void UpdateUniforms()
+        public override void BeforeRender(Scene scene)
         {
+            base.BeforeRender(scene);
+            if (_fx == null)
+                _fx = FXCenter.Instance.GetFX("self_circuit");
+        }
+
+        public override void Update(Scene scene)
+        {
+            base.Update(scene);
             Effect eff = GetEffect();
-            eff.Parameters["TimeRatio"].SetValue(Arguments.TimeRatio);
-            eff.Parameters["FlowStrength"].SetValue(Arguments.FlowStrength);
-            eff.Parameters["Density"].SetValue(Arguments.Density);
-            eff.Parameters["BackgroundColor1"].SetValue(Arguments.BackgroundColor1.ToVector3());
-            eff.Parameters["BackgroundColor2"].SetValue(Arguments.BackgroundColor2.ToVector3());
-            eff.Parameters["BackgroundColor3"].SetValue(Arguments.BackgroundColor3.ToVector3());
-            UpdateLineColors();
+            if (eff != null)
+            {
+                eff.Parameters["TimeRatio"].SetValue(Arguments.TimeRatio);
+                eff.Parameters["FlowStrength"].SetValue(Arguments.FlowStrength);
+                eff.Parameters["Density"].SetValue(Arguments.Density);
+                eff.Parameters["BackgroundColor1"].SetValue(Arguments.BackgroundColor1.ToVector3());
+                eff.Parameters["BackgroundColor2"].SetValue(Arguments.BackgroundColor2.ToVector3());
+                eff.Parameters["BackgroundColor3"].SetValue(Arguments.BackgroundColor3.ToVector3());
+                UpdateLineColors();
+            }
+        }
+
+        public override Effect GetEffect()
+        {
+            return _fx;
+        }
+
+        protected override VertexPositionColorTexture[] GetVertices()
+        {
+            return _quad.Vertices;
         }
 
         private void UpdateLineColors()
@@ -100,6 +110,8 @@ namespace Celeste.Mod.Aqua.Rendering
             }
         }
 
+        private Effect _fx;
+        private Quad _quad = new Quad();
         private float _timer = 0.0f;
     }
 }

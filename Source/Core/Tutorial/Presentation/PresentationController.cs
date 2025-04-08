@@ -27,6 +27,7 @@ namespace Celeste.Mod.Aqua.Core
             TrailLifetime = trailLifetime;
             LoopInterval = loopInterval;
             _loopIntervalTicker = new TimeTicker(LoopInterval);
+            _scheduler = new Scheduler(TrailInterval);
         }
 
         public override void Awake(Scene scene)
@@ -68,6 +69,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             base.Update();
 
+            _scheduler.Update(Engine.DeltaTime);
             if (_currentFrame == _presentation.Frames.Count)
             {
                 if (Loop)
@@ -85,6 +87,7 @@ namespace Celeste.Mod.Aqua.Core
                         if (_loopIntervalTicker.Check())
                         {
                             _waiting = false;
+                            _scheduler.Reset();
                             _playbackPlayer.Visible = _playbackHook.Visible = true;
                             _currentFrame = 0;
                         }
@@ -102,7 +105,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             _playbackPlayer.Apply(_presentation.Frames[_currentFrame].PlayerFrame);
             _playbackHook.Apply(_presentation.Frames[_currentFrame].HookFrame);
-            if (Scene.OnInterval(TrailInterval))
+            if (_scheduler.OnInterval)
             {
                 var trail = _playbackPlayer.CreateTrail(TrailLifetime);
                 Scene.Add(trail);
@@ -117,6 +120,7 @@ namespace Celeste.Mod.Aqua.Core
         private List<PresentationPlayer> _trails = new List<PresentationPlayer>();
         private int _currentFrame;
         private TimeTicker _loopIntervalTicker;
+        private Scheduler _scheduler;
         private bool _waiting = false;
     }
 }

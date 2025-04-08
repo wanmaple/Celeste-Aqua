@@ -125,15 +125,19 @@ entities.Aqua/Tie Rod.attributes.description.flag=Which flag of entities to cont
 entities.Aqua/Slidable Ice Block.attributes.description.hook_smooth=Indicates how easy the hook will slide on the surface.
 
 # Unhookable Area
-entities.Aqua/Unhookable Area.attributes.description.attachToSolid=Whether the area attaches to entities or blocks, and can be moved by them.
+entities.Aqua/Unhookable Area.attributes.description.attachToSolid=Whether the area attaches to blocks.
 entities.Aqua/Unhookable Area.attributes.description.block_up=Whether to block grapple from top.
 entities.Aqua/Unhookable Area.attributes.description.block_down=Whether to block grapple from bottom.
 entities.Aqua/Unhookable Area.attributes.description.block_left=Whether to block grapple from left.
 entities.Aqua/Unhookable Area.attributes.description.block_right=Whether to block grapple from right.
 
 # Unhookable Crystal
-entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether the spinner attaches to entities or blocks, and can be moved by them.
+entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether the spinner attaches to blocks.
 entities.Aqua/Unhookable Crystal.attributes.description.color=Main color of the spinner or connector.
+
+# Unhookable Ice Wall
+entities.Aqua/Unhookable Ice Wall.attributes.description.attach_to_solid=Whether the ice wall attaches to blocks.
+entities.Aqua/Unhookable Ice Wall.attributes.description.left=Whether the entity attaches to the left wall.
 
 # Unhookable Spikes Up
 entities.Aqua/Unhookable Spike Up.placements.name.up_default=Unhookable Spikes (Up, Default)

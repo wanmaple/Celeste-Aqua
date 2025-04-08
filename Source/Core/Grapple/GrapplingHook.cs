@@ -396,6 +396,13 @@ namespace Celeste.Mod.Aqua.Core
             UpdateColliderOffset(-rope.CurrentDirection);
             Vector2 rounded = AquaMaths.Round(rope.CurrentDirection);
             CheckCollisionWhileShooting(rounded);
+            // Ice wall is something can be shoot inside.
+            Entity collided = CollideFirst<WallBooster>();
+            if (collided != null)
+            {
+                Audio.Play("event:/char/madeline/unhookable", Position);
+                State = HookStates.Revoking;
+            }
         }
 
         public override void Removed(Scene scene)
@@ -911,6 +918,10 @@ namespace Celeste.Mod.Aqua.Core
             else if (entity is Platform platform)
             {
                 index = platform.GetLandSoundIndex(this);
+            }
+            else if (entity is WallBooster wall)
+            {
+                index = wall.IceMode ? 4 : 40;
             }
             else
             {

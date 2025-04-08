@@ -81,10 +81,10 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private bool OnHookInteract(GrapplingHook hook, Vector2 at)
+        private bool OnHookInteract(GrapplingHook grapple, Vector2 at)
         {
-            Audio.Play("event:/char/madeline/unhookable", Position);
-            hook.Revoke();
+            Audio.Play("event:/char/madeline/unhookable", grapple.Position);
+            grapple.Revoke();
             return true;
         }
 

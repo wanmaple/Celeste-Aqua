@@ -19,12 +19,8 @@ public class AquaModuleSettings : EverestModuleSettings
     public ButtonBinding SwitchAutoGrab { get; set; }
 
     [SettingName("SETTINGS_DOWN_SHOOT")]
-    [DefaultButtonBinding(Buttons.RightShoulder, Keys.F)]
+    [DefaultButtonBinding(Buttons.RightShoulder, Keys.None)]
     public ButtonBinding DownShoot { get; set; }
-
-    [SettingName("SETTINGS_BACKWARD_DOWN_SHOOT")]
-    [DefaultButtonBinding(Buttons.RightTrigger, Keys.G)]
-    public ButtonBinding BackwardDownShoot { get; set; }
 
     [SettingName("SETTINGS_FEATURE_ENABLED")]
     public bool FeatureEnabled
@@ -86,6 +82,12 @@ public class AquaModuleSettings : EverestModuleSettings
 
     [SettingName("SETTINGS_DEFAULT_SHOT_DIRECTION")]
     public DefaultShotDirections DefaultShotDirection { get; set; } = DefaultShotDirections.Up;
+
+    [SettingName("SETTINGS_INDICATOR_TYPE")]
+    public GrappleIndicatorType IndicatorSetting { get; set; } = GrappleIndicatorType.None;
+
+    [SettingName("SETTINGS_SHOW_AUTO_GRAB_ICON")]
+    public bool ShowAutoGrabIcon { get; set; } = true;
 
     public void CreateResetHookSettingsEntry(TextMenu menu, bool inGame)
     {

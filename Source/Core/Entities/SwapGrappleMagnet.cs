@@ -181,6 +181,14 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        protected override void DoPostMove(Vector2 movement)
+        {
+            base.DoPostMove(movement);
+            _from += movement;
+            _to += movement;
+            _backgroundRect.RenderPosition += movement;
+        }
+
         private Vector2 _from;
         private Vector2 _to;
         private bool _swapping;

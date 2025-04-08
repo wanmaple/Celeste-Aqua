@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.Aqua.Miscellaneous;
+using Microsoft.Xna.Framework;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -35,11 +36,16 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     self.OnPickup();
                 }
-                hook.Revoke();
                 self.noGravityTimer = 0.15f;
-                var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed, hook.ShootDirection);
+                Vector2 direction = hook.ShootDirection;
+                if (hook.State == GrapplingHook.HookStates.Bouncing && Vector2.DistanceSquared(hook.Owner.Center, self.Center) > 256.0f)
+                {
+                    direction = AquaMaths.TurnToDirection8(-hook.HookDirection);
+                }
+                var result = self.HandleMomentumOfActor(player, self.Speed, player.Speed, direction);
                 self.Speed = result.OwnerSpeed;
                 player.Speed = result.OtherSpeed;
+                hook.Revoke();
                 Celeste.Freeze(0.05f);
                 Audio.Play("event:/char/madeline/jump_superslide", player.Center);
                 return true;

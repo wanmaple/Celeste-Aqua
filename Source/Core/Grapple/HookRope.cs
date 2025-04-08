@@ -714,7 +714,6 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     if (AquaMaths.IsPointInsidePolygon(currentPt, ptrs, vertNum, false))
                     {
-                        AquaDebugger.LogInfo("Potential IN POLYGON: {0}", pivot);
                         return true;
                     }
                 }
@@ -735,14 +734,12 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             if (AquaMaths.IsSegmentIntersectsSegment(prevPt, currentPt, lastSeg.Pivot1.point, lastSeg.Pivot2.point) || AquaMaths.IsSegmentIntersectsSegment(prevPt, currentPt, ropeSeg.Pivot1.point, ropeSeg.Pivot2.point))
                             {
-                                AquaDebugger.LogInfo("Potential MOVE1: {0}", pivot);
                                 return true;
                             }
                             if (lastSeg.Pivot1.point != ropeSeg.Pivot1.point || lastSeg.Pivot2.point != ropeSeg.Pivot2.point)
                             {
                                 if (AquaMaths.IsPointInsidePolygon(currentPt, ptrs, vertNum, false))
                                 {
-                                    AquaDebugger.LogInfo("Potential MOVE2", pivot);
                                     return true;
                                 }
                             }
@@ -768,7 +765,6 @@ namespace Celeste.Mod.Aqua.Core
                     // the trick here won't intersect the pivot if the segments crossed the entity entirely.
                     if (pivot.entity.Collider.CheckLineWithoutEdge(ropeSeg.Pivot1.point, ropeSeg.Pivot2.point))
                     {
-                        AquaDebugger.LogInfo("Potential 0 to N0: {0}", pivot);
                         return true;
                     }
                 }
