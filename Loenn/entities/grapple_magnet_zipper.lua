@@ -110,8 +110,8 @@ function GrappleMagnetZipper.sprite(room, entity)
 end
 
 function GrappleMagnetZipper.nodeSprite(room, entity, node, nodeIndex)
-    local magnetTexture = "objects/hook_magnet/base/idle00"
-    local indicatorTexture = "objects/hook_magnet/normal/idle00"
+    local magnetTexture = entity.on and "objects/hook_magnet/base/idle00" or "objects/hook_magnet/base/close07"
+    local indicatorTexture = entity.on and "objects/hook_magnet/normal/idle00" or "objects/hook_magnet/normal/close07"
     local rangeTexture = "objects/hook_magnet/circle_in_leonn"
     local magnet = DrawableSprite.fromTexture(magnetTexture, node)
     local indicator = DrawableSprite.fromTexture(indicatorTexture, node)

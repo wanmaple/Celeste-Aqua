@@ -10,6 +10,7 @@ namespace Celeste.Mod.Aqua.Core
     {
         public string Flag { get; private set; }
         public bool OneUse { get; private set; }
+        public bool HoldableCanActivate { get; private set; }
 
         public MagnetToggle(EntityData data, Vector2 offset)
             : base(data.Position + offset)
@@ -17,7 +18,10 @@ namespace Celeste.Mod.Aqua.Core
             Collider = new Hitbox(16f, 24f, -8f, -8f);
             Flag = data.Attr("flag");
             OneUse = data.Bool("one_use", false);
+            HoldableCanActivate = data.Bool("holdable_can_activate", false);
             Add(new PlayerCollider(OnPlayer));
+            if (HoldableCanActivate)
+                Add(new HoldableCollider(OnHoldable));
             Add(_sprite = new Sprite());
             GFX.SpriteBank.CreateOn(_sprite, "Aqua_MagnetToggle");
             _sprite.Play("idle");
@@ -34,6 +38,16 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         private void OnPlayer(Player player)
+        {
+            OnToggle();
+        }
+
+        private void OnHoldable(Holdable holdable)
+        {
+            OnToggle();
+        }
+
+        private void OnToggle()
         {
             if (_useable && _tickerCoolDown.Check())
             {

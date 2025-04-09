@@ -48,6 +48,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public const float HOOK_SIZE = 8.0f;
         public const float BOUNCE_SPEED_ADDITION = 300.0f;
+        public const float GRAB_ENTITY_SLOW_MULTIPLIER = 0.25f;
 
         public Player Owner { get; set; }
         public float HookSize { get; private set; }
@@ -328,6 +329,10 @@ namespace Celeste.Mod.Aqua.Core
             {
                 return false;
             }
+            if (Owner.StateMachine.State == (int)AquaStates.StDash && Owner.DashDir == Vector2.Zero)
+            {
+                return false;
+            }
             var shotCheck = Owner.GetShootHookCheck();
             if (JustFixed)
             {
@@ -426,6 +431,7 @@ namespace Celeste.Mod.Aqua.Core
             _inertia.Clear();
             Active = false;
             JustFixed = false;
+            UserLockedLength = 0.0f;
         }
 
         public override void Awake(Scene scene)
@@ -468,7 +474,7 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 lastVelocity = AttachedVelocity;
             HookStates lastState = State;
             Entity attachEntity = rope.TopPivot.entity;
-            if (attachEntity != null && (!attachEntity.Collidable || attachEntity.Collider == null || !attachEntity.IsHookable() || attachEntity.Scene == null))
+            if (attachEntity != null && (!attachEntity.Collidable || attachEntity.Collider == null || !attachEntity.IsHookable() || attachEntity.Scene == null || !attachEntity.CheckColliderChanged(this)))
             {
                 Revoke();
                 rope.PrepareCheckCollision(playerSeg);

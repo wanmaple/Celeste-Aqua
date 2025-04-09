@@ -46,6 +46,7 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("prev_position", self.Position);
             self.WorkWithCardinalBumper();
             self.WorkWithSidewaysJumpThrough();
+            self.WorkWithElectricTypes();
         }
 
         private static void Entity_Awake(On.Monocle.Entity.orig_Awake orig, Entity self, Scene scene)
@@ -176,6 +177,21 @@ namespace Celeste.Mod.Aqua.Core
                 }
             }
             return null;
+        }
+
+        public static bool CheckColliderChanged(this Entity self, GrapplingHook grapple)
+        {
+            if (Collide.Check(self, grapple))
+                return true;
+            if (Collide.Check(grapple, self, grapple.Position - Vector2.UnitY))
+                return true;
+            if (Collide.Check(grapple, self, grapple.Position + Vector2.UnitX))
+                return true;
+            if (Collide.Check(grapple, self, grapple.Position - Vector2.UnitX))
+                return true;
+            if (Collide.Check(grapple, self, grapple.Position + Vector2.UnitY))
+                return true;
+            return false;
         }
 
         public static void MakeSelfEnableGrabToPlayer(this Entity self)
@@ -599,6 +615,55 @@ namespace Celeste.Mod.Aqua.Core
                         }
                     }
                     break;
+                }
+            }
+        }
+
+        private static void WorkWithElectricTypes(this Entity self)
+        {
+            if (ModInterop.ElectricEntityTypes != null)
+            {
+                foreach (Type type in ModInterop.ElectricEntityTypes)
+                {
+                    if (self.GetType().IsAssignableTo(type))
+                    {
+                        self.Add(new HookInOut(self.OnHookEnterElectricity, self.OnHookOutElectricity));
+                        self.Add(new ElectricShockInLightning());
+                    }
+                }
+            }
+        }
+
+        internal static void OnHookEnterElectricity(this Entity self, GrapplingHook hook)
+        {
+            hook.ElectricShocking = true;
+            if (hook.Material == GrapplingHook.RopeMaterial.Metal && hook.State != GrapplingHook.HookStates.Revoking)
+            {
+                Player player = hook.Owner;
+                player.StateMachine.ForceState((int)AquaStates.StElectricShock);
+            }
+        }
+
+        internal static void OnHookOutElectricity(this Entity self, GrapplingHook hook)
+        {
+            if (hook != null)
+            {
+                hook.ElectricShocking = false;
+            }
+        }
+
+        internal static void CheckRopeIntersectionOfElectricity(this Entity self)
+        {
+            GrapplingHook grapple = null;
+            if ((grapple = self.IntersectsWithRopeAndReturnGrapple()) != null)
+            {
+                if (grapple.Material == GrapplingHook.RopeMaterial.Metal && grapple.State != GrapplingHook.HookStates.Revoking)
+                {
+                    Player player = grapple.Owner;
+                    if (player.StateMachine.State != (int)AquaStates.StElectricShock)
+                    {
+                        player.StateMachine.ForceState((int)AquaStates.StElectricShock);
+                    }
                 }
             }
         }

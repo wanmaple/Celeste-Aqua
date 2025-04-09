@@ -8,6 +8,7 @@ MagnetToggle.placements = {
     data = {
         flag = "Magnet1",
         one_use = false,
+        holdable_can_activate = false,
     }
 }
 

@@ -44,9 +44,9 @@ for _, dir in ipairs(MOVE_DIRECTIONS) do
 end
 
 function MoveGrappleMagnet.sprite(room, entity)
-    local magnetTexture = "objects/hook_magnet/base/idle00"
+    local magnetTexture = entity.on and "objects/hook_magnet/base/idle00" or "objects/hook_magnet/base/close07"
     local dirStr = string.lower(entity.direction)
-    local indicatorTexture = string.format("objects/hook_magnet/move/%s/idle00", dirStr)
+    local indicatorTexture = string.format(entity.on and "objects/hook_magnet/move/%s/idle00" or "objects/hook_magnet/move/%s/close07", dirStr)
     local rangeTexture = "objects/hook_magnet/circle_in_leonn"
     local magnet = DrawableSprite.fromTexture(magnetTexture, entity)
     local indicator = DrawableSprite.fromTexture(indicatorTexture, entity)

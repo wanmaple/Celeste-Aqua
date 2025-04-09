@@ -310,6 +310,7 @@ entities.Aqua/Move Grapple Magnet.attributes.description.one_use=If checked, the
 # Magnet Toggle
 entities.Aqua/Magnet Toggle.attributes.description.flag=Make it the same with that of magnets you would like to control.
 entities.Aqua/Magnet Toggle.attributes.description.one_use=Whether to break the toggle once used.
+entities.Aqua/Magnet Toggle.attributes.description.holdable_can_activate=Whether a holdable can activate the toggle.
 
 # Simple Grapple Interaction Assigner
 entities.Aqua/Grapple Interaction Assigner.attributes.description.interaction_type=What kind of interaction to be assigned.\nGrabToPlayer: make the entity be able to hooked to player.

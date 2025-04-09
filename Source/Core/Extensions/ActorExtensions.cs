@@ -168,7 +168,7 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 otherSpd = (otherRatio * totalSpeed + otherSaveSpeed) * toActor;
             float extraCoeff = blocked ? MathF.Max(0.0f, self.GetAgainstBoostCoefficient() - myMass / (myMass + otherMass)) : 0.0f;
             float slowFallMax = Player.DashSpeed * (1.0f + extraCoeff);
-            float fastFallMax = Player.DashSpeed * (1.5f + extraCoeff);
+            float fastFallMax = Player.DashSpeed * (1.0f + extraCoeff);
             if (self.Get<Holdable>().SlowFall && otherSpd.Y < -slowFallMax)
             {
                 otherSpd.Y = -slowFallMax;

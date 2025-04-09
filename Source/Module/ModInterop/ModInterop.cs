@@ -52,6 +52,17 @@ namespace Celeste.Mod.Aqua.Module
                 return _springTypes;
             }
         }
+
+        public static IReadOnlyList<Type> ElectricEntityTypes
+        {
+            get
+            {
+                if (_electricEntityTypes == null)
+                    CacheModTypes();
+                return _electricEntityTypes;
+            }
+        }
+
         public static Type ConveyorType
         {
             get
@@ -183,6 +194,11 @@ namespace Celeste.Mod.Aqua.Module
             if (noDashSpring != null)
                 springTypes.Add(noDashSpring);
             _springTypes = springTypes.ToArray();
+            var elecEntityTypes = new List<Type>(4);
+            Type elecSpike = FactoryHelper.GetType("FactoryHelper.Entities.ElectrifiedWall");
+            if (elecSpike != null)
+                elecEntityTypes.Add(elecSpike);
+            _electricEntityTypes = elecEntityTypes.ToArray();
             _conveyorType = FactoryHelper.GetType("FactoryHelper.Entities.Conveyor");
             _holdableContainerType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Entities.HoldableContainer");
             _containerRefType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Components.ContainerRefComponent");
@@ -207,6 +223,7 @@ namespace Celeste.Mod.Aqua.Module
         private static Type[] _sidewaysJumpthruTypes;
         private static Type[] _curvedBoosterTypes;
         private static Type[] _springTypes;
+        private static Type[] _electricEntityTypes;
         private static Type _conveyorType;
         private static Type _holdableContainerType;
         private static Type _containerRefType;
