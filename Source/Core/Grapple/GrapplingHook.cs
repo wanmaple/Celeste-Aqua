@@ -474,7 +474,7 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 lastVelocity = AttachedVelocity;
             HookStates lastState = State;
             Entity attachEntity = rope.TopPivot.entity;
-            if (attachEntity != null && (!attachEntity.Collidable || attachEntity.Collider == null || !attachEntity.IsHookable() || attachEntity.Scene == null || !attachEntity.CheckColliderChanged(this)))
+            if (attachEntity != null && (!attachEntity.Collidable || attachEntity.Collider == null || !attachEntity.IsHookable() || attachEntity.Scene == null))
             {
                 Revoke();
                 rope.PrepareCheckCollision(playerSeg);
