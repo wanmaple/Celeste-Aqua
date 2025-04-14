@@ -8,6 +8,7 @@ using MonoMod.Utils;
 using Mono.Cecil;
 using System.Collections.Generic;
 using Celeste.Mod.Aqua.Debug;
+using System.Collections;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -52,7 +53,7 @@ namespace Celeste.Mod.Aqua.Core
         public const float SPEED_CHECK_GRAPPLING_SWING_DOWN = 250.0f;
         public const float SPEED_CHECK_2_GRAPPLING_SWING_DOWN = 160.0f;
         public const float SPEED_CHECK_GRAPPLING_SWING_UP = 90.0f;
-        public const float SAVED_SWING_SPEED = 325.0f;
+        public const float FAST_BUBBLE_SPEED_MULTIPLIER = 1.25f;
 
         public static void Initialize()
         {
@@ -64,12 +65,15 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.Added += Player_Added;
             On.Celeste.Player.Removed += Player_Removed;
             On.Celeste.Player.SceneEnd += Player_SceneEnd;
+            On.Celeste.Player.NormalBegin += Player_NormalBegin;
             On.Celeste.Player.NormalUpdate += Player_NormalUpdate;
             On.Celeste.Player.DashBegin += Player_DashBegin;
             On.Celeste.Player.DashEnd += Player_DashEnd;
             On.Celeste.Player.DashUpdate += Player_DashUpdate;
+            On.Celeste.Player.DashCoroutine += Player_DashCoroutine;
             On.Celeste.Player.SwimUpdate += Player_SwimUpdate;
             On.Celeste.Player.LaunchUpdate += Player_LaunchUpdate;
+            On.Celeste.Player.BoostBegin += Player_BoostBegin;
             On.Celeste.Player.BoostUpdate += Player_BoostUpdate;
             On.Celeste.Player.RedDashBegin += Player_RedDashBegin;
             On.Celeste.Player.RedDashEnd += Player_RedDashEnd;
@@ -79,7 +83,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.DreamDashEnd += Player_DreamDashEnd;
             On.Celeste.Player.DreamDashUpdate += Player_DreamDashUpdate;
             On.Celeste.Player.SummitLaunchBegin += Player_SummitLaunchBegin;
-            On.Celeste.Player.StarFlyBegin += Player_StarFlyBegin;
+            On.Celeste.Player.StarFlyUpdate += Player_StarFlyUpdate;
             On.Celeste.Player.FlingBirdBegin += Player_FlingBirdBegin;
             On.Celeste.Player.CassetteFlyBegin += Player_CassetteFlyBegin;
             On.Celeste.Player.PickupCoroutine += Player_PickupCoroutine;
@@ -100,12 +104,15 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.Added -= Player_Added;
             On.Celeste.Player.Removed -= Player_Removed;
             On.Celeste.Player.SceneEnd -= Player_SceneEnd;
+            On.Celeste.Player.NormalBegin -= Player_NormalBegin;
             On.Celeste.Player.NormalUpdate -= Player_NormalUpdate;
             On.Celeste.Player.DashBegin -= Player_DashBegin;
             On.Celeste.Player.DashEnd -= Player_DashEnd;
             On.Celeste.Player.DashUpdate -= Player_DashUpdate;
+            On.Celeste.Player.DashCoroutine -= Player_DashCoroutine;
             On.Celeste.Player.SwimUpdate -= Player_SwimUpdate;
             On.Celeste.Player.LaunchUpdate -= Player_LaunchUpdate;
+            On.Celeste.Player.BoostBegin -= Player_BoostBegin;
             On.Celeste.Player.BoostUpdate -= Player_BoostUpdate;
             On.Celeste.Player.RedDashBegin -= Player_RedDashBegin;
             On.Celeste.Player.RedDashEnd -= Player_RedDashEnd;
@@ -114,8 +121,8 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.DreamDashBegin -= Player_DreamDashBegin;
             On.Celeste.Player.DreamDashEnd -= Player_DreamDashEnd;
             On.Celeste.Player.DreamDashUpdate -= Player_DreamDashUpdate;
+            On.Celeste.Player.StarFlyUpdate -= Player_StarFlyUpdate;
             On.Celeste.Player.SummitLaunchBegin -= Player_SummitLaunchBegin;
-            On.Celeste.Player.StarFlyBegin -= Player_StarFlyBegin;
             On.Celeste.Player.FlingBirdBegin -= Player_FlingBirdBegin;
             On.Celeste.Player.CassetteFlyBegin -= Player_CassetteFlyBegin;
             On.Celeste.Player.PickupCoroutine -= Player_PickupCoroutine;
@@ -202,20 +209,17 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, position, spriteMode);
 
             self.UninitializeGrapplingHook();
-            self.StateMachine.SetCallbacks((int)AquaStates.StLaunch, self.LaunchUpdate, null, self.LaunchBegin, self.Player_LaunchEnd);
             self.StateMachine.SetCallbacks((int)AquaStates.StSwing, self.Player_SwingUpdate, null, self.Player_SwingBegin, self.Player_SwingEnd);
             self.StateMachine.SetStateName((int)AquaStates.StSwing, "Swing");
             self.StateMachine.SetCallbacks((int)AquaStates.StElectricShock, self.Player_ElectricShockingUpdate, null, self.Player_ElectricShockingBegin);
             self.StateMachine.SetStateName((int)AquaStates.StElectricShock, "ElectricShocking");
             self.SetTimeTicker("dash_hanging_ticker", 0.05f);
-            self.SetTimeTicker("boost_speed_save_ticker", 0.5f);
-            self.SetTimeTicker("swing_jump_keeping_ticker", 0.1f);
+            self.SetTimeTicker("boost_speed_save_ticker", 0.2f);
             self.SetTimeTicker("elec_shock_ticker", 0.5f);
-            DynamicData.For(self).Set("lift_speed_y", 0.0f);
             DynamicData.For(self).Set("rope_is_loosen", true);
             DynamicData.For(self).Set("is_booster_dash", false);
             self.SetSlideState(SlideStates.None);
-            self.SetSavedSwingSpeed(Vector2.Zero);
+            self.SetFastBubbleMultiplier(1.0f);
             self.SetSpecialSwingDirection(0.0f);
             self.SetSpecialSwingSpeed(Player.DashSpeed);
             self.SetHookable(false);
@@ -270,6 +274,13 @@ namespace Celeste.Mod.Aqua.Core
             self.UninitializeGrapplingHook();
         }
 
+        private static void Player_BoostBegin(On.Celeste.Player.orig_BoostBegin orig, Player self)
+        {
+            orig(self);
+            TimeTicker saveTicker = self.GetTimeTicker("boost_speed_save_ticker");
+            saveTicker.Reset();
+        }
+
         private static int Player_BoostUpdate(On.Celeste.Player.orig_BoostUpdate orig, Player self)
         {
             int nextState = orig(self);
@@ -279,59 +290,24 @@ namespace Celeste.Mod.Aqua.Core
             {
                 grapple.Revoke();
             }
-            self.RestoreSavedSwingSpeedIfPossible(nextState);
+            self.AccumulateSwingFastBubble(nextState);
             return nextState;
         }
 
         private static void Player_RedDashBegin(On.Celeste.Player.orig_RedDashBegin orig, Player self)
         {
-            Vector2 enterSpeed = self.Speed;
             orig(self);
             if (self.level.GetState() == null)
                 return;
             if (!self.level.GetState().FeatureEnabled)
                 return;
-            bool isSpecialBooster = false;
-            if (self.CurrentBooster != null && ModInterop.CurvedBoosterTypes != null)
+            SetupSpecialSwingArguments(self, self.Speed);
+            var hook = self.GetGrappleHook();
+            if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
             {
-                foreach (Type type in ModInterop.CurvedBoosterTypes)
+                if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                 {
-                    if (self.CurrentBooster.GetType().IsAssignableTo(type))
-                    {
-                        isSpecialBooster = true;
-                        break;
-                    }
-                }
-            }
-            if (isSpecialBooster)
-            {
-                var hook = self.GetGrappleHook();
-                if (hook != null && hook.Active && hook.State != GrapplingHook.HookStates.Revoking)
-                {
-                    hook.Revoke();
-                }
-                self.SetSpecialSwingDirection(0.0f);
-            }
-            else
-            {
-                Vector2 speed = enterSpeed;
-                if (AquaMaths.IsApproximateZero(speed))
-                {
-                    speed = self.Speed;
-                }
-                if (AquaMaths.IsApproximateZero(speed))
-                {
-                    speed = (int)self.Facing * Player.DashSpeed * Vector2.UnitX;
-                }
-                SetupSpecialSwingArguments(self, speed);
-                var hook = self.GetGrappleHook();
-                if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
-                {
-                    if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
-                    {
-                        if (self.GetSpecialSwingDirection() != 0.0f)
-                            hook.SetRopeLengthLocked(true, self.ExactCenter());
-                    }
+                    hook.SetRopeLengthLocked(true, self.ExactCenter());
                 }
             }
         }
@@ -345,7 +321,6 @@ namespace Celeste.Mod.Aqua.Core
                 if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                 {
                     hook.SetRopeLengthLocked(false, self.ExactCenter());
-                    self.TrySaveSwingSpeed();
                 }
             }
         }
@@ -357,27 +332,24 @@ namespace Celeste.Mod.Aqua.Core
                 return nextState;
             if (!self.level.GetState().FeatureEnabled)
                 return nextState;
-            if (nextState == (int)AquaStates.StRedDash && !AquaMaths.IsApproximateZero(self.Speed) && self.GetSpecialSwingDirection() != 0.0f)
+            if (nextState == (int)AquaStates.StRedDash && self.Speed != Vector2.Zero)
             {
+                self.SetupSpecialSwingArguments(self.Speed);
                 self.UpdateSpecialSwing();
             }
             return nextState;
         }
 
-        private static System.Collections.IEnumerator Player_RedDashCoroutine(On.Celeste.Player.orig_RedDashCoroutine orig, Player self)
+        private static IEnumerator Player_RedDashCoroutine(On.Celeste.Player.orig_RedDashCoroutine orig, Player self)
         {
             yield return new SwapImmediately(orig(self));
-            var hook = self.GetGrappleHook();
-            if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
+            var state = self.level.GetState();
+            if (state != null && state.FeatureEnabled)
             {
-                if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
+                var grapple = self.GetGrappleHook();
+                if (grapple != null && grapple.Active && grapple.State == GrapplingHook.HookStates.Fixed)
                 {
-                    float sign = MathF.Sign(Vector2.Dot(self.Speed, hook.SwingDirection));
-                    if (sign != self.GetSpecialSwingDirection())
-                    {
-                        self.SetSpecialSwingDirection(sign);
-                        self.SetSpecialSwingSpeed(Player.DashSpeed);
-                    }
+                    self.Speed *= self.GetFastBubbleMultiplier();
                 }
             }
         }
@@ -395,8 +367,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                 {
-                    if (self.GetSpecialSwingDirection() != 0.0f)
-                        hook.SetRopeLengthLocked(true, self.ExactCenter());
+                    hook.SetRopeLengthLocked(true, self.ExactCenter());
                 }
             }
         }
@@ -421,10 +392,9 @@ namespace Celeste.Mod.Aqua.Core
                 return nextState;
             if (!self.level.GetState().FeatureEnabled)
                 return nextState;
-            if (nextState == (int)AquaStates.StDreamDash)
+            if (nextState == (int)AquaStates.StDreamDash && self.Speed != Vector2.Zero)
             {
                 self.SetupSpecialSwingArguments(self.Speed);
-                self.SetSpecialSwingSpeed(self.Speed.Length());
                 self.UpdateSpecialSwing();
             }
             return nextState;
@@ -452,7 +422,7 @@ namespace Celeste.Mod.Aqua.Core
             orig(self);
         }
 
-        private static System.Collections.IEnumerator Player_PickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self)
+        private static IEnumerator Player_PickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player self)
         {
             var hook = self.GetGrappleHook();
             if (hook != null && hook.Active && hook.State != GrapplingHook.HookStates.Revoking)
@@ -463,15 +433,29 @@ namespace Celeste.Mod.Aqua.Core
             return orig(self);
         }
 
-        private static void Player_StarFlyBegin(On.Celeste.Player.orig_StarFlyBegin orig, Player self)
+        private static int Player_StarFlyUpdate(On.Celeste.Player.orig_StarFlyUpdate orig, Player self)
         {
-            var hook = self.GetGrappleHook();
-            if (hook != null && hook.Active && hook.State != GrapplingHook.HookStates.Revoking)
+            int nextState = orig(self);
+            if (nextState == (int)AquaStates.StStarFly)
             {
-                hook.Revoke();
+                var hook = self.GetGrappleHook();
+                if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
+                {
+                    if (AquaModule.Settings.ThrowHook.Pressed)
+                    {
+                        hook.Revoke();
+                        // if current speed is almost perpendicular to the rope direction, we get a direction correction.
+                        Vector2 ropeDirection = hook.RopeDirection;
+                        Vector2 currentDirection = Calc.SafeNormalize(self.Speed);
+                        float angle = 11.25f * Calc.DegToRad;
+                        if (Vector2.Dot(ropeDirection, currentDirection) > MathF.Cos(angle))
+                        {
+                            self.Speed = TurnToConsistentSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
+                        }
+                    }
+                }
             }
-
-            orig(self);
+            return nextState;
         }
 
         private static void Player_SummitLaunchBegin(On.Celeste.Player.orig_SummitLaunchBegin orig, Player self)
@@ -483,6 +467,12 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             orig(self);
+        }
+
+        private static void Player_NormalBegin(On.Celeste.Player.orig_NormalBegin orig, Player self)
+        {
+            orig(self);
+            self.SetFastBubbleMultiplier(1.0f);
         }
 
         private static int Player_NormalUpdate(On.Celeste.Player.orig_NormalUpdate orig, Player self)
@@ -541,6 +531,30 @@ namespace Celeste.Mod.Aqua.Core
             return nextState;
         }
 
+        private static IEnumerator Player_DashCoroutine(On.Celeste.Player.orig_DashCoroutine orig, Player self)
+        {
+            var state = self.level.GetState();
+            if (state == null || !state.FeatureEnabled)
+                yield return new SwapImmediately(orig(self));
+            else
+            {
+                IEnumerator enumerator = orig(self);
+                // twice to setup the speed
+                enumerator.MoveNext();
+                yield return enumerator.Current;
+                enumerator.MoveNext();
+                if (self.IsBoosterDash())
+                {
+                    self.Speed *= self.GetFastBubbleMultiplier();
+                }
+                yield return enumerator.Current;
+                while (enumerator.MoveNext())
+                {
+                    yield return enumerator.Current;
+                }
+            }
+        }
+
         private static int Player_SwimUpdate(On.Celeste.Player.orig_SwimUpdate orig, Player self)
         {
             int nextState = PreHookUpdate(self);
@@ -577,16 +591,6 @@ namespace Celeste.Mod.Aqua.Core
             return nextState;
         }
 
-        private static void Player_LaunchEnd(this Player self)
-        {
-            if (self.StateMachine.State == (int)AquaStates.StSwing)
-            {
-                TimeTicker keepTicker = self.GetTimeTicker("swing_jump_keeping_ticker");
-                keepTicker.Reset();
-                DynamicData.For(self).Set("lift_speed_y", MathF.Min(self.Speed.Y, 0.0f));
-            }
-        }
-
         private static void Player_SwingBegin(this Player self)
         {
             var hook = self.GetGrappleHook();
@@ -608,10 +612,6 @@ namespace Celeste.Mod.Aqua.Core
             hook.SetRopeLengthLocked(false, self.Center);
             DynamicData.For(self).Set("climb_rope_direction", 0);
             DynamicData.For(self).Set("lift_speed_y", 0.0f);
-            if (self.StateMachine.State == (int)AquaStates.StBoost || self.StateMachine.State == (int)AquaStates.StRedDash)
-            {
-                self.TrySaveSwingSpeed();
-            }
         }
 
         private static int Player_SwingUpdate(this Player self)
@@ -623,12 +623,6 @@ namespace Celeste.Mod.Aqua.Core
             Vector2 ropeDirection = hook.RopeDirection;
             Vector2 swingDirection = hook.SwingDirection;
             bool swingUp = IsRopeSwingingUp(ropeDirection);
-            TimeTicker keepTicker = self.GetTimeTicker("swing_jump_keeping_ticker");
-            keepTicker.Tick(dt);
-            if (keepTicker.Check())
-            {
-                DynamicData.For(self).Set("lift_speed_y", 0.0f);
-            }
             if (hook.State != GrapplingHook.HookStates.Fixed)
             {
                 self.Speed = TurnToConsistentSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
@@ -1027,8 +1021,7 @@ namespace Celeste.Mod.Aqua.Core
                     yLiftCoefficient = 1.0f - MathHelper.Clamp(split / MAX_INFINITE_MASS, 0.0f, 1.0f);
                 }
             }
-            float keepedLiftY = DynamicData.For(self).Get<float>("lift_speed_y");
-            Vector2 speed = new Vector2(self.Speed.X, MathF.Min(self.Speed.Y, keepedLiftY));
+            Vector2 speed = self.Speed;
             speed = TurnToConsistentSpeed(speed, SWING_JUMP_ACCURACY_RANGE_LIST);
             self.LiftSpeed = speed * new Vector2(X_LIFT, Y_LIFT * yLiftCoefficient * (ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f));
             self.dreamJump = false;
@@ -1176,7 +1169,7 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         self.GrappleBoost();
                     }
-                    else if (shotCheck.CanRevoke)
+                    else if ((self.StateMachine.State != (int)AquaStates.StDash || self.DashDir != Vector2.Zero) && shotCheck.CanRevoke)
                     {
                         grapple.Revoke();
                     }
@@ -1287,26 +1280,6 @@ namespace Celeste.Mod.Aqua.Core
             self.Speed += self.GetWindSpeed() * dt;
         }
 
-        private static void TrySaveSwingSpeed(this Player self)
-        {
-            GrapplingHook grapple = self.GetGrappleHook();
-            if (grapple != null)
-            {
-                Vector2 swingDirection = grapple.SwingDirection;
-                Vector2 tangentSpd = self.TurnToTangentSpeed(self.Speed, swingDirection);
-                if (tangentSpd.LengthSquared() > SPEED_CHECK_GRAPPLING_SWING_DOWN * SPEED_CHECK_GRAPPLING_SWING_DOWN)
-                {
-                    self.SetSavedSwingSpeed(TurnToConsistentSpeed(Vector2.Normalize(self.Speed) * SAVED_SWING_SPEED, UNIFORM_ACCURACY_RANGE_LIST));
-                }
-                else
-                {
-                    self.SetSavedSwingSpeed(Vector2.Zero);
-                }
-                TimeTicker saveTicker = self.GetTimeTicker("boost_speed_save_ticker");
-                saveTicker.Reset();
-            }
-        }
-
         private static Vector2 GetWindSpeed(this Player self)
         {
             WindController windCtrl = self.Scene.Entities.FindFirst<WindController>();
@@ -1357,16 +1330,12 @@ namespace Celeste.Mod.Aqua.Core
                         sign = 0.0f;
                     }
                     self.SetSpecialSwingDirection(sign);
-                    self.SetSpecialSwingSpeed(MathF.Max(Player.DashSpeed, speed.Length()));
+                    self.SetSpecialSwingSpeed(speed.Length());
                 }
                 else
                 {
                     self.SetSpecialSwingDirection(0.0f);
                 }
-            }
-            else
-            {
-                self.SetSpecialSwingDirection(0.0f);
             }
         }
 
@@ -1389,7 +1358,7 @@ namespace Celeste.Mod.Aqua.Core
                         // Make player follow the attached entity.
                         Entity attached = hook.AttachedEntity;
                         Vector2 movement = attached.Position - attached.GetPreviousPosition();
-                        if (!AquaMaths.IsApproximateZero(movement))
+                        if (!AquaMaths.IsApproximateZero(movement) && attached.Collidable && attached.IsHookable() && attached.Scene != null)
                         {
                             self.MoveH(movement.X, self.OnCollideH);
                             self.MoveV(movement.Y, self.OnCollideV);
@@ -1428,40 +1397,33 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private static void RestoreSavedSwingSpeedIfPossible(this Player self, int nextState)
+        private static void AccumulateSwingFastBubble(this Player self, int nextState)
         {
             TimeTicker saveTicker = self.GetTimeTicker("boost_speed_save_ticker");
+            saveTicker.Tick(Engine.DeltaTime);
             GrapplingHook hook = self.GetGrappleHook();
-            if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed && !AquaMaths.IsApproximateZero(self.GetSavedSwingSpeed()))
+            if (hook != null && hook.Active && hook.State == GrapplingHook.HookStates.Fixed)
             {
                 if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                 {
                     if ((nextState == (int)AquaStates.StDash || nextState == (int)AquaStates.StRedDash) && !saveTicker.Check())
                     {
-                        self.Speed = self.GetSavedSwingSpeed();
-                        self.SetSavedSwingSpeed(Vector2.Zero);
+                        self.SetFastBubbleMultiplier(FAST_BUBBLE_SPEED_MULTIPLIER);
                     }
                 }
             }
-            else
-            {
-                self.SetSavedSwingSpeed(Vector2.Zero);
-            }
-            saveTicker.Tick(Engine.DeltaTime);
-            if (nextState != (int)AquaStates.StBoost && nextState != (int)AquaStates.StRedDash)
-            {
-                self.SetSavedSwingSpeed(Vector2.Zero);
-            }
+            if (saveTicker.Check())
+                self.SetFastBubbleMultiplier(1.0f);
         }
 
-        private static Vector2 GetSavedSwingSpeed(this Player self)
+        private static float GetFastBubbleMultiplier(this Player self)
         {
-            return DynamicData.For(self).Get<Vector2>("saved_swing_speed");
+            return DynamicData.For(self).Get<float>("fast_bubble_multiplier");
         }
 
-        private static void SetSavedSwingSpeed(this Player self, Vector2 speed)
+        private static void SetFastBubbleMultiplier(this Player self, float multiplier)
         {
-            DynamicData.For(self).Set("saved_swing_speed", speed);
+            DynamicData.For(self).Set("fast_bubble_multiplier", multiplier);
         }
 
         private static float GetSpecialSwingDirection(this Player self)

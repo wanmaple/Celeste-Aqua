@@ -20,7 +20,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Solid.HasPlayerRider -= Solid_HasPlayerRider;
         }
 
-        private static void Solid_Awake(On.Celeste.Solid.orig_Awake orig, Solid self, Monocle.Scene scene)
+        private static void Solid_Awake(On.Celeste.Solid.orig_Awake orig, Solid self, Scene scene)
         {
             orig(self, scene);
             self.WorkWithConveyor();

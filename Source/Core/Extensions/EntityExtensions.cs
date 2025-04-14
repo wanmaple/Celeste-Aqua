@@ -179,17 +179,9 @@ namespace Celeste.Mod.Aqua.Core
             return null;
         }
 
-        public static bool CheckColliderChanged(this Entity self, GrapplingHook grapple)
+        public static bool CheckColliderChanged(this Entity self, GrapplingHook grapple, Vector2 direction)
         {
-            if (Collide.Check(self, grapple))
-                return true;
-            if (Collide.Check(grapple, self, grapple.Position - Vector2.UnitY))
-                return true;
-            if (Collide.Check(grapple, self, grapple.Position + Vector2.UnitX))
-                return true;
-            if (Collide.Check(grapple, self, grapple.Position - Vector2.UnitX))
-                return true;
-            if (Collide.Check(grapple, self, grapple.Position + Vector2.UnitY))
+            if (Collide.Check(grapple, self, grapple.Position + direction))
                 return true;
             return false;
         }

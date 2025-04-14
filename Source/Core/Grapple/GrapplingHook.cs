@@ -24,6 +24,14 @@ namespace Celeste.Mod.Aqua.Core
             public bool Moved;
         }
 
+        private struct AttachInfo
+        {
+            public Vector2 attachDirection;
+            public ColliderType colliderType;
+            public float colliderArg1;
+            public float colliderArg2;
+        }
+
         public enum HookStates : byte
         {
             None = 0,
@@ -44,6 +52,15 @@ namespace Celeste.Mod.Aqua.Core
         {
             Default,
             ShootCounter,
+        }
+
+        private enum ColliderType
+        {
+            None,
+            Tile,
+            Rectangle,
+            Circle,
+            List,
         }
 
         public const float HOOK_SIZE = 8.0f;
@@ -191,6 +208,7 @@ namespace Celeste.Mod.Aqua.Core
         public void Emit(Level level, Vector2 direction, float speed, float speedCoeff)
         {
             AlongRopeSpeed = 0.0f;
+            _attachInfo = new AttachInfo();
             HookRope rope = Get<HookRope>();
             rope.CurrentDirection = direction;
             rope.EmitSpeed = speed;
@@ -492,7 +510,8 @@ namespace Celeste.Mod.Aqua.Core
                         nextPosition = rope.DetectHookNextPosition(dt, false, CalculateSpeedCoefficient(false), out changeState);
                         movement = nextPosition - prevPosition;
                         rope.PrepareCheckCollision(playerSeg);
-                        collided = BresenhamMove(movement, OnCollideEntity).Hit;
+                        var moveRslt = BresenhamMove(movement, OnCollideEntity);
+                        collided = moveRslt.Hit;
                         rope.UpdateTopPivot(Position);
                         rope.CheckCollision(playerSeg);
                         if (collided && _hitInteractable)
@@ -527,7 +546,8 @@ namespace Celeste.Mod.Aqua.Core
                             changeState = true;
                         }
                         rope.PrepareCheckCollision(playerSeg);
-                        collided = BresenhamMove(movement, OnCollideEntity).Hit;
+                        var moveRslt2 = BresenhamMove(movement, OnCollideEntity);
+                        collided = moveRslt2.Hit;
                         rope.UpdateTopPivot(Position);
                         rope.CheckCollision(playerSeg);
                         if (collided && _hitInteractable)
@@ -566,7 +586,8 @@ namespace Celeste.Mod.Aqua.Core
                         nextPosition = ExactPosition + Calc.SafeNormalize(CurrentAttractor.AttractionTarget - ExactPosition) * MathHelper.Clamp(t, 0.0f, 1.0f) * shootSpeed * dt;
                         movement = nextPosition - prevPosition;
                         rope.PrepareCheckCollision(playerSeg);
-                        collided = BresenhamMove(movement, OnCollideEntity).Hit;
+                        var moveRslt3 = BresenhamMove(movement, OnCollideEntity);
+                        collided = moveRslt3.Hit;
                         rope.UpdateTopPivot(Position);
                         rope.CheckCollision(playerSeg);
                         if (collided && _hitInteractable)
@@ -599,6 +620,7 @@ namespace Celeste.Mod.Aqua.Core
                         rope.CheckCollision(playerSeg);
                         AttachedVelocity = ExactPosition - prevPosition;
                         rope.UpdateCurrentDirection();
+                        CheckColliderChanged();
                         break;
                     default:
                         break;
@@ -683,6 +705,22 @@ namespace Celeste.Mod.Aqua.Core
                 rope.HookAttachEntity(hitEntity);
                 hitEntity.SetHookAttached(true, this);
                 PlayHitSound(hitEntity);
+                var attachInfo = new AttachInfo
+                {
+                    attachDirection = collisionData.Direction,
+                    colliderType = GetColliderType(hitEntity.Collider)
+                };
+                Collider collider = hitEntity.Collider;
+                if (collider is Hitbox box)
+                {
+                    attachInfo.colliderArg1 = box.Width;
+                    attachInfo.colliderArg2 = box.Height;
+                }
+                else if (collider is Circle circle)
+                {
+                    attachInfo.colliderArg1 = circle.Radius;
+                }
+                _attachInfo = attachInfo;
                 _hitUnhookable = false;
             }
             else
@@ -691,21 +729,48 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private bool WillHitSolids()
+        private ColliderType GetColliderType(Collider collider)
         {
-            HookRope rope = Get<HookRope>();
-            List<Entity> solids = Scene.Tracker.GetEntities<Solid>();
-            foreach (Entity entity in solids)
+            if (collider is Grid)
+                return ColliderType.Tile;
+            else if (collider is Hitbox box)
+                return ColliderType.Rectangle;
+            else if (collider is Circle circle)
+                return ColliderType.Circle;
+            else if (collider is ColliderList)
+                return ColliderType.List;
+            return ColliderType.None;
+        }
+
+        private void CheckColliderChanged()
+        {
+            if (AttachedEntity != null)
             {
-                if (entity != rope.TopPivot.entity && entity.Collider != null && entity.Collidable)
+                bool needRevoke = false;
+                Collider curCollider = AttachedEntity.Collider;
+                ColliderType curColliderType = GetColliderType(curCollider);
+                // only fix of hitbox required currently.
+                if (curColliderType == ColliderType.Rectangle )
                 {
-                    if (entity.CollideCheck(this))
+                    if (_attachInfo.colliderType == ColliderType.Rectangle)
                     {
-                        return true;
+                        Hitbox curBox = curCollider as Hitbox;
+                        if (curBox.Width != _attachInfo.colliderArg1 || curBox.Height != _attachInfo.colliderArg2)
+                        {
+                            if (!AttachedEntity.CheckColliderChanged(this, _attachInfo.attachDirection))
+                            {
+                                needRevoke = true;
+                            }
+                            _attachInfo.colliderArg1 = curBox.Width;
+                            _attachInfo.colliderArg2 = curBox.Height;
+                        }
                     }
                 }
+                if (needRevoke)
+                {
+                    Revoke();
+                }
             }
-            return false;
         }
 
         private float CalculateSpeedCoefficient(bool revoking)
@@ -837,7 +902,11 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             _movementCounter.X -= step;
-            return new MoveResult { Hit = false, Moved = true, };
+            return new MoveResult
+            {
+                Hit = false,
+                Moved = true,
+            };
         }
 
         private MoveResult StepMoveV(int step, Action<CustomCollisionData> onCollide, params Entity[] ignoreList)
@@ -861,7 +930,11 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             _movementCounter.Y -= step;
-            return new MoveResult { Hit = false, Moved = true, };
+            return new MoveResult
+            {
+                Hit = false,
+                Moved = true,
+            };
         }
 
         private MoveResult DoCollideOrNot(Entity entity, Vector2 direction, Action<CustomCollisionData> onCollide, out CustomCollisionData data)
@@ -1062,6 +1135,7 @@ namespace Celeste.Mod.Aqua.Core
         private bool _hitUnhookable = false;
         private bool _hitInteractable = false;
         private GrappleInertia _inertia = new GrappleInertia(4);
+        private AttachInfo _attachInfo = new AttachInfo();
 
         private HookSprite _sprite;
         private Sprite _elecShockSprite;

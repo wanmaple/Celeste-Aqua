@@ -84,6 +84,7 @@ namespace Celeste.Mod.Aqua.Core
                 Color2 = Calc.HexToColor("dd1e1e"),
             };
             DynamicData.For(this).Set("post_move_patch", (Action<Vector2>)PostMove);
+            this.MakeExtraCollideCondition();
         }
 
         public override void Added(Scene scene)
@@ -417,6 +418,13 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (this.IsHookAttached())
                 this.MakeGrappleFollowMe(movement, movement);
+        }
+
+        private bool CanCollide(Entity other)
+        {
+            if (other is WallBooster)
+                return false;
+            return true;
         }
 
         protected Sprite _spriteMagnet;

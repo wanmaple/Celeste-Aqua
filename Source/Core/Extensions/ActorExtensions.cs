@@ -134,7 +134,7 @@ namespace Celeste.Mod.Aqua.Core
                             break;
                         }
                     }
-                    if (signY != 0)
+                    if (signY < 0 || (signY > 0 && i < 2))
                     {
                         Entity collideEntity = null;
                         if (self.CheckCollidePlatformsAtYDirection(signY * i, out collideEntity))
@@ -166,16 +166,22 @@ namespace Celeste.Mod.Aqua.Core
             var state = self.SceneAs<Level>().GetState();
             Vector2 ownerSpd = myRatio * totalSpeed * -toActor; // ignore addition speed for consistency.
             Vector2 otherSpd = (otherRatio * totalSpeed + otherSaveSpeed) * toActor;
-            float extraCoeff = blocked ? MathF.Max(0.0f, self.GetAgainstBoostCoefficient() - myMass / (myMass + otherMass)) : 0.0f;
-            float slowFallMax = Player.DashSpeed * (1.0f + extraCoeff);
-            float fastFallMax = Player.DashSpeed * (1.0f + extraCoeff);
-            if (self.Get<Holdable>().SlowFall && otherSpd.Y < -slowFallMax)
+            Holdable holdable = self.Get<Holdable>();
+            if (holdable != null)
             {
-                otherSpd.Y = -slowFallMax;
-            }
-            else if (!self.Get<Holdable>().SlowFall && otherSpd.Y < -fastFallMax)
-            {
-                otherSpd.Y = -fastFallMax;
+                float extraCoeff = blocked ? MathF.Max(0.0f, self.GetAgainstBoostCoefficient() - myMass / (myMass + otherMass)) : 0.0f;
+                Vector2 standardDiagonal = Calc.SafeNormalize(Vector2.One);
+                float ratio = AquaMaths.IsApproximateZero(toActor.Y) || AquaMaths.IsApproximateZero(toActor.X) ? 1.0f : MathF.Abs(toActor.Y) / standardDiagonal.Y;
+                float slowFallMax = Player.DashSpeed * (1.0f + extraCoeff) * ratio;
+                float fastFallMax = Player.DashSpeed * (1.0f + extraCoeff) * ratio;
+                if (holdable.SlowFall && otherSpd.Y < -slowFallMax)
+                {
+                    otherSpd.Y = -slowFallMax;
+                }
+                else if (!holdable.SlowFall && otherSpd.Y < -fastFallMax)
+                {
+                    otherSpd.Y = -fastFallMax;
+                }
             }
             return new MomentumResults
             {
