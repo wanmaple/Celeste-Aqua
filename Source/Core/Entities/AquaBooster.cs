@@ -65,6 +65,11 @@ namespace Celeste.Mod.Aqua.Core
             Collidable = respawnTimer <= 0.0f;
         }
 
+        public virtual void OnTransport()
+        {
+            _grabbing = false;
+        }
+
         private bool OnHookGrab(GrapplingHook hook, Vector2 at)
         {
             if (!BoostingPlayer)

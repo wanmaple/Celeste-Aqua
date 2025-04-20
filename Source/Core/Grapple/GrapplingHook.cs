@@ -698,30 +698,59 @@ namespace Celeste.Mod.Aqua.Core
 
         private void OnCollideEntity(CustomCollisionData collisionData)
         {
+            _hitUnhookable = false;
             HookRope rope = Get<HookRope>();
             Entity hitEntity = collisionData.Hit;
             if (hitEntity.IsHookable())
             {
-                rope.HookAttachEntity(hitEntity);
-                hitEntity.SetHookAttached(true, this);
-                PlayHitSound(hitEntity);
-                var attachInfo = new AttachInfo
+                if (hitEntity is SolidTiles)
                 {
-                    attachDirection = collisionData.Direction,
-                    colliderType = GetColliderType(hitEntity.Collider)
-                };
-                Collider collider = hitEntity.Collider;
-                if (collider is Hitbox box)
-                {
-                    attachInfo.colliderArg1 = box.Width;
-                    attachInfo.colliderArg2 = box.Height;
+                    int stepX = MathF.Sign(collisionData.Direction.X);
+                    int stepY = MathF.Sign(collisionData.Direction.Y);
+                    UnhookableTileCenter tileCenter = Scene.Tracker.GetEntity<UnhookableTileCenter>();
+                    if (stepX != 0)
+                    {
+                        Vector2 tilePos = stepX > 0 ? new Vector2(Right + 1, Center.Y) : new Vector2(Left - 1, Center.Y);
+                        if (tileCenter != null && tileCenter.IsTileBlocked(tilePos))
+                        {
+                            Audio.Play("event:/char/madeline/unhookable", Position);
+                            Revoke();
+                            _hitUnhookable = true;
+                        }
+                    }
+                    if (stepY != 0)
+                    {
+                        Vector2 tilePos = stepY > 0 ? new Vector2(Center.X, Bottom + 1) : new Vector2(Center.X, Top - 1);
+                        if (tileCenter != null && tileCenter.IsTileBlocked(tilePos))
+                        {
+                            Audio.Play("event:/char/madeline/unhookable", Position);
+                            Revoke();
+                            _hitUnhookable = true;
+                        }
+                    }
                 }
-                else if (collider is Circle circle)
+                if (!_hitUnhookable)
                 {
-                    attachInfo.colliderArg1 = circle.Radius;
+                    rope.HookAttachEntity(hitEntity);
+                    hitEntity.SetHookAttached(true, this);
+                    PlayHitSound(hitEntity);
+                    var attachInfo = new AttachInfo
+                    {
+                        attachDirection = collisionData.Direction,
+                        colliderType = GetColliderType(hitEntity.Collider)
+                    };
+                    Collider collider = hitEntity.Collider;
+                    if (collider is Hitbox box)
+                    {
+                        attachInfo.colliderArg1 = box.Width;
+                        attachInfo.colliderArg2 = box.Height;
+                    }
+                    else if (collider is Circle circle)
+                    {
+                        attachInfo.colliderArg1 = circle.Radius;
+                    }
+                    _attachInfo = attachInfo;
                 }
-                _attachInfo = attachInfo;
-                _hitUnhookable = false;
             }
             else
             {
@@ -885,6 +914,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (CheckInteractables(Position + Vector2.UnitX * step))
             {
+                _movementCounter.X = 0.0f;
                 return new MoveResult
                 {
                     Hit = true,
@@ -895,8 +925,7 @@ namespace Celeste.Mod.Aqua.Core
             Entity collideEntity = null;
             if (this.CheckCollidePlatformsAtXDirection(step, out collideEntity, ignoreList))
             {
-                AquaDebugger.Assert(collideEntity != null, "Runtime Error");
-                _movementCounter.X = 0f;
+                _movementCounter.X = 0.0f;
                 CustomCollisionData data;
                 return DoCollideOrNot(collideEntity, Vector2.UnitX * step, onCollide, out data);
             }
@@ -923,7 +952,6 @@ namespace Celeste.Mod.Aqua.Core
             Entity collideEntity = null;
             if (this.CheckCollidePlatformsAtYDirection(step, out collideEntity, ignoreList))
             {
-                AquaDebugger.Assert(collideEntity != null, "Runtime Error");
                 _movementCounter.Y = 0f;
                 CustomCollisionData data;
                 return DoCollideOrNot(collideEntity, Vector2.UnitY * step, onCollide, out data);

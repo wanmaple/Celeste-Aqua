@@ -414,6 +414,8 @@ namespace Celeste.Mod.Aqua.Core
         {
             if (exactMovement == Vector2.Zero)
                 return;
+            if (self.Scene == null)
+                return;
             var grapples = self.Scene.Tracker.GetEntities<GrapplingHook>();
             foreach (GrapplingHook grapple in grapples)
             {

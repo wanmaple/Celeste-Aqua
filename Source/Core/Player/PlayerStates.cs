@@ -648,6 +648,7 @@ namespace Celeste.Mod.Aqua.Core
             else if (shotCheck.CanRevoke)
             {
                 hook.Revoke();
+                self.Speed = TurnToConsistentSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
                 return (int)AquaStates.StNormal;
             }
             else if (!Input.GrabCheck && !AquaModule.Settings.AutoGrabRopeIfPossible)

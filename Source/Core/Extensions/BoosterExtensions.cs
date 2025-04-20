@@ -1,7 +1,5 @@
-﻿using Celeste.Mod.Aqua.Debug;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.Cil;
 using MonoMod.Utils;
 using System;
 using System.Reflection;
@@ -16,6 +14,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Booster.PlayerReleased += Booster_PlayerReleased;
             On.Celeste.Booster.Respawn += Booster_Respawn;
             On.Celeste.Booster.AppearParticles += Booster_AppearParticles;
+            On.Celeste.Booster.Update += Booster_Update;
         }
 
         public static void Uninitialize()
@@ -24,6 +23,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Booster.PlayerReleased -= Booster_PlayerReleased;
             On.Celeste.Booster.Respawn -= Booster_Respawn;
             On.Celeste.Booster.AppearParticles -= Booster_AppearParticles;
+            On.Celeste.Booster.Update -= Booster_Update;
         }
 
         private static void Booster_Construct(On.Celeste.Booster.orig_ctor_Vector2_bool orig, Booster self, Vector2 position, bool red)
@@ -63,6 +63,35 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        private static void Booster_Update(On.Celeste.Booster.orig_Update orig, Booster self)
+        {
+            if (!self.IsBoostingPlayer())
+            {
+                var transporters = self.Scene.Tracker.GetEntities<BoosterTransporter>();
+                float minDistance = float.MaxValue;
+                BoosterTransporter bestTransporter = null;
+                foreach (BoosterTransporter transporter in transporters)
+                {
+                    if (transporter.IsBusy)
+                        continue;
+                    if (self.CollideCheck(transporter))
+                    {
+                        float distanceSq = Vector2.DistanceSquared(self.Position, transporter.Position);
+                        if (distanceSq < minDistance)
+                        {
+                            minDistance = distanceSq;
+                            bestTransporter = transporter;
+                        }
+                    }
+                }
+                if (bestTransporter != null)
+                {
+                    bestTransporter.BeginTransport(self);
+                }
+            }
+            orig(self);
+        }
+
         private static void ResetPosition(this Booster self)
         {
             self.Position = self.outline.Position;
@@ -82,6 +111,17 @@ namespace Celeste.Mod.Aqua.Core
                 routine.Replace(self.UndraggableRoutine(self.sprite, Calc.SafeNormalize(at - self.Center), 0.4f, 8.0f));
             }
             return true;
+        }
+
+        public static bool IsBoostingPlayer(this Booster self)
+        {
+            var players = self.Scene.Tracker.GetEntities<Player>();
+            foreach (Player player in players)
+            {
+                if (player.CurrentBooster == self)
+                    return true;
+            }
+            return self.BoostingPlayer;
         }
     }
 }

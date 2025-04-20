@@ -8,7 +8,7 @@ namespace Celeste.Mod.Aqua.Core
     [Tracked(false)]
     public class AquaRefill : CustomRefill
     {
-        public AquaRefill(EntityData data, Vector2 offset) 
+        public AquaRefill(EntityData data, Vector2 offset)
             : base(data, offset)
         {
             RefillCount = data.Bool("twoDash", false) ? 2 : 1;
@@ -39,7 +39,7 @@ namespace Celeste.Mod.Aqua.Core
             }
             else
             {
-                    outline.Texture = GFX.Game[OutlineTexture];
+                outline.Texture = GFX.Game[OutlineTexture];
                 GFX.SpriteBank.CreateOn(sprite, RefillSprite);
                 GFX.SpriteBank.CreateOn(flash, FlashSprite);
             }
@@ -74,7 +74,11 @@ namespace Celeste.Mod.Aqua.Core
 
         protected override bool UseRefill(Player player)
         {
-            return player.UseRefill(twoDashes);
+            if (player.UseRefill(twoDashes))
+            {
+                return true;
+            }
+            return false;
         }
 
         protected override bool RefillCondition(Player player)

@@ -9,6 +9,7 @@ namespace Celeste.Mod.Aqua.Core
         public bool Hookable { get; protected set; }
         public int RefillCount { get; protected set; }
         public float RespawnTime { get; protected set; }
+        public bool FillStamina { get; private set; }
         public string RefillSprite { get; protected set; }
         public string FlashSprite { get; protected set; }
         public string OutlineTexture { get; protected set; }
@@ -21,6 +22,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             Hookable = data.Bool("hookable", true);
             RespawnTime = data.Float("respawn_time", 2.5f);
+            FillStamina = data.Bool("fill_stamina", true);
             RefillSprite = data.Attr("refill_sprite");
             FlashSprite = data.Attr("flash_sprite");
             OutlineTexture = data.Attr("outline_texture");
@@ -67,7 +69,7 @@ namespace Celeste.Mod.Aqua.Core
 
         protected virtual void OnPlayerCustom(Player player)
         {
-            if (UseRefill(player))
+            if (OnUseRefill(player))
             {
                 Audio.Play(twoDashes ? "event:/new_content/game/10_farewell/pinkdiamond_touch" : "event:/game/general/diamond_touch", Position);
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
@@ -75,6 +77,18 @@ namespace Celeste.Mod.Aqua.Core
                 Add(new Coroutine(RefillRoutine(player)));
                 respawnTimer = RespawnTime;
             }
+        }
+
+        private bool OnUseRefill(Player player)
+        {
+            float stamina = player.Stamina;
+            if (UseRefill(player))
+            {
+                if (!FillStamina)
+                    player.Stamina = stamina;
+                return true;
+            }
+            return false;
         }
 
         protected virtual bool OnHookInteract(GrapplingHook hook, Vector2 at)

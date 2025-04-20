@@ -15,6 +15,7 @@ entities.Aqua/Aqua Refill.attributes.description.twoDash=Whether the refill shou
 entities.Aqua/Aqua Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
 entities.Aqua/Aqua Refill.attributes.description.hookable=Whether the refill is interactable with the grappling hook.
 entities.Aqua/Aqua Refill.attributes.description.respawn_time=Respawn time when obtains.
+entities.Aqua/Aqua Refill.attributes.description.fill_stamina=Whether the refill will fill Madeline's stamina.
 entities.Aqua/Aqua Refill.attributes.description.refill_sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Aqua Refill.attributes.description.outline_texture=Your custom outline texture.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Aqua Refill.attributes.description.particle_color1=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
@@ -32,6 +33,16 @@ entities.Aqua/Aqua Crumble Platform.attributes.description.crumble_duration_on_s
 entities.Aqua/Aqua Crumble Platform.attributes.description.crumble_duration_attached=The time the platform will take to disappear when the player grapple it.
 entities.Aqua/Aqua Crumble Platform.attributes.description.crumble_particle_color=The particle color while crumbling.
 
+# Grapple Attack Kevin
+entities.Aqua/Grapple Attack Kevin.attributes.description.chillout=Whether Kevin should have the large face and get tired after being hit.
+entities.Aqua/Grapple Attack Kevin.attributes.description.top=Whether the top is active.
+entities.Aqua/Grapple Attack Kevin.attributes.description.bottom=Whether the bottom is active.
+entities.Aqua/Grapple Attack Kevin.attributes.description.left=Whether the left is active.
+entities.Aqua/Grapple Attack Kevin.attributes.description.right=Whether the right is active.
+entities.Aqua/Grapple Attack Kevin.attributes.description.grapple_trigger=Whether Kevin could be triggered by a grapple shot.
+entities.Aqua/Grapple Attack Kevin.attributes.description.dash_trigger=Whether Kevin could be triggered by a dash.
+entities.Aqua/Grapple Attack Kevin.attributes.description.edge_color=Frame color of Kevin.
+
 # Puzzle Light
 entities.Aqua/Puzzle Light.attributes.description.puzzleId=Puzzle Identifier that indicates which puzzle it belongs to.
 entities.Aqua/Puzzle Light.attributes.description.sequence=The puzzle light will be ordered with this attribute, used to handle logic.
@@ -40,13 +51,6 @@ entities.Aqua/Puzzle Light.attributes.description.color=The color of the light.
 
 # Puzzle City Satellite
 entities.Aqua/Puzzle City Satellite.attributes.description.puzzleId=Puzzle Identifier, used to recognize which Puzzle Light belongs to the puzzle.
-
-# Unidirectional Dash Block
-entities.Aqua/Unidirectional Dash Block.attributes.description.tiletype=Determines the visual apperance of the wall.
-entities.Aqua/Unidirectional Dash Block.attributes.description.blendin=Blend the block with the walls it touches, making it less apparent.
-entities.Aqua/Unidirectional Dash Block.attributes.description.canDash=Whether the player can break the wall by dashing into it.
-entities.Aqua/Unidirectional Dash Block.attributes.description.permanent=Once broken, the block will remain that way, even the player dies.
-entities.Aqua/Unidirectional Dash Block.attributes.description.direction=Indicates the dashing direction which will break the wall, use All/Left/Right/Up/Down.
 
 # Freeze Listener
 entities.Aqua/Freeze Listener.attributes.description.inputs=The inputs to listen when frozen. (Up/Down/Left/Right/UpLeft/UpRight/DownLeft/DownRight/Jump/Grab/Dash/mod:MOD_NAME/BINDING_NAME)
@@ -134,6 +138,8 @@ entities.Aqua/Unhookable Area.attributes.description.block_right=Whether to bloc
 # Unhookable Crystal
 entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether the spinner attaches to blocks.
 entities.Aqua/Unhookable Crystal.attributes.description.color=Main color of the spinner or connector.
+entities.Aqua/Unhookable Crystal.attributes.description.custom_foreground_texture=Custom foreground texture.
+entities.Aqua/Unhookable Crystal.attributes.description.custom_background_texture=Custom background texture.
 
 # Unhookable Ice Wall
 entities.Aqua/Unhookable Ice Wall.attributes.description.attach_to_solid=Whether the ice wall attaches to blocks.
@@ -196,6 +202,16 @@ entities.Aqua/Unhookable Spike Left.attributes.description.block_down=Whether to
 entities.Aqua/Unhookable Spike Left.attributes.description.block_left=Whether to block grapple from left.
 entities.Aqua/Unhookable Spike Left.attributes.description.block_right=Whether to block grapple from right.
 
+# Unhookable Tile Controller
+entities.Aqua/Unhookable Tile Controller.attributes.description.block_tile1=Tiletype1 to block the grapple, you need check Activate1 to make it work.
+entities.Aqua/Unhookable Tile Controller.attributes.description.block_tile2=Tiletype2 to block the grapple, you need check Activate2 to make it work.
+entities.Aqua/Unhookable Tile Controller.attributes.description.block_tile3=Tiletype3 to block the grapple, you need check Activate3 to make it work.
+entities.Aqua/Unhookable Tile Controller.attributes.description.block_tile4=Tiletype4 to block the grapple, you need check Activate4 to make it work.
+entities.Aqua/Unhookable Tile Controller.attributes.description.activate1=If checked, the Block Tile 1 will be unhookable.
+entities.Aqua/Unhookable Tile Controller.attributes.description.activate2=If checked, the Block Tile 2 will be unhookable.
+entities.Aqua/Unhookable Tile Controller.attributes.description.activate3=If checked, the Block Tile 3 will be unhookable.
+entities.Aqua/Unhookable Tile Controller.attributes.description.activate4=If checked, the Block Tile 4 will be unhookable.
+
 # Grapple Filter
 entities.Aqua/Grapple Filter.attributes.description.color=Area main color.
 entities.Aqua/Grapple Filter.attributes.description.opacity=Area main opacity.
@@ -218,6 +234,7 @@ entities.Aqua/Grappling Refill.attributes.description.oneUse=Whether the refill 
 entities.Aqua/Grappling Refill.attributes.description.chargeTwo=Whether the refill will charge two shots.
 entities.Aqua/Grappling Refill.attributes.description.hookable=Whether the refill is interactable with the grappling hook.
 entities.Aqua/Grappling Refill.attributes.description.respawn_time=Respawn time when obtains.
+entities.Aqua/Grappling Refill.attributes.description.fill_stamina=Whether the refill will fill Madeline's stamina.
 entities.Aqua/Grappling Refill.attributes.description.refill_sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Grappling Refill.attributes.description.outline_texture=Your custom outline texture.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Grappling Refill.attributes.description.particle_color1=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
@@ -232,6 +249,7 @@ entities.Aqua/Custom Grappling Refill.attributes.description.oneUse=Whether the 
 entities.Aqua/Custom Grappling Refill.attributes.description.refill_count=The amount of grapple shots to refill.
 entities.Aqua/Custom Grappling Refill.attributes.description.hookable=Whether the refill is interactable with the grappling hook.
 entities.Aqua/Custom Grappling Refill.attributes.description.respawn_time=Respawn time when obtains.
+entities.Aqua/Custom Grappling Refill.attributes.description.fill_stamina=Whether the refill will fill Madeline's stamina.
 entities.Aqua/Custom Grappling Refill.attributes.description.refill_sprite=Your custom sprite name in your XML.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Custom Grappling Refill.attributes.description.outline_texture=Your custom outline texture.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Custom Grappling Refill.attributes.description.particle_color1=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.

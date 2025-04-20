@@ -1,9 +1,7 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
-using Celeste.Mod.Aqua.Module;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
-using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
 {

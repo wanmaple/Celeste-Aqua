@@ -28,6 +28,7 @@ CustomGrapplingRefill.placements = {
         oneUse = false,
         hookable = true,
         respawn_time = 2.5,
+        fill_stamina = false,
         refill_sprite = "",
         outline_texture = "",
         particle_color1 = "909cb0",

@@ -12,12 +12,17 @@ namespace Celeste.Mod.Aqua.Core
     public class UnhookableCrystalSpinner : CrystalStaticSpinner
     {
         public Color MainColor { get; private set; }
+        public string CustomForegroundTexture { get; private set; }
+        public string CustomBackgroundTexture { get; private set; }
+
         public int ID => (int)_fieldID.GetValue(this);
 
         public UnhookableCrystalSpinner(EntityData data, Vector2 offset)
             : base(data, offset, CrystalColor.Purple)
         {
             MainColor = data.HexColor("color");
+            CustomForegroundTexture = data.Attr("custom_foreground_texture");
+            CustomBackgroundTexture = data.Attr("custom_background_texture");
             this.SetHookable(true);
             Add(new HookInteractable(OnHookInteract));
 
@@ -96,7 +101,8 @@ namespace Celeste.Mod.Aqua.Core
             }
 
             Calc.PushRandom(randomSeed);
-            List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(fgTextureLookup[CrystalColor.Rainbow]);
+            string fgTextureName = !string.IsNullOrEmpty(CustomForegroundTexture) ? CustomForegroundTexture : fgTextureLookup[CrystalColor.Rainbow];
+            List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(fgTextureName);
             MTexture mTexture = Calc.Random.Choose(atlasSubtextures);
             Color color = MainColor;
             if (!SolidCheck(new Vector2(X - 4f, Y - 4f)))
@@ -143,7 +149,8 @@ namespace Celeste.Mod.Aqua.Core
                 filler.Depth = Depth + 1;
             }
 
-            List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(bgTextureLookup[CrystalColor.Rainbow]);
+            string bgTextureName = !string.IsNullOrEmpty(CustomBackgroundTexture) ? CustomBackgroundTexture : bgTextureLookup[CrystalColor.Rainbow];
+            List<MTexture> atlasSubtextures = GFX.Game.GetAtlasSubtextures(bgTextureName);
             Image image = new Image(Calc.Random.Choose(atlasSubtextures));
             image.Position = offset;
             image.Rotation = Calc.Random.Choose(0, 1, 2, 3) * (MathF.PI / 2f);
