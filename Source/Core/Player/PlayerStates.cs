@@ -67,6 +67,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.SceneEnd += Player_SceneEnd;
             On.Celeste.Player.NormalBegin += Player_NormalBegin;
             On.Celeste.Player.NormalUpdate += Player_NormalUpdate;
+            On.Celeste.Player.ClimbUpdate += Player_ClimbUpdate;
             On.Celeste.Player.DashBegin += Player_DashBegin;
             On.Celeste.Player.DashEnd += Player_DashEnd;
             On.Celeste.Player.DashUpdate += Player_DashUpdate;
@@ -106,6 +107,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.Player.SceneEnd -= Player_SceneEnd;
             On.Celeste.Player.NormalBegin -= Player_NormalBegin;
             On.Celeste.Player.NormalUpdate -= Player_NormalUpdate;
+            On.Celeste.Player.ClimbUpdate -= Player_ClimbUpdate;
             On.Celeste.Player.DashBegin -= Player_DashBegin;
             On.Celeste.Player.DashEnd -= Player_DashEnd;
             On.Celeste.Player.DashUpdate -= Player_DashUpdate;
@@ -243,6 +245,7 @@ namespace Celeste.Mod.Aqua.Core
                     self.InitializeGrapplingHook(GrapplingHook.HOOK_SIZE, state.HookSettings.RopeLength, state.RopeMaterial, state.GameplayMode, state.InitialShootCount);
                 }
             }
+            _moveTimer.Reset();
             DynamicData.For(self).Set("previous_facing", (int)self.Facing);
         }
 
@@ -496,6 +499,20 @@ namespace Celeste.Mod.Aqua.Core
             return nextState;
         }
 
+        private static int Player_ClimbUpdate(On.Celeste.Player.orig_ClimbUpdate orig, Player self)
+        {
+            GrapplingHook grapple = self.GetGrappleHook();
+            if (grapple != null && grapple.Active && grapple.State == GrapplingHook.HookStates.Fixed)
+            {
+                var shotCheck = self.GetShootHookCheck();
+                if (shotCheck.CanRevoke)
+                {
+                    grapple.Revoke();
+                }
+            }
+            return orig(self);
+        }
+
         private static void Player_DashBegin(On.Celeste.Player.orig_DashBegin orig, Player self)
         {
             orig(self);
@@ -648,7 +665,8 @@ namespace Celeste.Mod.Aqua.Core
             else if (shotCheck.CanRevoke)
             {
                 hook.Revoke();
-                self.Speed = TurnToConsistentSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
+                if (state.Ungrapple16Direction)
+                    self.Speed = TurnToConsistentSpeed(self.Speed, UNIFORM_ACCURACY_RANGE_LIST);
                 return (int)AquaStates.StNormal;
             }
             else if (!Input.GrabCheck && !AquaModule.Settings.AutoGrabRopeIfPossible)
@@ -787,6 +805,7 @@ namespace Celeste.Mod.Aqua.Core
                 float dt = Engine.DeltaTime;
                 DynamicData.For(self).Set("rope_is_loosen", true);
                 DynamicData.For(self).Set("previous_facing", (int)self.Facing);
+                _moveTimer.Update(dt);
                 //if (!PERMIT_SHOOT_STATES.Contains(self.StateMachine.State))
                 //{
                 //    DynamicData.For(self).Set("start_emitting", false);
@@ -805,10 +824,10 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 else if (grapple != null && grapple.Active)
                 {
-                    // NerdHelper's NodedFlingBird compatibility.
-                    if (self.StateMachine.State == 30)
+                    // NerdHelper's NodedFlingBird / Dream Refill compatibility.
+                    if (self.StateMachine.State == 30 || self.StateMachine.State == 29)
                     {
-                        if (grapple != null && grapple.Active && grapple.State != GrapplingHook.HookStates.Revoking)
+                        if (grapple.State != GrapplingHook.HookStates.Revoking)
                         {
                             grapple.Revoke();
                         }
@@ -1238,7 +1257,7 @@ namespace Celeste.Mod.Aqua.Core
                 }
                 if (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible)
                 {
-                    if ((!self.onGround || Input.MoveY.Value < 0) && self.Holding == null && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()) && !self.SwimCheck())
+                    if ((!self.onGround || _moveTimer.MoveYPressed(-1, 0.5f)) && self.Holding == null && (self.StateMachine.State != (int)AquaStates.StDash || dashHangingTicker.Check()) && !self.SwimCheck())
                     {
                         Vector2 ropeDirection = hook.RopeDirection;
                         bool swingUp = IsRopeSwingingUp(ropeDirection);
@@ -1465,6 +1484,8 @@ namespace Celeste.Mod.Aqua.Core
             float ratio = MathHelper.Clamp(windSpeed.Y / Player.Gravity, -1.0f, 1.0f);
             return coeff * (1.0f + ratio);
         }
+
+        private static MoveInputTimer _moveTimer = new MoveInputTimer();
 
         private static readonly int[] PERMIT_SHOOT_STATES =
         {

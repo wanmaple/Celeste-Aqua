@@ -404,6 +404,16 @@ namespace Celeste.Mod.Aqua.Core
             callback?.Invoke(grapple);
         }
 
+        public static Action<GrapplingHook> GetAttachCallback(this Entity self)
+        {
+            return DynamicData.For(self).Get<Action<GrapplingHook>>("on_attach_callback");
+        }
+
+        public static Action<GrapplingHook> GetDetachCallback(this Entity self)
+        {
+            return DynamicData.For(self).Get<Action<GrapplingHook>>("on_detach_callback");
+        }
+
         public static void SetAttachCallbacks(this Entity self, Action<GrapplingHook> onAttach, Action<GrapplingHook> onDetach)
         {
             DynamicData.For(self).Set("on_attach_callback", onAttach);

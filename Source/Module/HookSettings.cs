@@ -79,9 +79,23 @@ namespace Celeste.Mod.Aqua.Module
         [DefaultValue(1)]
         public int GrabingStaminaCost { get; set; }
 
+        [SettingName("SETTINGS_GRAPPLE_JUMP_STAMINA_COST")]
         [SettingIgnore]
         [DefaultValue(20)]
-        public int SwingJumpStaminaCost { get; set; }
+        public int SwingJumpStaminaCost
+        {
+            get => _swingJumpStaminaCost;
+            set
+            {
+                if (_swingJumpStaminaCost != value)
+                {
+                    _swingJumpStaminaCost = value;
+                    ParameterChanged?.Invoke("SwingJumpStaminaCost", _swingJumpStaminaCost);
+                }
+            }
+        }
+
+        private int _swingJumpStaminaCost = 20;
 
         [SettingName("SETTINGS_FLY_TOWARD_SPEED")]
         [SettingRange(300, 600, true)]

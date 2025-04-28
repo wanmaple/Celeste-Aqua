@@ -37,6 +37,7 @@ namespace Celeste.Mod.Aqua.Core.Entities
                     AssignInteractionToEntity(actor);
                 }
             }
+            RemoveSelf();
         }
 
         private bool CheckCollision(Actor actor)

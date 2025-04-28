@@ -9,6 +9,7 @@ public class AquaModuleSettings : EverestModuleSettings
     public event Action<bool> FeatureEnableChanged;
     public event Action<bool> DisableGrappleBoostChanged;
     public event Action<bool> ShortDistanceGrappleBoostChanged;
+    public event Action<bool> Ungrapple16DirectionChanged;
 
     [SettingName("SETTINGS_THROW_HOOK")]
     [DefaultButtonBinding(Buttons.LeftShoulder, Keys.V)]
@@ -76,6 +77,22 @@ public class AquaModuleSettings : EverestModuleSettings
         }
     }
     private bool _shortDistanceGrappleBoost = false;
+
+    [SettingName("SETTINGS_UNGRAPPLE_16_DIRECTION")]
+    public bool Ungrapple16Direction
+    {
+        get => _ungrapple16dir;
+        set
+        {
+            if (_ungrapple16dir != value)
+            {
+                _ungrapple16dir = value;
+                Ungrapple16DirectionChanged?.Invoke(_ungrapple16dir);
+            }
+        }
+    }
+
+    private bool _ungrapple16dir = false;
 
     [SettingName("SETTINGS_THROW_HOOK_MODE")]
     public ShotHookModes ThrowHookMode { get; set; }

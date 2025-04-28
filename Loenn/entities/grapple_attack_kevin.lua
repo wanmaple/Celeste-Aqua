@@ -11,7 +11,11 @@ GrappleAttackKevin.fieldInformation = {
     edge_color = {
         fieldType = "color",
         useAlpha = false,
-    }
+    },
+    fill_color = {
+        fieldType = "color",
+        useAlpha = false,
+    },
 }
 GrappleAttackKevin.placements = {
     name = "Grapple Attack Kevin",
@@ -25,6 +29,7 @@ GrappleAttackKevin.placements = {
         right = true,
         grapple_trigger = true,
         dash_trigger = true,
+        no_return = false,
         edge_color = "0efefe",
     },
 }

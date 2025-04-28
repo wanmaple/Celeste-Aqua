@@ -40,6 +40,7 @@ namespace Celeste.Mod.Aqua.Core
                     }
                 }
             }
+            RemoveSelf();
         }
     }
 }

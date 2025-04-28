@@ -41,6 +41,7 @@ entities.Aqua/Grapple Attack Kevin.attributes.description.left=Whether the left 
 entities.Aqua/Grapple Attack Kevin.attributes.description.right=Whether the right is active.
 entities.Aqua/Grapple Attack Kevin.attributes.description.grapple_trigger=Whether Kevin could be triggered by a grapple shot.
 entities.Aqua/Grapple Attack Kevin.attributes.description.dash_trigger=Whether Kevin could be triggered by a dash.
+entities.Aqua/Grapple Attack Kevin.attributes.description.no_return=If checked, kevin will stay there when it stops attacking.
 entities.Aqua/Grapple Attack Kevin.attributes.description.edge_color=Frame color of Kevin.
 
 # Puzzle Light
@@ -138,8 +139,8 @@ entities.Aqua/Unhookable Area.attributes.description.block_right=Whether to bloc
 # Unhookable Crystal
 entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether the spinner attaches to blocks.
 entities.Aqua/Unhookable Crystal.attributes.description.color=Main color of the spinner or connector.
-entities.Aqua/Unhookable Crystal.attributes.description.custom_foreground_texture=Custom foreground texture.
-entities.Aqua/Unhookable Crystal.attributes.description.custom_background_texture=Custom background texture.
+entities.Aqua/Unhookable Crystal.attributes.description.custom_foreground_texture=Custom foreground texture, with 00, 01, 02 etc for randomness.
+entities.Aqua/Unhookable Crystal.attributes.description.custom_background_texture=Custom background texture, with 00, 01, 02 etc for randomness.
 
 # Unhookable Ice Wall
 entities.Aqua/Unhookable Ice Wall.attributes.description.attach_to_solid=Whether the ice wall attaches to blocks.
@@ -340,6 +341,16 @@ entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.stami
 entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.blacklist=The blacklist entities or mods simply used word containing check, using comma to separate, case insensitive.\ne.g. 'FactoryHelper' will ignore all entities in FactoryHelper, 'Booster' will ignore all entities with booster in the name.\nNot sure the name in leonn always satisfies, you can ask the mod author for its class name if not worked.
 entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.against_boost_coefficient=The 'against-wall boost' coefficient, should be between [0.0, 1.0].
 
+# Grapple Flag Assigner
+entities.Aqua/Grapple Flag Assigner.attributes.description.flag=The flag to set/unset.
+entities.Aqua/Grapple Flag Assigner.attributes.description.state=If checked, the flag will be unset.
+entities.Aqua/Grapple Flag Assigner.attributes.description.attach=Determine the timing when the flag will be set/unset.
+entities.Aqua/Grapple Flag Assigner.attributes.description.blacklist=The blacklist entities or mods simply used word containing check, using comma to separate, case insensitive.\ne.g. 'FactoryHelper' will ignore all entities in FactoryHelper, 'Booster' will ignore all entities with booster in the name.\nNot sure the name in leonn always satisfies, you can ask the mod author for its class name if not worked.
+
+# Grapple Attack Assigner
+entities.Aqua/Grapple Attack Assigner.attributes.description.can_dash=If unchecked, the default dash attack behavior will be removed.
+entities.Aqua/Grapple Attack Assigner.attributes.description.blacklist=The blacklist entities or mods simply used word containing check, using comma to separate, case insensitive.\ne.g. 'FactoryHelper' will ignore all entities in FactoryHelper, 'Booster' will ignore all entities with booster in the name.\nNot sure the name in leonn always satisfies, you can ask the mod author for its class name if not worked.
+
 # Acceleration Ability Assigner
 entities.Aqua/Acceleration Ability Assigner.attributes.description.acceleration=The acceleration value to be assigned.
 
@@ -415,7 +426,7 @@ triggers.Aqua/Custom Cutscene Trigger.attributes.description.fadeInOnSkip=Whethe
 triggers.Aqua/Custom Cutscene Trigger.attributes.description.endingChapter=Whether the chapter will end after this cutscene.
 
 # Change Hook Parameter Trigger
-triggers.Aqua/Change Hook Parameter Trigger.attributes.description.parameter=Parameter name.\nFeatureEnabled: 1 to enable and 0 to disable.\nRopeMaterial: 0 to default and 1 to metal.\nRopeLength: should be between 80-200.\nEmitSpeed: should be between 600-2000.\nMaxLineSpeed: should be between 400-2000.\nFlyTowardSpeed: should be between 300-600.\nActorPullForce: should be between 300-600.\nDisableGrappleBoost: 1 to disable and 0 to enable.\nShortDistanceGrappleBoost: 1 to enable and 0 to disable.\nHookStyle: 0 to default, and 1-4 to Aqua_HookStyle(1-4).
+triggers.Aqua/Change Hook Parameter Trigger.attributes.description.parameter=Parameter name.\nFeatureEnabled: 1 to enable and 0 to disable.\nRopeMaterial: 0 to default and 1 to metal.\nRopeLength: should be between 80-200.\nEmitSpeed: should be between 600-2000.\nMaxLineSpeed: should be between 400-2000.\nFlyTowardSpeed: should be between 300-600.\nActorPullForce: should be between 300-600.\nSwingJumpStaminaCost: should be greater than or equal to 0.\nDisableGrappleBoost: 1 to disable and 0 to enable.\nShortDistanceGrappleBoost: 1 to enable and 0 to disable.\nUngrapple16Direction: 1 to enable and 0 to disable.\nHookStyle: 0 to default, and 1-4 to Aqua_HookStyle(1-4).
 triggers.Aqua/Change Hook Parameter Trigger.attributes.description.value=Parameter value, you could check details in the description of parameter.
 
 # Change Gameplay Mode Trigger

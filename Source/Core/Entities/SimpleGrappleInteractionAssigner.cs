@@ -49,6 +49,7 @@ namespace Celeste.Mod.Aqua.Core
                     }
                 }
             }
+            RemoveSelf();
         }
 
         private void AssignInteractionToEntity(Entity entity)

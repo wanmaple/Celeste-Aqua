@@ -25,6 +25,7 @@ namespace Celeste.Mod.Aqua.Core
             public bool ResetCountInTransition { get; set; }
             public bool DisableGrappleBoost { get; set; }
             public bool ShortDistanceGrappleBoost { get; set; }
+            public bool Ungrapple16Direction { get; set; }
             public HookSettings HookSettings { get; set; }
 
             public LevelState()
@@ -51,6 +52,7 @@ namespace Celeste.Mod.Aqua.Core
                 ResetCountInTransition = extraMeta.ResetCountInTransition;
                 DisableGrappleBoost = extraMeta.DisableGrappleBoost;
                 ShortDistanceGrappleBoost = extraMeta.ShortDistanceGrappleBoost;
+                Ungrapple16Direction = extraMeta.Ungrapple16Direction;
                 HookSettings = extraMeta.HookSettings.Clone();
             }
         }
@@ -84,6 +86,7 @@ namespace Celeste.Mod.Aqua.Core
             AquaModule.Settings.FeatureEnableChanged += self.AquaSettings_FeatureEnableChanged;
             AquaModule.Settings.DisableGrappleBoostChanged += self.AquaSettings_DisableGrappleBoostChanged;
             AquaModule.Settings.ShortDistanceGrappleBoostChanged += self.AquaSettings_ShortDistanceGrappleBoostChanged;
+            AquaModule.Settings.Ungrapple16DirectionChanged += self.AquaSettings_Ungrapple16DirectionChanged;
             AquaModule.Settings.HookSettings.ParameterChanged += self. AquaHookSettings_ParameterChanged;
         }
 
@@ -93,6 +96,7 @@ namespace Celeste.Mod.Aqua.Core
             AquaModule.Settings.FeatureEnableChanged -= self.AquaSettings_FeatureEnableChanged;
             AquaModule.Settings.DisableGrappleBoostChanged -= self.AquaSettings_DisableGrappleBoostChanged;
             AquaModule.Settings.ShortDistanceGrappleBoostChanged -= self.AquaSettings_ShortDistanceGrappleBoostChanged;
+            AquaModule.Settings.Ungrapple16DirectionChanged -= self.AquaSettings_Ungrapple16DirectionChanged;
             AquaModule.Settings.HookSettings.ParameterChanged -= self.AquaHookSettings_ParameterChanged;
         }
 
@@ -168,6 +172,20 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        private static void AquaSettings_Ungrapple16DirectionChanged(this Level self, bool value)
+        {
+            AreaData areaData = AreaData.Get(self.Session.Area);
+            LevelExtras? extras = areaData.GetExtraMeta();
+            if (extras == null || !extras.Value.DisableUserCustomParameters)
+            {
+                LevelState state = self.GetState();
+                if (state != null)
+                {
+                    state.Ungrapple16Direction = value;
+                }
+            }
+        }
+
         private static void AquaHookSettings_ParameterChanged(this Level self, string parameter, int value)
         {
             AreaData areaData = AreaData.Get(self.Session.Area);
@@ -205,6 +223,9 @@ namespace Celeste.Mod.Aqua.Core
                             break;
                         case "ActorPullForce":
                             state.HookSettings.ActorPullForce = value;
+                            break;
+                        case "SwingJumpStaminaCost":
+                            state.HookSettings.SwingJumpStaminaCost = value;
                             break;
                     }
                 }

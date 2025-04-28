@@ -12,6 +12,7 @@ namespace Celeste.Mod.Aqua.Core
         public bool DisableUserCustomParameters;
         public bool DisableGrappleBoost;
         public bool ShortDistanceGrappleBoost;
+        public bool Ungrapple16Direction;
         public HookSettings HookSettings;
         public int GameplayMode;
         public int InitialShootCount;
@@ -27,6 +28,7 @@ namespace Celeste.Mod.Aqua.Core
             DisableUserCustomParameters = false;
             DisableGrappleBoost = AquaModule.Settings.DisableGrappleBoost;
             ShortDistanceGrappleBoost = AquaModule.Settings.ShortDistanceGrappleBoost;
+            Ungrapple16Direction = AquaModule.Settings.Ungrapple16Direction;
             HookSettings = AquaModule.Settings.HookSettings;
             GameplayMode = (int)GrapplingHook.GameplayMode.Default;
             InitialShootCount = 1;

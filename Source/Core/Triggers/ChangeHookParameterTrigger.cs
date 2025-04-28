@@ -1,6 +1,7 @@
 ﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -77,6 +78,12 @@ namespace Celeste.Mod.Aqua.Core
                         state.HookSettings.ActorPullForce = Calc.Clamp(pullForce, 300, 600);
                     }
                     break;
+                case "SwingJumpStaminaCost":
+                    if (int.TryParse(Value, out int swingJumpStamina))
+                    {
+                        state.HookSettings.SwingJumpStaminaCost = Math.Max(swingJumpStamina, 0);
+                    }
+                    break;
                 case "DisableGrappleBoost":
                     if (int.TryParse(Value, out int num2) && num2 > 0)
                     {
@@ -103,6 +110,20 @@ namespace Celeste.Mod.Aqua.Core
                     else
                     {
                         state.ShortDistanceGrappleBoost = false;
+                    }
+                    break;
+                case "Ungrapple16Direction":
+                    if (int.TryParse(Value, out int num4) && num4 > 0)
+                    {
+                        state.Ungrapple16Direction = true;
+                    }
+                    else if (bool.TryParse(Value, out bool bl) && bl)
+                    {
+                        state.Ungrapple16Direction = true;
+                    }
+                    else
+                    {
+                        state.Ungrapple16Direction = false;
                     }
                     break;
                 case "HookStyle":

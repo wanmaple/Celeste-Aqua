@@ -8,8 +8,10 @@ local PARAMETER_OPTIONS = {
     "MaxLineSpeed",
     "FlyTowardSpeed",
     "ActorPullForce",
+    "SwingJumpStaminaCost",
     "DisableGrappleBoost",
     "ShortDistanceGrappleBoost",
+    "Ungrapple16Direction",
     "HookStyle",
 }
 

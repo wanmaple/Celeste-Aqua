@@ -504,6 +504,7 @@ namespace Celeste.Mod.Aqua.Core
                         float crossOld = AquaMaths.Cross(oldToPrev, prevBound.Vector);
                         int sign = MathF.Sign(crossOld);
                         signs[i - 1] = sign;
+                        AquaDebugger.LogInfo("111: {0} {1}", curLastPt, prevBound);
                     }
                     for (int i = _pivots.Count - 1; i >= 1; --i)
                     {
@@ -782,6 +783,10 @@ namespace Celeste.Mod.Aqua.Core
             if (signOld != signNew)
             {
                 return true;
+            }
+            if (!pivot.entity.Collider.CheckLineWithoutEdge(currentBound.Point1, currentBound.Point2))
+            {
+                AquaDebugger.LogInfo("222: {0} {1}", currentPt, currentBound);
             }
             return false;
         }

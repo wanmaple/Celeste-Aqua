@@ -405,6 +405,49 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
+        public Vector2 ConvertToHitDirection(Entity entity, Vector2 direction)
+        {
+            float nearest = float.MaxValue;
+            Vector2 dir = direction;
+            if (direction.X > 0.0f && CollideCheck(entity, Position + Vector2.UnitX))
+            {
+                float val = Right + 1 - entity.Left;
+                if (val < nearest)
+                {
+                    nearest = val;
+                    dir = Vector2.UnitX;
+                }
+            }
+            if (direction.X < 0.0f && CollideCheck(entity, Position - Vector2.UnitX))
+            {
+                float val = entity.Right - Left + 1;
+                if (val < nearest)
+                {
+                    nearest = val;
+                    dir = -Vector2.UnitX;
+                }
+            }
+            if (direction.Y > 0.0f && CollideCheck(entity, Position + Vector2.UnitY))
+            {
+                float val = Bottom + 1 - entity.Top;
+                if (val < nearest)
+                {
+                    nearest = val;
+                    dir = Vector2.UnitY;
+                }
+            }
+            if (direction.Y < 0.0f && CollideCheck(entity, Position - Vector2.UnitY))
+            {
+                float val = entity.Bottom - Top + 1;
+                if (val < nearest)
+                {
+                    nearest = val;
+                    dir = -Vector2.UnitY;
+                }
+            }
+            return dir;
+        }
+
         public override void Added(Scene scene)
         {
             Player madeline = Owner;
@@ -614,7 +657,8 @@ namespace Celeste.Mod.Aqua.Core
                         //    Revoke();
                         //}
                         rope.PrepareCheckCollision(playerSeg);
-                        if (!BresenhamMove(Vector2.Zero, null, AttachedEntity).Moved)
+                        var rslt = BresenhamMove(Vector2.Zero, null, AttachedEntity);
+                        if (rslt.Hit == rslt.Moved)
                             Revoke();
                         rope.UpdateTopPivot(Position);
                         rope.CheckCollision(playerSeg);
@@ -779,7 +823,7 @@ namespace Celeste.Mod.Aqua.Core
                 Collider curCollider = AttachedEntity.Collider;
                 ColliderType curColliderType = GetColliderType(curCollider);
                 // only fix of hitbox required currently.
-                if (curColliderType == ColliderType.Rectangle )
+                if (curColliderType == ColliderType.Rectangle)
                 {
                     if (_attachInfo.colliderType == ColliderType.Rectangle)
                     {
@@ -969,7 +1013,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             data = new CustomCollisionData();
             Vector2 hookDir = Calc.AngleToVector(_sprite.Rotation, 1.0f);
-            if (State == HookStates.Attracted || Vector2.Dot(hookDir, direction) > MathF.Cos(Calc.DegToRad * 89.9f))
+            if (State == HookStates.Attracted || MathF.Abs(Vector2.Dot(hookDir, direction)) > MathF.Cos(Calc.DegToRad * 89.9f))
             {
                 if (onCollide != null)
                 {

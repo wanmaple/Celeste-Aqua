@@ -1,4 +1,4 @@
-local DrawableSpriteStruct = require("structs.drawable_sprite")
+local DrawableSprite = require("structs.drawable_sprite")
 local Utils = require("utils")
 
 local spinnerConnectionDistanceSquared = 24 * 24
@@ -33,8 +33,10 @@ local function getSpinnerSprite(entity, foreground)
         y = entity.y
     }
 
-    local texture = foreground and FOREGROUND_TEXTURE or BACKGROUND_TEXTURE
-    local sprite = DrawableSpriteStruct.fromTexture(texture, position)
+    local foreTexture = FOREGROUND_TEXTURE
+    local backTexture = BACKGROUND_TEXTURE
+    local texture = foreground and foreTexture or backTexture
+    local sprite = DrawableSprite.fromTexture(texture, position)
     sprite:setColor(color)
     return sprite
 end
@@ -46,7 +48,7 @@ local function getConnectionSprites(room, entity)
             break
         end
 
-        if (target._name == "spinner" or target._name == entity._name) and not target.dust and entity.attachToSolid == target.attachToSolid then
+        if (target._name == "spinner" or target._name == entity._name) and entity.attachToSolid == target.attachToSolid then
             if Utils.distanceSquared(entity.x, entity.y, target.x, target.y) < spinnerConnectionDistanceSquared then
                 local connectorData = {
                     x = math.floor((entity.x + target.x) / 2),

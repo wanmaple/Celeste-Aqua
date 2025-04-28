@@ -18,6 +18,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.CrushBlock.ctor_Vector2_float_float_Axes_bool += CrushBlock_Construct;
             On.Celeste.CrushBlock.Update += CrushBlock_Update;
             On.Celeste.CrushBlock.OnDashed += CrushBlock_OnDashed;
+            On.Celeste.CrushBlock.TurnOffImages += CrushBlock_TurnOffImages;
         }
 
         public static void Uninitialize()
@@ -27,6 +28,7 @@ namespace Celeste.Mod.Aqua.Core
             On.Celeste.CrushBlock.ctor_Vector2_float_float_Axes_bool -= CrushBlock_Construct;
             On.Celeste.CrushBlock.Update -= CrushBlock_Update;
             On.Celeste.CrushBlock.OnDashed -= CrushBlock_OnDashed;
+            On.Celeste.CrushBlock.TurnOffImages -= CrushBlock_TurnOffImages;
         }
 
         private static void CrushBlock_ILAttackSequence(ILContext il)
@@ -68,6 +70,15 @@ namespace Celeste.Mod.Aqua.Core
                 com.ExtraSpeed = 0.0f;
             }
             return result;
+        }
+
+        private static void CrushBlock_TurnOffImages(On.Celeste.CrushBlock.orig_TurnOffImages orig, CrushBlock self)
+        {
+            orig(self);
+            if (self is GrappleAttackCrushBlock block && block.NoReturn)
+            {
+                block.returnStack.Clear();
+            }
         }
 
         public static void AddExtraSpeed(this CrushBlock self, float toAdd)

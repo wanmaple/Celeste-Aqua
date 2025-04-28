@@ -1,6 +1,7 @@
 ﻿using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System;
 using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
@@ -14,6 +15,7 @@ namespace Celeste.Mod.Aqua.Core
         public bool ActiveRight { get; private set; }
         public bool GrappleTrigger { get; private set; }
         public bool DashTrigger { get; private set; }
+        public bool NoReturn { get; private set; }
         public Color EdgeColor { get; private set; }
 
         public GrappleAttackCrushBlock(EntityData data, Vector2 offset)
@@ -25,11 +27,19 @@ namespace Celeste.Mod.Aqua.Core
             ActiveRight = data.Bool("right", true);
             GrappleTrigger = data.Bool("grapple_trigger", true);
             DashTrigger = data.Bool("dash_trigger", true);
+            NoReturn = data.Bool("no_return", false);
             EdgeColor = data.HexColor("edge_color", Calc.HexToColor("0efefe"));
             RebuildImages();
             if (GrappleTrigger)
                 Add(new HookInteractable(OnGrappleInteract));
             OnDashCollide = OnCustomDashed;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            if (NoReturn)
+                returnLoopSfx.Stop();
         }
 
         private void RebuildImages()
@@ -164,7 +174,7 @@ namespace Celeste.Mod.Aqua.Core
 
         private bool OnGrappleInteract(GrapplingHook grapple, Vector2 at)
         {
-            Vector2 direction = ConvertToHitDirection(grapple, grapple.ShootDirection);
+            Vector2 direction = grapple.ConvertToHitDirection(this, grapple.ShootDirection);
             if (GrappleTrigger && CanActivateKevin(-direction))
             {
                 grapple.Revoke();
@@ -172,27 +182,6 @@ namespace Celeste.Mod.Aqua.Core
                 return true;
             }
             return false;
-        }
-
-        private Vector2 ConvertToHitDirection(GrapplingHook grapple, Vector2 direction)
-        {
-            if (grapple.CollideCheck(this, grapple.Position + Vector2.UnitX))
-            {
-                return Vector2.UnitX;
-            }
-            if (grapple.CollideCheck(this, grapple.Position - Vector2.UnitX))
-            {
-                return -Vector2.UnitX;
-            }
-            if (grapple.CollideCheck(this, grapple.Position + Vector2.UnitY))
-            {
-                return Vector2.UnitY;
-            }
-            if (grapple.CollideCheck(this, grapple.Position - Vector2.UnitY))
-            {
-                return -Vector2.UnitY;
-            }
-            return direction;
         }
 
         private bool CanActivateKevin(Vector2 direction)
