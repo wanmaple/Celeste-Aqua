@@ -331,6 +331,18 @@ entities.Aqua/Magnet Toggle.attributes.description.flag=Make it the same with th
 entities.Aqua/Magnet Toggle.attributes.description.one_use=Whether to break the toggle once used.
 entities.Aqua/Magnet Toggle.attributes.description.holdable_can_activate=Whether a holdable can activate the toggle.
 
+# Booster Transporter
+entities.Aqua/Booster Transporter.attributes.description.absorb_duration=How much time it costs to absorb the booster before transporting.
+entities.Aqua/Booster Transporter.attributes.description.release_duration=How much time it costs to release the booster after transporting.
+entities.Aqua/Booster Transporter.attributes.description.transport_duration=How much time it costs to transport the booster.
+entities.Aqua/Booster Transporter.attributes.description.change_respawn=If checked, the booster will respawn at the out position after that.
+entities.Aqua/Booster Transporter.attributes.description.in_base_texture=The frame texture of transporter entry.\nUncheck 'Use Default Sprite' to make it work.
+entities.Aqua/Booster Transporter.attributes.description.out_base_texture=The frame texture of transporter exit, it should be atlas and to show the transporting progress.\nUncheck 'Use Default Sprite' to make it work.
+entities.Aqua/Booster Transporter.attributes.description.sprite=The sprite name used inside transporter.\nUncheck 'Use Default Sprite' to make it work.
+entities.Aqua/Booster Transporter.attributes.description.color=Sprite color inside transporter.
+entities.Aqua/Booster Transporter.attributes.description.particle_color=Particle color after absorbing and releasing.
+entities.Aqua/Booster Transporter.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+
 # Simple Grapple Interaction Assigner
 entities.Aqua/Grapple Interaction Assigner.attributes.description.interaction_type=What kind of interaction to be assigned.\nGrabToPlayer: make the entity be able to hooked to player.
 entities.Aqua/Grapple Interaction Assigner.attributes.description.blacklist=The blacklist entities or mods simply used word containing check, using comma to separate, case insensitive.\ne.g. 'FactoryHelper' will ignore all entities in FactoryHelper, 'Booster' will ignore all entities with booster in the name.\nNot sure the name in leonn always satisfies, you can ask the mod author for its class name if not worked.

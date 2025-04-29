@@ -65,7 +65,8 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void Booster_Update(On.Celeste.Booster.orig_Update orig, Booster self)
         {
-            if (!self.IsBoostingPlayer())
+            orig(self);
+            if (!self.IsBoostingPlayer() && self.cannotUseTimer <= 0.0f)
             {
                 var transporters = self.Scene.Tracker.GetEntities<BoosterTransporter>();
                 float minDistance = float.MaxValue;
@@ -89,7 +90,6 @@ namespace Celeste.Mod.Aqua.Core
                     bestTransporter.BeginTransport(self);
                 }
             }
-            orig(self);
         }
 
         private static void ResetPosition(this Booster self)

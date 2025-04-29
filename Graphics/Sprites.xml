@@ -327,4 +327,34 @@
       <Anim id="corrupt" path="troggle" delay="0.08" frames="2-13" goto="idle_corrupt" />
     </Aqua_MagnetToggle>
 
+    <Aqua_BoosterTransporterCustom path="objects/booster_transporter/" start="in_idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="in_idle" path="custom/in_idle" delay="0.1" />
+      <Loop id="out_idle" path="custom/out_idle" delay="0.1" />
+    </Aqua_BoosterTransporterCustom>
+
+    <Aqua_BoosterTransporterBlue path="objects/booster_transporter/" start="in_idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="in_idle" path="blue/in_idle" delay="0.1" />
+      <Loop id="out_idle" path="blue/out_idle" delay="0.1" />
+    </Aqua_BoosterTransporterBlue>
+
+    <Aqua_BoosterTransporterGreen path="objects/booster_transporter/" start="in_idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="in_idle" path="green/in_idle" delay="0.1" />
+      <Loop id="out_idle" path="green/out_idle" delay="0.1" />
+    </Aqua_BoosterTransporterGreen>
+
+    <Aqua_BoosterTransporterRed path="objects/booster_transporter/" start="in_idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="in_idle" path="red/in_idle" delay="0.1" />
+      <Loop id="out_idle" path="red/out_idle" delay="0.1" />
+    </Aqua_BoosterTransporterRed>
+
+    <Aqua_BoosterTransporterYellow path="objects/booster_transporter/" start="in_idle">
+      <Justify x="0.5" y="0.5" />
+      <Loop id="in_idle" path="yellow/in_idle" delay="0.1" />
+      <Loop id="out_idle" path="yellow/out_idle" delay="0.1" />
+    </Aqua_BoosterTransporterYellow>
+
 </Sprites>
