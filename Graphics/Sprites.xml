@@ -357,4 +357,26 @@
       <Loop id="out_idle" path="yellow/out_idle" delay="0.1" />
     </Aqua_BoosterTransporterYellow>
 
+    <Aqua_KevinFace path="objects/grapple_kevin/face/" start="idle">
+      <Center/>
+      <Loop id="idle" path="idle_face" delay="0.08"/>
+      <Anim id="hurt" path="hurt" frames="3-12" delay="0.08" goto="idle"/>
+      <Anim id="hit" path="hit" delay="0.08"/>
+      <Loop id="left" path="hit_left" delay="0.08"/>
+      <Loop id="right" path="hit_right" delay="0.08"/>
+      <Loop id="up" path="hit_up" delay="0.08"/>
+      <Loop id="down" path="hit_down" delay="0.08"/>
+    </Aqua_KevinFace>
+
+    <Aqua_KevinEye path="objects/grapple_kevin/face/" start="idle">
+      <Center/>
+      <Loop id="idle" path="idle_eye" delay="0.08"/>
+      <Anim id="hurt" path="hurt_eye" frames="3-12" delay="0.08" goto="idle"/>
+      <Anim id="hit" path="hit_eye" delay="0.08"/>
+      <Loop id="left" path="hit_left_eye" delay="0.08"/>
+      <Loop id="right" path="hit_right_eye" delay="0.08"/>
+      <Loop id="up" path="hit_up_eye" delay="0.08"/>
+      <Loop id="down" path="hit_down_eye" delay="0.08"/>
+    </Aqua_KevinEye>
+
 </Sprites>

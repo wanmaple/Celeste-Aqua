@@ -17,6 +17,7 @@ namespace Celeste.Mod.Aqua.Core
         public bool DashTrigger { get; private set; }
         public bool NoReturn { get; private set; }
         public Color EdgeColor { get; private set; }
+        public Color FaceColor { get; private set; }
 
         public GrappleAttackCrushBlock(EntityData data, Vector2 offset)
             : base(data, offset)
@@ -29,6 +30,8 @@ namespace Celeste.Mod.Aqua.Core
             DashTrigger = data.Bool("dash_trigger", true);
             NoReturn = data.Bool("no_return", false);
             EdgeColor = data.HexColor("edge_color", Calc.HexToColor("0efefe"));
+            FaceColor = data.HexColor("face_color", Calc.HexToColor("ac5757"));
+            fill = new Color(FaceColor.ToVector4() * Calc.HexToColor("c4c4c4").ToVector4());
             RebuildImages();
             if (GrappleTrigger)
                 Add(new HookInteractable(OnGrappleInteract));
@@ -40,6 +43,11 @@ namespace Celeste.Mod.Aqua.Core
             base.Update();
             if (NoReturn)
                 returnLoopSfx.Stop();
+            _eye.Position = face.Position;
+            if (_eye.CurrentAnimationID != face.CurrentAnimationID)
+                _eye.Play(face.CurrentAnimationID);
+            _eye.CurrentAnimationFrame = face.CurrentAnimationFrame;
+            _eye.Stop();
         }
 
         private void RebuildImages()
@@ -65,10 +73,19 @@ namespace Celeste.Mod.Aqua.Core
                 Remove(img);
             }
             MTexture idle = GFX.Game["objects/grapple_kevin/block"];
+            MTexture cover = GFX.Game["objects/grapple_kevin/base"];
             MTexture idleTop = GFX.Game["objects/grapple_kevin/block_top"];
             MTexture idleBottom = GFX.Game["objects/grapple_kevin/block_bottom"];
             MTexture idleLeft = GFX.Game["objects/grapple_kevin/block_left"];
             MTexture idleRight = GFX.Game["objects/grapple_kevin/block_right"];
+            MTexture coverTop = GFX.Game["objects/grapple_kevin/block_top_base"];
+            MTexture coverBottom = GFX.Game["objects/grapple_kevin/block_bottom_base"];
+            MTexture coverLeft = GFX.Game["objects/grapple_kevin/block_left_base"];
+            MTexture coverRight = GFX.Game["objects/grapple_kevin/block_right_base"];
+            MTexture cornorTL = GFX.Game["objects/grapple_kevin/corner_a"];
+            MTexture cornorTR = GFX.Game["objects/grapple_kevin/corner_b"];
+            MTexture cornorBL = GFX.Game["objects/grapple_kevin/corner_c"];
+            MTexture cornorBR = GFX.Game["objects/grapple_kevin/corner_d"];
             int w = (int)(Width / 8.0f) - 1;
             int h = (int)(Height / 8.0f) - 1;
             AddIdleLayer(idle, w, h);
@@ -81,6 +98,53 @@ namespace Celeste.Mod.Aqua.Core
                 AddIdleLayer(idleLeft, w, h);
             if (ActiveRight)
                 AddIdleLayer(idleRight, w, h);
+            if (ActiveTop && ActiveLeft)
+            {
+                var img = new Image(cornorTL);
+                Add(img);
+                img.RenderPosition = Position;
+                idleImages.Add(img);
+            }
+            if (ActiveTop && ActiveRight)
+            {
+                var img = new Image(cornorTR);
+                Add(img);
+                img.RenderPosition = Position + new Vector2(Width - 32.0f, 0.0f);
+                idleImages.Add(img);
+            }
+            if (ActiveBottom && ActiveLeft)
+            {
+                var img = new Image(cornorBL);
+                Add(img);
+                img.RenderPosition = Position + new Vector2(0.0f, Height - 32.0f);
+                idleImages.Add(img);
+            }
+            if (ActiveBottom && ActiveRight)
+            {
+                var img = new Image(cornorBR);
+                Add(img);
+                img.RenderPosition = Position + new Vector2(Width - 32.0f, Height - 32.0f);
+                idleImages.Add(img);
+            }
+            int num2 = idleImages.Count;
+            AddIdleLayer(cover, w, h);
+            if (ActiveTop)
+                AddIdleLayer(coverTop, w, h);
+            if (ActiveBottom)
+                AddIdleLayer(coverBottom, w, h);
+            if (ActiveLeft)
+                AddIdleLayer(coverLeft, w, h);
+            if (ActiveRight)
+                AddIdleLayer(coverRight, w, h);
+            int idx = 0;
+            foreach (Image image in idleImages)
+            {
+                if (idx >= num2)
+                    image.SetColor(fill);
+                else if (idx >= num)
+                    image.SetColor(EdgeColor);
+                ++idx;
+            }
             MTexture litTop = GFX.Game["objects/grapple_kevin/lit_top"];
             MTexture litBottom = GFX.Game["objects/grapple_kevin/lit_bottom"];
             MTexture litLeft = GFX.Game["objects/grapple_kevin/lit_left"];
@@ -121,13 +185,12 @@ namespace Celeste.Mod.Aqua.Core
                     AddLitImage(litRight, w, i, 0, Calc.Random.Choose(1, 2), activeRightImages);
                 }
             }
-            int idx = 0;
-            foreach (Image image in idleImages)
-            {
-                if (idx >= num)
-                    image.SetColor(EdgeColor);
-                ++idx;
-            }
+            GFX.SpriteBank.CreateOn(face, "Aqua_KevinFace");
+            face.SetColor(FaceColor);
+            Add(_eye = new Sprite());
+            GFX.SpriteBank.CreateOn(_eye, "Aqua_KevinEye");
+            _eye.Position = face.Position;
+            _eye.Play("idle");
         }
 
         private void AddIdleLayer(MTexture texture, int width, int height)
@@ -157,7 +220,7 @@ namespace Celeste.Mod.Aqua.Core
             container.Add(image);
             image.Position = pos;
             image.Visible = false;
-            image.SetColor(EdgeColor);
+            //image.SetColor(EdgeColor);
             Add(image);
         }
 
@@ -206,5 +269,7 @@ namespace Celeste.Mod.Aqua.Core
 
             return false;
         }
+
+        private Sprite _eye;
     }
 }

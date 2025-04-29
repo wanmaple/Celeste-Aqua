@@ -34,7 +34,6 @@ entities.Aqua/Aqua Crumble Platform.attributes.description.crumble_duration_atta
 entities.Aqua/Aqua Crumble Platform.attributes.description.crumble_particle_color=The particle color while crumbling.
 
 # Grapple Attack Kevin
-entities.Aqua/Grapple Attack Kevin.attributes.description.chillout=Whether Kevin should have the large face and get tired after being hit.
 entities.Aqua/Grapple Attack Kevin.attributes.description.top=Whether the top is active.
 entities.Aqua/Grapple Attack Kevin.attributes.description.bottom=Whether the bottom is active.
 entities.Aqua/Grapple Attack Kevin.attributes.description.left=Whether the left is active.
@@ -43,6 +42,7 @@ entities.Aqua/Grapple Attack Kevin.attributes.description.grapple_trigger=Whethe
 entities.Aqua/Grapple Attack Kevin.attributes.description.dash_trigger=Whether Kevin could be triggered by a dash.
 entities.Aqua/Grapple Attack Kevin.attributes.description.no_return=If checked, kevin will stay there when it stops attacking.
 entities.Aqua/Grapple Attack Kevin.attributes.description.edge_color=Frame color of Kevin.
+entities.Aqua/Grapple Attack Kevin.attributes.description.face_color=Face color of Kevin.
 
 # Puzzle Light
 entities.Aqua/Puzzle Light.attributes.description.puzzleId=Puzzle Identifier that indicates which puzzle it belongs to.
