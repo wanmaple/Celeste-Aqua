@@ -46,6 +46,7 @@ namespace Celeste.Mod.Aqua.Core
             DynamicData.For(self).Set("prev_position", self.Position);
             self.WorkWithCardinalBumper();
             self.WorkWithSidewaysJumpThrough();
+            self.WorkWithDownsideJumpThrough();
             self.WorkWithElectricTypes();
         }
 
@@ -486,7 +487,7 @@ namespace Celeste.Mod.Aqua.Core
                 if (Array.IndexOf(ignoreList, entity) >= 0)
                     continue;
                 // why the facing of wall booster confuses me so much?
-                if ((entity.Facing == Facings.Left && sign < 0)||(entity.Facing == Facings.Right && sign > 0))
+                if ((entity.Facing == Facings.Left && sign < 0) || (entity.Facing == Facings.Right && sign > 0))
                 {
                     if (Collide.Check(self, entity, self.Position + Vector2.UnitX * movement))
                     {
@@ -596,6 +597,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void WorkWithSidewaysJumpThrough(this Entity self)
         {
             // sideways jump throughs might be attached to solids which might do movement, we have to add its movement to grapples.
+            // we should also trigger the attached platform if it's hit by grapple.
             if (ModInterop.SidewaysJumpthruTypes == null)
                 return;
             foreach (Type sidewaysType in ModInterop.SidewaysJumpthruTypes)
@@ -615,6 +617,51 @@ namespace Celeste.Mod.Aqua.Core
                                 Vector2 movement = newPosition - oldPosition;
                                 self.MakeGrappleFollowMe(movement, movement);
                             };
+                            mover.OnAttach = platform =>
+                            {
+                                DynamicData.For(self).Set("attached_platform", platform);
+                            };
+                            self.Add(new GrapplingHookAttachBehavior((e, grapple) =>
+                            {
+                                Platform platform = DynamicData.For(e).Get<Platform>("attached_platform");
+                                if (mover != null && e.IsHookAttached())
+                                {
+                                    platform?.OnStaticMoverTrigger(mover);
+                                }
+                            }));
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        private static void WorkWithDownsideJumpThrough(this Entity self)
+        {
+            // we should trigger the attached platform if it's hit by grapple.
+            if (ModInterop.DownsideJumpthruTypes == null)
+                return;
+            foreach (Type downsideType in ModInterop.DownsideJumpthruTypes)
+            {
+                if (self.GetType().IsAssignableTo(downsideType))
+                {
+                    foreach (Component com in self.Components)
+                    {
+                        if (com is StaticMover mover)
+                        {
+                            mover.OnAttach = platform =>
+                            {
+                                DynamicData.For(self).Set("attached_platform", platform);
+                            };
+                            self.Add(new GrapplingHookAttachBehavior((e, grapple) =>
+                            {
+                                Platform platform = DynamicData.For(e).Get<Platform>("attached_platform");
+                                if (mover != null && e.IsHookAttached())
+                                {
+                                    platform?.OnStaticMoverTrigger(mover);
+                                }
+                            }));
                             break;
                         }
                     }

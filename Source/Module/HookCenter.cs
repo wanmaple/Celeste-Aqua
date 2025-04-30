@@ -17,6 +17,7 @@ namespace Celeste.Mod.Aqua.Module
             PlatformExtensions.Initialize();
             SolidExtensions.Initialize();
             ActorExtensions.Initialize();
+            JumpThruExtensions.Initialize();
             CrumblePlatformExtensions.Initialize();
             FallingBlockExtensions.Initialize();
             MoveBlockExtensions.Initialize();
@@ -65,6 +66,7 @@ namespace Celeste.Mod.Aqua.Module
             PlatformExtensions.Uninitialize();
             SolidExtensions.Uninitialize();
             ActorExtensions.Uninitialize();
+            JumpThruExtensions.Uninitialize();
             CrumblePlatformExtensions.Uninitialize();
             FallingBlockExtensions.Uninitialize();
             MoveBlockExtensions.Uninitialize();

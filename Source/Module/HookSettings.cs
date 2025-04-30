@@ -80,7 +80,7 @@ namespace Celeste.Mod.Aqua.Module
         public int GrabingStaminaCost { get; set; }
 
         [SettingName("SETTINGS_GRAPPLE_JUMP_STAMINA_COST")]
-        [SettingIgnore]
+        [SettingRange(0, 200, true)]
         [DefaultValue(20)]
         public int SwingJumpStaminaCost
         {

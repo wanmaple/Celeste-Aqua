@@ -16,6 +16,7 @@ namespace Celeste.Mod.Aqua.Module
         public static FrostHelperInterop FrostHelper => _interopFrostHelper;
         public static FlaglinesAndSuchInterop FlaglinesAndSuch => _interopFlaglines;
         public static VivHelperInterop VivHelper => _interopVivHelper;
+        public static VortexHelperInterop VortexHelper => _interopVortexHelper;
         public static IReadOnlyList<Type> SidewaysJumpthruTypes
         {
             get
@@ -143,6 +144,16 @@ namespace Celeste.Mod.Aqua.Module
             }
         }
 
+        public static Type AttachedJumpThroughType
+        {
+            get
+            {
+                if (_attachJumpThruType == null)
+                    CacheModTypes();
+                return _attachJumpThruType;
+            }
+        }
+
         public static void Initialize()
         {
             typeof(AquaExports).ModInterop();
@@ -207,6 +218,7 @@ namespace Celeste.Mod.Aqua.Module
             _platformJellyType = FlaglinesAndSuch.GetType("FlaglinesAndSuch.PlatformJelly");
             _holdableBarrierType = VivHelper.GetType("VivHelper.Entities.HoldableBarrier");
             _holdableBarrierJumpThruType = VivHelper.GetType("VivHelper.Entities.HoldableBarrierJumpThru");
+            _attachJumpThruType = VortexHelper.GetType("Celeste.Mod.VortexHelper.Entities.AttachedJumpThru");
         }
 
         private static GravityHelperInterop _interopGravityHelper = new GravityHelperInterop();
@@ -219,6 +231,7 @@ namespace Celeste.Mod.Aqua.Module
         private static FrostHelperInterop _interopFrostHelper = new FrostHelperInterop();
         private static FlaglinesAndSuchInterop _interopFlaglines = new FlaglinesAndSuchInterop();
         private static VivHelperInterop _interopVivHelper = new VivHelperInterop();
+        private static VortexHelperInterop _interopVortexHelper = new VortexHelperInterop();
         private static Type[] _downsideJumpthruTypes;
         private static Type[] _sidewaysJumpthruTypes;
         private static Type[] _curvedBoosterTypes;
@@ -232,5 +245,6 @@ namespace Celeste.Mod.Aqua.Module
         private static Type _platformJellyType;
         private static Type _holdableBarrierType;
         private static Type _holdableBarrierJumpThruType;
+        private static Type _attachJumpThruType;
     }
 }

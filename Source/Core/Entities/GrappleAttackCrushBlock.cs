@@ -73,15 +73,11 @@ namespace Celeste.Mod.Aqua.Core
                 Remove(img);
             }
             MTexture idle = GFX.Game["objects/grapple_kevin/block"];
-            MTexture cover = GFX.Game["objects/grapple_kevin/base"];
             MTexture idleTop = GFX.Game["objects/grapple_kevin/block_top"];
             MTexture idleBottom = GFX.Game["objects/grapple_kevin/block_bottom"];
             MTexture idleLeft = GFX.Game["objects/grapple_kevin/block_left"];
             MTexture idleRight = GFX.Game["objects/grapple_kevin/block_right"];
-            MTexture coverTop = GFX.Game["objects/grapple_kevin/block_top_base"];
-            MTexture coverBottom = GFX.Game["objects/grapple_kevin/block_bottom_base"];
-            MTexture coverLeft = GFX.Game["objects/grapple_kevin/block_left_base"];
-            MTexture coverRight = GFX.Game["objects/grapple_kevin/block_right_base"];
+            MTexture cover = GFX.Game["objects/grapple_kevin/base"];
             MTexture cornorTL = GFX.Game["objects/grapple_kevin/corner_a"];
             MTexture cornorTR = GFX.Game["objects/grapple_kevin/corner_b"];
             MTexture cornorBL = GFX.Game["objects/grapple_kevin/corner_c"];
@@ -128,14 +124,6 @@ namespace Celeste.Mod.Aqua.Core
             }
             int num2 = idleImages.Count;
             AddIdleLayer(cover, w, h);
-            if (ActiveTop)
-                AddIdleLayer(coverTop, w, h);
-            if (ActiveBottom)
-                AddIdleLayer(coverBottom, w, h);
-            if (ActiveLeft)
-                AddIdleLayer(coverLeft, w, h);
-            if (ActiveRight)
-                AddIdleLayer(coverRight, w, h);
             int idx = 0;
             foreach (Image image in idleImages)
             {
