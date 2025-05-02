@@ -89,6 +89,20 @@ namespace Celeste.Mod.Aqua.Module
                 var eff = new SelfCircuit(args);
                 return eff;
             }
+            else if (child.Name.Equals("Aqua/Vortex", StringComparison.OrdinalIgnoreCase))
+            {
+                Color color1 = Calc.HexToColor(child.Attr("color1", "ff0000"));
+                Color color2 = Calc.HexToColor(child.Attr("color2", "0000ff"));
+                float duration = child.AttrFloat("duration", 4.0f);
+                VortexParameters args = new VortexParameters
+                {
+                    Color1 = color1,
+                    Color2 = color2,
+                    Duration = duration,
+                };
+                var eff = new Vortex(args);
+                return eff;
+            }
             return null;
         }
     }
