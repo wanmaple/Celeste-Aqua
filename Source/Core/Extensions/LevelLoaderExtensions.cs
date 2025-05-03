@@ -20,7 +20,6 @@ namespace Celeste.Mod.Aqua.Core
             orig(self);
             self.Level.Add(new BarrierRenderer());
             self.Level.Add(new RodEntityManager());
-            self.Level.Add(new UnhookableTileCenter());
         }
     }
 }

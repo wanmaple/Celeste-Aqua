@@ -30,6 +30,7 @@ namespace Celeste.Mod.Aqua.Module
             PufferExtensions.Initialize();
             FireBallExtensions.Initialize();
             FireBarrierExtensions.Initialize();
+            IceBlockExtensions.Initialize();
             SeekerBarrierExtensions.Initialize();
             CassetteBlockExtensions.Initialize();
             FloatySpaceBlockExtensions.Initialize();
@@ -79,6 +80,7 @@ namespace Celeste.Mod.Aqua.Module
             PufferExtensions.Uninitialize();
             FireBallExtensions.Uninitialize();
             FireBarrierExtensions.Uninitialize();
+            IceBlockExtensions.Uninitialize();
             SeekerBarrierExtensions.Uninitialize();
             CassetteBlockExtensions.Uninitialize();
             FloatySpaceBlockExtensions.Uninitialize();

@@ -64,6 +64,16 @@ namespace Celeste.Mod.Aqua.Module
             }
         }
 
+        public static IReadOnlyList<Type> BumperTypes
+        {
+            get
+            {
+                if (_bumperTypes == null)
+                    CacheModTypes();
+                return _bumperTypes;
+            }
+        }
+
         public static Type ConveyorType
         {
             get
@@ -154,6 +164,16 @@ namespace Celeste.Mod.Aqua.Module
             }
         }
 
+        public static Type VortexBumperType
+        {
+            get
+            {
+                if (_vortexBumperType == null)
+                    CacheModTypes();
+                return _vortexBumperType;
+            }
+        }
+
         public static void Initialize()
         {
             typeof(AquaExports).ModInterop();
@@ -210,6 +230,17 @@ namespace Celeste.Mod.Aqua.Module
             if (elecSpike != null)
                 elecEntityTypes.Add(elecSpike);
             _electricEntityTypes = elecEntityTypes.ToArray();
+            var bumperTypes = new List<Type>(4);
+            Type staticBumper = FrostHelper.GetType("FrostHelper.StaticBumper");
+            _vortexBumperType = VortexHelper.GetType("Celeste.Mod.VortexHelper.Entities.VortexBumper");
+            Type dashBumper = VivHelper.GetType("VivHelper.Entities.DashBumper");
+            if (staticBumper != null)
+                bumperTypes.Add(staticBumper);
+            if (_vortexBumperType != null)
+                bumperTypes.Add(_vortexBumperType);
+            if (dashBumper != null)
+                bumperTypes.Add(dashBumper);
+            _bumperTypes = bumperTypes.ToArray();
             _conveyorType = FactoryHelper.GetType("FactoryHelper.Entities.Conveyor");
             _holdableContainerType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Entities.HoldableContainer");
             _containerRefType = EeveeHelper.GetType("Celeste.Mod.EeveeHelper.Components.ContainerRefComponent");
@@ -237,6 +268,7 @@ namespace Celeste.Mod.Aqua.Module
         private static Type[] _curvedBoosterTypes;
         private static Type[] _springTypes;
         private static Type[] _electricEntityTypes;
+        private static Type[] _bumperTypes;
         private static Type _conveyorType;
         private static Type _holdableContainerType;
         private static Type _containerRefType;
@@ -246,5 +278,6 @@ namespace Celeste.Mod.Aqua.Module
         private static Type _holdableBarrierType;
         private static Type _holdableBarrierJumpThruType;
         private static Type _attachJumpThruType;
+        private static Type _vortexBumperType;
     }
 }

@@ -29,20 +29,20 @@ namespace Celeste.Mod.Aqua.Core
             Activate4 = data.Bool("activate4");
         }
 
-        public override void Awake(Scene scene)
+        public override void Update()
         {
-            base.Awake(scene);
-            UnhookableTileCenter tileCenter = scene.Tracker.GetEntity<UnhookableTileCenter>();
-            if (tileCenter != null)
+            base.Update();
+            var state = SceneAs<Level>().GetState();
+            if (state != null)
             {
                 if (Activate1 && BlockTile1 != '\0')
-                    tileCenter.AddBlockTiletype(BlockTile1);
+                    state.UnhookableTiletypes.Add(BlockTile1);
                 if (Activate2 && BlockTile2 != '\0')
-                    tileCenter.AddBlockTiletype(BlockTile2);
+                    state.UnhookableTiletypes.Add(BlockTile2);
                 if (Activate3 && BlockTile3 != '\0')
-                    tileCenter.AddBlockTiletype(BlockTile3);
+                    state.UnhookableTiletypes.Add(BlockTile3);
                 if (Activate4 && BlockTile4 != '\0')
-                    tileCenter.AddBlockTiletype(BlockTile4);
+                    state.UnhookableTiletypes.Add(BlockTile4);
             }
             RemoveSelf();
         }

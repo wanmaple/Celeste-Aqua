@@ -4,18 +4,18 @@
     {
         public static void Initialize()
         {
-            On.Celeste.FireBarrier.OnChangeMode += FireBarrier_OnChangeMode;
+            On.Celeste.FireBarrier.Added += FireBarrier_Added;
         }
 
         public static void Uninitialize()
         {
-            On.Celeste.FireBarrier.OnChangeMode -= FireBarrier_OnChangeMode;
+            On.Celeste.FireBarrier.Added -= FireBarrier_Added;
         }
 
-        private static void FireBarrier_OnChangeMode(On.Celeste.FireBarrier.orig_OnChangeMode orig, FireBarrier self, Session.CoreModes mode)
+        private static void FireBarrier_Added(On.Celeste.FireBarrier.orig_Added orig, FireBarrier self, Monocle.Scene scene)
         {
-            orig(self, mode);
-            self.solid.SetHookable(mode == Session.CoreModes.Cold);
+            orig(self, scene);
+            self.solid.SetHookable(false);
         }
     }
 }

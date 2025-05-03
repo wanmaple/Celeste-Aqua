@@ -1,6 +1,8 @@
 ﻿using Celeste.Mod.Aqua.Debug;
+using Celeste.Mod.Aqua.Miscellaneous;
 using Celeste.Mod.Aqua.Module;
 using Celeste.Mod.Aqua.Rendering;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 using System;
@@ -28,6 +30,8 @@ namespace Celeste.Mod.Aqua.Core
             public bool Ungrapple16Direction { get; set; }
             public HookSettings HookSettings { get; set; }
 
+            public HashSet<char> UnhookableTiletypes { get; private set; } = new HashSet<char>();
+
             public LevelState()
             {
             }
@@ -54,6 +58,28 @@ namespace Celeste.Mod.Aqua.Core
                 ShortDistanceGrappleBoost = extraMeta.ShortDistanceGrappleBoost;
                 Ungrapple16Direction = extraMeta.Ungrapple16Direction;
                 HookSettings = extraMeta.HookSettings.Clone();
+            }
+
+            public bool IsTileBlocked(Level level, Vector2 position, bool xDir)
+            {
+                SolidTiles tiles = level.Tracker.GetEntity<SolidTiles>();
+                for (int i = 0; i < 3; ++i)
+                {
+                    Vector2 relativePos = position - tiles.Position;
+                    Vector2 coord = AquaMaths.Floor(relativePos / 8.0f);
+                    char tiletype = level.SolidsData[(int)coord.X, (int)coord.Y];
+                    if (UnhookableTiletypes.Contains(tiletype))
+                        return true;
+                    if (xDir)
+                    {
+                        position.Y += 8.0f;
+                    }
+                    else
+                    {
+                        position.X += 8.0f;
+                    }
+                }
+                return false;
             }
         }
 

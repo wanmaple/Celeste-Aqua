@@ -2,6 +2,7 @@
 using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
+using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using System;
 using System.Collections;
@@ -48,6 +49,7 @@ namespace Celeste.Mod.Aqua.Core
             self.WorkWithSidewaysJumpThrough();
             self.WorkWithDownsideJumpThrough();
             self.WorkWithElectricTypes();
+            self.WorkWithBumpers();
         }
 
         private static void Entity_Awake(On.Monocle.Entity.orig_Awake orig, Entity self, Scene scene)
@@ -681,6 +683,78 @@ namespace Celeste.Mod.Aqua.Core
                         self.Add(new HookInOut(self.OnHookEnterElectricity, self.OnHookOutElectricity));
                         self.Add(new ElectricShockInLightning());
                     }
+                }
+            }
+        }
+
+        private static void WorkWithBumpers(this Entity self)
+        {
+            if (ModInterop.BumperTypes != null)
+            {
+                foreach (Type type in ModInterop.BumperTypes)
+                {
+                    if (self.GetType().IsAssignableTo(type))
+                    {
+                        self.SetHookable(true);
+                        self.Add(new HookInteractable(self.OnGrappleBumper));
+                    }
+                }
+            }
+        }
+
+        internal static bool OnGrappleBumper(this Entity self, GrapplingHook grapple, Vector2 at)
+        {
+            Vector2 direction = Calc.SafeNormalize(at - self.Center);
+            direction = AquaMaths.TurnToDirection8(direction);
+            grapple.BounceTo(direction);
+            self.BumperHit(direction);
+            return true;
+        }
+
+        private static void BumperHit(this Entity self, Vector2 direction)
+        {
+            Audio.Play("event:/game/06_reflection/pinballbumper_hit", self.Position);
+            var respawnTimeField = self.GetType().FindField(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, "respawnTime", "RespawnTime");
+            float respawnTime = respawnTimeField == null ? 0.6f : (float)respawnTimeField.GetValue(self);
+            var respawnTimerField = self.GetType().FindField(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, "respawnTimer");
+            if (respawnTimerField != null)
+            {
+                respawnTimerField.SetValue(self, respawnTime);
+            }
+            var spriteField = self.GetType().FindField(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, "sprite");
+            if (spriteField != null)
+            {
+                Sprite sprite = spriteField.GetValue(self) as Sprite;
+                sprite.Play("hit", true);
+            }
+            var spriteEvilField = self.GetType().FindField(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, "spriteEvil");
+            if (spriteEvilField != null)
+            {
+                Sprite sprite = spriteEvilField.GetValue(self) as Sprite;
+                sprite.Play("hit", true);
+            }
+            var lightField = self.GetType().FindField(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, "light");
+            if (lightField != null)
+            {
+                Component com = lightField.GetValue(self) as Component;
+                com.Visible = false;
+            }
+            var bloomField = self.GetType().FindField(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, "bloom");
+            if (bloomField != null)
+            {
+                Component com = bloomField.GetValue(self) as Component;
+                com.Visible = false;
+            }
+            self.SceneAs<Level>().DirectionalShake(direction, 0.15f);
+            self.SceneAs<Level>().Displacement.AddBurst(self.Center, 0.3f, 8.0f, 32.0f, 0.8f);
+            self.SceneAs<Level>().Particles.Emit(Bumper.P_Launch, 12, self.Center + direction * 12.0f, Vector2.One * 3.0f, direction.Angle());
+            if (ModInterop.VortexBumperType != null && self.GetType().IsAssignableTo(ModInterop.VortexBumperType))
+            {
+                var oneUseField = self.GetType().FindField(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, "oneUse");
+                var deadlyField = self.GetType().FindField(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, "deadly");
+                if ((bool)oneUseField.GetValue(self))
+                {
+                    deadlyField.SetValue(self, true);
                 }
             }
         }

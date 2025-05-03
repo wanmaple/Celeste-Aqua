@@ -601,7 +601,7 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             Fix();
                         }
-                        else if (changeState || _hitUnhookable)
+                        else if (changeState)
                         {
                             Revoke();
                         }
@@ -751,25 +751,29 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     int stepX = MathF.Sign(collisionData.Direction.X);
                     int stepY = MathF.Sign(collisionData.Direction.Y);
-                    UnhookableTileCenter tileCenter = Scene.Tracker.GetEntity<UnhookableTileCenter>();
-                    if (stepX != 0)
+                    Level level = SceneAs<Level>();
+                    var state = level.GetState();
+                    if (state != null)
                     {
-                        Vector2 tilePos = stepX > 0 ? new Vector2(Right + 1, Center.Y) : new Vector2(Left - 1, Center.Y);
-                        if (tileCenter != null && tileCenter.IsTileBlocked(tilePos))
+                        if (stepX != 0)
                         {
-                            Audio.Play("event:/char/madeline/unhookable", Position);
-                            Revoke();
-                            _hitUnhookable = true;
+                            Vector2 tilePos = stepX > 0 ? new Vector2(Right + 1, Top) : new Vector2(Left - 1, Top);
+                            if (state.IsTileBlocked(level, tilePos, true))
+                            {
+                                Audio.Play("event:/char/madeline/unhookable", Position);
+                                Revoke();
+                                _hitUnhookable = true;
+                            }
                         }
-                    }
-                    if (stepY != 0)
-                    {
-                        Vector2 tilePos = stepY > 0 ? new Vector2(Center.X, Bottom + 1) : new Vector2(Center.X, Top - 1);
-                        if (tileCenter != null && tileCenter.IsTileBlocked(tilePos))
+                        if (stepY != 0)
                         {
-                            Audio.Play("event:/char/madeline/unhookable", Position);
-                            Revoke();
-                            _hitUnhookable = true;
+                            Vector2 tilePos = stepY > 0 ? new Vector2(Left, Bottom + 1) : new Vector2(Left, Top - 1);
+                            if (state.IsTileBlocked(level, tilePos, false))
+                            {
+                                Audio.Play("event:/char/madeline/unhookable", Position);
+                                Revoke();
+                                _hitUnhookable = true;
+                            }
                         }
                     }
                 }
