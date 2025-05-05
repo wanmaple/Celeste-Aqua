@@ -2,7 +2,7 @@ local SelfReconfigurationCircuit = {}
 
 SelfReconfigurationCircuit.name = "Aqua/Self Reconfiguration Circuit"
 SelfReconfigurationCircuit.canBackground = true
-SelfReconfigurationCircuit.canForeground = false
+SelfReconfigurationCircuit.canForeground = true
 
 SelfReconfigurationCircuit.fieldInformation = {
     background_color1 = {

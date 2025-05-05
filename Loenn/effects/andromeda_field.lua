@@ -2,7 +2,7 @@ local AndromedaField = {}
 
 AndromedaField.name = "Aqua/Andromeda Field"
 AndromedaField.canBackground = true
-AndromedaField.canForeground = false
+AndromedaField.canForeground = true
 
 AndromedaField.fieldInformation = {
     base_color = {

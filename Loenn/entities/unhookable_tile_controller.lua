@@ -22,6 +22,7 @@ UnhookableTileController.placements = {
         activate2 = false,
         activate3 = false,
         activate4 = false,
+        clear = false,
     },
 }
 

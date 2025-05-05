@@ -1,5 +1,4 @@
 ﻿using Celeste.Mod.Aqua.Debug;
-using Celeste.Mod.Aqua.Miscellaneous;
 using Celeste.Mod.Aqua.Module;
 using Celeste.Mod.Aqua.Rendering;
 using Microsoft.Xna.Framework;
@@ -7,8 +6,6 @@ using Microsoft.Xna.Framework.Input;
 using Monocle;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -17,6 +14,8 @@ namespace Celeste.Mod.Aqua.Core
         [Serializable]
         public class LevelState
         {
+            public const char EMPTY_TILE = '0';
+
             public bool FeatureEnabled { get; set; }
             public GrapplingHook.RopeMaterial RopeMaterial { get; set; }
             public int HookStyle { get; set; }
@@ -63,21 +62,30 @@ namespace Celeste.Mod.Aqua.Core
             public bool IsTileBlocked(Level level, Vector2 position, bool xDir)
             {
                 SolidTiles tiles = level.Tracker.GetEntity<SolidTiles>();
-                for (int i = 0; i < 3; ++i)
+                Vector2 relativePos = position - tiles.Position;
+                int coordX = (int)MathF.Floor(relativePos.X / 8.0f);
+                int coordY = (int)MathF.Floor(relativePos.Y / 8.0f);
+                if (xDir)
                 {
-                    Vector2 relativePos = position - tiles.Position;
-                    Vector2 coord = AquaMaths.Floor(relativePos / 8.0f);
-                    char tiletype = level.SolidsData[(int)coord.X, (int)coord.Y];
-                    if (UnhookableTiletypes.Contains(tiletype))
+                    char tiletype = level.SolidsData[coordX, coordY];
+                    if (tiletype == EMPTY_TILE)
+                    {
+                        if (UnhookableTiletypes.Contains(level.SolidsData[coordX, coordY - 1]) || UnhookableTiletypes.Contains(level.SolidsData[coordX, coordY + 1]))
+                            return true;
+                    }
+                    else if (UnhookableTiletypes.Contains(tiletype))
                         return true;
-                    if (xDir)
+                }
+                else
+                {
+                    char tiletype = level.SolidsData[coordX, coordY];
+                    if (tiletype == EMPTY_TILE)
                     {
-                        position.Y += 8.0f;
+                        if (UnhookableTiletypes.Contains(level.SolidsData[coordX - 1, coordY]) || UnhookableTiletypes.Contains(level.SolidsData[coordX + 1, coordY]))
+                            return true;
                     }
-                    else
-                    {
-                        position.X += 8.0f;
-                    }
+                    else if (UnhookableTiletypes.Contains(tiletype))
+                        return true;
                 }
                 return false;
             }
@@ -113,7 +121,7 @@ namespace Celeste.Mod.Aqua.Core
             AquaModule.Settings.DisableGrappleBoostChanged += self.AquaSettings_DisableGrappleBoostChanged;
             AquaModule.Settings.ShortDistanceGrappleBoostChanged += self.AquaSettings_ShortDistanceGrappleBoostChanged;
             AquaModule.Settings.Ungrapple16DirectionChanged += self.AquaSettings_Ungrapple16DirectionChanged;
-            AquaModule.Settings.HookSettings.ParameterChanged += self. AquaHookSettings_ParameterChanged;
+            AquaModule.Settings.HookSettings.ParameterChanged += self.AquaHookSettings_ParameterChanged;
         }
 
         private static void Level_End(On.Celeste.Level.orig_End orig, Level self)
@@ -289,7 +297,8 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private static readonly Dictionary<string, KeyValuePair<Type, Type>> BACKGROUND_HINTS = new Dictionary<string, KeyValuePair<Type, Type>> {
-            };
+        private static readonly Dictionary<string, KeyValuePair<Type, Type>> BACKGROUND_HINTS = new Dictionary<string, KeyValuePair<Type, Type>>
+        {
+        };
     }
 }

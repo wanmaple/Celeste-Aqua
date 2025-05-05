@@ -15,6 +15,7 @@ namespace Celeste.Mod.Aqua.Core
         public bool Activate2 { get; private set; }
         public bool Activate3 { get; private set; }
         public bool Activate4 { get; private set; }
+        public bool ClearAll { get; private set; }
 
         public UnhookableTileController(EntityData data, Vector2 offset)
             : base()
@@ -27,6 +28,7 @@ namespace Celeste.Mod.Aqua.Core
             Activate2 = data.Bool("activate2");
             Activate3 = data.Bool("activate3");
             Activate4 = data.Bool("activate4");
+            ClearAll = data.Bool("clear");
         }
 
         public override void Update()
@@ -35,6 +37,8 @@ namespace Celeste.Mod.Aqua.Core
             var state = SceneAs<Level>().GetState();
             if (state != null)
             {
+                if (ClearAll)
+                    state.UnhookableTiletypes.Clear();
                 if (Activate1 && BlockTile1 != '\0')
                     state.UnhookableTiletypes.Add(BlockTile1);
                 if (Activate2 && BlockTile2 != '\0')

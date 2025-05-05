@@ -1,4 +1,6 @@
-﻿namespace Celeste.Mod.Aqua.Core
+﻿using Celeste.Mod.Aqua.Module;
+
+namespace Celeste.Mod.Aqua.Core
 {
     public static class HookBeginnerTutorial
     {
@@ -19,7 +21,7 @@
             GrapplingHook grapple = player.GetGrappleHook();
             if (player != null && grapple != null)
             {
-                return player.StateMachine.State == (int)AquaStates.StRedDash && grapple.State == GrapplingHook.HookStates.Fixed && Input.GrabCheck;
+                return player.StateMachine.State == (int)AquaStates.StRedDash && grapple.State == GrapplingHook.HookStates.Fixed && (Input.GrabCheck || AquaModule.Settings.AutoGrabRopeIfPossible);
             }
             return false;
         }

@@ -825,7 +825,7 @@ namespace Celeste.Mod.Aqua.Core
                 else if (grapple != null && grapple.Active)
                 {
                     // NerdHelper's NodedFlingBird / Dream Refill compatibility.
-                    if (self.StateMachine.State == 30 || self.StateMachine.State == 29)
+                    if (self.StateMachine.State > (int)AquaStates.StElectricShock)
                     {
                         if (grapple.State != GrapplingHook.HookStates.Revoking)
                         {

@@ -2,7 +2,7 @@ local Vortex = {}
 
 Vortex.name = "Aqua/Vortex"
 Vortex.canBackground = true
-Vortex.canForeground = false
+Vortex.canForeground = true
 
 Vortex.fieldInformation = {
     color1 = {

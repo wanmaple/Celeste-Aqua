@@ -212,6 +212,7 @@ entities.Aqua/Unhookable Tile Controller.attributes.description.activate1=If che
 entities.Aqua/Unhookable Tile Controller.attributes.description.activate2=If checked, the Block Tile 2 will be unhookable.
 entities.Aqua/Unhookable Tile Controller.attributes.description.activate3=If checked, the Block Tile 3 will be unhookable.
 entities.Aqua/Unhookable Tile Controller.attributes.description.activate4=If checked, the Block Tile 4 will be unhookable.
+entities.Aqua/Unhookable Tile Controller.attributes.description.clear=If checked, the previous setup tiles will be cleared first.
 
 # Grapple Filter
 entities.Aqua/Grapple Filter.attributes.description.color=Area main color.

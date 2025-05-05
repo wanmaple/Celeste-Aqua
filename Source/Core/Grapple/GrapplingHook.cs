@@ -757,7 +757,7 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         if (stepX != 0)
                         {
-                            Vector2 tilePos = stepX > 0 ? new Vector2(Right + 1, Top) : new Vector2(Left - 1, Top);
+                            Vector2 tilePos = stepX > 0 ? new Vector2(Right + 1, Center.Y) : new Vector2(Left - 1, Center.Y);
                             if (state.IsTileBlocked(level, tilePos, true))
                             {
                                 Audio.Play("event:/char/madeline/unhookable", Position);
@@ -767,7 +767,7 @@ namespace Celeste.Mod.Aqua.Core
                         }
                         if (stepY != 0)
                         {
-                            Vector2 tilePos = stepY > 0 ? new Vector2(Left, Bottom + 1) : new Vector2(Left, Top - 1);
+                            Vector2 tilePos = stepY > 0 ? new Vector2(Center.X, Bottom + 1) : new Vector2(Center.X, Top - 1);
                             if (state.IsTileBlocked(level, tilePos, false))
                             {
                                 Audio.Play("event:/char/madeline/unhookable", Position);
