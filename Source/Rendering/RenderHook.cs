@@ -17,7 +17,7 @@ namespace Celeste.Mod.Aqua.Rendering
         {
             IL.Celeste.Level.Render += Level_ILRender;
             IL.Monocle.EntityList.RenderExcept += EntityList_ILRenderExcept;
-            On.Celeste.LevelLoader.LoadingThread += LevelLoader_LoadingThread;
+            //On.Celeste.LevelLoader.LoadingThread += LevelLoader_LoadingThread;
             On.Celeste.Tags.Initialize += Tags_Initialize;
             On.Monocle.Scene.ctor += Scene_Construct;
             On.Monocle.Scene.Update += Scene_Update;
@@ -27,7 +27,7 @@ namespace Celeste.Mod.Aqua.Rendering
         {
             IL.Celeste.Level.Render -= Level_ILRender;
             IL.Monocle.EntityList.RenderExcept -= EntityList_ILRenderExcept;
-            On.Celeste.LevelLoader.LoadingThread -= LevelLoader_LoadingThread;
+            //On.Celeste.LevelLoader.LoadingThread -= LevelLoader_LoadingThread;
             On.Celeste.Tags.Initialize -= Tags_Initialize;
             On.Monocle.Scene.ctor -= Scene_Construct;
             On.Monocle.Scene.Update -= Scene_Update;

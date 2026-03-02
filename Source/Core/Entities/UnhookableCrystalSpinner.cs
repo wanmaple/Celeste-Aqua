@@ -12,6 +12,7 @@ namespace Celeste.Mod.Aqua.Core
     public class UnhookableCrystalSpinner : CrystalStaticSpinner
     {
         public Color MainColor { get; private set; }
+        public bool Rainbow { get; private set; }
         public string CustomForegroundTexture { get; private set; }
         public string CustomBackgroundTexture { get; private set; }
 
@@ -21,6 +22,7 @@ namespace Celeste.Mod.Aqua.Core
             : base(data, offset, CrystalColor.Purple)
         {
             MainColor = data.HexColor("color");
+            Rainbow = data.Bool("rainbow");
             CustomForegroundTexture = data.Attr("custom_foreground_texture");
             CustomBackgroundTexture = data.Attr("custom_background_texture");
             this.SetHookable(true);
@@ -61,10 +63,18 @@ namespace Celeste.Mod.Aqua.Core
                     {
                         CreateSpritesEx();
                     }
+                    if (Rainbow)
+                    {
+                        UpdateHue();
+                    }
                 }
             }
             else
             {
+                if (Rainbow && Scene.OnInterval(0.08f, offset))
+                {
+                    UpdateHue();
+                }
                 if (Scene.OnInterval(0.25f, offset) && !InView())
                 {
                     Visible = false;

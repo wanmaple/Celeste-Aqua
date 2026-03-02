@@ -71,6 +71,7 @@ namespace Celeste.Mod.Aqua.Core
 
         protected override void BeginBoosting()
         {
+            base.BeginBoosting();
             ModInterop.GravityHelper.SetPlayerGravity(GravityType);
         }
 

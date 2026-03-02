@@ -26,6 +26,7 @@ AquaRefill.placements = {
             particle_color1 = "f19310",
             particle_color2 = "824c00",
             use_default_sprite = true,
+            sync_holdable_container = false,
         },
     },
     {
@@ -41,6 +42,7 @@ AquaRefill.placements = {
             particle_color1 = "912ed4",
             particle_color2 = "4b1680",
             use_default_sprite = true,
+            sync_holdable_container = false,
         },
     },
 }

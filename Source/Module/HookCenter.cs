@@ -34,6 +34,7 @@ namespace Celeste.Mod.Aqua.Module
             SeekerBarrierExtensions.Initialize();
             CassetteBlockExtensions.Initialize();
             FloatySpaceBlockExtensions.Initialize();
+            StarJumpBlockExtensions.Initialize();
             DreamBlockExtensions.Initialize();
             TheoCrystalExtensions.Initialize();
             GliderExtensions.Initialize();
@@ -84,6 +85,7 @@ namespace Celeste.Mod.Aqua.Module
             SeekerBarrierExtensions.Uninitialize();
             CassetteBlockExtensions.Uninitialize();
             FloatySpaceBlockExtensions.Uninitialize();
+            StarJumpBlockExtensions.Uninitialize();
             DreamBlockExtensions.Uninitialize();
             TheoCrystalExtensions.Uninitialize();
             GliderExtensions.Uninitialize();

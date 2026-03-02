@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System.Collections;
 using System.Collections.Generic;
-using static Celeste.GaussianBlur;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -12,6 +11,7 @@ namespace Celeste.Mod.Aqua.Core
     {
         public float FallDelay { get; private set; }
         public string FallFlag { get; private set; }
+        public bool Down { get; private set; }
         public bool GrappleTrigger { get; private set; }
         public bool FlagTrigger { get; private set; }
 
@@ -20,6 +20,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             FallDelay = data.Float("fall_delay", 0.2f);
             FallFlag = data.Attr("fall_flag", string.Empty);
+            Down = data.Bool("down", true);
             GrappleTrigger = data.Bool("grapple_trigger", true);
             FlagTrigger = data.Bool("flag_trigger", false);
             Add(new Coroutine(Sequence()));
@@ -48,7 +49,7 @@ namespace Celeste.Mod.Aqua.Core
             yield return FallDelay;
             StopShaking();
             float speed = 0.0f;
-            float maxSpeed = 160.0f;
+            float maxSpeed = 160.0f * (Down ? 1.0f : -1.0f);
             float dt = Engine.DeltaTime;
             bool breaking = false;
             while (true)

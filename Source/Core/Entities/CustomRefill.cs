@@ -1,6 +1,7 @@
 ﻿using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
+using System.ComponentModel;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -16,6 +17,9 @@ namespace Celeste.Mod.Aqua.Core
         public Color ParticleColor1 { get; protected set; }
         public Color ParticleColor2 { get; protected set; }
         public bool UseDefaultSprite { get; protected set; }
+        public bool SyncHoldableContainer { get; protected set; }
+
+        public Vector2 HoldableContainerOffset => _containerOffset;
 
         protected CustomRefill(EntityData data, Vector2 offset)
             : base(data, offset)
@@ -29,11 +33,12 @@ namespace Celeste.Mod.Aqua.Core
             ParticleColor1 = data.HexColor("particle_color1", P_Shatter.Color);
             ParticleColor2 = data.HexColor("particle_color2", P_Shatter.Color2);
             UseDefaultSprite = data.Bool("use_default_sprite", true);
+            SyncHoldableContainer = data.Bool("sync_holdable_container", false);
             this.SetHookable(Hookable);
             PlayerCollider com = Get<PlayerCollider>();
             com.OnCollide = OnPlayerCustom;
             Add(new HookInteractable(OnHookInteract));
-            Add(_moveToward = new MoveToward(null, true));
+            Add(_moveToward = new MoveToward(null, true, SyncHoldableContainer));
             _moveToward.Active = false;
         }
 
@@ -42,6 +47,16 @@ namespace Celeste.Mod.Aqua.Core
             base.Added(scene);
             SetupSprite();
             SetupParticles();
+        }
+
+        public override void Awake(Scene scene)
+        {
+            base.Awake(scene);
+            if (SyncHoldableContainer)
+            {
+                _container = this.GetHoldableContainer();
+                _containerOffset = _container != null ? _container.Position - Position : Vector2.Zero;
+            }
         }
 
         protected abstract void SetupSprite();
@@ -86,6 +101,13 @@ namespace Celeste.Mod.Aqua.Core
             {
                 if (!FillStamina)
                     player.Stamina = stamina;
+                if (SyncHoldableContainer)
+                {
+                    if (_container != null)
+                    {
+                        _container.Active = false;
+                    }
+                }
                 return true;
             }
             return false;
@@ -108,5 +130,7 @@ namespace Celeste.Mod.Aqua.Core
         }
 
         private MoveToward _moveToward;
+        private Vector2 _containerOffset;
+        private Entity _container;
     }
 }

@@ -33,6 +33,7 @@ GrapplingRefill.placements = {
             cap = -1,
             capped = false,
             always_refill = false,
+            sync_holdable_container = false,
         },
     },
     {
@@ -51,6 +52,7 @@ GrapplingRefill.placements = {
             cap = -1,
             capped = false,
             always_refill = false,
+            sync_holdable_container = false,
         },
     }
 }

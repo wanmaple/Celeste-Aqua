@@ -14,6 +14,7 @@ namespace Celeste.Mod.Aqua.Core
         bool IBarrierRenderable.Visible => Visible;
         public Color ParticleColor { get; protected set; }
         public bool CollideSolids { get; protected set; }
+        public bool BlockClimb { get; protected set; }
         public int LandSoundIndex { get; protected set; }
 
         protected Filter(EntityData data, Vector2 offset)
@@ -28,6 +29,7 @@ namespace Celeste.Mod.Aqua.Core
             particleColor.A = (byte)(particleOpacity * 255);
             ParticleColor = particleColor;
             CollideSolids = data.Bool("collide_solids", false);
+            BlockClimb = data.Bool("block_climb", false);
             LandSoundIndex = data.Int("land_sound_index", 11);
             this.MakeExtraCollideCondition();
             this.SetHookable(false);
@@ -36,6 +38,8 @@ namespace Celeste.Mod.Aqua.Core
                 _particlePositions.Add(new Vector2(Calc.Random.NextFloat(Width - 1f), Calc.Random.NextFloat(Height - 1f)));
             }
             Add(new PlayerExactCollider(OnPlayerCollide));
+            if (BlockClimb)
+                Add(new ClimbBlocker(false));
         }
 
         protected virtual bool CanCollide(Entity other)

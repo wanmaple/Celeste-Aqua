@@ -20,6 +20,7 @@ UnhookableCrystal.placements = {
     name = "Unhookable Crystal",
     data = {
         attachToSolid = false,
+        rainbow = false,
         custom_foreground_texture = "",
         custom_background_texture = "",
         color = "05ecfb",

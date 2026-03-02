@@ -20,6 +20,7 @@ FallingGrappleMagnet.placements = {
         use_default_sprite = true,
         fall_delay = 0.6,
         fall_flag = "",
+        down = true,
         grapple_trigger = true,
         flag_trigger = false,
     },

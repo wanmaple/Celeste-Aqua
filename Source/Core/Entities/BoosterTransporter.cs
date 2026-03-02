@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Aqua.Module;
+using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.RuntimeDetour;
@@ -108,6 +109,12 @@ namespace Celeste.Mod.Aqua.Core
                 myBooster.OnTransport();
             }
             booster.cannotUseTimer = AbsorbDuration + ReleaseDuration + TransportDuration;
+            Entity container = booster.GetHoldableContainer();
+            if (container != null)
+            {
+                container.Active = false;
+                _eeveeOffset = container.Position - booster.Position;
+            }
             _busy = true;
         }
 
@@ -115,6 +122,12 @@ namespace Celeste.Mod.Aqua.Core
         {
             _transportingBooster.Collidable = true;
             _transportingBooster.cannotUseTimer = 0.0f;
+            Entity container = _transportingBooster.GetHoldableContainer();
+            if (container != null)
+            {
+                container.Active = true;
+                container.Position = _transportingBooster.Position + _eeveeOffset;
+            }
             _transportingBooster = null;
             _busy = false;
         }
@@ -188,6 +201,7 @@ namespace Celeste.Mod.Aqua.Core
                         yield return null;
                     }
                 }
+                _transportingBooster.sprite.Scale = Vector2.One;
                 for (int i = 0; i < 360; i += 30)
                 {
                     particlesBG.Emit(_particle, 1, TargetPosition, Vector2.One * 1.5f, i * (MathF.PI / 180.0f));
@@ -212,5 +226,7 @@ namespace Celeste.Mod.Aqua.Core
         private SoundSource _soundTravel = new SoundSource();
         private bool _transporting;
         private ParticleType _particle;
+
+        private Vector2 _eeveeOffset;
     }
 }

@@ -6,6 +6,7 @@ local DrawableText = require("structs.drawable_text")
 local GrappleInteractionAssigner = {}
 
 local ASSIGN_OPTIONS = {
+    "CancelInteraction",
     "GrabToPlayer",
     -- "PullPlayer",
 }
@@ -25,6 +26,7 @@ for _, option in ipairs(ASSIGN_OPTIONS) do
             width = 16,
             height = 16,
             interaction_type = option,
+            sync_holdable_container = false,
             blacklist = "",
         },
     })

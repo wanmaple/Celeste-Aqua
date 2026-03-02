@@ -1,4 +1,5 @@
-﻿using Celeste.Mod.Entities;
+﻿using Celeste.Mod.Aqua.Module;
+using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -42,6 +43,10 @@ namespace Celeste.Mod.Aqua.Core
             {
                 return CollideSolids;
             }
+            else if (other is Booster)
+                return false;
+            else if (ModInterop.HoldableContainerType != null && other.GetType().IsAssignableTo(ModInterop.HoldableContainerType))
+                return false;
             return true;
         }
     }

@@ -21,6 +21,7 @@ entities.Aqua/Aqua Refill.attributes.description.outline_texture=Your custom out
 entities.Aqua/Aqua Refill.attributes.description.particle_color1=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Aqua Refill.attributes.description.particle_color2=Shatter/Glow/Regen particle color will random between Particle Color 1 and Particle Color 2.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Aqua Refill.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+entities.Aqua/Aqua Refill.attributes.description.sync_holdable_container=If checked, HoldableContainer from EeveeHelper will follow the entity.
 
 # Aqua Crumble Platform
 entities.Aqua/Aqua Crumble Platform.attributes.description.platform_texture=What texture to use for the crumble block.
@@ -59,9 +60,11 @@ entities.Aqua/Freeze Listener.attributes.description.inputs=The inputs to listen
 # Aqua Booster
 entities.Aqua/Aqua Booster.attributes.description.red=Whether the booster is short distance or infinite distance.
 entities.Aqua/Aqua Booster.attributes.description.hookable=Whether the booster is interactable with the grappling hook.
+entities.Aqua/Aqua Booster.attributes.description.one_use=If checked, the booster will disappear after one boost.
 entities.Aqua/Aqua Booster.attributes.description.sprite=Custom sprite name, leave empty leads to default sprite.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Aqua Booster.attributes.description.particle_color=Custom burst/appear particle color.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Aqua Booster.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
+entities.Aqua/Aqua Booster.attributes.description.sync_holdable_container=If checked, HoldableContainer from EeveeHelper will follow the entity.
 
 # Aqua NPC
 entities.Aqua/Custom NPC.attributes.description.indicatorOffsetX=Offset for the chat icon on the X axis.
@@ -139,6 +142,7 @@ entities.Aqua/Unhookable Area.attributes.description.block_right=Whether to bloc
 # Unhookable Crystal
 entities.Aqua/Unhookable Crystal.attributes.description.attachToSolid=Whether the spinner attaches to blocks.
 entities.Aqua/Unhookable Crystal.attributes.description.color=Main color of the spinner or connector.
+entities.Aqua/Unhookable Crystal.attributes.description.rainbow=Whether the color of crystal displays like rainbow.
 entities.Aqua/Unhookable Crystal.attributes.description.custom_foreground_texture=Custom foreground texture, with 00, 01, 02 etc for randomness.
 entities.Aqua/Unhookable Crystal.attributes.description.custom_background_texture=Custom background texture, with 00, 01, 02 etc for randomness.
 
@@ -220,6 +224,7 @@ entities.Aqua/Grapple Filter.attributes.description.opacity=Area main opacity.
 entities.Aqua/Grapple Filter.attributes.description.particle_color=Area particle color.
 entities.Aqua/Grapple Filter.attributes.description.particle_opacity=Area particle opacity.
 entities.Aqua/Grapple Filter.attributes.description.collide_solids=Whether the filter will collide solids.
+entities.Aqua/Grapple Filter.attributes.description.block_climb=If checked, player cannot grab on the filter.
 entities.Aqua/Grapple Filter.attributes.description.land_sound_index=Land sound index.
 
 # Booster Filter
@@ -229,6 +234,7 @@ entities.Aqua/Booster Filter.attributes.description.particle_color=Area particle
 entities.Aqua/Booster Filter.attributes.description.particle_opacity=Area particle opacity.
 entities.Aqua/Booster Filter.attributes.description.can_pass=What kind of booster can pass through.
 entities.Aqua/Booster Filter.attributes.description.collide_solids=Whether the filter will collide solids.
+entities.Aqua/Booster Filter.attributes.description.block_climb=If checked, player cannot grab on the filter.
 entities.Aqua/Booster Filter.attributes.description.land_sound_index=Land sound index.
 
 # Grappling Refill
@@ -245,6 +251,7 @@ entities.Aqua/Grappling Refill.attributes.description.use_default_sprite=If chec
 entities.Aqua/Grappling Refill.attributes.description.cap=The maximum grapple shots the player can get. Leave -1 to use the num set by 'ChangeGameplayModeTrigger'.
 entities.Aqua/Grappling Refill.attributes.description.capped=If checked, the grapple count will never exceed the defined maximum shots (Cap or Trigger).
 entities.Aqua/Grappling Refill.attributes.description.always_refill=If checked, the refill will break even if the player already has the maximum amount of grapple shots they can get.
+entities.Aqua/Grappling Refill.attributes.description.sync_holdable_container=If checked, HoldableContainer from EeveeHelper will follow the entity.
 
 # Custom Grappling Refill
 entities.Aqua/Custom Grappling Refill.attributes.description.oneUse=Whether the refill should respawn after being used.
@@ -310,6 +317,7 @@ entities.Aqua/Falling Grapple Magnet.attributes.description.sprite=Your custom s
 entities.Aqua/Falling Grapple Magnet.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
 entities.Aqua/Falling Grapple Magnet.attributes.description.fall_delay=How much time it costs when get attached by grapple and prepares to fall down.
 entities.Aqua/Falling Grapple Magnet.attributes.description.fall_flag=The flag to trigger the fall, you must have 'Flag Trigger' checked.
+entities.Aqua/Falling Grapple Magnet.attributes.description.down=Whether the magnet will fall down or raise up.
 entities.Aqua/Falling Grapple Magnet.attributes.description.grapple_trigger=If checked, the magnet will trigger the fall when get attached by grapple.
 entities.Aqua/Falling Grapple Magnet.attributes.description.flag_trigger=If checked, the magnet will trigger the fall through 'Fall Flag'.
 
@@ -347,6 +355,7 @@ entities.Aqua/Booster Transporter.attributes.description.use_default_sprite=If c
 # Simple Grapple Interaction Assigner
 entities.Aqua/Grapple Interaction Assigner.attributes.description.interaction_type=What kind of interaction to be assigned.\nGrabToPlayer: make the entity be able to hooked to player.
 entities.Aqua/Grapple Interaction Assigner.attributes.description.blacklist=The blacklist entities or mods simply used word containing check, using comma to separate, case insensitive.\ne.g. 'FactoryHelper' will ignore all entities in FactoryHelper, 'Booster' will ignore all entities with booster in the name.\nNot sure the name in leonn always satisfies, you can ask the mod author for its class name if not worked.
+entities.Aqua/Grapple Interaction Assigner.attributes.description.sync_holdable_container=If checked, HoldableContainer from EeveeHelper will follow the entity.
 
 # Holdable Grapple Interaction Assigner
 entities.Aqua/Holdable Grapple Interaction Assigner.attributes.description.mass=The mass affects both holdable and Madline's momentum when being grappled(Madeline's mass is 1.0). If set to zero, then madeline won't get any momentum, if set to greater than or equal to 5, then holdable won't get any momentum.
@@ -377,6 +386,7 @@ entities.Aqua/Gravity Booster.attributes.description.sprite=Custom sprite name, 
 entities.Aqua/Gravity Booster.attributes.description.particle_color=Custom burst/appear particle color.\nUncheck the 'Use Default Sprite' to make it work.
 entities.Aqua/Gravity Booster.attributes.description.use_default_sprite=If checked, AQUA will ignore all your custom sprites/textures/particle settings.
 entities.Aqua/Gravity Booster.attributes.description.gravity_type=The gravity type to change.
+entities.Aqua/Gravity Booster.attributes.description.sync_holdable_container=If checked, HoldableContainer from EeveeHelper will follow the entity.
 
 # Gravity Filter
 entities.Aqua/Gravity Filter.attributes.description.color=Area main color.
@@ -386,6 +396,7 @@ entities.Aqua/Gravity Filter.attributes.description.particle_color=Area particle
 entities.Aqua/Gravity Filter.attributes.description.particle_opacity=Area particle opacity.
 entities.Aqua/Gravity Filter.attributes.description.gravity=Which kind of gravity circumstance can't be passed through.
 entities.Aqua/Gravity Filter.attributes.description.collide_solids=Whether the filter will collide solids.
+entities.Aqua/Gravity Filter.attributes.description.block_climb=If checked, player cannot grab on the filter.
 entities.Aqua/Gravity Filter.attributes.description.land_sound_index=Land sound index.
 
 # Gravity Spikes Up

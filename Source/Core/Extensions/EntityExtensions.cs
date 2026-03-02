@@ -2,7 +2,6 @@
 using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
-using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using System;
 using System.Collections;
@@ -189,12 +188,20 @@ namespace Celeste.Mod.Aqua.Core
             return false;
         }
 
-        public static void MakeSelfEnableGrabToPlayer(this Entity self)
+        public static void MakeSelfEnableGrabToPlayer(this Entity self, bool syncHoldableContainer)
         {
             self.SetHookable(true);
-            var moveToward = new MoveToward(null, true);
-            moveToward.Active = false;
-            self.Add(moveToward);
+            var moveToward = self.Get<MoveToward>();
+            if (moveToward == null)
+            {
+                moveToward = new MoveToward(null, true, syncHoldableContainer);
+                moveToward.Active = false;
+                self.Add(moveToward);
+            }
+            else
+            {
+                moveToward.SyncHoldableContainer = syncHoldableContainer;
+            }
             DynamicData.For(self).Set("move_toward", moveToward);
             HookInteractable com = self.Get<HookInteractable>();
             if (com != null)

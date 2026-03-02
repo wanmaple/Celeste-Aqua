@@ -46,6 +46,7 @@ for i, passType in ipairs(PASS_TYPE) do
             particle_opacity = 0.5,
             can_pass = passType,
             collide_solids = false,
+            block_climb = false,
             land_sound_index = 11,
         },
     })

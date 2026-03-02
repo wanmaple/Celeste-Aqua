@@ -42,6 +42,7 @@ for i, gravityType in ipairs(GRAVITY_OPTIONS) do
             particle_opacity = 0.5,
             gravity = gravityType,
             collide_solids = false,
+            block_climb = false,
             land_sound_index = 11,
         },
     })

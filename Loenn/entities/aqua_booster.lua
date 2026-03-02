@@ -23,9 +23,11 @@ AquaBooster.placements = {
         data = {
             red = false,
             hookable = true,
+            one_use = false,
             sprite = "Aqua_BoosterOrange",
             particle_color = "bc630e",
             use_default_sprite = true,
+            sync_holdable_container = false,
         },
     },
     {
@@ -33,9 +35,11 @@ AquaBooster.placements = {
         data = {
             red = true,
             hookable = true,
+            one_use = false,
             sprite = "Aqua_BoosterPurple",
             particle_color = "760ebc",
             use_default_sprite = true,
+            sync_holdable_container = false,
         },
     },
 }

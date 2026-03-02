@@ -2,7 +2,6 @@
 using Monocle;
 using MonoMod.Utils;
 using System;
-using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -38,6 +37,10 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self);
             self.SetHookable(false);
+            if (self is AquaBooster booster && booster.OneUse)
+            {
+                self.RemoveSelf();
+            }
         }
 
         private static void Booster_Respawn(On.Celeste.Booster.orig_Respawn orig, Booster self)
@@ -45,6 +48,15 @@ namespace Celeste.Mod.Aqua.Core
             self.ResetPosition();
             self.SetHookable(true);
             orig(self);
+            if (self is AquaBooster booster && booster.SyncHoldableContainer)
+            {
+                var container = booster.GetHoldableContainer();
+                if (container != null)
+                {
+                    container.Position = booster.Position + booster.HoldableContainerOffset;
+                    container.Active = true;
+                }
+            }
         }
 
         private static void Booster_AppearParticles(On.Celeste.Booster.orig_AppearParticles orig, Booster self)

@@ -29,6 +29,7 @@ GrappleFilter.placements = {
         particle_color = "ffffff",
         particle_opacity = 0.5,
         collide_solids = false,
+        block_climb = false,
         land_sound_index = 11,
     },
 }

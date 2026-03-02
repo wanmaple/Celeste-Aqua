@@ -38,6 +38,15 @@ namespace Celeste.Mod.Aqua.Core
         {
             self.Position = self.GetRespawnPosition();
             orig(self);
+            if (self is CustomRefill refill && refill.SyncHoldableContainer)
+            {
+                var container = refill.GetHoldableContainer();
+                if (container != null)
+                {
+                    container.Position = refill.Position + refill.HoldableContainerOffset;
+                    container.Active = true;
+                }
+            }
         }
 
         public static Vector2 GetRespawnPosition(this Refill self)

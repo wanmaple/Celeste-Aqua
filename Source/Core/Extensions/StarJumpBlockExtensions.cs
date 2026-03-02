@@ -5,28 +5,29 @@ using System.Reflection;
 
 namespace Celeste.Mod.Aqua.Core
 {
-    public static class FloatySpaceBlockExtensions
+    public static class StarJumpBlockExtensions
     {
         public static void Initialize()
         {
-            IL.Celeste.FloatySpaceBlock.Update += FloatySpaceBlock_ILUpdate;
+            IL.Celeste.StarJumpBlock.Update += StarJumpBlock_ILUpdate;
         }
 
         public static void Uninitialize()
         {
-            IL.Celeste.FloatySpaceBlock.Update -= FloatySpaceBlock_ILUpdate;
+            IL.Celeste.StarJumpBlock.Update -= StarJumpBlock_ILUpdate;
         }
 
-        private static void FloatySpaceBlock_ILUpdate(ILContext il)
+        private static void StarJumpBlock_ILUpdate(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
             MethodInfo method = typeof(Solid).GetMethod("HasPlayerRider", BindingFlags.Instance | BindingFlags.Public);
-            if (cursor.TryGotoNext(ins => ins.MatchCallvirt(method)))
+            if (cursor.TryGotoNext(ins => ins.MatchCallOrCallvirt(method)))
             {
                 cursor.Index++;
+                cursor.EmitPop();
                 cursor.EmitLdarg0();
                 cursor.EmitDelegate(IsPlayerHanging);
-                cursor.EmitOr();
+                //cursor.EmitOr();
             }
         }
 

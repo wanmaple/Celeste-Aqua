@@ -12,17 +12,23 @@ namespace Celeste.Mod.Aqua.Core
         public enum GrappleInteractions
         {
             None,
+            CancelInteraction,
             GrabToPlayer,
             PullPlayer,
         }
 
         public GrappleInteractions InteractionType { get; private set; }
+        public bool SyncHoldableContainer { get; private set; }
 
         public SimpleGrappleInteractionAssigner(EntityData data, Vector2 offset)
             : base(data, offset)
         {
+            SyncHoldableContainer = data.Bool("sync_holdable_container", false);
             switch (data.Attr("interaction_type"))
             {
+                case "CancelInteraction":
+                    InteractionType = GrappleInteractions.CancelInteraction;
+                    break;
                 case "GrabToPlayer":
                     InteractionType = GrappleInteractions.GrabToPlayer;
                     break;
@@ -57,6 +63,9 @@ namespace Celeste.Mod.Aqua.Core
             entity.SetHookable(true);
             switch (InteractionType)
             {
+                case GrappleInteractions.CancelInteraction:
+                    CancelGrappleInteraction(entity);
+                    break;
                 case GrappleInteractions.GrabToPlayer:
                     MakeEnableToGrab(entity);
                     break;
@@ -66,9 +75,18 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
+        private void CancelGrappleInteraction(Entity entity)
+        {
+            var interactable = entity.Get<HookInteractable>();
+            if (interactable != null)
+            {
+                entity.Remove(interactable);
+            }
+        }
+
         private void MakeEnableToGrab(Entity entity)
         {
-            entity.MakeSelfEnableGrabToPlayer();
+            entity.MakeSelfEnableGrabToPlayer(SyncHoldableContainer);
         }
 
         private void MakeEnableToPullPlayer(Entity entity)

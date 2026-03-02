@@ -50,6 +50,7 @@ local DEFAULT_OUT_BASE = "objects/booster_transporter/out_base00"
 function BoosterTransporter.sprite(room, entity)
     local baseTexture = entity.use_default_sprite and DEFAULT_IN_BASE or entity.in_base_texture
     local inBase = DrawableSprite.fromTexture(baseTexture, entity)
+    inBase:setColor("ffffff")
     return inBase
 end
 
