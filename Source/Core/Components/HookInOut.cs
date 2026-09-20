@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Celeste.Mod.Aqua.Core
 {
+    [Tracked]
     public class HookInOut : Component
     {
         public HookInOut(Action<GrapplingHook> hookIn, Action<GrapplingHook> hookOut, Action<GrapplingHook> keepIn = null)
@@ -33,14 +34,21 @@ namespace Celeste.Mod.Aqua.Core
                     }
                     else
                     {
-                        _inGrapples.Remove(grapple);
-                        _hookOut?.Invoke(grapple);
+                        OnHookRemoved(grapple);
                     }
                 }
                 if (currentIn)
                 {
                     _keepIn?.Invoke(grapple);
                 }
+            }
+        }
+
+        internal void OnHookRemoved(GrapplingHook grapple)
+        {
+            if (_inGrapples.Remove(grapple))
+            {
+                _hookOut?.Invoke(grapple);
             }
         }
 

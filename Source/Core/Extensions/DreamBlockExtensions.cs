@@ -25,7 +25,9 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, position, width, height, node, fastMoving, oneUse, below);
             self.Add(new HookInOut(self.OnHookIn, self.OnHookOut, self.OnHookKeepIn));
-            DataContainer.For(self).Set("hook_in_sound", new SoundSource());
+            SoundSource hookInSound = new SoundSource();
+            self.Add(hookInSound);
+            DataContainer.For(self).Set("hook_in_sound", hookInSound);
         }
 
         private static void DreamBlock_Added(On.Celeste.DreamBlock.orig_Added orig, DreamBlock self, Scene scene)
@@ -64,7 +66,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void OnHookKeepIn(this DreamBlock self, GrapplingHook hook)
         {
             SoundSource hookInSound = DataContainer.For(self).Get<SoundSource>("hook_in_sound");
-            if (hook.State == GrapplingHook.HookStates.Fixed)
+            if (hook.State == GrapplingHook.HookStates.Fixed || !self.playerHasDreamDash)
             {
                 hookInSound.Stop();
             }

@@ -468,6 +468,10 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Removed(Scene scene)
         {
+            foreach (HookInOut hookInOut in scene.Tracker.GetComponents<HookInOut>())
+            {
+                hookInOut.OnHookRemoved(this);
+            }
             base.Removed(scene);
             _movementCounter = Vector2.Zero;
             State = HookStates.None;
