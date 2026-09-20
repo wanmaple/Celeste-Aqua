@@ -220,6 +220,7 @@ namespace Celeste.Mod.Aqua.Core
             self.SetTimeTicker("elec_shock_ticker", 0.5f);
             DataContainer.For(self).Set("rope_is_loosen", true);
             DataContainer.For(self).Set("is_booster_dash", false);
+            self.SetRedirectionShoot(false);
             self.SetSlideState(SlideStates.None);
             self.SetFastBubbleMultiplier(1.0f);
             self.SetSpecialSwingDirection(0.0f);
@@ -1122,7 +1123,7 @@ namespace Celeste.Mod.Aqua.Core
             var shotCheck = self.GetShootHookCheck();
             float dt = Engine.DeltaTime;
             bool downGrapplePressed = AquaModule.Settings.DownShoot.Pressed;
-            if (!grapple.Active && (shotCheck.CanThrow || downGrapplePressed) && !self.IsExhausted() && self.Holding == null && grapple.CanEmit(self.level))
+            if (self.IsRedirectionShoot())
             {
                 Vector2 direction;
                 switch (AquaModule.Settings.DefaultShotDirection)
@@ -1147,19 +1148,59 @@ namespace Celeste.Mod.Aqua.Core
                 {
                     direction = Input.GetAimVector(self.Facing);
                 }
-                if (direction.Y > 0.0f)
-                {
-                    Celeste.Freeze(0.05f);
-                }
-                else
-                {
-                    Celeste.Freeze(0.03f);
-                }
                 direction.Y *= ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f;
                 float emitSpeed = self.SceneAs<Level>().GetState().HookSettings.EmitSpeed;
                 float emitSpeedCoeff = self.CalculateEmitParameters(emitSpeed * direction, ref direction);
                 grapple.Emit(self.level, direction, emitSpeed, emitSpeedCoeff - 1.0f);
                 self.Scene.Add(grapple);
+                self.SetRedirectionShoot(false);
+            }
+            else if (!grapple.Active && (shotCheck.CanThrow || downGrapplePressed) && !self.IsExhausted() && self.Holding == null && grapple.CanEmit(self.level))
+            {
+                if (AquaModule.Settings.HookSettings.ShootFreezeTime > 0)
+                {
+                    Celeste.Freeze((float)AquaModule.Settings.HookSettings.ShootFreezeTime / 1000.0f);
+                    self.SetRedirectionShoot(true);
+                }
+                else
+                {
+                    Vector2 direction;
+                    switch (AquaModule.Settings.DefaultShotDirection)
+                    {
+                        case DefaultShotDirections.Forward:
+                            direction = Vector2.UnitX * (int)self.Facing;
+                            break;
+                        case DefaultShotDirections.ForwardUp:
+                            direction = new Vector2((int)self.Facing, -1.0f);
+                            direction.Normalize();
+                            break;
+                        case DefaultShotDirections.Up:
+                        default:
+                            direction = -Vector2.UnitY;
+                            break;
+                    }
+                    if (downGrapplePressed)
+                    {
+                        direction = Vector2.UnitY;
+                    }
+                    else if (Input.Aim.Value != Vector2.Zero)
+                    {
+                        direction = Input.GetAimVector(self.Facing);
+                    }
+                    if (direction.Y > 0.0f)
+                    {
+                        Celeste.Freeze(0.05f);
+                    }
+                    else
+                    {
+                        Celeste.Freeze(0.03f);
+                    }
+                    direction.Y *= ModInterop.GravityHelper.IsPlayerGravityInverted() ? -1.0f : 1.0f;
+                    float emitSpeed = self.SceneAs<Level>().GetState().HookSettings.EmitSpeed;
+                    float emitSpeedCoeff = self.CalculateEmitParameters(emitSpeed * direction, ref direction);
+                    grapple.Emit(self.level, direction, emitSpeed, emitSpeedCoeff - 1.0f);
+                    self.Scene.Add(grapple);
+                }
             }
 
             if (grapple.Active)
@@ -1464,6 +1505,16 @@ namespace Celeste.Mod.Aqua.Core
         private static void SetSpecialSwingSpeed(this Player self, float speed)
         {
             DataContainer.For(self).Set("red_dash_swing_speed", speed);
+        }
+
+        private static bool IsRedirectionShoot(this Player self)
+        {
+            return DataContainer.For(self).Get("redirection_shoot", false);
+        }
+
+        private static void SetRedirectionShoot(this Player self, bool shoot)
+        {
+            DataContainer.For(self).Set("redirection_shoot", shoot);
         }
 
         private static void OnGravityChanged(Player player, int gravity, float momentumModifier)

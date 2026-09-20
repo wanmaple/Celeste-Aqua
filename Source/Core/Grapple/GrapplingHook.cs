@@ -217,10 +217,6 @@ namespace Celeste.Mod.Aqua.Core
 
             _sprite.Play(HookSprite.Emit, true);
             _sprite.Rotation = _elecShockSprite.Rotation = direction.Angle();
-            if (AquaModule.Settings.HookSettings.ShootFreezeTime > 0)
-            {
-                Celeste.Freeze((float)AquaModule.Settings.HookSettings.ShootFreezeTime / 1000.0f);
-            }
         }
 
         public void Revoke()
