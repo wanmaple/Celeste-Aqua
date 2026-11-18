@@ -28,7 +28,7 @@ namespace Celeste.Mod.Aqua.Module
 
         public override void Initialize()
         {
-            RegisterStaticTypes(typeof(DataContainer), "_data");
+            // do nothing
         }
 
         public object RegisterSaveLoadAction(

@@ -24,7 +24,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, position, height, left, notCoreMode);
             self.SetHookable(true);
-            DataContainer.For(self).Set("post_move_patch", (Action<Vector2>)self.PostMove);
+            DataContainer.For(self).PostMovePatch = (Action<Vector2>)self.PostMove;
         }
 
         private static void WallBooster_Update(On.Celeste.WallBooster.orig_Update orig, WallBooster self)

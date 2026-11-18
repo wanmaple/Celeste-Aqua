@@ -1,72 +1,121 @@
-﻿using Monocle;
-using System.Collections.Generic;
+﻿using Celeste.Mod.Aqua.Core;
+using Microsoft.Xna.Framework;
+using Monocle;
+using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Celeste.Mod.Aqua.Miscellaneous
 {
-    public class DataContainer
+
+    public class DataContainer : Component
     {
         public static DataContainer For(Entity obj)
         {
-            DataContainer data;
-            if (!_data.TryGetValue(obj, out data))
+            DataContainer container = obj.Components.Get<DataContainer>();
+            if (container is not null)
             {
-                data = new DataContainer(32);
-                _data.Add(obj, data);
+                return container;
             }
-            return data;
-        }
 
-        public static bool Has(Entity obj)
-        {
-            return _data.TryGetValue(obj, out _);
-        }
-
-        static ConditionalWeakTable<Entity, DataContainer> _data = new ConditionalWeakTable<Entity, DataContainer>();
-
-        public bool Has(string key)
-        {
-            return _values.ContainsKey(key);
-        }
-
-        public T Get<T>(string key, T defaultValue = default)
-        {
-            if (_values.TryGetValue(key, out object value))
+            if (_queuedCount > 0 && _queue.TryGetValue(obj, out container))
             {
-                if (value is T tValue)
-                    return tValue;
-                else
-                    return defaultValue;
+                return container;
             }
-            else
+
+            container = new DataContainer(obj);
+            _queue.Add(obj, container);
+            _queuedCount++;
+            obj.Add(container); // LockModes.Open 下会立刻触发 Added，并把 container 从 _queue 移除
+
+            return container;
+        }
+
+        public static DataContainer OnlyGet(Entity obj)
+        {
+            DataContainer c = obj.Components.Get<DataContainer>();
+            if (c is not null)
             {
-                return defaultValue;
+                return c;
+            }
+            if (_queuedCount > 0 && _queue.TryGetValue(obj, out c))
+            {
+                return c;
+            }
+            return null;
+        }
+
+        private readonly Entity _owner;
+
+        public DataContainer(Entity owner)
+            : base(true, false)
+        {
+            _owner = owner;
+            PrevPosition = owner.Position;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            PrevPosition = _owner.Position;
+        }
+
+        public override void Added(Entity entity)
+        {
+            base.Added(entity);
+            if (_queue.Remove(entity))
+            {
+                _queuedCount--;
             }
         }
 
-        public void Set(string key, object value)
+        public override void Removed(Entity entity)
         {
-            _values[key] = value;
+            base.Removed(entity);
+            if (_queue.Remove(entity))
+            {
+                _queuedCount--;
+            }
         }
 
-        public void Remove(string key)
-        {
-            _values.Remove(key);
-        }
+        public bool Hookable { get; set; } = false;
+        public Action<GrapplingHook> OnAttachCallback { get; set; } = null;
+        public Action<GrapplingHook> OnDetachCallback { get; set; } = null;
+        public bool HookAttached { get; set; } = false;
+        public MethodInfo CanCollideMethod { get; set; } = null;
+        public Vector2 PrevPosition { get; set; }
 
-        public IReadOnlyDictionary<string, object> GetValues()
-        {
-            return _values;
-        }
+        public ulong UniqueId { get; set; } = AUTO_ID++;
 
-        public DataContainer() : this(32)
-        { }
+        public AccelerationArea.AccelerateState AccelerateState { get; set; } = AccelerationArea.AccelerateState.None;
+        public bool Reversed { get; set; } = false;
+        public Action<Vector2> PostMovePatch { get; set; } = null;
+        public bool EeveePatched { get; set; } = false;
+        public MoveToward MoveToward { get; set; }
+        public Vector2? RespawnPosition { get; set; }
+        public Platform AttachedPlatform { get; set; }
+        public Coroutine UndraggableRoutine { get; set; }
+        public SoundSource HookInSound { get; set; }
+        public bool CassetteActive { get; set; }
+        public GrapplingHook GrappleHook { get; set; }
+        public GrappleIndicator GrappleIndicator { get; set; }
+        public ShotHookCheck ShootCheck { get; set; }
+        public bool IsBoosterDash { get; set; }
+        public PlayerStates.SlideStates SlideState { get; set; }
+        public int PreviousFacing { get; set; }
+        public bool RopeIsLoosen { get; set; }
+        public int ClimbRopeDirection { get; set; }
+        public float LiftSpeedY { get; set; }
+        public float FastBubbleMultiplier { get; set; }
+        public float RedDashSwingDir { get; set; }
+        public float RedDashSwingSpeed { get; set; }
+        public bool RedirectionShoot { get; set; }
+        public TimeTicker DashHangingTicker { get; set; }
+        public TimeTicker BoostSpeedSaveTicker { get; set; }
+        public TimeTicker ElectricShockTicker { get; set; }
+        private static ulong AUTO_ID = 0u;
 
-        public DataContainer(int capacity)
-        {
-            _values = new Dictionary<string, object>(capacity);
-        }
-
-        Dictionary<string, object> _values;
+        private static ConditionalWeakTable<Entity, DataContainer> _queue = new ConditionalWeakTable<Entity, DataContainer>();
+        private static int _queuedCount;
     }
 }
