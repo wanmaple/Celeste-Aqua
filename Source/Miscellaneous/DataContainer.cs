@@ -9,13 +9,60 @@ using System.Runtime.CompilerServices;
 namespace Celeste.Mod.Aqua.Miscellaneous
 {
     /// <summary>
-    /// Per-entity state bag. The keys Aqua uses are known up front, so they live in typed fields;
-    /// the dictionary only keeps what the typed fields cannot represent. The public API is unchanged.
+    /// Per-entity state bag.
+    /// <para>
+    /// The keys Aqua uses are known up front, so they live in typed fields instead of a
+    /// <c>Dictionary&lt;string, object&gt;</c>. Every key name is written exactly once, as a
+    /// <see cref="KeyNames"/> constant, and the call sites use those same constants; the dispatch is
+    /// a <c>switch</c> over them, which the compiler turns into the same length/hash jump it would
+    /// generate for string literals (a <c>FrozenDictionary</c> lookup was measured 2-5x slower than
+    /// that switch). A lazily created overflow dictionary (<see cref="_spill"/>) only receives keys
+    /// that are not predefined and values whose type does not match the predefined field.
+    /// </para>
+    /// <para>
+    /// Why not one <c>Dictionary&lt;string, object&gt;</c> per entity: SpeedrunTool deep-clones this
+    /// whole table on every savestate, and cloning a dictionary costs roughly
+    /// <c>716 B + 148 B * slotCount + 14 B * entryCount</c> (measured with the vendored DeepCloner).
+    /// Measured on a 3616-container table: 6336 B/container before, 359 B/container after.
+    /// </para>
+    /// <para>
+    /// Adding a key touches these places, in this order:
+    /// <list type="number">
+    /// <item>a <see cref="KeyNames"/> constant -- the only place the literal is written;</item>
+    /// <item>the same constant in <see cref="AllKeys"/> and a <see cref="KeyBit"/> constant with the
+    /// next free bit, both <b>at the same position</b> as in <see cref="KeyNames"/> (the three lists
+    /// are index-aligned);</item>
+    /// <item>a private field for the value;</item>
+    /// <item>one <c>case</c> in <see cref="Has(string)"/>, <see cref="Get{T}"/>,
+    /// <see cref="TrySetTyped"/> and <see cref="Remove"/>;</item>
+    /// <item>a probe value in <c>BuildProbeValues</c> if the field has a type that no other key
+    /// uses, otherwise the DEBUG self-check throws "no probe value matches";</item>
+    /// <item>the call sites, using the constant instead of a literal.</item>
+    /// </list>
+    /// <b>There are only 64 presence bits</b>: <see cref="KeyBit"/> is a <c>ulong</c> mask, so key
+    /// number 65 would compute <c>1UL &lt;&lt; 64</c>, which C# masks back to bit 0 and silently
+    /// aliases the first key.
+    /// </para>
+    /// <para>
+    /// A mistake is caught, but not every kind by the compiler: two <see cref="KeyNames"/> constants
+    /// with the same value fail to compile (duplicate <c>case</c> label, CS0152), while two
+    /// <see cref="KeyBit"/> constants with the same bit <b>do</b> compile -- they are only passed to
+    /// <c>Mark</c>/<c>Present</c>, never used as <c>case</c> labels -- and are caught at runtime by
+    /// the DEBUG self-check in the static constructor. That check is also what catches a key missing
+    /// from <see cref="AllKeys"/> or from the <c>Set</c>/<c>Get</c> switches.
+    /// </para>
+    /// <para>
+    /// The public signatures are unchanged; two behaviours differ, see <see cref="GetValues"/> and
+    /// the capacity constructor.
+    /// </para>
     /// </summary>
     public partial class DataContainer
     {
-        // KeyNames, AllKeys, KeyBit and the switches in Has/Get/TrySetTyped/Remove are
-        // index-aligned: append a new key to the end of all of them.
+        // The seven key tables -- KeyNames, AllKeys, KeyBit, and the switches in Has, Get,
+        // TrySetTyped and Remove (plus the private field block below) -- must list the keys in the
+        // same order. KeyNames/AllKeys/KeyBit are index-aligned (AllKeys[i] is the name of bit i);
+        // the DEBUG check proves set-equality but cannot prove that Get and TrySetTyped were kept
+        // in that order, so always append a new key to the end of all seven.
         internal static class KeyNames
         {
             public const string Hookable = "hookable";
@@ -332,8 +379,15 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         }
 
         /// <summary>
-        /// Every key/value pair that <see cref="Has(string)"/> currently reports, copied into a new
-        /// dictionary.
+        /// Snapshot of every key that <see cref="Has(string)"/> currently reports, taken at call time.
+        /// <para>
+        /// Behaviour difference against the dictionary implementation this replaced: that one
+        /// returned the live backing dictionary (the same instance on every call, later
+        /// <see cref="Set"/> calls visible through it, and castable back to
+        /// <c>Dictionary&lt;string, object&gt;</c>). There is no backing dictionary any more, so
+        /// callers get a copy: mutating it does not affect the container and two calls return two
+        /// instances. The method is kept because it is public API; nothing in Aqua calls it.
+        /// </para>
         /// </summary>
         public IReadOnlyDictionary<string, object> GetValues()
         {
@@ -363,14 +417,17 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
         public DataContainer(int capacity)
         {
-            // Keep the old contract: a negative capacity used to throw from `new Dictionary(-1)`.
+            // The old constructor forwarded the capacity to `new Dictionary(capacity)`, so a
+            // negative value threw; keep that contract instead of silently clamping it.
             if (capacity < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(capacity));
             }
 
-            // The capacity only sizes the overflow dictionary now, and it is clamped: that path is
-            // a handful of keys at most.
+            // The capacity now only sizes the overflow dictionary and is always clamped: the
+            // overflow path is a handful of keys at most (in the shipped code path _spill is never
+            // created at all), and sizing it like the old main dictionary would bring the cloning
+            // cost back.
             _spillInitialCapacity = Math.Min(capacity, DefaultSpillCapacity);
         }
 
