@@ -31,18 +31,18 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             _owner = owner;
         }
 
-        public bool Hookable { get; set; }
-        public Action<GrapplingHook> OnAttachCallback { get; set; }
-        public Action<GrapplingHook> OnDetachCallback { get; set; }
-        public bool HookAttached { get; set; }
-        public MethodInfo CanCollideMethod { get; set; }
-        public Vector2 PrevPosition { get; set;}
+        public bool Hookable { get; set; } = false;
+        public Action<GrapplingHook> OnAttachCallback { get; set; } = null;
+        public Action<GrapplingHook> OnDetachCallback { get; set; } = null;
+        public bool HookAttached { get; set; } = false;
+        public MethodInfo CanCollideMethod { get; set; } = null;
+        public Vector2 PrevPosition { get; set; }
 
-        public ulong UniqueId { get; set; }
+        public ulong UniqueId { get; set; } = AUTO_ID++;
 
-        public AccelerationArea.AccelerateState AccelerateState { get; set; }
-        public bool Reversed { get; set; }
-        public Action<Vector2> PostMovePatch { get; set; }
+        public AccelerationArea.AccelerateState AccelerateState { get; set; } = AccelerationArea.AccelerateState.None;
+        public bool Reversed { get; set; } = false;
+        public Action<Vector2> PostMovePatch { get; set; } = null;
         public bool EeveePatched { get; set; }
         public MoveToward MoveToward { get; set; }
         public Vector2? RespawnPosition { get; set; }
@@ -66,5 +66,6 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         public TimeTicker DashHangingTicker { get; set; }
         public TimeTicker BoostSpeedSaveTicker { get; set; }
         public TimeTicker ElectricShockTicker { get; set; }
+        private static ulong AUTO_ID = 0u;
     }
 }

@@ -15,46 +15,36 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             On.Monocle.Entity.ctor_Vector2 += Entity_Construct;
-            On.Monocle.Entity.Awake += Entity_Awake;
             On.Monocle.Entity.Added += Entity_Added;
         }
 
         public static void Uninitialize()
         {
             On.Monocle.Entity.ctor_Vector2 -= Entity_Construct;
-            On.Monocle.Entity.Awake -= Entity_Awake;
             On.Monocle.Entity.Added -= Entity_Added;
         }
 
         private static void Entity_Construct(On.Monocle.Entity.orig_ctor_Vector2 orig, Entity self, Vector2 position)
         {
             orig(self, position);
-            self.SetHookable(false);
-            self.SetAttachCallbacks(null, null);
-            DataContainer.For(self).HookAttached = false;
-            DataContainer.For(self).CanCollideMethod = null;
-            DataContainer.For(self).UniqueId = AUTO_ID++;
-            DataContainer.For(self).PrevPosition = self.Position;
-            DataContainer.For(self).AccelerateState = AccelerationArea.AccelerateState.None;
-            DataContainer.For(self).Reversed = false;
-            DataContainer.For(self).PostMovePatch = null;
+            if (   self is Platform
+                || self is Actor
+                || self is Refill
+                || self is FlyFeather
+                || self is GrappleAttractor)
+            {
+                DataContainer.For(self);
+            }
         }
 
         private static void Entity_Added(On.Monocle.Entity.orig_Added orig, Entity self, Scene scene)
         {
             orig(self, scene);
-            DataContainer.For(self).PrevPosition = self.Position;
             self.WorkWithCardinalBumper();
             self.WorkWithSidewaysJumpThrough();
             self.WorkWithDownsideJumpThrough();
             self.WorkWithElectricTypes();
             self.WorkWithBumpers();
-        }
-
-        private static void Entity_Awake(On.Monocle.Entity.orig_Awake orig, Entity self, Scene scene)
-        {
-            orig(self, scene);
-            DataContainer.For(self).PrevPosition = self.Position;
         }
 
         public static Entity CollideFirst(this Entity self, Type type, IReadOnlyList<Type> excludeTypes, params Entity[] ignoreList)
@@ -852,6 +842,5 @@ namespace Celeste.Mod.Aqua.Core
             }
         }
 
-        private static ulong AUTO_ID = 0u;
     }
 }
