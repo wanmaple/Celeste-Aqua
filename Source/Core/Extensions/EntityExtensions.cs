@@ -220,7 +220,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static ulong GetUniqueID(this Entity self)
         {
-            return DataContainer.OnlyGet(self)?.UniqueId ?? 0u;
+            return DataContainer.For(self).UniqueId;
         }
 
         public static Entity GetHoldableContainer(this Entity self)
