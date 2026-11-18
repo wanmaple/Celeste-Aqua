@@ -18,15 +18,15 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                 return container;
             }
 
-            if (_queue.TryGetValue(obj, out container))
+            if (_queuedCount > 0 && _queue.TryGetValue(obj, out container))
             {
                 return container;
             }
 
             container = new DataContainer(obj);
-            container.PrevPosition = obj.Position;
             _queue.Add(obj, container);
-            obj.Add(container); // 如果 obj.Components.LockMode = LockModes.Open, 这会立刻触发 Added 从而将 container 从 _queue 移除
+            _queuedCount++;
+            obj.Add(container); // LockModes.Open 下会立刻触发 Added，并把 container 从 _queue 移除
 
             return container;
         }
@@ -38,7 +38,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             {
                 return c;
             }
-            if (_queue.TryGetValue(obj, out c))
+            if (_queuedCount > 0 && _queue.TryGetValue(obj, out c))
             {
                 return c;
             }
@@ -51,6 +51,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             : base(true, false)
         {
             _owner = owner;
+            PrevPosition = owner.Position;
         }
 
         public override void Update()
@@ -62,13 +63,19 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         public override void Added(Entity entity)
         {
             base.Added(entity);
-            _queue.Remove(entity);
+            if (_queue.Remove(entity))
+            {
+                _queuedCount--;
+            }
         }
 
         public override void Removed(Entity entity)
         {
             base.Removed(entity);
-            _queue.Remove(entity);
+            if (_queue.Remove(entity))
+            {
+                _queuedCount--;
+            }
         }
 
         public bool Hookable { get; set; } = false;
@@ -109,5 +116,6 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         private static ulong AUTO_ID = 0u;
 
         private static ConditionalWeakTable<Entity, DataContainer> _queue = new ConditionalWeakTable<Entity, DataContainer>();
+        private static int _queuedCount;
     }
 }
