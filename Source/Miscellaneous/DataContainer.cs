@@ -137,6 +137,22 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                 case KeyNames.UndraggableRoutine: return Present(_present, KeyBit.UndraggableRoutine);
                 case KeyNames.HookInSound: return Present(_present, KeyBit.HookInSound);
                 case KeyNames.CassetteActive: return Present(_present, KeyBit.CassetteActive);
+                case KeyNames.GrappleHook: return Present(_present, KeyBit.GrappleHook);
+                case KeyNames.GrappleIndicator: return Present(_present, KeyBit.GrappleIndicator);
+                case KeyNames.ShootCheck: return Present(_present, KeyBit.ShootCheck);
+                case KeyNames.IsBoosterDash: return Present(_present, KeyBit.IsBoosterDash);
+                case KeyNames.SlideState: return Present(_present, KeyBit.SlideState);
+                case KeyNames.PreviousFacing: return Present(_present, KeyBit.PreviousFacing);
+                case KeyNames.RopeIsLoosen: return Present(_present, KeyBit.RopeIsLoosen);
+                case KeyNames.ClimbRopeDirection: return Present(_present, KeyBit.ClimbRopeDirection);
+                case KeyNames.LiftSpeedY: return Present(_present, KeyBit.LiftSpeedY);
+                case KeyNames.FastBubbleMultiplier: return Present(_present, KeyBit.FastBubbleMultiplier);
+                case KeyNames.RedDashSwingDir: return Present(_present, KeyBit.RedDashSwingDir);
+                case KeyNames.RedDashSwingSpeed: return Present(_present, KeyBit.RedDashSwingSpeed);
+                case KeyNames.RedirectionShoot: return Present(_present, KeyBit.RedirectionShoot);
+                case KeyNames.DashHangingTicker: return Present(_present, KeyBit.DashHangingTicker);
+                case KeyNames.BoostSpeedSaveTicker: return Present(_present, KeyBit.BoostSpeedSaveTicker);
+                case KeyNames.ElecShockTicker: return Present(_present, KeyBit.ElecShockTicker);
                 default: return false;
             }
         }
@@ -180,6 +196,28 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                     return ReadRef<T, Coroutine>(present, KeyBit.UndraggableRoutine, _undraggableRoutine, defaultValue);
                 case KeyNames.HookInSound: return ReadRef<T, SoundSource>(present, KeyBit.HookInSound, _hookInSound, defaultValue);
                 case KeyNames.CassetteActive: return Read<T, bool>(present, KeyBit.CassetteActive, _cassetteActive, defaultValue);
+                case KeyNames.GrappleHook: return ReadRef<T, GrapplingHook>(present, KeyBit.GrappleHook, _grappleHook, defaultValue);
+                case KeyNames.GrappleIndicator:
+                    return ReadRef<T, GrappleIndicator>(present, KeyBit.GrappleIndicator, _grappleIndicator, defaultValue);
+                case KeyNames.ShootCheck: return ReadRef<T, ShotHookCheck>(present, KeyBit.ShootCheck, _shootCheck, defaultValue);
+                case KeyNames.IsBoosterDash: return Read<T, bool>(present, KeyBit.IsBoosterDash, _isBoosterDash, defaultValue);
+                case KeyNames.SlideState: return Read<T, PlayerStates.SlideStates>(present, KeyBit.SlideState, _slideState, defaultValue);
+                case KeyNames.PreviousFacing: return Read<T, int>(present, KeyBit.PreviousFacing, _previousFacing, defaultValue);
+                case KeyNames.RopeIsLoosen: return Read<T, bool>(present, KeyBit.RopeIsLoosen, _ropeIsLoosen, defaultValue);
+                case KeyNames.ClimbRopeDirection:
+                    return Read<T, int>(present, KeyBit.ClimbRopeDirection, _climbRopeDirection, defaultValue);
+                case KeyNames.LiftSpeedY: return Read<T, float>(present, KeyBit.LiftSpeedY, _liftSpeedY, defaultValue);
+                case KeyNames.FastBubbleMultiplier:
+                    return Read<T, float>(present, KeyBit.FastBubbleMultiplier, _fastBubbleMultiplier, defaultValue);
+                case KeyNames.RedDashSwingDir: return Read<T, float>(present, KeyBit.RedDashSwingDir, _redDashSwingDir, defaultValue);
+                case KeyNames.RedDashSwingSpeed: return Read<T, float>(present, KeyBit.RedDashSwingSpeed, _redDashSwingSpeed, defaultValue);
+                case KeyNames.RedirectionShoot: return Read<T, bool>(present, KeyBit.RedirectionShoot, _redirectionShoot, defaultValue);
+                case KeyNames.DashHangingTicker:
+                    return ReadRef<T, TimeTicker>(present, KeyBit.DashHangingTicker, _dashHangingTicker, defaultValue);
+                case KeyNames.BoostSpeedSaveTicker:
+                    return ReadRef<T, TimeTicker>(present, KeyBit.BoostSpeedSaveTicker, _boostSpeedSaveTicker, defaultValue);
+                case KeyNames.ElecShockTicker:
+                    return ReadRef<T, TimeTicker>(present, KeyBit.ElecShockTicker, _elecShockTicker, defaultValue);
                 default: return defaultValue;
             }
         }
@@ -222,6 +260,22 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                 case KeyNames.UndraggableRoutine: return StoreRef(key, value, ref _undraggableRoutine, KeyBit.UndraggableRoutine);
                 case KeyNames.HookInSound: return StoreRef(key, value, ref _hookInSound, KeyBit.HookInSound);
                 case KeyNames.CassetteActive: return Store(key, value, ref _cassetteActive, KeyBit.CassetteActive);
+                case KeyNames.GrappleHook: return StoreRef(key, value, ref _grappleHook, KeyBit.GrappleHook);
+                case KeyNames.GrappleIndicator: return StoreRef(key, value, ref _grappleIndicator, KeyBit.GrappleIndicator);
+                case KeyNames.ShootCheck: return StoreRef(key, value, ref _shootCheck, KeyBit.ShootCheck);
+                case KeyNames.IsBoosterDash: return Store(key, value, ref _isBoosterDash, KeyBit.IsBoosterDash);
+                case KeyNames.SlideState: return Store(key, value, ref _slideState, KeyBit.SlideState);
+                case KeyNames.PreviousFacing: return Store(key, value, ref _previousFacing, KeyBit.PreviousFacing);
+                case KeyNames.RopeIsLoosen: return Store(key, value, ref _ropeIsLoosen, KeyBit.RopeIsLoosen);
+                case KeyNames.ClimbRopeDirection: return Store(key, value, ref _climbRopeDirection, KeyBit.ClimbRopeDirection);
+                case KeyNames.LiftSpeedY: return Store(key, value, ref _liftSpeedY, KeyBit.LiftSpeedY);
+                case KeyNames.FastBubbleMultiplier: return Store(key, value, ref _fastBubbleMultiplier, KeyBit.FastBubbleMultiplier);
+                case KeyNames.RedDashSwingDir: return Store(key, value, ref _redDashSwingDir, KeyBit.RedDashSwingDir);
+                case KeyNames.RedDashSwingSpeed: return Store(key, value, ref _redDashSwingSpeed, KeyBit.RedDashSwingSpeed);
+                case KeyNames.RedirectionShoot: return Store(key, value, ref _redirectionShoot, KeyBit.RedirectionShoot);
+                case KeyNames.DashHangingTicker: return StoreRef(key, value, ref _dashHangingTicker, KeyBit.DashHangingTicker);
+                case KeyNames.BoostSpeedSaveTicker: return StoreRef(key, value, ref _boostSpeedSaveTicker, KeyBit.BoostSpeedSaveTicker);
+                case KeyNames.ElecShockTicker: return StoreRef(key, value, ref _elecShockTicker, KeyBit.ElecShockTicker);
                 default: return false;
             }
         }
@@ -248,6 +302,22 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                 case KeyNames.UndraggableRoutine: Clear(key, ref _undraggableRoutine, KeyBit.UndraggableRoutine); return;
                 case KeyNames.HookInSound: Clear(key, ref _hookInSound, KeyBit.HookInSound); return;
                 case KeyNames.CassetteActive: Clear(key, ref _cassetteActive, KeyBit.CassetteActive); return;
+                case KeyNames.GrappleHook: Clear(key, ref _grappleHook, KeyBit.GrappleHook); return;
+                case KeyNames.GrappleIndicator: Clear(key, ref _grappleIndicator, KeyBit.GrappleIndicator); return;
+                case KeyNames.ShootCheck: Clear(key, ref _shootCheck, KeyBit.ShootCheck); return;
+                case KeyNames.IsBoosterDash: Clear(key, ref _isBoosterDash, KeyBit.IsBoosterDash); return;
+                case KeyNames.SlideState: Clear(key, ref _slideState, KeyBit.SlideState); return;
+                case KeyNames.PreviousFacing: Clear(key, ref _previousFacing, KeyBit.PreviousFacing); return;
+                case KeyNames.RopeIsLoosen: Clear(key, ref _ropeIsLoosen, KeyBit.RopeIsLoosen); return;
+                case KeyNames.ClimbRopeDirection: Clear(key, ref _climbRopeDirection, KeyBit.ClimbRopeDirection); return;
+                case KeyNames.LiftSpeedY: Clear(key, ref _liftSpeedY, KeyBit.LiftSpeedY); return;
+                case KeyNames.FastBubbleMultiplier: Clear(key, ref _fastBubbleMultiplier, KeyBit.FastBubbleMultiplier); return;
+                case KeyNames.RedDashSwingDir: Clear(key, ref _redDashSwingDir, KeyBit.RedDashSwingDir); return;
+                case KeyNames.RedDashSwingSpeed: Clear(key, ref _redDashSwingSpeed, KeyBit.RedDashSwingSpeed); return;
+                case KeyNames.RedirectionShoot: Clear(key, ref _redirectionShoot, KeyBit.RedirectionShoot); return;
+                case KeyNames.DashHangingTicker: Clear(key, ref _dashHangingTicker, KeyBit.DashHangingTicker); return;
+                case KeyNames.BoostSpeedSaveTicker: Clear(key, ref _boostSpeedSaveTicker, KeyBit.BoostSpeedSaveTicker); return;
+                case KeyNames.ElecShockTicker: Clear(key, ref _elecShockTicker, KeyBit.ElecShockTicker); return;
                 default: return;
             }
         }
@@ -403,6 +473,22 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             public const int UndraggableRoutine = 14;
             public const int HookInSound = 15;
             public const int CassetteActive = 16;
+            public const int GrappleHook = 17;
+            public const int GrappleIndicator = 18;
+            public const int ShootCheck = 19;
+            public const int IsBoosterDash = 20;
+            public const int SlideState = 21;
+            public const int PreviousFacing = 22;
+            public const int RopeIsLoosen = 23;
+            public const int ClimbRopeDirection = 24;
+            public const int LiftSpeedY = 25;
+            public const int FastBubbleMultiplier = 26;
+            public const int RedDashSwingDir = 27;
+            public const int RedDashSwingSpeed = 28;
+            public const int RedirectionShoot = 29;
+            public const int DashHangingTicker = 30;
+            public const int BoostSpeedSaveTicker = 31;
+            public const int ElecShockTicker = 32;
         }
 
         // Which predefined keys have been written. Kept separately from the field values because
@@ -430,6 +516,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         private SoundSource _hookInSound;
         private bool _cassetteActive;
 
+        // Player keys.
         private GrapplingHook _grappleHook;
         private GrappleIndicator _grappleIndicator;
         private ShotHookCheck _shootCheck;
