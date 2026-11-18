@@ -3,39 +3,40 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace Celeste.Mod.Aqua.Miscellaneous
 {
-    public class DataContainer
+
+    public class DataContainer : Component
     {
         public static DataContainer For(Entity obj)
         {
-            DataContainer data;
-            if (!_data.TryGetValue(obj, out data))
+            DataContainer container = obj.Components.Get<DataContainer>();
+            if (container is not null)
             {
-                data = new DataContainer();
-                _data.Add(obj, data);
+                return container;
             }
-            return data;
+
+            container = new DataContainer(obj);
+            obj.Add(container);
+
+            return container;
         }
 
-        public static bool Has(Entity obj)
+        private readonly Entity _owner;
+
+        public DataContainer(Entity owner)
+            : base(false, false)
         {
-            return _data.TryGetValue(obj, out _);
+            _owner = owner;
         }
 
-        static ConditionalWeakTable<Entity, DataContainer> _data = new ConditionalWeakTable<Entity, DataContainer>();
-
-        public DataContainer()
-        {
-        }
         public bool Hookable { get; set; }
         public Action<GrapplingHook> OnAttachCallback { get; set; }
         public Action<GrapplingHook> OnDetachCallback { get; set; }
         public bool HookAttached { get; set; }
         public MethodInfo CanCollideMethod { get; set; }
-        public Vector2 PrevPosition { get; set; }}
+        public Vector2 PrevPosition { get; set;}
 
         public ulong UniqueId { get; set; }
 
