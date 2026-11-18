@@ -1,6 +1,7 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
 using Microsoft.Xna.Framework;
 using MonoMod.Utils;
+using KeyNames = Celeste.Mod.Aqua.Miscellaneous.DataContainer.KeyNames;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -39,7 +40,7 @@ namespace Celeste.Mod.Aqua.Core
             if (HasRespawnPosition(self))
             {
                 self.Position = self.GetRespawnPosition();
-                DataContainer.For(self).Remove("respawn_position");
+                DataContainer.For(self).Remove(KeyNames.RespawnPosition);
             }
             orig(self);
             if (self is CustomRefill refill && refill.SyncHoldableContainer)
@@ -55,12 +56,12 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool HasRespawnPosition(this Refill self)
         {
-            return DataContainer.For(self).Has("respawn_position");
+            return DataContainer.For(self).Has(KeyNames.RespawnPosition);
         }
 
         public static Vector2 GetRespawnPosition(this Refill self)
         {
-            return DataContainer.For(self).Get<Vector2>("respawn_position");
+            return DataContainer.For(self).Get<Vector2>(KeyNames.RespawnPosition);
         }
     }
 }

@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using KeyNames = Celeste.Mod.Aqua.Miscellaneous.DataContainer.KeyNames;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -31,19 +32,19 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, position);
             self.SetHookable(false);
             self.SetAttachCallbacks(null, null);
-            DataContainer.For(self).Set("hook_attached", false);
-            DataContainer.For(self).Set("can_collide_method", null);
-            DataContainer.For(self).Set("unique_id", AUTO_ID++);
-            DataContainer.For(self).Set("prev_position", self.Position);
-            DataContainer.For(self).Set("accelerate_state", AccelerationArea.AccelerateState.None);
-            DataContainer.For(self).Set("reversed", false);
-            DataContainer.For(self).Set("post_move_patch", null);
+            DataContainer.For(self).Set(KeyNames.HookAttached, false);
+            DataContainer.For(self).Set(KeyNames.CanCollideMethod, null);
+            DataContainer.For(self).Set(KeyNames.UniqueId, AUTO_ID++);
+            DataContainer.For(self).Set(KeyNames.PrevPosition, self.Position);
+            DataContainer.For(self).Set(KeyNames.AccelerateState, AccelerationArea.AccelerateState.None);
+            DataContainer.For(self).Set(KeyNames.Reversed, false);
+            DataContainer.For(self).Set(KeyNames.PostMovePatch, null);
         }
 
         private static void Entity_Added(On.Monocle.Entity.orig_Added orig, Entity self, Scene scene)
         {
             orig(self, scene);
-            DataContainer.For(self).Set("prev_position", self.Position);
+            DataContainer.For(self).Set(KeyNames.PrevPosition, self.Position);
             self.WorkWithCardinalBumper();
             self.WorkWithSidewaysJumpThrough();
             self.WorkWithDownsideJumpThrough();
@@ -54,7 +55,7 @@ namespace Celeste.Mod.Aqua.Core
         private static void Entity_Awake(On.Monocle.Entity.orig_Awake orig, Entity self, Scene scene)
         {
             orig(self, scene);
-            DataContainer.For(self).Set("prev_position", self.Position);
+            DataContainer.For(self).Set(KeyNames.PrevPosition, self.Position);
         }
 
         public static Entity CollideFirst(this Entity self, Type type, IReadOnlyList<Type> excludeTypes, params Entity[] ignoreList)
@@ -202,7 +203,7 @@ namespace Celeste.Mod.Aqua.Core
             {
                 moveToward.SyncHoldableContainer = syncHoldableContainer;
             }
-            DataContainer.For(self).Set("move_toward", moveToward);
+            DataContainer.For(self).Set(KeyNames.MoveToward, moveToward);
             HookInteractable com = self.Get<HookInteractable>();
             if (com != null)
             {
@@ -219,10 +220,10 @@ namespace Celeste.Mod.Aqua.Core
             if (hook.IsShooting)
             {
                 hook.Revoke();
-                MoveToward moveToward = DataContainer.For(self).Get<MoveToward>("move_toward");
+                MoveToward moveToward = DataContainer.For(self).Get<MoveToward>(KeyNames.MoveToward);
                 moveToward.Target = hook;
                 moveToward.Active = true;
-                DataContainer.For(self).Set("respawn_position", self.Position);
+                DataContainer.For(self).Set(KeyNames.RespawnPosition, self.Position);
                 return true;
             }
             return false;
@@ -230,7 +231,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static ulong GetUniqueID(this Entity self)
         {
-            return DataContainer.For(self).Get<ulong>("unique_id");
+            return DataContainer.For(self).Get<ulong>(KeyNames.UniqueId);
         }
 
         public static Entity GetHoldableContainer(this Entity self)
@@ -262,23 +263,23 @@ namespace Celeste.Mod.Aqua.Core
 
         public static Vector2 GetPreviousPosition(this Entity self)
         {
-            Vector2 prevPos = DataContainer.For(self).Get<Vector2>("prev_position");
+            Vector2 prevPos = DataContainer.For(self).Get<Vector2>(KeyNames.PrevPosition);
             return prevPos;
         }
 
         public static bool IsHookable(this Entity self)
         {
-            return DataContainer.For(self).Get<bool>("hookable");
+            return DataContainer.For(self).Get<bool>(KeyNames.Hookable);
         }
 
         public static void SetHookable(this Entity self, bool hookable)
         {
-            DataContainer.For(self).Set("hookable", hookable);
+            DataContainer.For(self).Set(KeyNames.Hookable, hookable);
         }
 
         public static bool IsHookAttached(this Entity self)
         {
-            return DataContainer.For(self).Get<bool>("hook_attached");
+            return DataContainer.For(self).Get<bool>(KeyNames.HookAttached);
         }
 
         public static void SetHookAttached(this Entity self, bool attached, GrapplingHook grapple)
@@ -286,7 +287,7 @@ namespace Celeste.Mod.Aqua.Core
             bool isAttached = self.IsHookAttached();
             if (isAttached != attached)
             {
-                DataContainer.For(self).Set("hook_attached", attached);
+                DataContainer.For(self).Set(KeyNames.HookAttached, attached);
                 if (self.Scene != null)
                 {
                     if (attached)
@@ -299,22 +300,22 @@ namespace Celeste.Mod.Aqua.Core
 
         public static AccelerationArea.AccelerateState GetAccelerateState(this Entity self)
         {
-            return DataContainer.For(self).Get<AccelerationArea.AccelerateState>("accelerate_state");
+            return DataContainer.For(self).Get<AccelerationArea.AccelerateState>(KeyNames.AccelerateState);
         }
 
         public static void SetAccelerateState(this Entity self, AccelerationArea.AccelerateState state)
         {
-            DataContainer.For(self).Set("accelerate_state", state);
+            DataContainer.For(self).Set(KeyNames.AccelerateState, state);
         }
 
         public static bool IsReversed(this Entity self)
         {
-            return DataContainer.For(self).Get<bool>("reversed");
+            return DataContainer.For(self).Get<bool>(KeyNames.Reversed);
         }
 
         public static void SetReversed(this Entity self, bool reversed)
         {
-            DataContainer.For(self).Set("reversed", reversed);
+            DataContainer.For(self).Set(KeyNames.Reversed, reversed);
         }
 
         public static bool IntersectsWithRope(this Entity self)
@@ -357,7 +358,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static void PostMovePatch(this Entity self, Vector2 movement)
         {
-            Action<Vector2> action = DataContainer.For(self).Get<Action<Vector2>>("post_move_patch");
+            Action<Vector2> action = DataContainer.For(self).Get<Action<Vector2>>(KeyNames.PostMovePatch);
             action?.Invoke(movement);
         }
 
@@ -397,7 +398,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool CanCollide(this Entity self, Entity other)
         {
-            MethodInfo method = DataContainer.For(self).Get<MethodInfo>("can_collide_method");
+            MethodInfo method = DataContainer.For(self).Get<MethodInfo>(KeyNames.CanCollideMethod);
             if (method == null)
                 return true;
             return (bool)method.Invoke(self, new object[] { other });
@@ -405,30 +406,30 @@ namespace Celeste.Mod.Aqua.Core
 
         public static void AttachCallback(this Entity self, GrapplingHook grapple)
         {
-            Action<GrapplingHook> callback = DataContainer.For(self).Get<Action<GrapplingHook>>("on_attach_callback");
+            Action<GrapplingHook> callback = DataContainer.For(self).Get<Action<GrapplingHook>>(KeyNames.OnAttachCallback);
             callback?.Invoke(grapple);
         }
 
         public static void DetachCallback(this Entity self, GrapplingHook grapple)
         {
-            Action<GrapplingHook> callback = DataContainer.For(self).Get<Action<GrapplingHook>>("on_detach_callback");
+            Action<GrapplingHook> callback = DataContainer.For(self).Get<Action<GrapplingHook>>(KeyNames.OnDetachCallback);
             callback?.Invoke(grapple);
         }
 
         public static Action<GrapplingHook> GetAttachCallback(this Entity self)
         {
-            return DataContainer.For(self).Get<Action<GrapplingHook>>("on_attach_callback");
+            return DataContainer.For(self).Get<Action<GrapplingHook>>(KeyNames.OnAttachCallback);
         }
 
         public static Action<GrapplingHook> GetDetachCallback(this Entity self)
         {
-            return DataContainer.For(self).Get<Action<GrapplingHook>>("on_detach_callback");
+            return DataContainer.For(self).Get<Action<GrapplingHook>>(KeyNames.OnDetachCallback);
         }
 
         public static void SetAttachCallbacks(this Entity self, Action<GrapplingHook> onAttach, Action<GrapplingHook> onDetach)
         {
-            DataContainer.For(self).Set("on_attach_callback", onAttach);
-            DataContainer.For(self).Set("on_detach_callback", onDetach);
+            DataContainer.For(self).Set(KeyNames.OnAttachCallback, onAttach);
+            DataContainer.For(self).Set(KeyNames.OnDetachCallback, onDetach);
         }
 
         public static void MakeGrappleFollowMe(this Entity self, Vector2 exactMovement, Vector2 pixelMovement)
@@ -447,12 +448,12 @@ namespace Celeste.Mod.Aqua.Core
         public static void MakeExtraCollideCondition(this Entity self)
         {
             MethodInfo method = self.GetType().GetMethod("CanCollide", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            DataContainer.For(self).Set("can_collide_method", method);
+            DataContainer.For(self).Set(KeyNames.CanCollideMethod, method);
         }
 
         public static void MakeExtraCollideCondition(this Entity self, MethodInfo method)
         {
-            DataContainer.For(self).Set("can_collide_method", method);
+            DataContainer.For(self).Set(KeyNames.CanCollideMethod, method);
         }
 
         public static bool CheckCollidePlatformsAtXDirection(this Entity self, float movement, out Entity collideEntity, params Entity[] ignoreList)
@@ -629,11 +630,11 @@ namespace Celeste.Mod.Aqua.Core
                             };
                             mover.OnAttach = platform =>
                             {
-                                DataContainer.For(self).Set("attached_platform", platform);
+                                DataContainer.For(self).Set(KeyNames.AttachedPlatform, platform);
                             };
                             self.Add(new GrapplingHookAttachBehavior((e, grapple) =>
                             {
-                                Platform platform = DataContainer.For(e).Get<Platform>("attached_platform");
+                                Platform platform = DataContainer.For(e).Get<Platform>(KeyNames.AttachedPlatform);
                                 if (mover != null && e.IsHookAttached())
                                 {
                                     platform?.OnStaticMoverTrigger(mover);
@@ -662,11 +663,11 @@ namespace Celeste.Mod.Aqua.Core
                         {
                             mover.OnAttach = platform =>
                             {
-                                DataContainer.For(self).Set("attached_platform", platform);
+                                DataContainer.For(self).Set(KeyNames.AttachedPlatform, platform);
                             };
                             self.Add(new GrapplingHookAttachBehavior((e, grapple) =>
                             {
-                                Platform platform = DataContainer.For(e).Get<Platform>("attached_platform");
+                                Platform platform = DataContainer.For(e).Get<Platform>(KeyNames.AttachedPlatform);
                                 if (mover != null && e.IsHookAttached())
                                 {
                                     platform?.OnStaticMoverTrigger(mover);

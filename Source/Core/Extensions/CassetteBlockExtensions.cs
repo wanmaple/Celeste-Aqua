@@ -1,6 +1,7 @@
 ﻿using Celeste.Mod.Aqua.Miscellaneous;
 using Celeste.Mod.Entities;
 using MonoMod.Utils;
+using KeyNames = Celeste.Mod.Aqua.Miscellaneous.DataContainer.KeyNames;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -77,12 +78,12 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool IsCassetteActive(this CassetteBlock self)
         {
-            return DataContainer.For(self).Get<bool>("cassette_active");
+            return DataContainer.For(self).Get<bool>(KeyNames.CassetteActive);
         }
 
         private static void SetCassetteActive(this CassetteBlock self, bool active)
         {
-            DataContainer.For(self).Set("cassette_active", active);
+            DataContainer.For(self).Set(KeyNames.CassetteActive, active);
         }
     }
 }

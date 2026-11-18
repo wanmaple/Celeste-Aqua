@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
+using KeyNames = Celeste.Mod.Aqua.Miscellaneous.DataContainer.KeyNames;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -9,39 +10,39 @@ namespace Celeste.Mod.Aqua.Core
     {
         public static void InitializeGrapplingHook(this Player self, float size, float length, GrapplingHook.RopeMaterial material, GrapplingHook.GameplayMode mode, int initialCounter, int style = 0)
         {
-            GrapplingHook hook = DataContainer.For(self).Get<GrapplingHook>("grapple_hook");
+            GrapplingHook hook = DataContainer.For(self).Get<GrapplingHook>(KeyNames.GrappleHook);
             if (hook == null)
             {
                 hook = new GrapplingHook(size, length, material);
                 hook.ChangeGameplayMode(mode, self.level, initialCounter);
                 hook.SetStyle(style);
                 hook.Owner = self;
-                DataContainer.For(self).Set("grapple_hook", hook);
+                DataContainer.For(self).Set(KeyNames.GrappleHook, hook);
                 GrappleIndicator indicator = new GrappleIndicator(GFX.Game["objects/hook/indicator"], self);
                 self.Scene.Add(indicator);
-                DataContainer.For(self).Set("grapple_indicator", indicator);
+                DataContainer.For(self).Set(KeyNames.GrappleIndicator, indicator);
             }
         }
 
         public static void UninitializeGrapplingHook(this Player self)
         {
-            DataContainer.For(self).Set("grapple_hook", null);
-            DataContainer.For(self).Set("grapple_indicator", null);
+            DataContainer.For(self).Set(KeyNames.GrappleHook, null);
+            DataContainer.For(self).Set(KeyNames.GrappleIndicator, null);
         }
 
         public static GrapplingHook GetGrappleHook(this Player self)
         {
-            return DataContainer.For(self).Get<GrapplingHook>("grapple_hook");
+            return DataContainer.For(self).Get<GrapplingHook>(KeyNames.GrappleHook);
         }
 
         public static GrappleIndicator GetGrappleIndicator(this Player self)
         {
-            return DataContainer.For(self).Get<GrappleIndicator>("grapple_indicator");
+            return DataContainer.For(self).Get<GrappleIndicator>(KeyNames.GrappleIndicator);
         }
 
         public static ShotHookCheck GetShootHookCheck(this Player self)
         {
-            return DataContainer.For(self).Get<ShotHookCheck>("shoot_check");
+            return DataContainer.For(self).Get<ShotHookCheck>(KeyNames.ShootCheck);
         }
 
         public static Vector2 ExactCenter(this Player self)
@@ -51,7 +52,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool IsBoosterDash(this Player self)
         {
-            return self.StateMachine.State == (int)AquaStates.StDash && DataContainer.For(self).Get<bool>("is_booster_dash");
+            return self.StateMachine.State == (int)AquaStates.StDash && DataContainer.For(self).Get<bool>(KeyNames.IsBoosterDash);
         }
 
         public static void BounceDown(this Player self, float fromY)

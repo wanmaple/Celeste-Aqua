@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using KeyNames = Celeste.Mod.Aqua.Miscellaneous.DataContainer.KeyNames;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -36,13 +37,13 @@ namespace Celeste.Mod.Aqua.Core
             self.Add(new ActorExtraFields());
             self.SetMass(PlayerStates.MADELINE_MASS);
             self.SetHookable(true);
-            DataContainer.For(self).Set("eevee_patched", false);
+            DataContainer.For(self).Set(KeyNames.EeveePatched, false);
         }
 
         private static void Actor_Update(On.Celeste.Actor.orig_Update orig, Actor self)
         {
             self.PatchNonPlatformHoldableContainer();
-            DataContainer.For(self).Set("prev_position", self.Position);
+            DataContainer.For(self).Set(KeyNames.PrevPosition, self.Position);
             orig(self);
         }
 
@@ -243,18 +244,18 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void PatchNonPlatformHoldableContainer(this Actor self)
         {
-            if (DataContainer.For(self).Get<bool>("eevee_patched"))
+            if (DataContainer.For(self).Get<bool>(KeyNames.EeveePatched))
                 return;
             if (ModInterop.HoldableContainerType == null || !self.GetType().IsAssignableTo(ModInterop.HoldableContainerType))
             {
-                DataContainer.For(self).Set("eevee_patched", true);
+                DataContainer.For(self).Set(KeyNames.EeveePatched, true);
                 return;
             }
             // the movement of non-platform holdables made by EeveeHelper can't be tracked.
             Component mover = null;
             if (ModInterop.ContainerMoverType == null || (mover = self.GetComponent(ModInterop.ContainerMoverType)) == null)
             {
-                DataContainer.For(self).Set("eevee_patched", true);
+                DataContainer.For(self).Set(KeyNames.EeveePatched, true);
                 return;
             }
             FieldInfo fieldPreMove = mover.GetType().FindField(BindingFlags.Instance | BindingFlags.Public, "OnPreMove");
@@ -262,7 +263,7 @@ namespace Celeste.Mod.Aqua.Core
             MethodInfo methodGetEntities = mover.GetType().FindMethod("GetEntities");
             if (fieldPreMove == null || fieldPostMove == null || methodGetEntities == null)
             {
-                DataContainer.For(self).Set("eevee_patched", true);
+                DataContainer.For(self).Set(KeyNames.EeveePatched, true);
                 return;
             }
             Action onPrevMove = fieldPreMove.GetValue(mover) as Action;
@@ -291,7 +292,7 @@ namespace Celeste.Mod.Aqua.Core
             };
             fieldPreMove.SetValue(mover, onPrevMove);
             fieldPostMove.SetValue(mover, onPostMove);
-            DataContainer.For(self).Set("eevee_patched", true);
+            DataContainer.For(self).Set(KeyNames.EeveePatched, true);
         }
     }
 }

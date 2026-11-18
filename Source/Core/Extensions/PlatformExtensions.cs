@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using MonoMod.Utils;
 using System;
+using KeyNames = Celeste.Mod.Aqua.Miscellaneous.DataContainer.KeyNames;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -42,12 +43,12 @@ namespace Celeste.Mod.Aqua.Core
         private static void Platform_Construct(On.Celeste.Platform.orig_ctor orig, Platform self, Vector2 position, bool safe)
         {
             orig(self, position, safe);
-            DataContainer.For(self).Set("hookable", true);
+            DataContainer.For(self).Set(KeyNames.Hookable, true);
         }
 
         private static void Platform_Update(On.Celeste.Platform.orig_Update orig, Platform self)
         {
-            DataContainer.For(self).Set("prev_position", self.Position);
+            DataContainer.For(self).Set(KeyNames.PrevPosition, self.Position);
             orig(self);
         }
 

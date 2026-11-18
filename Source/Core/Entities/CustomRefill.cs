@@ -3,6 +3,7 @@ using Celeste.Mod.Aqua.Module;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System.ComponentModel;
+using KeyNames = Celeste.Mod.Aqua.Miscellaneous.DataContainer.KeyNames;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -125,7 +126,7 @@ namespace Celeste.Mod.Aqua.Core
                 hook.Revoke();
                 _moveToward.Target = hook;
                 _moveToward.Active = true;
-                DataContainer.For(this).Set("respawn_position", Position);
+                DataContainer.For(this).Set(KeyNames.RespawnPosition, Position);
                 return true;
             }
             return false;

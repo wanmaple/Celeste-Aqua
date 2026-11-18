@@ -6,6 +6,7 @@ using MonoMod.Cil;
 using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
+using KeyNames = Celeste.Mod.Aqua.Miscellaneous.DataContainer.KeyNames;
 
 namespace Celeste.Mod.Aqua.Core
 {
@@ -48,12 +49,12 @@ namespace Celeste.Mod.Aqua.Core
 
         public static SlideStates GetSlideState(this Player self)
         {
-            return DataContainer.For(self).Get<SlideStates>("slide_state");
+            return DataContainer.For(self).Get<SlideStates>(KeyNames.SlideState);
         }
 
         private static void SetSlideState(this Player self, SlideStates state)
         {
-            DataContainer.For(self).Set("slide_state", state);
+            DataContainer.For(self).Set(KeyNames.SlideState, state);
         }
 
         private static bool CheckOnSlidable(this Player self)
