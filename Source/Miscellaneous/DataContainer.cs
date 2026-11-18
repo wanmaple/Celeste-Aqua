@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Celeste.Mod.Aqua.Miscellaneous
 {
@@ -17,9 +18,15 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                 return container;
             }
 
+            if (_queue.TryGetValue(obj, out container))
+            {
+                return container;
+            }
+
             container = new DataContainer(obj);
             container.PrevPosition = obj.Position;
-            obj.Add(container);
+            _queue.Add(obj, container);
+            obj.Add(container); // 如果 obj.Components.LockMode = LockModes.Open, 这会立刻触发 Added 从而将 container 从 _queue 移除
 
             return container;
         }
@@ -41,6 +48,18 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         {
             base.Update();
             PrevPosition = _owner.Position;
+        }
+
+        public override void Added(Entity entity)
+        {
+            base.Added(entity);
+            _queue.Remove(entity);
+        }
+
+        public override void Removed(Entity entity)
+        {
+            base.Removed(entity);
+            _queue.Remove(entity);
         }
 
         public bool Hookable { get; set; } = false;
@@ -79,5 +98,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         public TimeTicker BoostSpeedSaveTicker { get; set; }
         public TimeTicker ElectricShockTicker { get; set; }
         private static ulong AUTO_ID = 0u;
+
+        private static ConditionalWeakTable<Entity, DataContainer> _queue = new ConditionalWeakTable<Entity, DataContainer>();
     }
 }
