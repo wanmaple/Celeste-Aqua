@@ -113,7 +113,8 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
         public bool Has(string key)
         {
-            if (_values.ContainsKey(key))
+            Dictionary<string, object> spill = _spill;
+            if (spill != null && spill.ContainsKey(key))
             {
                 return true;
             }
@@ -159,9 +160,10 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
         public T Get<T>(string key, T defaultValue = default)
         {
-            // The dictionary wins: a key is stored in exactly one place, because Set() moves a key
-            // out of it when it writes the matching typed field again.
-            if (_values.TryGetValue(key, out object spilledValue))
+            // The overflow dictionary wins: a key is stored in exactly one place, because Set()
+            // moves a key out of _spill when it writes the matching typed field again.
+            Dictionary<string, object> spill = _spill;
+            if (spill != null && spill.TryGetValue(key, out object spilledValue))
             {
                 return spilledValue is T spilledTypedValue ? spilledTypedValue : defaultValue;
             }
@@ -232,7 +234,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             // Not a predefined key, a value whose type does not match the predefined field, or a
             // null written into a value-typed key: keep it in the overflow dictionary so that
             // Has()/Get<T>() behave exactly like the old Dictionary<string, object>.
-            _values[key] = value;
+            (_spill ??= new Dictionary<string, object>(_spillInitialCapacity))[key] = value;
         }
 
         /// <summary>
@@ -282,7 +284,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
         public void Remove(string key)
         {
-            _values.Remove(key);
+            _spill?.Remove(key);
             switch (key)
             {
                 case KeyNames.Hookable: Clear(key, ref _hookable, KeyBit.Hookable); return;
@@ -328,7 +330,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         /// </summary>
         public IReadOnlyDictionary<string, object> GetValues()
         {
-            Dictionary<string, object> snapshot = new Dictionary<string, object>(AllKeys.Length + _values.Count);
+            Dictionary<string, object> snapshot = new Dictionary<string, object>(AllKeys.Length + (_spill?.Count ?? 0));
             foreach (string key in AllKeys)
             {
                 if (Has(key))
@@ -337,21 +339,32 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                 }
             }
 
-            foreach (KeyValuePair<string, object> pair in _values)
+            if (_spill != null)
             {
-                snapshot[pair.Key] = pair.Value;
+                foreach (KeyValuePair<string, object> pair in _spill)
+                {
+                    snapshot[pair.Key] = pair.Value;
+                }
             }
 
             return snapshot;
         }
 
-        public DataContainer() : this(32)
+        public DataContainer() : this(DefaultSpillCapacity)
         {
         }
 
         public DataContainer(int capacity)
         {
-            _values = new Dictionary<string, object>(capacity);
+            // Keep the old contract: a negative capacity used to throw from `new Dictionary(-1)`.
+            if (capacity < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(capacity));
+            }
+
+            // The capacity only sizes the overflow dictionary now, and it is clamped: that path is
+            // a handful of keys at most.
+            _spillInitialCapacity = Math.Min(capacity, DefaultSpillCapacity);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -383,7 +396,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
             field = typedValue;
             Mark(keyBit);
-            _values.Remove(key);
+            _spill?.Remove(key);
             return true;
         }
 
@@ -398,7 +411,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
             field = (T)value;
             Mark(keyBit);
-            _values.Remove(key);
+            _spill?.Remove(key);
             return true;
         }
 
@@ -408,7 +421,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         {
             field = default;
             Unmark(keyBit);
-            _values.Remove(key);
+            _spill?.Remove(key);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -534,9 +547,15 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         private TimeTicker _boostSpeedSaveTicker;
         private TimeTicker _elecShockTicker;
 
-        // Holds the keys and value shapes the typed fields do not cover, exactly like the single
-        // dictionary this class used to keep.
-        private Dictionary<string, object> _values;
+        // Created on first write of a key that is not predefined, of a value whose type does not
+        // match the predefined field, or of null into a value-typed key. Stays null for almost
+        // every entity; with the keys above typed, the shipped code path never creates it.
+        private Dictionary<string, object> _spill;
+
+        /// <summary>Upper bound for the overflow dictionary initial capacity (see the constructor).</summary>
+        private const int DefaultSpillCapacity = 4;
+
+        private int _spillInitialCapacity;
 
         private static readonly ConditionalWeakTable<Entity, DataContainer> _data = new ConditionalWeakTable<Entity, DataContainer>();
     }
