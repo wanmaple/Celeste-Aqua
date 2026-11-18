@@ -130,6 +130,13 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                 case KeyNames.AccelerateState: return Present(_present, KeyBit.AccelerateState);
                 case KeyNames.Reversed: return Present(_present, KeyBit.Reversed);
                 case KeyNames.PostMovePatch: return Present(_present, KeyBit.PostMovePatch);
+                case KeyNames.EeveePatched: return Present(_present, KeyBit.EeveePatched);
+                case KeyNames.MoveToward: return Present(_present, KeyBit.MoveToward);
+                case KeyNames.RespawnPosition: return Present(_present, KeyBit.RespawnPosition);
+                case KeyNames.AttachedPlatform: return Present(_present, KeyBit.AttachedPlatform);
+                case KeyNames.UndraggableRoutine: return Present(_present, KeyBit.UndraggableRoutine);
+                case KeyNames.HookInSound: return Present(_present, KeyBit.HookInSound);
+                case KeyNames.CassetteActive: return Present(_present, KeyBit.CassetteActive);
                 default: return false;
             }
         }
@@ -164,6 +171,15 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                 case KeyNames.Reversed: return Read<T, bool>(present, KeyBit.Reversed, _reversed, defaultValue);
                 case KeyNames.PostMovePatch:
                     return ReadRef<T, Action<Vector2>>(present, KeyBit.PostMovePatch, _postMovePatch, defaultValue);
+                case KeyNames.EeveePatched: return Read<T, bool>(present, KeyBit.EeveePatched, _eeveePatched, defaultValue);
+                case KeyNames.MoveToward: return ReadRef<T, MoveToward>(present, KeyBit.MoveToward, _moveToward, defaultValue);
+                case KeyNames.RespawnPosition: return Read<T, Vector2>(present, KeyBit.RespawnPosition, _respawnPosition, defaultValue);
+                case KeyNames.AttachedPlatform:
+                    return ReadRef<T, Platform>(present, KeyBit.AttachedPlatform, _attachedPlatform, defaultValue);
+                case KeyNames.UndraggableRoutine:
+                    return ReadRef<T, Coroutine>(present, KeyBit.UndraggableRoutine, _undraggableRoutine, defaultValue);
+                case KeyNames.HookInSound: return ReadRef<T, SoundSource>(present, KeyBit.HookInSound, _hookInSound, defaultValue);
+                case KeyNames.CassetteActive: return Read<T, bool>(present, KeyBit.CassetteActive, _cassetteActive, defaultValue);
                 default: return defaultValue;
             }
         }
@@ -199,6 +215,13 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                 case KeyNames.AccelerateState: return Store(key, value, ref _accelerateState, KeyBit.AccelerateState);
                 case KeyNames.Reversed: return Store(key, value, ref _reversed, KeyBit.Reversed);
                 case KeyNames.PostMovePatch: return StoreRef(key, value, ref _postMovePatch, KeyBit.PostMovePatch);
+                case KeyNames.EeveePatched: return Store(key, value, ref _eeveePatched, KeyBit.EeveePatched);
+                case KeyNames.MoveToward: return StoreRef(key, value, ref _moveToward, KeyBit.MoveToward);
+                case KeyNames.RespawnPosition: return Store(key, value, ref _respawnPosition, KeyBit.RespawnPosition);
+                case KeyNames.AttachedPlatform: return StoreRef(key, value, ref _attachedPlatform, KeyBit.AttachedPlatform);
+                case KeyNames.UndraggableRoutine: return StoreRef(key, value, ref _undraggableRoutine, KeyBit.UndraggableRoutine);
+                case KeyNames.HookInSound: return StoreRef(key, value, ref _hookInSound, KeyBit.HookInSound);
+                case KeyNames.CassetteActive: return Store(key, value, ref _cassetteActive, KeyBit.CassetteActive);
                 default: return false;
             }
         }
@@ -218,6 +241,13 @@ namespace Celeste.Mod.Aqua.Miscellaneous
                 case KeyNames.AccelerateState: Clear(key, ref _accelerateState, KeyBit.AccelerateState); return;
                 case KeyNames.Reversed: Clear(key, ref _reversed, KeyBit.Reversed); return;
                 case KeyNames.PostMovePatch: Clear(key, ref _postMovePatch, KeyBit.PostMovePatch); return;
+                case KeyNames.EeveePatched: Clear(key, ref _eeveePatched, KeyBit.EeveePatched); return;
+                case KeyNames.MoveToward: Clear(key, ref _moveToward, KeyBit.MoveToward); return;
+                case KeyNames.RespawnPosition: Clear(key, ref _respawnPosition, KeyBit.RespawnPosition); return;
+                case KeyNames.AttachedPlatform: Clear(key, ref _attachedPlatform, KeyBit.AttachedPlatform); return;
+                case KeyNames.UndraggableRoutine: Clear(key, ref _undraggableRoutine, KeyBit.UndraggableRoutine); return;
+                case KeyNames.HookInSound: Clear(key, ref _hookInSound, KeyBit.HookInSound); return;
+                case KeyNames.CassetteActive: Clear(key, ref _cassetteActive, KeyBit.CassetteActive); return;
                 default: return;
             }
         }
@@ -366,6 +396,13 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             public const int AccelerateState = 7;
             public const int Reversed = 8;
             public const int PostMovePatch = 9;
+            public const int EeveePatched = 10;
+            public const int MoveToward = 11;
+            public const int RespawnPosition = 12;
+            public const int AttachedPlatform = 13;
+            public const int UndraggableRoutine = 14;
+            public const int HookInSound = 15;
+            public const int CassetteActive = 16;
         }
 
         // Which predefined keys have been written. Kept separately from the field values because
@@ -384,6 +421,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         private bool _reversed;
         private Action<Vector2> _postMovePatch;
 
+        // Keys written by specific entity types.
         private bool _eeveePatched;
         private MoveToward _moveToward;
         private Vector2 _respawnPosition;
