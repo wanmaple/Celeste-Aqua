@@ -33,7 +33,16 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
         public static DataContainer OnlyGet(Entity obj)
         {
-            return obj.Components.Get<DataContainer>();
+            DataContainer c = obj.Components.Get<DataContainer>();
+            if (c is not null)
+            {
+                return c;
+            }
+            if (_queue.TryGetValue(obj, out c))
+            {
+                return c;
+            }
+            return null;
         }
 
         private readonly Entity _owner;

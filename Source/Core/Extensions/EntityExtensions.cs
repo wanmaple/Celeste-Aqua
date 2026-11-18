@@ -336,7 +336,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static void PostMovePatch(this Entity self, Vector2 movement)
         {
-            Action<Vector2> action = DataContainer.For(self).PostMovePatch;
+            Action<Vector2> action = DataContainer.OnlyGet(self)?.PostMovePatch;
             action?.Invoke(movement);
         }
 
@@ -376,7 +376,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool CanCollide(this Entity self, Entity other)
         {
-            MethodInfo method = DataContainer.For(self).CanCollideMethod;
+            MethodInfo method = DataContainer.OnlyGet(self)?.CanCollideMethod;
             if (method == null)
                 return true;
             return (bool)method.Invoke(self, new object[] { other });
@@ -384,24 +384,24 @@ namespace Celeste.Mod.Aqua.Core
 
         public static void AttachCallback(this Entity self, GrapplingHook grapple)
         {
-            Action<GrapplingHook> callback = DataContainer.For(self).OnAttachCallback;
+            Action<GrapplingHook> callback = DataContainer.OnlyGet(self)?.OnAttachCallback;
             callback?.Invoke(grapple);
         }
 
         public static void DetachCallback(this Entity self, GrapplingHook grapple)
         {
-            Action<GrapplingHook> callback = DataContainer.For(self).OnDetachCallback;
+            Action<GrapplingHook> callback = DataContainer.OnlyGet(self)?.OnDetachCallback;
             callback?.Invoke(grapple);
         }
 
         public static Action<GrapplingHook> GetAttachCallback(this Entity self)
         {
-            return DataContainer.For(self).OnAttachCallback;
+            return DataContainer.OnlyGet(self)?.OnAttachCallback;
         }
 
         public static Action<GrapplingHook> GetDetachCallback(this Entity self)
         {
-            return DataContainer.For(self).OnDetachCallback;
+            return DataContainer.OnlyGet(self)?.OnDetachCallback;
         }
 
         public static void SetAttachCallbacks(this Entity self, Action<GrapplingHook> onAttach, Action<GrapplingHook> onDetach)
@@ -612,7 +612,7 @@ namespace Celeste.Mod.Aqua.Core
                             };
                             self.Add(new GrapplingHookAttachBehavior((e, grapple) =>
                             {
-                                Platform platform = DataContainer.For(e).AttachedPlatform;
+                                Platform platform = DataContainer.OnlyGet(e)?.AttachedPlatform;
                                 if (mover != null && e.IsHookAttached())
                                 {
                                     platform?.OnStaticMoverTrigger(mover);
@@ -645,7 +645,7 @@ namespace Celeste.Mod.Aqua.Core
                             };
                             self.Add(new GrapplingHookAttachBehavior((e, grapple) =>
                             {
-                                Platform platform = DataContainer.For(e).AttachedPlatform;
+                                Platform platform = DataContainer.OnlyGet(e)?.AttachedPlatform;
                                 if (mover != null && e.IsHookAttached())
                                 {
                                     platform?.OnStaticMoverTrigger(mover);
