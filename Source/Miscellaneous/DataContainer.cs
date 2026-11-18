@@ -12,7 +12,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
     /// Per-entity state bag. The keys Aqua uses are known up front, so they live in typed fields;
     /// the dictionary only keeps what the typed fields cannot represent. The public API is unchanged.
     /// </summary>
-    public class DataContainer
+    public partial class DataContainer
     {
         // KeyNames, AllKeys, KeyBit and the switches in Has/Get/TrySetTyped/Remove are
         // index-aligned: append a new key to the end of all of them.
@@ -93,6 +93,13 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             KeyNames.BoostSpeedSaveTicker,
             KeyNames.ElecShockTicker,
         };
+
+        static DataContainer()
+        {
+#if DEBUG
+            VerifyKeyTable();
+#endif
+        }
 
         public static DataContainer For(Entity obj)
         {
