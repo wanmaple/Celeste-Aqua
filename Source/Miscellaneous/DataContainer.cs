@@ -1,5 +1,8 @@
-﻿using Monocle;
-using System.Collections.Generic;
+﻿using Celeste.Mod.Aqua.Core;
+using Microsoft.Xna.Framework;
+using Monocle;
+using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Celeste.Mod.Aqua.Miscellaneous
@@ -11,7 +14,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             DataContainer data;
             if (!_data.TryGetValue(obj, out data))
             {
-                data = new DataContainer(32);
+                data = new DataContainer();
                 _data.Add(obj, data);
             }
             return data;
@@ -24,49 +27,43 @@ namespace Celeste.Mod.Aqua.Miscellaneous
 
         static ConditionalWeakTable<Entity, DataContainer> _data = new ConditionalWeakTable<Entity, DataContainer>();
 
-        public bool Has(string key)
+        public DataContainer()
         {
-            return _values.ContainsKey(key);
         }
+        public bool Hookable { get; set; }
+        public Action<GrapplingHook> OnAttachCallback { get; set; }
+        public Action<GrapplingHook> OnDetachCallback { get; set; }
+        public bool HookAttached { get; set; }
+        public MethodInfo CanCollideMethod { get; set; }
+        public Vector2 PrevPosition { get; set; }}
 
-        public T Get<T>(string key, T defaultValue = default)
-        {
-            if (_values.TryGetValue(key, out object value))
-            {
-                if (value is T tValue)
-                    return tValue;
-                else
-                    return defaultValue;
-            }
-            else
-            {
-                return defaultValue;
-            }
-        }
+        public ulong UniqueId { get; set; }
 
-        public void Set(string key, object value)
-        {
-            _values[key] = value;
-        }
-
-        public void Remove(string key)
-        {
-            _values.Remove(key);
-        }
-
-        public IReadOnlyDictionary<string, object> GetValues()
-        {
-            return _values;
-        }
-
-        public DataContainer() : this(32)
-        { }
-
-        public DataContainer(int capacity)
-        {
-            _values = new Dictionary<string, object>(capacity);
-        }
-
-        Dictionary<string, object> _values;
+        public AccelerationArea.AccelerateState AccelerateState { get; set; }
+        public bool Reversed { get; set; }
+        public Action<Vector2> PostMovePatch { get; set; }
+        public bool EeveePatched { get; set; }
+        public MoveToward MoveToward { get; set; }
+        public Vector2? RespawnPosition { get; set; }
+        public Platform AttachedPlatform { get; set; }
+        public Coroutine UndraggableRoutine { get; set; }
+        public SoundSource HookInSound { get; set; }
+        public bool CassetteActive { get; set; }
+        public GrapplingHook GrappleHook { get; set; }
+        public GrappleIndicator GrappleIndicator { get; set; }
+        public ShotHookCheck ShootCheck { get; set; }
+        public bool IsBoosterDash { get; set; }
+        public PlayerStates.SlideStates SlideState { get; set; }
+        public int PreviousFacing { get; set; }
+        public bool RopeIsLoosen { get; set; }
+        public int ClimbRopeDirection { get; set; }
+        public float LiftSpeedY { get; set; }
+        public float FastBubbleMultiplier { get; set; }
+        public float RedDashSwingDir { get; set; }
+        public float RedDashSwingSpeed { get; set; }
+        public bool RedirectionShoot { get; set; }
+        public TimeTicker DashHangingTicker { get; set; }
+        public TimeTicker BoostSpeedSaveTicker { get; set; }
+        public TimeTicker ElectricShockTicker { get; set; }
     }
 }

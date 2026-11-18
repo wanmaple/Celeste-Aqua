@@ -19,10 +19,10 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void FlyFeather_Respawn(On.Celeste.FlyFeather.orig_Respawn orig, FlyFeather self)
         {
-            if (DataContainer.For(self).Has("respawn_position"))
+            if (DataContainer.For(self).RespawnPosition is Vector2 respawnPosition)
             {
-                self.Position = DataContainer.For(self).Get<Vector2>("respawn_position");
-                DataContainer.For(self).Remove("respawn_position");
+                self.Position = respawnPosition;
+                DataContainer.For(self).RespawnPosition = null;
             }
             orig(self);
         }
@@ -30,9 +30,9 @@ namespace Celeste.Mod.Aqua.Core
         private static void FlyFeather_Update(On.Celeste.FlyFeather.orig_Update orig, FlyFeather self)
         {
             orig(self);
-            if (self.IsHookable() && DataContainer.For(self).Has("respawn_position"))
+            if (self.IsHookable() && DataContainer.For(self).RespawnPosition is Vector2 respawnPosition)
             {
-                self.outline.Position = DataContainer.For(self).Get<Vector2>("respawn_position") - self.Position;
+                self.outline.Position = respawnPosition - self.Position;
             }
         }
     }

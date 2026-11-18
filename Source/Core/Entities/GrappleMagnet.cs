@@ -83,7 +83,7 @@ namespace Celeste.Mod.Aqua.Core
                 Color = Calc.HexToColor("ff3b3b"),
                 Color2 = Calc.HexToColor("dd1e1e"),
             };
-            DataContainer.For(this).Set("post_move_patch", (Action<Vector2>)PostMove);
+            DataContainer.For(this).PostMovePatch = (Action<Vector2>)PostMove;
             this.MakeExtraCollideCondition();
         }
 
@@ -115,7 +115,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
-            DataContainer.For(this).Set("prev_position", Position);
+            DataContainer.For(this).PrevPosition = Position;
             base.Update();
             if (_activated)
                 UpdateImageMovers();

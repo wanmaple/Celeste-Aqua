@@ -31,7 +31,7 @@ namespace Celeste.Mod.Aqua.Core
             orig(self, position, red);
             self.Add(new HookInteractable(self.OnGrappleInteract));
             self.SetHookable(true);
-            DataContainer.For(self).Set("undraggable_routine", null);
+            DataContainer.For(self).UndraggableRoutine = null;
         }
 
         private static void Booster_PlayerReleased(On.Celeste.Booster.orig_PlayerReleased orig, Booster self)
@@ -107,10 +107,10 @@ namespace Celeste.Mod.Aqua.Core
 
         private static void ResetPosition(this Booster self)
         {
-            if (DataContainer.For(self).Has("respawn_position"))
+            if (DataContainer.For(self).RespawnPosition is Vector2 respawnPosition)
             {
-                self.Position = DataContainer.For(self).Get<Vector2>("respawn_position");
-                DataContainer.For(self).Remove("respawn_position");
+                self.Position = respawnPosition;
+                DataContainer.For(self).RespawnPosition = null;
             }
         }
 
@@ -118,7 +118,7 @@ namespace Celeste.Mod.Aqua.Core
         {
             hook.Revoke();
             Audio.Play(self.red ? "event:/game/05_mirror_temple/redbooster_reappear" : "event:/game/04_cliffside/greenbooster_reappear", self.Position);
-            Coroutine routine = DataContainer.For(self).Get<Coroutine>("undraggable_routine");
+            Coroutine routine = DataContainer.For(self).UndraggableRoutine;
             if (routine == null)
             {
                 self.Add(routine = new Coroutine(self.UndraggableRoutine(self.sprite, Calc.SafeNormalize(at - self.Center), 0.4f, 8.0f)));

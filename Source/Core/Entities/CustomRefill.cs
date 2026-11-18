@@ -125,7 +125,7 @@ namespace Celeste.Mod.Aqua.Core
                 hook.Revoke();
                 _moveToward.Target = hook;
                 _moveToward.Active = true;
-                DataContainer.For(this).Set("respawn_position", Position);
+                DataContainer.For(this).RespawnPosition = Position;
                 return true;
             }
             return false;

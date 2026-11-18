@@ -77,12 +77,12 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool IsCassetteActive(this CassetteBlock self)
         {
-            return DataContainer.For(self).Get<bool>("cassette_active");
+            return DataContainer.For(self).CassetteActive;
         }
 
         private static void SetCassetteActive(this CassetteBlock self, bool active)
         {
-            DataContainer.For(self).Set("cassette_active", active);
+            DataContainer.For(self).CassetteActive = active;
         }
     }
 }
