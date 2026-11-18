@@ -115,7 +115,6 @@ namespace Celeste.Mod.Aqua.Core
 
         public override void Update()
         {
-            DataContainer.For(this).PrevPosition = Position;
             base.Update();
             if (_activated)
                 UpdateImageMovers();

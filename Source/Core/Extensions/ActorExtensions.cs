@@ -36,13 +36,11 @@ namespace Celeste.Mod.Aqua.Core
             self.Add(new ActorExtraFields());
             self.SetMass(PlayerStates.MADELINE_MASS);
             self.SetHookable(true);
-            DataContainer.For(self).EeveePatched = false;
         }
 
         private static void Actor_Update(On.Celeste.Actor.orig_Update orig, Actor self)
         {
             self.PatchNonPlatformHoldableContainer();
-            DataContainer.For(self).PrevPosition = self.Position;
             orig(self);
         }
 

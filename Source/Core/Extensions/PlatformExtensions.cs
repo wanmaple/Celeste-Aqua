@@ -10,7 +10,6 @@ namespace Celeste.Mod.Aqua.Core
         public static void Initialize()
         {
             On.Celeste.Platform.ctor += Platform_Construct;
-            On.Celeste.Platform.Update += Platform_Update;
             On.Celeste.Platform.MoveH_float += Platform_MoveH_1;
             On.Celeste.Platform.MoveH_float_float += Platform_MoveH_2;
             On.Celeste.Platform.MoveHNaive += Platform_MoveHNaive;
@@ -26,7 +25,6 @@ namespace Celeste.Mod.Aqua.Core
         public static void Uninitialize()
         {
             On.Celeste.Platform.ctor -= Platform_Construct;
-            On.Celeste.Platform.Update -= Platform_Update;
             On.Celeste.Platform.MoveH_float -= Platform_MoveH_1;
             On.Celeste.Platform.MoveH_float_float -= Platform_MoveH_2;
             On.Celeste.Platform.MoveHNaive -= Platform_MoveHNaive;
@@ -43,12 +41,6 @@ namespace Celeste.Mod.Aqua.Core
         {
             orig(self, position, safe);
             DataContainer.For(self).Hookable = true;
-        }
-
-        private static void Platform_Update(On.Celeste.Platform.orig_Update orig, Platform self)
-        {
-            DataContainer.For(self).PrevPosition = self.Position;
-            orig(self);
         }
 
         private static void Platform_MoveH_1(On.Celeste.Platform.orig_MoveH_float orig, Platform self, float moveH)

@@ -32,9 +32,15 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         private readonly Entity _owner;
 
         public DataContainer(Entity owner)
-            : base(false, false)
+            : base(true, false)
         {
             _owner = owner;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            PrevPosition = _owner.Position;
         }
 
         public bool Hookable { get; set; } = false;
@@ -49,7 +55,7 @@ namespace Celeste.Mod.Aqua.Miscellaneous
         public AccelerationArea.AccelerateState AccelerateState { get; set; } = AccelerationArea.AccelerateState.None;
         public bool Reversed { get; set; } = false;
         public Action<Vector2> PostMovePatch { get; set; } = null;
-        public bool EeveePatched { get; set; }
+        public bool EeveePatched { get; set; } = false;
         public MoveToward MoveToward { get; set; }
         public Vector2? RespawnPosition { get; set; }
         public Platform AttachedPlatform { get; set; }
