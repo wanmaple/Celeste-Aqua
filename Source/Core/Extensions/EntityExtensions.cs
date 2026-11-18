@@ -220,7 +220,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static ulong GetUniqueID(this Entity self)
         {
-            return DataContainer.For(self).UniqueId;
+            return DataContainer.OnlyGet(self)?.UniqueId ?? 0u;
         }
 
         public static Entity GetHoldableContainer(this Entity self)
@@ -257,7 +257,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool IsHookable(this Entity self)
         {
-            return DataContainer.For(self).Hookable;
+            return DataContainer.OnlyGet(self)?.Hookable ?? false;
         }
 
         public static void SetHookable(this Entity self, bool hookable)
@@ -267,7 +267,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool IsHookAttached(this Entity self)
         {
-            return DataContainer.For(self).HookAttached;
+            return DataContainer.OnlyGet(self)?.HookAttached ?? false;
         }
 
         public static void SetHookAttached(this Entity self, bool attached, GrapplingHook grapple)
@@ -288,7 +288,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static AccelerationArea.AccelerateState GetAccelerateState(this Entity self)
         {
-            return DataContainer.For(self).AccelerateState;
+            return DataContainer.OnlyGet(self)?.AccelerateState ?? AccelerationArea.AccelerateState.None;
         }
 
         public static void SetAccelerateState(this Entity self, AccelerationArea.AccelerateState state)
@@ -298,7 +298,7 @@ namespace Celeste.Mod.Aqua.Core
 
         public static bool IsReversed(this Entity self)
         {
-            return DataContainer.For(self).Reversed;
+            return DataContainer.OnlyGet(self)?.Reversed ?? false;
         }
 
         public static void SetReversed(this Entity self, bool reversed)

@@ -18,9 +18,15 @@ namespace Celeste.Mod.Aqua.Miscellaneous
             }
 
             container = new DataContainer(obj);
+            container.PrevPosition = obj.Position;
             obj.Add(container);
 
             return container;
+        }
+
+        public static DataContainer OnlyGet(Entity obj)
+        {
+            return obj.Components.Get<DataContainer>();
         }
 
         private readonly Entity _owner;
